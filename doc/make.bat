@@ -1,5 +1,7 @@
 @ECHO OFF
 
+setlocal
+
 pushd %~dp0
 
 REM Command file for Sphinx documentation
@@ -9,6 +11,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=_build
+set SPHINXOPTS=-v -j auto -W --keep-going -w build_errors.txt -N
 
 if "%1" == "" goto help
 if "%1" == "clean" goto clean
@@ -26,11 +29,13 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
+python settings_rstgen.py
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
 :clean
-rmdir /s /q %BUILDDIR% > /NUL 2>&1 
+rmdir /s /q %BUILDDIR% > /NUL 2>&1
+rmdir /s /q %SOURCEDIR%\examples > /NUL 2>&1
 for /d /r %SOURCEDIR% %%d in (_autosummary) do @if exist "%%d" rmdir /s /q "%%d"
 goto end
 
