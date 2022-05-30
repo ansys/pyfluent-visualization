@@ -31,7 +31,7 @@ Pyfluent visualization
    :alt: Black
 
 
-A Python wrapper for Ansys fluent visualization
+A Python wrapper for Ansys Fluent visualization
 
 
 How to install
@@ -100,7 +100,8 @@ need to follow these steps:
 
     .. code:: bash
     
-        poetry run python -m pip install ansys-fluent-visualization
+        cd pyfluent-visualization
+        poetry run python -m pip install .
         
     5. Finally, verify your development installation by running:
 
