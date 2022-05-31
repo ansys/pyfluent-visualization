@@ -49,13 +49,8 @@ customized scripts.
 
 Features
 --------
-The primary package, ``ansys-fluent-solver``, provides features such as:
+The package, ``ansys-fluent-visualization``, provides features such as:
 
-- Scripting of Fluent's meshing capabilities. See the :ref:`ref_meshing` module
-  for more information.
-- Scripting using Fluent's TUI commands. See the :ref:`ref_solver_tui`  module for
-  more information about the available commands.
-- Scripting of a parametric study using Fluent.
 - Script post processing using Fluent's in-built post processing capabilities.
   See the :ref:`ref_postprocessing` module for more information.
 - Plotting of Fluent geometry and meshes using `PyVista
@@ -64,16 +59,6 @@ The primary package, ``ansys-fluent-solver``, provides features such as:
 - Access to Fluent surface based field data as Python objects via `NumPy
   <https://numpy.org/>`_ arrays
 - and more...
-  
-Beta Features
--------------
-The settings object interface provides a more Pythonic way to access and modify
-Fluent settings than the TUI command interface.  These API calls group Fluent
-settings into a tree of objects where individal settings for material
-properties, boundary conditions are accessible without the need to pass
-parameter lists.
-
-More information is available in the :ref:`ref_settings` module documentation.
 
 Documentation and Issues
 ------------------------
