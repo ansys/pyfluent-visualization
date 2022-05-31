@@ -112,7 +112,7 @@ exclude_patterns = ["_build"]
 pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
+todo_include_todos = True
 
 # Copy button customization ---------------------------------------------------
 # exclude traditional Python prompts from the copied code
