@@ -9,4 +9,4 @@ constituent modules and components.
 
 ================================================
 Understanding the pyfluent-visualization Modules
-==================================​==============
+================================================

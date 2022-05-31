@@ -41,10 +41,7 @@ For a local "development" version, install with:
    cd pyfluent-visualization
    pip install -e .
 
-.. todo::
-
-   Remove this section when pyfluent-visualization project goes public
-
+(Remove this section when pyfluent-visualization project goes public)
 Until pyfluent-visualization project goes public, install the latest release from
 the artifactory.
 
