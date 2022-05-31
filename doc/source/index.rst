@@ -1,5 +1,5 @@
-PyFluent Documentation |version|
-================================
+pyfluent-visualization Documentation |version|
+==============================================
 
 .. toctree::
    :hidden:
