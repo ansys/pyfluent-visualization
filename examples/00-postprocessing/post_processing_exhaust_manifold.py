@@ -1,7 +1,7 @@
 """.. _ref_post_processing_exhaust_manifold:
 
 Post Processing using PyVista and Matplotlib: Exhaust Manifold
-----------------------------------------------------------------------
+--------------------------------------------------------------
 This example demonstrates the postprocessing capabilities of PyFluent
 (using PyVista and Matplotlib) using a 3D model
 of an exhaust manifold with high temperature flows passing through.

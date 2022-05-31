@@ -32,7 +32,7 @@ pyfluent.BUILDING_GALLERY = True
 
 # -- Project information -----------------------------------------------------
 
-project = "ansys.fluent.visualization"
+project = "ansys-fluent-visualization"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "ANSYS Inc."
 

@@ -49,7 +49,7 @@ customized scripts.
 
 Features
 --------
-The primary package, ``ansys-fluent``, provides features such as:
+The primary package, ``ansys-fluent-solver``, provides features such as:
 
 - Scripting of Fluent's meshing capabilities. See the :ref:`ref_meshing` module
   for more information.
@@ -94,7 +94,7 @@ the functionality of Ansys Fluent by adding an additional Python interface to
 Ansys Fluent without changing the core behavior or license of the original
 software. The use of the interactive control of PyFluent requires a legally
 licensed local copy of Ansys Fluent. For more information about Ansys Fluent,
-visit the Ansys Fluent page on the Ansys website.
+visit `Ansys Fluent <https://www.ansys.com/products/fluids/ansys-fluent>`_.
 
 Project Index
 -------------

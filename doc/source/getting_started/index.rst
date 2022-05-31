@@ -15,7 +15,7 @@ Installation
 
 Python Module
 ~~~~~~~~~~~~~
-The ``ansys-fluent-visualization`` package currently supports Python 3.7 through
+The ``ansys-fluent-visualization`` package supports Python 3.7 through
 Python 3.10 on Windows and Linux.
 
 Install the latest release from `PyPi
@@ -41,7 +41,10 @@ For a local "development" version, install with:
    cd pyfluent-visualization
    pip install -e .
 
-(Remove this section when pyfluent-visualization project goes public) 
+.. todo::
+
+   Remove this section when pyfluent-visualization project goes public
+
 Until pyfluent-visualization project goes public, install the latest release from
 the artifactory.
 
@@ -82,4 +85,4 @@ environment variable:
 
 .. code:: python
 
-  pyfluent.set_log_level('DEBUG') # for development, by default only errors are shown
+  pyfluent.set_log_level('DEBUG')  # for development, by default only errors are shown

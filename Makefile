@@ -2,7 +2,7 @@ install:
 	@python -m pip install --upgrade pip poetry
 	@python -m pip install -r requirements/requirements_build.txt
 	@poetry build
-	@pip install dist/ansys_fluent_visualization-0.1.dev0-py3-none-any.whl
+	@pip install dist/ansys*.whl
 
 docker-pull:
 	@pip install docker
