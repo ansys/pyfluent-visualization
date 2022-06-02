@@ -21,4 +21,4 @@ build-doc:
 	@pip install -r requirements/requirements_doc.txt
 	@xvfb-run make -C doc html
 	@touch doc/_build/html/.nojekyll
-	@echo "fluentvisualization.docs.pyansys.com" >> doc/_build/html/CNAME
+	@echo "$(DOCS_CNAME)" >> doc/_build/html/CNAME
