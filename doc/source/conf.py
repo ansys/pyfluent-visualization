@@ -10,7 +10,7 @@ from pyansys_sphinx_theme import pyansys_logo_black
 import pyvista
 from sphinx_gallery.sorting import FileNameSortKey
 
-from ansys.fluent.visualization import __version__
+from ansys.fluent.post import __version__
 
 # Manage errors
 pyvista.set_error_output_file("errors.txt")
@@ -124,7 +124,9 @@ def _stop_fluent_container(gallery_conf, fname):
     try:
         is_linux = platform.system() == "Linux"
         container_names = (
-            subprocess.check_output("docker container ls --format {{.Names}}", shell=is_linux)
+            subprocess.check_output(
+                "docker container ls --format {{.Names}}", shell=is_linux
+            )
             .decode("utf-8")
             .strip()
             .split()
@@ -190,7 +192,7 @@ latex_documents = [
     (
         master_doc,
         f"pyfluent-visualization-Documentation-{__version__}.tex",
-        "ansys.fluent.visualization Documentation",
+        "ansys.fluent.post Documentation",
         author,
         "manual",
     ),
@@ -204,8 +206,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "ansys.fluent.visualization",
-        "ansys.fluent.visualization Documentation",
+        "ansys.fluent.post",
+        "ansys.fluent.post Documentation",
         [author],
         1,
     )
@@ -220,10 +222,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "ansys.fluent.visualization",
-        "ansys.fluent.visualization Documentation",
+        "ansys.fluent.post",
+        "ansys.fluent.post Documentation",
         author,
-        "ansys.fluent.visualization",
+        "ansys.fluent.post",
         "Pythonic interface for Fluent using gRPC",
         "Engineering Software",
     ),

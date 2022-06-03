@@ -1,23 +1,26 @@
 """.. _ref_post_processing_exhaust_manifold:
 
-Post Processing using PyVista and Matplotlib: Exhaust Manifold
---------------------------------------------------------------
+Postprocessing using PyVista and Matplotlib
+---------------------------------------------
 This example demonstrates the postprocessing capabilities of PyFluent
 (using PyVista and Matplotlib) using a 3D model
 of an exhaust manifold with high temperature flows passing through.
 The flow through the manifold is turbulent and
 involves conjugate heat transfer.
 
-This example demonstrates how to do the following:
+This example demonstrates postprocessing using pyvista
 
 - Create surfaces for the display of 3D data.
 - Display filled contours of temperature on several surfaces.
 - Display velocity vectors.
 - Plot quantitative results using Matplotlib
 """
+# sphinx_gallery_thumbnail_number = -3
+
 ###############################################################################
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
+
 from ansys.fluent.post import set_config
 from ansys.fluent.post.matplotlib import Plots
 from ansys.fluent.post.pyvista import Graphics
@@ -36,7 +39,7 @@ import_data = examples.download_file(
     filename="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
 )
 
-session = pyfluent.launch_fluent(precision="double", processor_count=4)
+session = pyfluent.launch_fluent(precision="double", processor_count=2)
 
 session.solver.tui.file.read_case(case_file_name=import_case)
 session.solver.tui.file.read_data(case_file_name=import_data)
@@ -125,8 +128,8 @@ temperature_contour_manifold.display("window-5")
 # Currently using outlet-plane since mid-plane is affected by Issue # 276
 
 velocity_vector = graphics.Vectors["velocity-vector"]
-velocity_vector.surfaces_list = ["outlet-plane"]
-velocity_vector.scale = 1
+velocity_vector.surfaces_list = ["solid_up:1:830"]
+velocity_vector.scale = 2
 velocity_vector.display("window-6")
 
 ###############################################################################
@@ -146,3 +149,8 @@ plot_1.y_axis_function = "temperature"
 ###############################################################################
 # Plot the created XY-Plot
 plot_1.plot("window-7")
+
+#########################################################################
+# Close Fluent
+
+session.exit()

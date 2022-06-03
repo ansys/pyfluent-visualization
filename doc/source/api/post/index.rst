@@ -96,7 +96,7 @@ environment and data is plotted in MatplotLib.
   plots_session1 = Plots(session)
   
   #get xyplot object
-  plot1 = plots_session1.XYPlots["plot-1"]
+  plot1=plots_session1.XYPlots["plot-1"]
   
   #set properties
   plot1.surfaces_list = ["symmetry"]
