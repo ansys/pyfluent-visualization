@@ -5,11 +5,12 @@ import platform
 import subprocess
 
 import ansys.fluent.core as pyfluent
-from ansys.fluent.visualization import __version__
 import numpy as np
 from pyansys_sphinx_theme import pyansys_logo_black
 import pyvista
 from sphinx_gallery.sorting import FileNameSortKey
+
+from ansys.fluent.post import __version__
 
 # Manage errors
 pyvista.set_error_output_file("errors.txt")
@@ -191,7 +192,7 @@ latex_documents = [
     (
         master_doc,
         f"pyfluent-visualization-Documentation-{__version__}.tex",
-        "ansys.fluent.visualization Documentation",
+        "ansys.fluent.post Documentation",
         author,
         "manual",
     ),
@@ -205,8 +206,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "ansys.fluent.visualization",
-        "ansys.fluent.visualization Documentation",
+        "ansys.fluent.post",
+        "ansys.fluent.post Documentation",
         [author],
         1,
     )
@@ -221,10 +222,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "ansys.fluent.visualization",
-        "ansys.fluent.visualization Documentation",
+        "ansys.fluent.post",
+        "ansys.fluent.post Documentation",
         author,
-        "ansys.fluent.visualization",
+        "ansys.fluent.post",
         "Pythonic interface for Fluent using gRPC",
         "Engineering Software",
     ),
