@@ -55,7 +55,7 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt update
-          sudo apt install pandoc libegl1
+          sudo apt install libegl1
 
       - name: Install pyfluent-visualization
         run: make install
