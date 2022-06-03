@@ -6,7 +6,12 @@ from typing import Optional
 
 from ansys.fluent.core.meta import PyLocalContainer
 
-from ansys.fluent.post.post_object_defns import ContourDefn, MeshDefn, SurfaceDefn, VectorDefn
+from ansys.fluent.post.post_object_defns import (
+    ContourDefn,
+    MeshDefn,
+    SurfaceDefn,
+    VectorDefn,
+)
 from ansys.fluent.post.pyvista.pyvista_windows_manager import pyvista_windows_manager
 
 
