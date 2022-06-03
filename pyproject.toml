@@ -33,7 +33,7 @@ pyside6 = "6.2.3"
 matplotlib = "3.5.1"
 
 [tool.black]
-line-length = 100
+line-length = 88
 
 [tool.isort]
 profile = "black"

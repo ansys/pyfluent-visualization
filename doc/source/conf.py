@@ -5,12 +5,11 @@ import platform
 import subprocess
 
 import ansys.fluent.core as pyfluent
+from ansys.fluent.visualization import __version__
 import numpy as np
 from pyansys_sphinx_theme import pyansys_logo_black
 import pyvista
 from sphinx_gallery.sorting import FileNameSortKey
-
-from ansys.fluent.visualization import __version__
 
 # Manage errors
 pyvista.set_error_output_file("errors.txt")
@@ -124,7 +123,9 @@ def _stop_fluent_container(gallery_conf, fname):
     try:
         is_linux = platform.system() == "Linux"
         container_names = (
-            subprocess.check_output("docker container ls --format {{.Names}}", shell=is_linux)
+            subprocess.check_output(
+                "docker container ls --format {{.Names}}", shell=is_linux
+            )
             .decode("utf-8")
             .strip()
             .split()
