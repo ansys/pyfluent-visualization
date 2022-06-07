@@ -18,8 +18,8 @@ Pyfluent visualization
    :target: https://codecov.io/gh/pyansys/pyfluent-visualization
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci.yml/badge.svg
-   :target: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci.yml
+.. |GH-CI| image:: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -66,48 +66,48 @@ need to follow these steps:
 
 1. Start by cloning this repository:
 
-    .. code:: bash
+  .. code:: bash
 
-        git clone https://github.com/pyansys/pyfluent-visualization
+     git clone https://github.com/pyansys/pyfluent-visualization
 
 2. Create a fresh-clean Python environment and activate it:
 
-    .. code:: bash
+  .. code:: bash
 
-        # Create a virtual environment
-        python -m venv .venv
+     # Create a virtual environment
+     python -m venv .venv
 
-        # Activate it in a POSIX system
-        source .venv/bin/activate
+     # Activate it in a POSIX system
+     source .venv/bin/activate
 
-        # Activate it in Windows CMD environment
-        .venv\Scripts\activate.bat
+     # Activate it in Windows CMD environment
+     .venv\Scripts\activate.bat
 
-        # Activate it in Windows Powershell
-        .venv\Scripts\Activate.ps1
+     # Activate it in Windows Powershell
+     .venv\Scripts\Activate.ps1
 
 3. Make sure you have the latest required build system and doc, testing, and CI tools:
 
-    .. code:: bash
+  .. code:: bash
 
-        python -m pip install -U pip poetry tox
-        python -m pip install -r requirements/requirements_build.txt
-        python -m pip install -r requirements/requirements_doc.txt
-        python -m pip install -r requirements/requirements_tests.txt
+     python -m pip install -U pip poetry tox
+     python -m pip install -r requirements/requirements_build.txt
+     python -m pip install -r requirements/requirements_doc.txt
+     python -m pip install -r requirements/requirements_tests.txt
 
 
 4. Install the project in editable mode:
 
-    .. code:: bash
+   .. code:: bash
     
-        cd pyfluent-visualization
-        poetry run python -m pip install .
+      cd pyfluent-visualization
+      poetry run python -m pip install .
         
-    5. Finally, verify your development installation by running:
+5. Finally, verify your development installation by running:
 
-    .. code:: bash
-        
-        tox
+   .. code:: bash
+
+      tox
 
 
 How to testing
@@ -147,7 +147,7 @@ encouraged to install this tool via:
 
 .. code:: bash
 
-    python -m pip install pre-commit && pre-commit install
+   python -m pip install pre-commit && pre-commit install
 
 
 Documentation
@@ -181,8 +181,8 @@ Then, you can execute:
 
 .. code:: bash
 
-        poetry build
-        python -m twine check dist/*
+    poetry build
+    python -m twine check dist/*
 
 .. LINKS AND REFERENCES
 .. _black: https://github.com/psf/black
