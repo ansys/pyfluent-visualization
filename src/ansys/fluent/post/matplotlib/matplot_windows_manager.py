@@ -3,14 +3,13 @@ import itertools
 import multiprocessing as mp
 from typing import List, Optional, Union
 
-from ansys.api.fluent.v0.field_data_pb2 import PayloadTag
 from ansys.fluent.core.session import Session
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
-import numpy as np
 
 from ansys.fluent.post import get_config
 from ansys.fluent.post.matplotlib.plotter_defns import Plotter, ProcessPlotter
-from ansys.fluent.post.post_object_defns import GraphicsDefn, PlotDefn
+from ansys.fluent.post.post_data_extractor import XYPlotDataExtractor
+from ansys.fluent.post.post_object_defns import MonitorDefn, PlotDefn, XYPlotDefn
 from ansys.fluent.post.post_windows_manager import PostWindow, PostWindowsManager
 
 
@@ -65,40 +64,31 @@ class _ProcessPlotterHandle:
 class MatplotWindow(PostWindow):
     """Class for MatplotWindow."""
 
-    def __init__(self, id: str, post_object: Union[GraphicsDefn, PlotDefn]):
+    def __init__(self, id: str, post_object: PlotDefn):
         """Instantiate a MatplotWindow.
 
         Parameters
         ----------
         id : str
             Window id.
-        post_object : Union[GraphicsDefn, PlotDefn]
+        post_object : PlotDefn
             Object to plot.
         """
-        self.post_object: Union[GraphicsDefn, PlotDefn] = post_object
         self.id: str = id
-        self.properties: dict = None
+        self.post_object = None
         self.plotter: Union[_ProcessPlotterHandle, Plotter] = self._get_plotter()
-        self.animate: bool = False
         self.close: bool = False
         self.refresh: bool = False
 
     def plot(self):
         """Draw plot."""
-        if not self.post_object:
-            return
-        xy_data = self._get_xy_plot_data()
-        if in_notebook() or get_config()["blocking"]:
-            self.plotter.set_properties(self.properties)
-        else:
-            try:
-                self.plotter.set_properties(self.properties)
-            except BrokenPipeError:
-                self.plotter: Union[
-                    _ProcessPlotterHandle, Plotter
-                ] = self._get_plotter()
-                self.plotter.set_properties(self.properties)
-        self.plotter.plot(xy_data)
+        if self.post_object is not None:
+            plot = (
+                _XYPlot(self.post_object, self.plotter)
+                if self.post_object.__class__.__name__ == "XYPlot"
+                else _MonitorPlot(self.post_object, self.plotter)
+            )
+            plot()
 
     # private methods
     def _get_plotter(self):
@@ -108,86 +98,99 @@ class MatplotWindow(PostWindow):
             else _ProcessPlotterHandle(self.id)
         )
 
-    def _get_xy_plot_data(self):
-        obj = self.post_object
-        field = obj.y_axis_function()
-        node_values = obj.node_values()
-        boundary_values = obj.boundary_values()
-        direction_vector = obj.direction_vector()
-        surfaces_list = obj.surfaces_list()
-        self.properties = {
-            "curves": surfaces_list,
+
+class _XYPlot:
+    """Class for XYPlot."""
+
+    def __init__(
+        self, post_object: XYPlotDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
+    ):
+        """Instantiate XYPlot.
+
+        Parameters
+        ----------
+        post_object : XYPlotDefn
+            Object to plot.
+        plotter: Union[_ProcessPlotterHandle, Plotter]
+            Plotter to plot data.
+        """
+        self.post_object: XYPlotDefn = post_object
+        self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
+
+    def __call__(self):
+        """Draw XY plot."""
+        if not self.post_object:
+            return
+        properties = {
+            "curves": self.post_object.surfaces_list(),
             "title": "XY Plot",
             "xlabel": "position",
-            "ylabel": field,
+            "ylabel": self.post_object.y_axis_function(),
         }
-        field_info = obj._data_extractor.field_info()
-        field_data = obj._data_extractor.field_data()
-        surfaces_info = field_info.get_surfaces_info()
-        surface_ids = [
-            id
-            for surf in map(
-                obj._data_extractor.remote_surface_name, obj.surfaces_list()
-            )
-            for id in surfaces_info[surf]["surface_id"]
-        ]
+        xy_data = XYPlotDataExtractor(self.post_object).fetch_data()
+        if in_notebook() or get_config()["blocking"]:
+            self.plotter.set_properties(properties)
+        else:
+            try:
+                self.plotter.set_properties(properties)
+            except BrokenPipeError:
+                self.plotter: Union[
+                    _ProcessPlotterHandle, Plotter
+                ] = self._get_plotter()
+                self.plotter.set_properties(properties)
+        self.plotter.plot(xy_data)
 
-        # get scalar field data
-        field_data.add_get_surfaces_request(
-            surface_ids,
-            provide_faces=False,
-            provide_vertices=True if node_values else False,
-            provide_faces_centroid=False if node_values else True,
-        )
-        field_data.add_get_scalar_fields_request(
-            surface_ids,
-            field,
-            node_values,
-            boundary_values,
-        )
 
-        location_tag = (
-            field_data._payloadTags[PayloadTag.NODE_LOCATION]
-            if node_values
-            else field_data._payloadTags[PayloadTag.ELEMENT_LOCATION]
-        )
-        boundary_value_tag = (
-            field_data._payloadTags[PayloadTag.BOUNDARY_VALUES]
-            if boundary_values
-            else 0
-        )
-        surface_tag = 0
-        xyplot_payload_data = field_data.get_fields()
-        data_tag = location_tag | boundary_value_tag
-        xyplot_data = xyplot_payload_data[data_tag]
-        surface_data = xyplot_payload_data[surface_tag]
+class _MonitorPlot:
+    """Class MonitorPlot."""
 
-        # loop over all meshes
-        xy_plots_data = {}
-        surfaces_list_iter = iter(surfaces_list)
-        for surface_id, mesh_data in surface_data.items():
-            mesh_data["vertices" if node_values else "centroid"].shape = (
-                mesh_data["vertices" if node_values else "centroid"].size // 3,
-                3,
-            )
-            y_values = xyplot_data[surface_id][field]
-            x_values = np.matmul(
-                mesh_data["vertices" if node_values else "centroid"],
-                direction_vector,
-            )
-            structured_data = np.empty(
-                x_values.size,
-                dtype={
-                    "names": ("xvalues", "yvalues"),
-                    "formats": ("f8", "f8"),
-                },
-            )
-            structured_data["xvalues"] = x_values
-            structured_data["yvalues"] = y_values
-            sort = np.argsort(structured_data, order=["xvalues"])
-            surface_name = next(surfaces_list_iter)
-            xy_plots_data[surface_name] = structured_data[sort]
-        return xy_plots_data
+    def __init__(
+        self, post_object: MonitorDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
+    ):
+        """Instantiate MonitorPlot.
+
+        Parameters
+        ----------
+        post_object : MonitorDefn
+            Object to plot.
+        plotter: Union[_ProcessPlotterHandle, Plotter]
+            Plotter to plot data.
+        """
+        self.post_object: MonitorDefn = post_object
+        self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
+
+    def __call__(self):
+        """Draw Monitor plot."""
+        if not self.post_object:
+            return
+        monitors_manager = self.post_object._data_extractor.monitors_manager()
+        indices, columns_data = monitors_manager.get_monitor_set_data(
+            self.post_object.monitor_set_name()
+        )
+        xy_data = {}
+        for column_name, column_data in columns_data.items():
+            xy_data[column_name] = {"xvalues": indices, "yvalues": column_data}
+        monitor_set_name = self.post_object.monitor_set_name()
+        properties = {
+            "curves": list(xy_data.keys()),
+            "title": monitor_set_name,
+            "xlabel": monitors_manager.get_monitor_set_prop(monitor_set_name, "xlabel"),
+            "ylabel": monitors_manager.get_monitor_set_prop(monitor_set_name, "ylabel"),
+            "yscale": "log" if monitor_set_name == "residual" else "linear",
+        }
+
+        if in_notebook() or get_config()["blocking"]:
+            self.plotter.set_properties(properties)
+        else:
+            try:
+                self.plotter.set_properties(properties)
+            except BrokenPipeError:
+                self.plotter: Union[
+                    _ProcessPlotterHandle, Plotter
+                ] = self._get_plotter()
+                self.plotter.set_properties(properties)
+        if xy_data:
+            self.plotter.plot(xy_data)
 
 
 class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
@@ -215,14 +218,12 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self._open_window(window_id)
         return window_id
 
-    def set_object_for_window(
-        self, object: Union[PlotDefn, GraphicsDefn], window_id: str
-    ) -> None:
+    def set_object_for_window(self, object: PlotDefn, window_id: str) -> None:
         """Associate post object with running window instance.
 
         Parameters
         ----------
-        object : Union[GraphicsDefn, PlotDefn]
+        object : PlotDefn
             Post object to associate with window.
 
         window_id : str
@@ -241,14 +242,14 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
     def plot(
         self,
-        object: Union[PlotDefn, GraphicsDefn],
+        object: PlotDefn,
         window_id: Optional[str] = None,
     ) -> None:
         """Draw plot.
 
         Parameters
         ----------
-        object: Union[GraphicsDefn, PlotDefn]
+        object: PlotDefn
             Object to plot.
 
         window_id : str, optional
