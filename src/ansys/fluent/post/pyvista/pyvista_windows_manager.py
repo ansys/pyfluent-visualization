@@ -3,7 +3,6 @@ import itertools
 import threading
 from typing import List, Optional, Union
 
-from ansys.api.fluent.v0.field_data_pb2 import PayloadTag
 from ansys.fluent.core.session import Session
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 import numpy as np
@@ -11,24 +10,25 @@ import pyvista as pv
 from pyvistaqt import BackgroundPlotter
 
 from ansys.fluent.post import get_config
-from ansys.fluent.post.post_object_defns import GraphicsDefn, PlotDefn
+from ansys.fluent.post.post_data_extractor import FieldDataExtractor
+from ansys.fluent.post.post_object_defns import GraphicsDefn
 from ansys.fluent.post.post_windows_manager import PostWindow, PostWindowsManager
 
 
 class PyVistaWindow(PostWindow):
     """Class for PyVista window."""
 
-    def __init__(self, id: str, post_object: Union[GraphicsDefn, PlotDefn]):
+    def __init__(self, id: str, post_object: GraphicsDefn):
         """Instantiate a PyVistaWindow.
 
         Parameters
         ----------
         id : str
             Window id.
-        post_object : Union[GraphicsDefn, PlotDefn]
+        post_object : GraphicsDefn
             Object to draw.
         """
-        self.post_object: Union[GraphicsDefn, PlotDefn] = post_object
+        self.post_object: GraphicsDefn = post_object
         self.id: str = id
         self.plotter: Union[BackgroundPlotter, pv.Plotter] = (
             pv.Plotter(title=f"PyFluent ({self.id})")
@@ -102,11 +102,8 @@ class PyVistaWindow(PostWindow):
 
     def _display_vector(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
 
-        if not obj.surfaces_list():
-            raise RuntimeError("Vector definition is incomplete.")
-
+        vector_field_data = FieldDataExtractor(obj).fetch_data()
         field_info = obj._data_extractor.field_info()
-        field_data = obj._data_extractor.field_data()
 
         # surface ids
         surfaces_info = field_info.get_surfaces_info()
@@ -118,16 +115,12 @@ class PyVistaWindow(PostWindow):
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        # field
-        field = "velocity-magnitude"
-
         # scalar bar properties
         scalar_bar_args = self._scalar_bar_default_properties()
 
-        field_data.add_get_surfaces_request(surface_ids)
-        field_data.add_get_vector_fields_request(surface_ids, obj.vectors_of())
-        vector_field_tag = 0
-        vector_field_data = field_data.get_fields()[vector_field_tag]
+        # field
+        field = "velocity-magnitude"
+
         for surface_id, mesh_data in vector_field_data.items():
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
             mesh_data[obj.vectors_of()].shape = (
@@ -184,9 +177,6 @@ class PyVistaWindow(PostWindow):
                 plotter.add_mesh(mesh, show_edges=True, color="white")
 
     def _display_contour(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
-        if not obj.surfaces_list() or not obj.field():
-            raise RuntimeError("Contour definition is incomplete.")
-
         # contour properties
         field = obj.field()
         range_option = obj.range.option()
@@ -197,61 +187,26 @@ class PyVistaWindow(PostWindow):
 
         # scalar bar properties
         scalar_bar_args = self._scalar_bar_default_properties()
-
-        field_info = obj._data_extractor.field_info()
-        field_data = obj._data_extractor.field_data()
-        surfaces_info = field_info.get_surfaces_info()
-        surface_ids = [
-            id
-            for surf in map(
-                obj._data_extractor.remote_surface_name, obj.surfaces_list()
-            )
-            for id in surfaces_info[surf]["surface_id"]
-        ]
-        # get scalar field data
-        field_data.add_get_surfaces_request(surface_ids)
-        field_data.add_get_scalar_fields_request(
-            surface_ids,
-            field,
-            node_values,
-            boundary_values,
-        )
-
-        location_tag = (
-            field_data._payloadTags[PayloadTag.NODE_LOCATION]
-            if node_values
-            else field_data._payloadTags[PayloadTag.ELEMENT_LOCATION]
-        )
-        boundary_value_tag = (
-            field_data._payloadTags[PayloadTag.BOUNDARY_VALUES]
-            if boundary_values
-            else 0
-        )
-        surface_tag = 0
-
-        scalar_field_payload_data = field_data.get_fields()
-        data_tag = location_tag | boundary_value_tag
-        scalar_field_data = scalar_field_payload_data[data_tag]
-        surface_data = scalar_field_payload_data[surface_tag]
+        scalar_field_data = FieldDataExtractor(obj).fetch_data()
 
         # loop over all meshes
-        for surface_id, mesh_data in surface_data.items():
-            mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
-            topology = "line" if mesh_data["faces"][0] == 2 else "face"
+        for surface_id, surface_data in scalar_field_data.items():
+            surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
+            topology = "line" if surface_data["faces"][0] == 2 else "face"
             if topology == "line":
                 mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    lines=mesh_data["faces"],
+                    surface_data["vertices"],
+                    lines=surface_data["faces"],
                 )
             else:
                 mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    faces=mesh_data["faces"],
+                    surface_data["vertices"],
+                    faces=surface_data["faces"],
                 )
             if node_values:
-                mesh.point_data[field] = scalar_field_data[surface_id][field]
+                mesh.point_data[field] = surface_data[field]
             else:
-                mesh.cell_data[field] = scalar_field_data[surface_id][field]
+                mesh.cell_data[field] = surface_data[field]
             if range_option == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
                 if auto_range_off.clip_to_range():
@@ -299,6 +254,7 @@ class PyVistaWindow(PostWindow):
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
+                        field_info = obj._data_extractor.field_info()
                         plotter.add_mesh(
                             mesh,
                             clim=field_info.get_range(field, False),
@@ -349,23 +305,8 @@ class PyVistaWindow(PostWindow):
         surface_api.delete_surface_on_server()
 
     def _display_mesh(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
-        if not obj.surfaces_list():
-            raise RuntimeError("Mesh definition is incomplete.")
-        field_info = obj._data_extractor.field_info()
-        field_data = obj._data_extractor.field_data()
-        surfaces_info = field_info.get_surfaces_info()
-        surface_ids = [
-            id
-            for surf in map(
-                obj._data_extractor.remote_surface_name, obj.surfaces_list()
-            )
-            for id in surfaces_info[surf]["surface_id"]
-        ]
 
-        field_data.add_get_surfaces_request(surface_ids)
-        surface_tag = 0
-
-        surfaces_data = field_data.get_fields()[surface_tag]
+        surfaces_data = FieldDataExtractor(obj).fetch_data()
         for surface_id, mesh_data in surfaces_data.items():
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
             topology = "line" if mesh_data["faces"][0] == 2 else "face"
@@ -410,7 +351,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         """Instantiate WindowManager for PyVista."""
         self._post_windows: Dict[str:PyVistaWindow] = {}
         self._plotter_thread: threading.Thread = None
-        self._post_object: Union[GraphicsDefn, PlotDefn] = None
+        self._post_object: GraphicsDefn = None
         self._window_id: str = None
         self._exit_thread: bool = False
         self._app = None
@@ -453,14 +394,12 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 self._open_and_plot_console(None, window_id)
             return window_id
 
-    def set_object_for_window(
-        self, object: Union[GraphicsDefn, PlotDefn], window_id: str
-    ) -> None:
+    def set_object_for_window(self, object: GraphicsDefn, window_id: str) -> None:
         """Associate post object with running window instance.
 
         Parameters
         ----------
-        object : Union[GraphicsDefn, PlotDefn]
+        object : GraphicsDefn
             Post object to associate with window.
 
         window_id : str
@@ -478,14 +417,12 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             if window:
                 window.post_object = object
 
-    def plot(
-        self, object: Union[GraphicsDefn, PlotDefn], window_id: Optional[str] = None
-    ) -> None:
+    def plot(self, object: GraphicsDefn, window_id: Optional[str] = None) -> None:
         """Draw plot.
 
         Parameters
         ----------
-        object: Union[GraphicsDefn, PlotDefn]
+        object: GraphicsDefn
             Object to plot.
 
         window_id : str, optional
