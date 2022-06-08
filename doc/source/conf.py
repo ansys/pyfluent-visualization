@@ -5,8 +5,8 @@ import platform
 import subprocess
 
 import ansys.fluent.core as pyfluent
+from ansys_sphinx_theme import ansys_favicon, pyansys_logo_black
 import numpy as np
-from pyansys_sphinx_theme import pyansys_logo_black
 import pyvista
 from sphinx_gallery.sorting import FileNameSortKey
 
@@ -87,6 +87,12 @@ numpydoc_validation_checks = {
     # type, unless multiple values are being returned"
 }
 
+# Favicon
+html_favicon = ansys_favicon
+
+# static path
+# html_static_path = ["_static"]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -165,7 +171,7 @@ sphinx_gallery_conf = {
 
 # -- Options for HTML output -------------------------------------------------
 html_short_title = html_title = "pyfluent-visualization"
-html_theme = "pyansys_sphinx_theme"
+html_theme = "ansys_sphinx_theme"
 html_logo = pyansys_logo_black
 html_theme_options = {
     "github_url": "https://github.com/pyansys/pyfluent-visualization",
