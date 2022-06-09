@@ -1,4 +1,4 @@
-"""Module providing post objects for PyVista."""
+"""Module providing visualization objects for PyVista."""
 
 import inspect
 import sys
@@ -6,13 +6,15 @@ from typing import Optional
 
 from ansys.fluent.core.meta import PyLocalContainer
 
-from ansys.fluent.post.post_object_defns import (
+from ansys.fluent.visualization.post_object_defns import (
     ContourDefn,
     MeshDefn,
     SurfaceDefn,
     VectorDefn,
 )
-from ansys.fluent.post.pyvista.pyvista_windows_manager import pyvista_windows_manager
+from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
+    pyvista_windows_manager,
+)
 
 
 class Graphics:

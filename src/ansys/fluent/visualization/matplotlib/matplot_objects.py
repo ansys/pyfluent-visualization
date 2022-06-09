@@ -1,12 +1,14 @@
-"""Module providing post objects for Matplotlib."""
+"""Module providing visualization objects for Matplotlib."""
 import inspect
 import sys
 from typing import Optional
 
 from ansys.fluent.core.meta import PyLocalContainer
 
-from ansys.fluent.post.matplotlib.matplot_windows_manager import matplot_windows_manager
-from ansys.fluent.post.post_object_defns import MonitorDefn, XYPlotDefn
+from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
+    matplot_windows_manager,
+)
+from ansys.fluent.visualization.post_object_defns import MonitorDefn, XYPlotDefn
 
 
 class Plots:

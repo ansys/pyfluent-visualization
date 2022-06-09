@@ -9,10 +9,13 @@ import numpy as np
 import pyvista as pv
 from pyvistaqt import BackgroundPlotter
 
-from ansys.fluent.post import get_config
-from ansys.fluent.post.post_data_extractor import FieldDataExtractor
-from ansys.fluent.post.post_object_defns import GraphicsDefn
-from ansys.fluent.post.post_windows_manager import PostWindow, PostWindowsManager
+from ansys.fluent.visualization import get_config
+from ansys.fluent.visualization.post_data_extractor import FieldDataExtractor
+from ansys.fluent.visualization.post_object_defns import GraphicsDefn
+from ansys.fluent.visualization.post_windows_manager import (
+    PostWindow,
+    PostWindowsManager,
+)
 
 
 class PyVistaWindow(PostWindow):
@@ -395,7 +398,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             return window_id
 
     def set_object_for_window(self, object: GraphicsDefn, window_id: str) -> None:
-        """Associate post object with running window instance.
+        """Associate visualization object with running window instance.
 
         Parameters
         ----------

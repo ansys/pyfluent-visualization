@@ -32,7 +32,7 @@ environment and PyVista is used to visualze the extracted data.
 .. code:: python
 
   # import module
-  from ansys.fluent.post.pyvista import Graphics
+  from ansys.fluent.visualization.pyvista import Graphics
 
   # get the graphics objects for the session
 
@@ -90,7 +90,7 @@ environment and data is plotted in MatplotLib.
 .. code:: python
 
   # import module
-  from ansys.fluent.post.matplotlib import Plots
+  from ansys.fluent.visualization.matplotlib import Plots
 
   # get the plots object for the session
   plots_session1 = Plots(session)
@@ -107,7 +107,7 @@ environment and data is plotted in MatplotLib.
 
   session.exit()
 
-.. currentmodule:: ansys.fluent.post
+.. currentmodule:: ansys.fluent.visualization
 
 .. autosummary::
    :toctree: _autosummary

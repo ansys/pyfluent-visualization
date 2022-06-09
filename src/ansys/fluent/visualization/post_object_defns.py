@@ -1,4 +1,4 @@
-"""Module providing post objects definition."""
+"""Module providing visualization objects definition."""
 from abc import abstractmethod
 from typing import List, NamedTuple, Optional
 
@@ -11,7 +11,7 @@ from ansys.fluent.core.meta import (
 
 
 class BasePostObjectDefn:
-    """Base class for post objects."""
+    """Base class for visualization objects."""
 
     def _pre_display(self):
         local_surfaces_provider = self._get_top_most_parent()._local_surfaces_provider()

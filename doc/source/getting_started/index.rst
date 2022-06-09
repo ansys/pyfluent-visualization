@@ -66,7 +66,7 @@ You can launch Fluent from Python using the ``launch_fluent`` function:
   session.check_health()
   session.start_transcript() # Streaming the transcript locally
 
-The ``post`` package provides integrations with both
+The ``visualization`` package provides integrations with both
 ``pyvista`` and ``matplotlib``.
 
 If you want to interact with the Fluent graphical user interface, set the
