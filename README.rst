@@ -1,4 +1,4 @@
-Pyfluent visualization
+PyFluent Visualization
 ======================
 |pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
 
