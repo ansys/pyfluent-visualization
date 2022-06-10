@@ -5,7 +5,7 @@ from typing import Dict
 from ansys.api.fluent.v0.field_data_pb2 import PayloadTag
 import numpy as np
 
-from ansys.fluent.post.post_object_defns import GraphicsDefn, PlotDefn
+from ansys.fluent.visualization.post_object_defns import GraphicsDefn, PlotDefn
 
 
 class FieldDataExtractor:
@@ -188,7 +188,7 @@ class XYPlotDataExtractor:
         self._post_object: PlotDefn = post_object
 
     def fetch_data(self) -> Dict[str, Dict[str, np.array]]:
-        """Fetch data for post object.
+        """Fetch data for visualization object.
 
         Parameters
         ----------

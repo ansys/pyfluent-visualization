@@ -21,9 +21,9 @@ This example demonstrates postprocessing using pyvista
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
 
-from ansys.fluent.post import set_config
-from ansys.fluent.post.matplotlib import Plots
-from ansys.fluent.post.pyvista import Graphics
+from ansys.fluent.visualization import set_config
+from ansys.fluent.visualization.matplotlib import Plots
+from ansys.fluent.visualization.pyvista import Graphics
 
 set_config(blocking=True, set_view_on_display="isometric")
 

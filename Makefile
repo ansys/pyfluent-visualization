@@ -6,7 +6,7 @@ install:
 	@python -m pip install --upgrade pip poetry
 	@python -m pip install -r requirements/requirements_build.txt
 	@poetry build
-	@pip install dist/ansys*.whl
+	@pip install dist/ansys*.whl --force-reinstall
 
 docker-pull:
 	@pip install docker

@@ -5,11 +5,11 @@ PostWindowManager is container for PostWindow.
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional, Union
 
-from ansys.fluent.post.post_object_defns import GraphicsDefn, PlotDefn
+from ansys.fluent.visualization.post_object_defns import GraphicsDefn, PlotDefn
 
 
 class PostWindow:
-    """Abstract class for post window."""
+    """Abstract class for visualization window."""
 
     @abstractmethod
     def plot(self):
@@ -18,7 +18,7 @@ class PostWindow:
 
 
 class PostWindowsManager(metaclass=ABCMeta):
-    """Abstract class for post windows management."""
+    """Abstract class for visualization windows management."""
 
     @abstractmethod
     def open_window(self, window_id: Optional[str] = None) -> str:
@@ -40,7 +40,7 @@ class PostWindowsManager(metaclass=ABCMeta):
     def set_object_for_window(
         self, object: Union[GraphicsDefn, PlotDefn], window_id: str
     ) -> None:
-        """Associate post object with running window instance.
+        """Associate visualization object with running window instance.
 
         Parameters
         ----------

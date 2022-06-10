@@ -6,11 +6,18 @@ from typing import List, Optional, Union
 from ansys.fluent.core.session import Session
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 
-from ansys.fluent.post import get_config
-from ansys.fluent.post.matplotlib.plotter_defns import Plotter, ProcessPlotter
-from ansys.fluent.post.post_data_extractor import XYPlotDataExtractor
-from ansys.fluent.post.post_object_defns import MonitorDefn, PlotDefn, XYPlotDefn
-from ansys.fluent.post.post_windows_manager import PostWindow, PostWindowsManager
+from ansys.fluent.visualization import get_config
+from ansys.fluent.visualization.matplotlib.plotter_defns import Plotter, ProcessPlotter
+from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
+from ansys.fluent.visualization.post_object_defns import (
+    MonitorDefn,
+    PlotDefn,
+    XYPlotDefn,
+)
+from ansys.fluent.visualization.post_windows_manager import (
+    PostWindow,
+    PostWindowsManager,
+)
 
 
 class _ProcessPlotterHandle:
@@ -219,7 +226,7 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         return window_id
 
     def set_object_for_window(self, object: PlotDefn, window_id: str) -> None:
-        """Associate post object with running window instance.
+        """Associate visualization object with running window instance.
 
         Parameters
         ----------

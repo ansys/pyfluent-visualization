@@ -1,10 +1,10 @@
-"""Global configuration state for post."""
+"""Global configuration state for visualization."""
 
 _global_config = {"blocking": False, "set_view_on_display": None}
 
 
 def get_config() -> dict:
-    """Retrieve post configuration.
+    """Retrieve visualization configuration.
 
     Returns
     -------
@@ -15,7 +15,7 @@ def get_config() -> dict:
 
 
 def set_config(blocking: bool = False, set_view_on_display: str = None):
-    """Set post configuration.
+    """Set visualization configuration.
 
     Parameters
     ----------

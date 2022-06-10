@@ -1,4 +1,4 @@
-from ansys.fluent.post import __version__
+from ansys.fluent.visualization import __version__
 
 
 def test_pkg_version():

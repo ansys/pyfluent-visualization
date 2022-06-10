@@ -2,7 +2,7 @@
 
 Graphics
 ========
-.. currentmodule:: ansys.fluent.post.pyvista.pyvista_objects
+.. currentmodule:: ansys.fluent.visualization.pyvista.pyvista_objects
 
 .. autosummary::
    :toctree: _autosummary
