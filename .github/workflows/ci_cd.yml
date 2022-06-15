@@ -68,6 +68,9 @@ jobs:
   docs:
     name: Documentation
     runs-on: self-hosted
+    strategy:
+      matrix:
+        image-tag: [latest]
     steps:
       - uses: actions/checkout@v3
 
@@ -102,6 +105,8 @@ jobs:
 
       - name: Pull Fluent docker image
         run: make docker-pull
+        env:
+          FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
       - name: Retrieve pyfluent-visualization version
         run: |
@@ -113,9 +118,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: doc/source/examples
-          key: Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ hashFiles('examples/**') }}-${{ github.sha }}
+          key: Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ matrix.image-tag }}-${{ hashFiles('examples/**') }}-${{ github.sha }}
           restore-keys: |
-            Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ hashFiles('examples/**') }}
+            Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ matrix.image-tag }}-${{ hashFiles('examples/**') }}
 
       - name: Generate the documentation
         run: make build-doc
@@ -123,16 +128,17 @@ jobs:
           ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
           PYFLUENT_START_INSTANCE: 0
           DOCS_CNAME: fluentvisualization.docs.pyansys.com
+          FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v3
         with:
-          name: HTML-Documentation
+          name: HTML-Documentation-tag-${{ matrix.image-tag }}
           path: doc/_build/html
           retention-days: 7
 
       - name: Deploy
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags') && ${{ matrix.image-tag == 'latest'}}
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           repository-name: pyansys/pyfluent-visualization-docs

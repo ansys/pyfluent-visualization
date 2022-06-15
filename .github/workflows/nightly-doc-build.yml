@@ -8,6 +8,9 @@ on:
 jobs:
   nightly_docs_build:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        image-tag: [latest]
 
     steps:
       - uses: actions/checkout@v3
@@ -42,6 +45,8 @@ jobs:
 
       - name: Pull Fluent docker image
         run: make docker-pull
+        env:
+          FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
       - name: Generate the documentation
         run: make build-doc
@@ -49,8 +54,10 @@ jobs:
           ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
           PYFLUENT_START_INSTANCE: 0
           DOCS_CNAME: dev.fluentvisualization.docs.pyansys.com
+          FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
       - name: Deploy
+        if: ${{ matrix.image-tag == 'latest'}}
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           repository-name: pyansys/pyfluent-visualization-dev-docs
