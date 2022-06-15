@@ -101,6 +101,7 @@ need to follow these steps:
    .. code:: bash
     
       cd pyfluent-visualization
+      pip install install_data/ansys_api_fluent-0.1.0-py3-none-any.whl
       poetry run python -m pip install .
         
 5. Finally, verify your development installation by running:
