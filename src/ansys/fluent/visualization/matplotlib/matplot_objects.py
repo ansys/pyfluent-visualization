@@ -67,7 +67,18 @@ class Plots:
 
 
 class XYPlot(XYPlotDefn):
-    """XY Plot."""
+    """XY Plot.
+
+    .. code-block:: python
+
+        from ansys.fluent.visualization.matplotlib import Plots
+
+        matplotlib_plots =  Plots(session)
+        plot1 = matplotlib_plots.XYPlots["plot-1"]
+        plot1.surfaces_list = ['symmetry', 'wall']
+        plot1.y_axis_function = "temperature"
+        plot1.plot("window-0")
+    """
 
     def plot(self, window_id: Optional[str] = None):
         """Draw XYPlot.
@@ -81,7 +92,17 @@ class XYPlot(XYPlotDefn):
 
 
 class MonitorPlot(MonitorDefn):
-    """Monitor Plot."""
+    """Monitor Plot.
+
+    .. code-block:: python
+
+        from ansys.fluent.visualization.matplotlib import Plots
+
+        matplotlib_plots =  Plots(session)
+        plot1 = matplotlib_plots.Monitors["plot-1"]
+        plot1.monitor_set_name = 'residuals'
+        plot1.plot("window-0")
+    """
 
     def plot(self, window_id: Optional[str] = None):
         """Draw Monitor Plot.
