@@ -11,10 +11,10 @@ from ansys.fluent.visualization.pyvista import Graphics
 
 
 @pytest.fixture(autouse=True)
-def patch_mock_data_extractor(mocker) -> None:
+def patch_mock_api_helper(mocker) -> None:
     mocker.patch(
-        "ansys.fluent.core.meta.LocalObjectDataExtractor",
-        MockLocalObjectDataExtractor,
+        "ansys.fluent.visualization.post_helper.PostAPIHelper",
+        MockAPIHelper,
     )
 
 
@@ -155,22 +155,20 @@ class MockFieldInfo:
         return self._session_data["surfaces_info"]
 
 
-class MockLocalObjectDataExtractor:
+class MockAPIHelper:
     _session_data = None
     _session_dump = "tests//session.dump"
 
     def __init__(self, obj=None):
-        if not MockLocalObjectDataExtractor._session_data:
+        if not MockAPIHelper._session_data:
             with open(
-                str(Path(MockLocalObjectDataExtractor._session_dump).resolve()),
+                str(Path(MockAPIHelper._session_dump).resolve()),
                 "rb",
             ) as pickle_obj:
-                MockLocalObjectDataExtractor._session_data = pickle.load(pickle_obj)
-        self.field_info = lambda: MockFieldInfo(
-            MockLocalObjectDataExtractor._session_data
-        )
+                MockAPIHelper._session_data = pickle.load(pickle_obj)
+        self.field_info = lambda: MockFieldInfo(MockAPIHelper._session_data)
         self.field_data = lambda: MockFieldData(
-            MockLocalObjectDataExtractor._session_data, self.field_info
+            MockAPIHelper._session_data, self.field_info
         )
         self.id = lambda: 1
 
@@ -178,8 +176,8 @@ class MockLocalObjectDataExtractor:
 def test_field_api():
     pyvista_graphics = Graphics(session=None)
     contour1 = pyvista_graphics.Contours["contour-1"]
-    field_info = contour1._data_extractor.field_info()
-    field_data = contour1._data_extractor.field_data()
+    field_info = contour1._api_helper.field_info()
+    field_data = contour1._api_helper.field_data()
 
     surfaces_id = [
         v["surface_id"][0] for k, v in field_info.get_surfaces_info().items()
@@ -254,7 +252,7 @@ def test_contour_object():
 
     pyvista_graphics = Graphics(session=None)
     contour1 = pyvista_graphics.Contours["contour-1"]
-    field_info = contour1._data_extractor.field_info()
+    field_info = contour1._api_helper.field_info()
 
     # Surfaces allowed values should be all surfaces.
     assert contour1.surfaces_list.allowed_values == list(
@@ -273,9 +271,7 @@ def test_contour_object():
     contour1.surfaces_list = contour1.surfaces_list.allowed_values
 
     # Field allowed values should be all fields.
-    assert contour1.field.allowed_values == [
-        v["solver_name"] for k, v in field_info.get_fields_info().items()
-    ]
+    assert contour1.field.allowed_values == list(field_info.get_fields_info())
 
     # Important. Because there is no type checking so following passes.
     contour1.field = [contour1.field.allowed_values[0]]
@@ -343,7 +339,7 @@ def test_vector_object():
 
     pyvista_graphics = Graphics(session=None)
     vector1 = pyvista_graphics.Vectors["contour-1"]
-    field_info = vector1._data_extractor.field_info()
+    field_info = vector1._api_helper.field_info()
 
     assert vector1.surfaces_list.allowed_values == list(
         field_info.get_surfaces_info().keys()
@@ -382,7 +378,7 @@ def test_surface_object():
 
     pyvista_graphics = Graphics(session=None)
     surf1 = pyvista_graphics.Surfaces["surf-1"]
-    field_info = surf1._data_extractor.field_info()
+    field_info = surf1._api_helper.field_info()
 
     surf1.surface.type = "iso-surface"
     assert surf1.surface.plane_surface is None
@@ -396,9 +392,7 @@ def test_surface_object():
     surf1.surface.type = "iso-surface"
     iso_surf = surf1.surface.iso_surface
 
-    assert iso_surf.field.allowed_values == [
-        v["solver_name"] for k, v in field_info.get_fields_info().items()
-    ]
+    assert iso_surf.field.allowed_values == list(field_info.get_fields_info())
 
     # Important. Because there is no type checking so following test passes.
     iso_surf.field = [iso_surf.field.allowed_values[0]]
@@ -456,7 +450,7 @@ def test_xyplot_object():
 
     matplotlib_plots = Plots(session=None)
     p1 = matplotlib_plots.XYPlots["p-1"]
-    field_info = p1._data_extractor.field_info()
+    field_info = p1._api_helper.field_info()
 
     assert p1.surfaces_list.allowed_values == list(
         field_info.get_surfaces_info().keys()
@@ -470,9 +464,7 @@ def test_xyplot_object():
 
     p1.surfaces_list = p1.surfaces_list.allowed_values
 
-    assert p1.y_axis_function.allowed_values == [
-        v["solver_name"] for k, v in field_info.get_fields_info().items()
-    ]
+    assert p1.y_axis_function.allowed_values == list(field_info.get_fields_info())
 
     # Important. Because there is no type checking so following passes.
     p1.y_axis_function = [p1.y_axis_function.allowed_values[0]]
