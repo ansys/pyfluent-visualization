@@ -8,6 +8,7 @@ from ansys.fluent.core.meta import PyLocalContainer
 from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
     matplot_windows_manager,
 )
+from ansys.fluent.visualization.post_helper import PostAPIHelper
 from ansys.fluent.visualization.post_object_defns import MonitorDefn, XYPlotDefn
 
 
@@ -47,7 +48,7 @@ class Plots:
                 setattr(
                     obj,
                     cls.PLURAL,
-                    PyLocalContainer(self, cls),
+                    PyLocalContainer(self, cls, PostAPIHelper),
                 )
 
 

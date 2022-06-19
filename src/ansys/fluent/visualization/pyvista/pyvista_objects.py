@@ -6,6 +6,7 @@ from typing import Optional
 
 from ansys.fluent.core.meta import PyLocalContainer
 
+from ansys.fluent.visualization.post_helper import PostAPIHelper
 from ansys.fluent.visualization.post_object_defns import (
     ContourDefn,
     MeshDefn,
@@ -53,7 +54,7 @@ class Graphics:
                 setattr(
                     obj,
                     cls.PLURAL,
-                    PyLocalContainer(self, cls),
+                    PyLocalContainer(self, cls, PostAPIHelper),
                 )
 
     def add_outline_mesh(self):
@@ -73,7 +74,7 @@ class Graphics:
             outline_mesh = meshes[outline_mesh_id]
             outline_mesh.surfaces_list = [
                 k
-                for k, v in outline_mesh._data_extractor.field_info()
+                for k, v in outline_mesh._api_helper.field_info()
                 .get_surfaces_info()
                 .items()
                 if v["type"] == "zone-surf" and v["zone_type"] != "interior"

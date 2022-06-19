@@ -18,7 +18,7 @@ class BasePostObjectDefn:
         for surf_name in self.surfaces_list():
             if surf_name in list(local_surfaces_provider):
                 surf_obj = local_surfaces_provider[surf_name]
-                surf_api = surf_obj._data_extractor.surface_api
+                surf_api = surf_obj._api_helper.surface_api
                 surf_api.create_surface_on_server()
 
     def _post_display(self):
@@ -26,7 +26,7 @@ class BasePostObjectDefn:
         for surf_name in self.surfaces_list():
             if surf_name in list(local_surfaces_provider):
                 surf_obj = local_surfaces_provider[surf_name]
-                surf_api = surf_obj._data_extractor.surface_api
+                surf_api = surf_obj._api_helper.surface_api
                 surf_api.delete_surface_on_server()
 
 
@@ -81,7 +81,7 @@ class MonitorDefn(PlotDefn):
         @Attribute
         def allowed_values(self):
             """Monitor set allowed values."""
-            return self._data_extractor.monitors_manager().get_monitor_set_names()
+            return self._api_helper.monitors_manager().get_monitor_set_names()
 
 
 class XYPlotDefn(PlotDefn):
@@ -114,7 +114,7 @@ class XYPlotDefn(PlotDefn):
             """Y axis function allowed values."""
             return [
                 v["solver_name"]
-                for k, v in self._data_extractor.field_info().get_fields_info().items()
+                for k, v in self._api_helper.field_info().get_fields_info().items()
             ]
 
     class x_axis_function(metaclass=PyLocalPropertyMeta):
@@ -136,7 +136,7 @@ class XYPlotDefn(PlotDefn):
         def allowed_values(self):
             """Surface list allowed values."""
             return list(
-                self._data_extractor.field_info().get_surfaces_info().keys()
+                self._api_helper.field_info().get_surfaces_info().keys()
             ) + list(self._get_top_most_parent()._local_surfaces_provider())
 
 
@@ -154,7 +154,7 @@ class MeshDefn(GraphicsDefn):
         def allowed_values(self):
             """Surface list allowed values."""
             return list(
-                (self._data_extractor.field_info().get_surfaces_info().keys())
+                (self._api_helper.field_info().get_surfaces_info().keys())
             ) + list(self._get_top_most_parent()._local_surfaces_provider())
 
     class show_edges(metaclass=PyLocalPropertyMeta):
@@ -226,7 +226,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """Z value range."""
-                        return self._data_extractor.field_info().get_range(
+                        return self._api_helper.field_info().get_range(
                             "z-coordinate", True
                         )
 
@@ -241,7 +241,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """X value range."""
-                        return self._data_extractor.field_info().get_range(
+                        return self._api_helper.field_info().get_range(
                             "x-coordinate", True
                         )
 
@@ -256,7 +256,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """Y value range."""
-                        return self._data_extractor.field_info().get_range(
+                        return self._api_helper.field_info().get_range(
                             "y-coordinate", True
                         )
 
@@ -271,7 +271,7 @@ class SurfaceDefn(GraphicsDefn):
                 @Attribute
                 def allowed_values(self):
                     """Field allowed values."""
-                    field_info = self._data_extractor.field_info()
+                    field_info = self._api_helper.field_info()
                     return [
                         v["solver_name"]
                         for k, v in field_info.get_fields_info().items()
@@ -312,7 +312,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Iso value range."""
                     field = self._parent.field()
                     if field:
-                        return self._data_extractor.field_info().get_range(field, True)
+                        return self._api_helper.field_info().get_range(field, True)
 
 
 class ContourDefn(GraphicsDefn):
@@ -328,7 +328,7 @@ class ContourDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Field allowed values."""
-            field_info = self._data_extractor.field_info()
+            field_info = self._api_helper.field_info()
             return [v["solver_name"] for k, v in field_info.get_fields_info().items()]
 
     class surfaces_list(metaclass=PyLocalPropertyMeta):
@@ -340,7 +340,7 @@ class ContourDefn(GraphicsDefn):
         def allowed_values(self):
             """Surfaces list allowed values."""
             return list(
-                self._data_extractor.field_info().get_surfaces_info().keys()
+                self._api_helper.field_info().get_surfaces_info().keys()
             ) + list(self._get_top_most_parent()._local_surfaces_provider())
 
     class filled(metaclass=PyLocalPropertyMeta):
@@ -434,7 +434,7 @@ class ContourDefn(GraphicsDefn):
                     if getattr(self, "_value", None) is None:
                         field = self._get_parent_by_type(ContourDefn).field()
                         if field:
-                            field_info = self._data_extractor.field_info()
+                            field_info = self._api_helper.field_info()
                             field_range = field_info.get_range(
                                 field,
                                 self._get_parent_by_type(ContourDefn).node_values(),
@@ -463,7 +463,7 @@ class ContourDefn(GraphicsDefn):
                     if getattr(self, "_value", None) is None:
                         field = self._get_parent_by_type(ContourDefn).field()
                         if field:
-                            field_info = self._data_extractor.field_info()
+                            field_info = self._api_helper.field_info()
                             field_range = field_info.get_range(
                                 field,
                                 self._get_parent_by_type(ContourDefn).node_values(),
@@ -490,9 +490,7 @@ class VectorDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Vectors of allowed values."""
-            return list(
-                self._data_extractor.field_info().get_vector_fields_info().keys()
-            )
+            return list(self._api_helper.get_vector_fields())
 
     class surfaces_list(metaclass=PyLocalPropertyMeta):
         """List of surfaces for vector graphics."""
@@ -503,7 +501,7 @@ class VectorDefn(GraphicsDefn):
         def allowed_values(self):
             """Surface list allowed values."""
             return list(
-                self._data_extractor.field_info().get_surfaces_info().keys()
+                self._api_helper.field_info().get_surfaces_info().keys()
             ) + list(self._get_top_most_parent()._local_surfaces_provider())
 
     class scale(metaclass=PyLocalPropertyMeta):
@@ -566,7 +564,7 @@ class VectorDefn(GraphicsDefn):
                 def value(self):
                     """Range minimum property setter."""
                     if getattr(self, "_value", None) is None:
-                        field_info = self._data_extractor.field_info()
+                        field_info = self._api_helper.field_info()
                         field_range = field_info.get_range(
                             "velocity-magnitude",
                             False,
@@ -587,7 +585,7 @@ class VectorDefn(GraphicsDefn):
                 def value(self):
                     """Range maximum property setter."""
                     if getattr(self, "_value", None) is None:
-                        field_info = self._data_extractor.field_info()
+                        field_info = self._api_helper.field_info()
                         field_range = field_info.get_range(
                             "velocity-magnitude",
                             False,
