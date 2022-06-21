@@ -106,15 +106,13 @@ class PyVistaWindow(PostWindow):
     def _display_vector(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
 
         vector_field_data = FieldDataExtractor(obj).fetch_data()
-        field_info = obj._data_extractor.field_info()
+        field_info = obj._api_helper.field_info()
 
         # surface ids
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
-            for surf in map(
-                obj._data_extractor.remote_surface_name, obj.surfaces_list()
-            )
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
             for id in surfaces_info[surf]["surface_id"]
         ]
 
@@ -125,6 +123,8 @@ class PyVistaWindow(PostWindow):
         field = "velocity-magnitude"
 
         for surface_id, mesh_data in vector_field_data.items():
+            if "vertices" not in mesh_data or "faces" not in mesh_data:
+                continue
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
             mesh_data[obj.vectors_of()].shape = (
                 mesh_data[obj.vectors_of()].size // 3,
@@ -194,6 +194,8 @@ class PyVistaWindow(PostWindow):
 
         # loop over all meshes
         for surface_id, surface_data in scalar_field_data.items():
+            if "vertices" not in surface_data or "faces" not in surface_data:
+                continue
             surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
             topology = "line" if surface_data["faces"][0] == 2 else "face"
             if topology == "line":
@@ -257,7 +259,7 @@ class PyVistaWindow(PostWindow):
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
-                        field_info = obj._data_extractor.field_info()
+                        field_info = obj._api_helper.field_info()
                         plotter.add_mesh(
                             mesh,
                             clim=field_info.get_range(field, False),
@@ -284,7 +286,7 @@ class PyVistaWindow(PostWindow):
                         plotter.add_mesh(mesh.contour(isosurfaces=20))
 
     def _display_surface(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
-        surface_api = obj._data_extractor.surface_api
+        surface_api = obj._api_helper.surface_api
         surface_api.create_surface_on_server()
         dummy_object = "dummy_object"
         post_session = obj._get_top_most_parent()
@@ -311,6 +313,8 @@ class PyVistaWindow(PostWindow):
 
         surfaces_data = FieldDataExtractor(obj).fetch_data()
         for surface_id, mesh_data in surfaces_data.items():
+            if "vertices" not in mesh_data or "faces" not in mesh_data:
+                continue
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
             topology = "line" if mesh_data["faces"][0] == 2 else "face"
             if topology == "line":
@@ -634,7 +638,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                     if not window.plotter._closed
                     and (
                         not session_id
-                        or session_id == window.post_object._data_extractor.id()
+                        or session_id == window.post_object._api_helper.id()
                     )
                 ]
                 if not windows_id or window_id in windows_id

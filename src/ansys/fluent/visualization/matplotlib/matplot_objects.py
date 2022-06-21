@@ -39,6 +39,8 @@ class Plots:
         )
 
     def _init_module(self, obj, mod):
+        from ansys.fluent.visualization.post_helper import PostAPIHelper
+
         for name, cls in mod.__dict__.items():
 
             if cls.__class__.__name__ in (
@@ -47,7 +49,7 @@ class Plots:
                 setattr(
                     obj,
                     cls.PLURAL,
-                    PyLocalContainer(self, cls),
+                    PyLocalContainer(self, cls, PostAPIHelper),
                 )
 
 

@@ -45,6 +45,8 @@ class Graphics:
         )
 
     def _init_module(self, obj, mod):
+        from ansys.fluent.visualization.post_helper import PostAPIHelper
+
         for name, cls in mod.__dict__.items():
 
             if cls.__class__.__name__ in (
@@ -53,7 +55,7 @@ class Graphics:
                 setattr(
                     obj,
                     cls.PLURAL,
-                    PyLocalContainer(self, cls),
+                    PyLocalContainer(self, cls, PostAPIHelper),
                 )
 
     def add_outline_mesh(self):
@@ -73,7 +75,7 @@ class Graphics:
             outline_mesh = meshes[outline_mesh_id]
             outline_mesh.surfaces_list = [
                 k
-                for k, v in outline_mesh._data_extractor.field_info()
+                for k, v in outline_mesh._api_helper.field_info()
                 .get_surfaces_info()
                 .items()
                 if v["type"] == "zone-surf" and v["zone_type"] != "interior"

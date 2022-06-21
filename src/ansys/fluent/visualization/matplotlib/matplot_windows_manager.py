@@ -128,13 +128,13 @@ class _XYPlot:
         """Draw XY plot."""
         if not self.post_object:
             return
+        xy_data = XYPlotDataExtractor(self.post_object).fetch_data()
         properties = {
-            "curves": self.post_object.surfaces_list(),
+            "curves": list(xy_data),
             "title": "XY Plot",
             "xlabel": "position",
             "ylabel": self.post_object.y_axis_function(),
         }
-        xy_data = XYPlotDataExtractor(self.post_object).fetch_data()
         if in_notebook() or get_config()["blocking"]:
             self.plotter.set_properties(properties)
         else:
@@ -170,7 +170,7 @@ class _MonitorPlot:
         """Draw Monitor plot."""
         if not self.post_object:
             return
-        monitors_manager = self.post_object._data_extractor.monitors_manager()
+        monitors_manager = self.post_object._api_helper.monitors_manager()
         indices, columns_data = monitors_manager.get_monitor_set_data(
             self.post_object.monitor_set_name()
         )
@@ -405,8 +405,7 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 for window_id, window in self._post_windows.items()
                 if not window.plotter.is_closed()
                 and (
-                    not session_id
-                    or session_id == window.post_object._data_extractor.id()
+                    not session_id or session_id == window.post_object._api_helper.id()
                 )
             ]
             if not windows_id or window_id in windows_id
