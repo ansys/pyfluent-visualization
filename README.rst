@@ -1,22 +1,14 @@
 PyFluent Visualization
 ======================
-|pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
+|pyansys| |pypi| |GH-CI| |MIT| |black|
 
 .. |pyansys| image:: https://img.shields.io/badge/Py-Ansys-ffc107.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABDklEQVQ4jWNgoDfg5mD8vE7q/3bpVyskbW0sMRUwofHD7Dh5OBkZGBgW7/3W2tZpa2tLQEOyOzeEsfumlK2tbVpaGj4N6jIs1lpsDAwMJ278sveMY2BgCA0NFRISwqkhyQ1q/Nyd3zg4OBgYGNjZ2ePi4rB5loGBhZnhxTLJ/9ulv26Q4uVk1NXV/f///////69du4Zdg78lx//t0v+3S88rFISInD59GqIH2esIJ8G9O2/XVwhjzpw5EAam1xkkBJn/bJX+v1365hxxuCAfH9+3b9/+////48cPuNehNsS7cDEzMTAwMMzb+Q2u4dOnT2vWrMHu9ZtzxP9vl/69RVpCkBlZ3N7enoDXBwEAAA+YYitOilMVAAAAAElFTkSuQmCC
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.7-blue
-   :target: https://pypi.org/project/pyfluent-visualization/
-   :alt: Python
-
 .. |pypi| image:: https://img.shields.io/pypi/v/pyfluent-visualization.svg?logo=python&logoColor=white
    :target: https://pypi.org/project/pyfluent-visualization
    :alt: PyPI
-
-.. |codecov| image:: https://codecov.io/gh/pyansys/pyfluent-visualization/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/pyansys/pyfluent-visualization
-   :alt: Codecov
 
 .. |GH-CI| image:: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci_cd.yml/badge.svg
    :target: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci_cd.yml
@@ -30,167 +22,77 @@ PyFluent Visualization
    :target: https://github.com/psf/black
    :alt: Black
 
+Overview
+--------
+The PyFluent Visualization project provides post-processing and visualization
+capabilities for PyFluent using `pyvista <https://docs.pyvista.org/>`_ and
+`matplotlib <https://matplotlib.org/>`_.
 
-A Python wrapper for Ansys Fluent visualization
+Documentation and Issues
+------------------------
+Please see the latest release `documentation <https://fluentvisualization.docs.pyansys.com>`_
+page for more details.
 
+Please feel free to post issues and other questions at `PyFluent Visualization Issues
+<https://github.com/pyansys/pyfluent-visualization/issues>`_.  This is the best place
+to post questions and code.
 
-How to install
---------------
-
-At least two installation modes are provided: user and developer.
-
-For users
-^^^^^^^^^
-
-In order to install Pyfluent visualization, make sure you
-have the required build system tool. To do so, run:
-
-.. code:: bash
-
-    python -m pip install -U pip poetry
-
-Then, you can simply execute:
-
-.. code:: bash
-
-    poetry run python -m pip install ansys-fluent-visualization
-    
-For developers
-^^^^^^^^^^^^^^
-
-Installing Pyfluent visualization in developer mode allows
-you to modify the source and enhance it.
-
-Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will 
-need to follow these steps:
-
-1. Start by cloning this repository:
-
-   .. code:: bash
-
-      git clone https://github.com/pyansys/pyfluent-visualization
-
-2. Create a fresh-clean Python environment and activate it:
-
-   .. code:: bash
-
-      # Create a virtual environment
-      python -m venv .venv
-
-      # Activate it in a POSIX system
-      source .venv/bin/activate
-
-      # Activate it in Windows CMD environment
-      .venv\Scripts\activate.bat
-
-      # Activate it in Windows Powershell
-      .venv\Scripts\Activate.ps1
-
-3. Make sure you have the latest required build system and doc, testing, and CI tools:
-
-   .. code:: bash
-
-      python -m pip install -U pip poetry tox
-      python -m pip install -r requirements/requirements_build.txt
-      python -m pip install -r requirements/requirements_doc.txt
-      python -m pip install -r requirements/requirements_tests.txt
-
-
-4. Install the project in editable mode:
-
-   .. code:: bash
-    
-      cd pyfluent-visualization
-      pip install install_data/ansys_api_fluent-0.1.0-py3-none-any.whl
-      poetry run python -m pip install .
-        
-5. Finally, verify your development installation by running:
-
-   .. code:: bash
-
-      tox
-
-
-How to testing
---------------
-
-This project takes advantage of `tox`_. This tool allows to automate common
-development tasks (similar to Makefile) but it is oriented towards Python
-development. 
-
-Using tox
-^^^^^^^^^
-
-As Makefile has rules, `tox`_ has environments. In fact, the tool creates its
-own virtual environment so anything being tested is isolated from the project in
-order to guarantee project's integrity. The following environments commands are provided:
-
-- **tox -e style**: will check for coding style quality.
-- **tox -e py**: checks for unit tests.
-- **tox -e py-coverage**: checks for unit testing and code coverage.
-- **tox -e doc**: checs for documentation building process.
-
-
-Raw testing
-^^^^^^^^^^^
-
-If required, you can always call the style commands (`black`_, `isort`_,
-`flake8`_...) or unit testing ones (`pytest`_) from the command line. However,
-this does not guarantee that your project is being tested in an isolated
-environment, which is the reason why tools like `tox`_ exist.
-
-
-A note on pre-commit
-^^^^^^^^^^^^^^^^^^^^
-
-The style checks take advantage of `pre-commit`_. Developers are not forced but
-encouraged to install this tool via:
-
-.. code:: bash
-
-   python -m pip install pre-commit && pre-commit install
-
-
-Documentation
--------------
-
-For building documentation, you can either run the usual rules provided in the
-`Sphinx`_ Makefile, such us:
-
-.. code:: bash
-
-    make -C doc/ html && your_browser_name doc/html/index.html
-
-However, the recommended way of checking documentation integrity is using:
-
-.. code:: bash
-
-    tox -e doc && your_browser_name .tox/doc_out/html/index.html
-
-
-Distributing
+Installation
 ------------
+The ``ansys-fluent-visualization`` package currently supports Python 3.7 through Python
+3.10 on Windows and Linux.
 
-If you would like to create either source or wheel files, start by installing
-the building requirements:
+If you want to use PyFluent visualization please install the latest from `PyFluent Visualization GitHub
+<https://github.com/pyansys/pyfluent-visualization>`_ via:
 
-.. code:: bash
+.. code:: console
 
-    python -m pip install -r requirements/requirements_build.txt
+   pip install git+https://github.com/pyansys/pyfluent-visualization.git
 
-Then, you can execute:
+If you plan on doing local "development" of PyFluent with Git, then install
+with:
 
-.. code:: bash
+.. code:: console
 
-    poetry build
-    python -m twine check dist/*
+   git clone https://github.com/pyansys/pyfluent-visualization.git
+   cd pyfluent-visualization
+   pip install pip -U
+   pip install install_data/ansys_api_fluent-0.1.0-py3-none-any.whl  # till public release
+   pip install -e .
 
-.. LINKS AND REFERENCES
-.. _black: https://github.com/psf/black
-.. _flake8: https://flake8.pycqa.org/en/latest/
-.. _isort: https://github.com/PyCQA/isort
-.. _PyAnsys Developer's guide: https://dev.docs.pyansys.com/
-.. _pre-commit: https://pre-commit.com/
-.. _pytest: https://docs.pytest.org/en/stable/
-.. _Sphinx: https://www.sphinx-doc.org/en/master/
-.. _tox: https://tox.wiki/
+Dependencies
+------------
+You will need a locally installed licensed copy of ANSYS to run Fluent, with the
+first supported version being Ansys 2022 R2.
+
+Getting Started
+---------------
+
+Basic Usage
+~~~~~~~~~~~
+
+.. code:: python
+
+   from ansys.fluent.visualization.pyvista import Graphics
+   graphics = Graphics(session=session)
+   temperature_contour = graphics.Contours["contour-temperature"]
+   temperature_contour.field = "temperature"
+   temperature_contour.surfaces_list = ["in1", "in2", "out1"]
+   temperature_contour.display("window-1")
+
+Above code assumes that a PyFluent session has already been created and a Fluent case
+with input parameters has been set up. The `Analyzing Your Results
+<https://fluentvisualization.docs.pyansys.com/users_guide/postprocessing.html>`_ in
+the user guide has a complete example.
+
+License and Acknowledgments
+---------------------------
+``PyFluent Visualization`` is licensed under the MIT license.
+
+This module, ``ansys-fluent-visualization`` makes no commercial claim over Ansys
+whatsoever. This tool extends the functionality of ``Fluent`` by adding a Python
+interface to the Fluent without changing the core behavior or license of the original
+software.  The use of the interactive Fluent control of ``PyFluent Visualization`` requires
+a legally licensed local copy of Ansys.
+
+To get a copy of Ansys, please visit `Ansys <https://www.ansys.com/>`_.
