@@ -4,11 +4,10 @@ style:
 
 install:
 	@pip uninstall ansys-api-fluent -y
-	@python -m pip install --upgrade pip poetry
-	@python -m pip install -r requirements/requirements_build.txt
+	@pip install -r requirements/requirements_build.txt
 	@pip install install_data/ansys_api_fluent-0.1.0-py3-none-any.whl
-	@poetry build
-	@pip install dist/ansys*.whl --force-reinstall
+	@python -m build
+	@pip install dist/*.whl --force-reinstall
 
 docker-pull:
 	@pip install docker
