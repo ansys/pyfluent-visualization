@@ -6,8 +6,8 @@ PyFluent Visualization
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |pypi| image:: https://img.shields.io/pypi/v/pyfluent-visualization.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/pyfluent-visualization
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-fluent-visualization.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/ansys-fluent-visualization
    :alt: PyPI
 
 .. |GH-CI| image:: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci_cd.yml/badge.svg
