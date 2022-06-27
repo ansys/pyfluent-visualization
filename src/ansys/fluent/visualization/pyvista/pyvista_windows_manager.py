@@ -107,20 +107,20 @@ class PyVistaWindow(PostWindow):
 
         vector_field_data = FieldDataExtractor(obj).fetch_data()
         field_info = obj._api_helper.field_info()
-
-        # surface ids
-        surfaces_info = field_info.get_surfaces_info()
-        surface_ids = [
-            id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
-            for id in surfaces_info[surf]["surface_id"]
-        ]
-
+        vectors_of = obj.vectors_of()
         # scalar bar properties
         scalar_bar_args = self._scalar_bar_default_properties()
 
         # field
-        field = "velocity-magnitude"
+        field = (
+            "rel-velocity-magnitude"
+            if "relative" in vectors_of
+            else "velocity-magnitude"
+        )
+
+        phases = list(filter(vectors_of.startswith, obj._api_helper._get_phases()))
+        if phases:
+            field = f"{phases[0]}-{field}"
 
         for surface_id, mesh_data in vector_field_data.items():
             if "vertices" not in mesh_data or "faces" not in mesh_data:
@@ -158,7 +158,7 @@ class PyVistaWindow(PostWindow):
                 if auto_range_on.global_range():
                     range = field_info.get_range(field, False)
                 else:
-                    range = field_info.get_range(field, False, surface_ids)
+                    range = [np.min(velocity_magnitude), np.max(velocity_magnitude)]
 
             if obj.skip():
                 vmag = np.zeros(velocity_magnitude.size)
