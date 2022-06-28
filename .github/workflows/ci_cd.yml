@@ -67,7 +67,7 @@ jobs:
 
   docs:
     name: Documentation
-    runs-on: self-hosted
+    runs-on: [self-hosted, pyfluent]
     strategy:
       matrix:
         image-tag: [latest]
