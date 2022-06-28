@@ -41,7 +41,7 @@ For a local "development" version, install with:
    cd pyfluent-visualization
    pip install -e .
 
-Follow `README.rst. <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_ This will allow you to install the PyFluent Visulization ``ansys-fluent-core`` module
+Follow `README.rst. <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_ This will allow you to install the PyFluent Visualization ``ansys-fluent-core`` module
 and modify it locally and have the changes reflected in your setup
 after restarting the Python kernel.
 
