@@ -41,13 +41,9 @@ For a local "development" version, install with:
    cd pyfluent-visualization
    pip install -e .
 
-(Remove this section when pyfluent-visualization project goes public)
-Until pyfluent-visualization project goes public, install the latest release from
-the artifactory.
-
-.. code::
-
-   python -m pip install --extra-index-url http://conanreader:conanreader@canartifactory.ansys.com:8080/artifactory/api/pypi/pypi/simple --trusted-host canartifactory.ansys.com ansys-fluent-visualization
+Follow `README.rst. <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_ This will allow you to install the PyFluent Parametric ``ansys-fluent-core`` module
+and modify it locally and have the changes reflected in your setup
+after restarting the Python kernel.
 
 This will allow you to install the PyFluent ``ansys-fluent-visualization`` module
 and modify it locally and have the changes reflected in your setup
