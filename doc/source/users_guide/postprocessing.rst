@@ -101,7 +101,34 @@ The following example demonstrates how you can display the xy plot:
 .. code:: python
 
     plots_session_1 = Plots(session)
-    plot_1 = plots_session_1.XYPlots["plot-1"]
-    plot_1.surfaces_list = ["outlet"]
-    plot_1.y_axis_function = "temperature"
-    plot_1.plot("window-5")
+    xy_plot = plots_session_1.XYPlots["xy-plot"]
+    xy_plot.surfaces_list = ["outlet"]
+    xy_plot.y_axis_function = "temperature"
+    xy_plot.plot("window-5")
+
+Plotting Residual
+~~~~~~~~~~~~~~~~~
+The following example demonstrates how you can plot solution residual:
+
+.. code:: python
+
+
+    matplotlib_plots1 = Plots(session)
+    residual = matplotlib_plots1.Monitors["residual"]
+    residual.monitor_set_name = "residual"
+    residual.plot("window-6")
+
+Plotting Solution Minitors
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+The following example demonstrates how you can plot solution monitors:
+
+.. code:: python
+
+    session.solver.tui.solve.initialize.hyb_initialization()
+    session.solver.tui.solve.set.number_of_iterations(50)
+    session.solver.tui.solve.iterate()
+    session.monitors_manager.get_monitor_set_names()
+    matplotlib_plots1 = Plots(session)
+    mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
+    mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+    mass_bal_rplot.plot("window-7")

@@ -15,7 +15,7 @@ This example demonstrates postprocessing using pyvista
 - Display velocity vectors.
 - Plot quantitative results using Matplotlib
 """
-# sphinx_gallery_thumbnail_number = -3
+# sphinx_gallery_thumbnail_number = -5
 
 ###############################################################################
 import ansys.fluent.core as pyfluent
@@ -55,10 +55,9 @@ graphics = Graphics(session=session)
 mesh1 = graphics.Meshes["mesh-1"]
 
 ###############################################################################
-# Show edges and faces
+# Show edges
 
 mesh1.show_edges = True
-mesh1.show_faces = True
 
 ###############################################################################
 # Get the surfaces list
@@ -91,7 +90,7 @@ iso_surf1.iso_value = -0.125017
 surf_outlet_plane.display("window-3")
 
 ###############################################################################
-# Create iso-surface on the mid-plane (Issue # 276)
+# Create iso-surface on the mid-plane
 
 surf_mid_plane_x = graphics.Surfaces["mid-plane-x"]
 surf_mid_plane_x.surface.type = "iso-surface"
@@ -99,6 +98,17 @@ iso_surf2 = surf_mid_plane_x.surface.iso_surface
 iso_surf2.field = "x-coordinate"
 iso_surf2.iso_value = -0.174
 surf_mid_plane_x.display("window-4")
+
+###############################################################################
+# Create iso-surface using the velocity magnitude
+
+surf_vel_contour = graphics.Surfaces["surf-vel-contour"]
+surf_vel_contour.surface.type = "iso-surface"
+iso_surf3 = surf_vel_contour.surface.iso_surface
+iso_surf3.field = "velocity-magnitude"
+iso_surf3.rendering = "contour"
+iso_surf3.iso_value = 0.0
+surf_vel_contour.display("window-5")
 
 ###############################################################################
 # Temperature contour on the mid-plane and the outlet
@@ -139,18 +149,43 @@ plots_session_1 = Plots(session)
 
 ###############################################################################
 # Create a default XY-Plot
-plot_1 = plots_session_1.XYPlots["plot-1"]
+xy_plot = plots_session_1.XYPlots["xy-plot"]
 
 ###############################################################################
 # Set the surface on which the plot is plotted and the Y-axis function
-plot_1.surfaces_list = ["outlet"]
-plot_1.y_axis_function = "temperature"
+xy_plot.surfaces_list = ["outlet"]
+xy_plot.y_axis_function = "temperature"
 
 ###############################################################################
 # Plot the created XY-Plot
-plot_1.plot("window-7")
+xy_plot.plot("window-7")
 
-#########################################################################
+###############################################################################
+# Plot residual
+
+matplotlib_plots1 = Plots(session)
+residual = matplotlib_plots1.Monitors["residual"]
+residual.monitor_set_name = "residual"
+residual.plot("window-8")
+
+###############################################################################
+# Solve and Plot Solution Minitors.
+
+session.solver.tui.solve.initialize.hyb_initialization()
+session.solver.tui.solve.set.number_of_iterations(50)
+session.solver.tui.solve.iterate()
+session.monitors_manager.get_monitor_set_names()
+matplotlib_plots1 = Plots(session)
+mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
+mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+mass_bal_rplot.plot("window-9")
+
+matplotlib_plots1 = Plots(session)
+point_vel_rplot = matplotlib_plots1.Monitors["point-vel-rplot"]
+point_vel_rplot.monitor_set_name = "point-vel-rplot"
+point_vel_rplot.plot("window-10")
+
+###############################################################################
 # Close Fluent
 
 session.exit()
