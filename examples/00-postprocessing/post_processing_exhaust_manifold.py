@@ -149,23 +149,21 @@ plots_session_1 = Plots(session)
 
 ###############################################################################
 # Create a default XY-Plot
-plot_1 = plots_session_1.XYPlots["plot-1"]
+xy_plot = plots_session_1.XYPlots["xy-plot"]
 
 ###############################################################################
 # Set the surface on which the plot is plotted and the Y-axis function
-plot_1.surfaces_list = ["outlet"]
-plot_1.y_axis_function = "temperature"
+xy_plot.surfaces_list = ["outlet"]
+xy_plot.y_axis_function = "temperature"
 
 ###############################################################################
 # Plot the created XY-Plot
-plot_1.plot("window-7")
+xy_plot.plot("window-7")
 
 ###############################################################################
 # Plot residual
 
-local_surfaces_provider = Graphics(session).Surfaces
-matplotlib_plots1 = Plots(session, local_surfaces_provider=local_surfaces_provider)
-session.monitors_manager.get_monitor_set_names()
+matplotlib_plots1 = Plots(session)
 residual = matplotlib_plots1.Monitors["residual"]
 residual.monitor_set_name = "residual"
 residual.plot("window-8")
