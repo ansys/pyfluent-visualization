@@ -55,10 +55,9 @@ graphics = Graphics(session=session)
 mesh1 = graphics.Meshes["mesh-1"]
 
 ###############################################################################
-# Show edges and faces
+# Show edges
 
 mesh1.show_edges = True
-mesh1.show_faces = True
 
 ###############################################################################
 # Get the surfaces list
@@ -91,7 +90,7 @@ iso_surf1.iso_value = -0.125017
 surf_outlet_plane.display("window-3")
 
 ###############################################################################
-# Create iso-surface on the mid-plane (Issue # 276)
+# Create iso-surface on the mid-plane
 
 surf_mid_plane_x = graphics.Surfaces["mid-plane-x"]
 surf_mid_plane_x.surface.type = "iso-surface"
@@ -99,6 +98,17 @@ iso_surf2 = surf_mid_plane_x.surface.iso_surface
 iso_surf2.field = "x-coordinate"
 iso_surf2.iso_value = -0.174
 surf_mid_plane_x.display("window-4")
+
+###############################################################################
+# Create iso-surface using the velocity magnitude
+
+surf_vel_contour = graphics.Surfaces["surf-vel-contour"]
+surf_vel_contour.surface.type = "iso-surface"
+iso_surf3 = surf_vel_contour.surface.iso_surface
+iso_surf3.field = "velocity-magnitude"
+iso_surf3.rendering = "contour"
+iso_surf3.iso_value = 0.0
+surf_vel_contour.display("window-5")
 
 ###############################################################################
 # Temperature contour on the mid-plane and the outlet
@@ -150,7 +160,16 @@ plot_1.y_axis_function = "temperature"
 # Plot the created XY-Plot
 plot_1.plot("window-7")
 
-#########################################################################
+###############################################################################
+# Plot residual
+
+local_surfaces_provider = Graphics(session).Surfaces
+matplotlib_plots1 = Plots(session, local_surfaces_provider=local_surfaces_provider)
+session.monitors_manager.get_monitor_set_names()
+residual = matplotlib_plots1.Monitors["residual"]
+residual.monitor_set_name = "residual"
+residual.plot("window-8")
+
 # Close Fluent
 
 session.exit()
