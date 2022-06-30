@@ -117,3 +117,17 @@ The following example demonstrates how you can plot solution residual:
     residual = matplotlib_plots1.Monitors["residual"]
     residual.monitor_set_name = "residual"
     residual.plot("window-6")
+
+Solve and Plot Solution Minitors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    session.solver.tui.solve.initialize.hyb_initialization()
+    session.solver.tui.solve.set.number_of_iterations(50)
+    session.solver.tui.solve.iterate()
+    session.monitors_manager.get_monitor_set_names()
+    matplotlib_plots1 = Plots(session)
+    mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
+    mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+    mass_bal_rplot.plot("window-7")

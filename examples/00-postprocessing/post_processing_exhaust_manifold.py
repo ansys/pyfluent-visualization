@@ -15,7 +15,7 @@ This example demonstrates postprocessing using pyvista
 - Display velocity vectors.
 - Plot quantitative results using Matplotlib
 """
-# sphinx_gallery_thumbnail_number = -3
+# sphinx_gallery_thumbnail_number = -5
 
 ###############################################################################
 import ansys.fluent.core as pyfluent
@@ -168,6 +168,24 @@ residual = matplotlib_plots1.Monitors["residual"]
 residual.monitor_set_name = "residual"
 residual.plot("window-8")
 
+###############################################################################
+# Solve and Plot Solution Minitors.
+
+session.solver.tui.solve.initialize.hyb_initialization()
+session.solver.tui.solve.set.number_of_iterations(50)
+session.solver.tui.solve.iterate()
+session.monitors_manager.get_monitor_set_names()
+matplotlib_plots1 = Plots(session)
+mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
+mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+mass_bal_rplot.plot("window-9")
+
+matplotlib_plots1 = Plots(session)
+point_vel_rplot = matplotlib_plots1.Monitors["point-vel-rplot"]
+point_vel_rplot.monitor_set_name = "point-vel-rplot"
+point_vel_rplot.plot("window-10")
+
+###############################################################################
 # Close Fluent
 
 session.exit()
