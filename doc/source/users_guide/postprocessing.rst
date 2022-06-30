@@ -118,8 +118,9 @@ The following example demonstrates how you can plot solution residual:
     residual.monitor_set_name = "residual"
     residual.plot("window-6")
 
-Solve and Plot Solution Minitors
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Plotting Solution Minitors
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+The following example demonstrates how you can plot solution monitors:
 
 .. code:: python
 
