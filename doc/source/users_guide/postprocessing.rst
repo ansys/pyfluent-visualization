@@ -105,3 +105,16 @@ The following example demonstrates how you can display the xy plot:
     plot_1.surfaces_list = ["outlet"]
     plot_1.y_axis_function = "temperature"
     plot_1.plot("window-5")
+
+Plotting Residual
+~~~~~~~~~~~~~~~~~
+The following example demonstrates how you can plot solution residual:
+
+.. code:: python
+
+    local_surfaces_provider = Graphics(session).Surfaces
+    matplotlib_plots1 = Plots(session, local_surfaces_provider=local_surfaces_provider)
+    session.monitors_manager.get_monitor_set_names()
+    residual = matplotlib_plots1.Monitors["residual"]
+    residual.monitor_set_name = "residual"
+    residual.plot("window-6")
