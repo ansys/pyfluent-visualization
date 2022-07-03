@@ -18,7 +18,24 @@ from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
 
 
 class Graphics:
-    """Graphics objects provider."""
+    """PyVista Graphics objects manager.
+
+    It provides access to graphics object containers for a given session,
+    from which grpahics objects can be created.
+    It takes session object as argument. Additionally local surface provider
+    can also be passed to access surfaces created in other modules.
+
+    Attributes
+    ----------
+    Meshes : dict
+        Container for mesh objects.
+    Surfaces : dict
+        Container for surface objects.
+    Contours : dict
+        Container for contour objects.
+    Vectors : dict
+        Container for vector objects.
+    """
 
     _sessions_state = {}
 

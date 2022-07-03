@@ -90,12 +90,12 @@ class XYPlotDefn(PlotDefn):
     PLURAL = "XYPlots"
 
     class node_values(metaclass=PyLocalPropertyMeta):
-        """Show nodal data."""
+        """Plot nodal values."""
 
         value: bool = True
 
     class boundary_values(metaclass=PyLocalPropertyMeta):
-        """Show Boundary values."""
+        """Plot Boundary values."""
 
         value: bool = True
 
@@ -122,7 +122,7 @@ class XYPlotDefn(PlotDefn):
         @Attribute
         def allowed_values(self):
             """X axis function allowed values."""
-            return ["direction-vector", "curve-length"]
+            return ["direction-vector"]
 
     class surfaces_list(metaclass=PyLocalPropertyMeta):
         """List of surfaces for plotting."""
@@ -138,7 +138,7 @@ class XYPlotDefn(PlotDefn):
 
 
 class MeshDefn(GraphicsDefn):
-    """Mesh graphics."""
+    """Mesh graphics definition."""
 
     PLURAL = "Meshes"
 
@@ -161,7 +161,7 @@ class MeshDefn(GraphicsDefn):
 
 
 class SurfaceDefn(GraphicsDefn):
-    """Surface graphics."""
+    """Surface graphics definition."""
 
     PLURAL = "Surfaces"
 
@@ -170,8 +170,8 @@ class SurfaceDefn(GraphicsDefn):
 
         value: bool = True
 
-    class surface(metaclass=PyLocalObjectMeta):
-        """Specify surface type."""
+    class definition(metaclass=PyLocalObjectMeta):
+        """Specify surface definition type."""
 
         def _availability(self, name):
             if name == "plane_surface":
@@ -191,7 +191,7 @@ class SurfaceDefn(GraphicsDefn):
                 return ["plane-surface", "iso-surface"]
 
         class plane_surface(metaclass=PyLocalObjectMeta):
-            """Plane surface data."""
+            """Plane surface definition."""
 
             def _availability(self, name):
                 if name == "xy_plane":
@@ -213,7 +213,7 @@ class SurfaceDefn(GraphicsDefn):
                     return ["xy-plane", "yz-plane", "zx-plane"]
 
             class xy_plane(metaclass=PyLocalObjectMeta):
-                """XY Plane."""
+                """XY Plane definition."""
 
                 class z(metaclass=PyLocalPropertyMeta):
                     """Z value."""
@@ -228,7 +228,7 @@ class SurfaceDefn(GraphicsDefn):
                         )
 
             class yz_plane(metaclass=PyLocalObjectMeta):
-                """YZ Plane."""
+                """YZ Plane definition."""
 
                 class x(metaclass=PyLocalPropertyMeta):
                     """X value."""
@@ -243,7 +243,7 @@ class SurfaceDefn(GraphicsDefn):
                         )
 
             class zx_plane(metaclass=PyLocalObjectMeta):
-                """ZX Plane."""
+                """ZX Plane definition."""
 
                 class y(metaclass=PyLocalPropertyMeta):
                     """Y value."""
@@ -258,7 +258,7 @@ class SurfaceDefn(GraphicsDefn):
                         )
 
         class iso_surface(metaclass=PyLocalObjectMeta):
-            """Iso surface data."""
+            """Iso surface definition."""
 
             class field(metaclass=PyLocalPropertyMeta):
                 """Iso surface field."""
@@ -281,7 +281,7 @@ class SurfaceDefn(GraphicsDefn):
                     return ["mesh", "contour"]
 
             class iso_value(metaclass=PyLocalPropertyMeta):
-                """Iso surface field iso value."""
+                """Iso value for field."""
 
                 _value: float
 
@@ -309,7 +309,7 @@ class SurfaceDefn(GraphicsDefn):
 
 
 class ContourDefn(GraphicsDefn):
-    """Contour graphics."""
+    """Contour graphics definition."""
 
     PLURAL = "Contours"
 
@@ -336,12 +336,12 @@ class ContourDefn(GraphicsDefn):
             ) + list(self._get_top_most_parent()._local_surfaces_provider())
 
     class filled(metaclass=PyLocalPropertyMeta):
-        """Show filled contour."""
+        """Draw filled contour."""
 
         value: bool = True
 
     class node_values(metaclass=PyLocalPropertyMeta):
-        """Show nodal data."""
+        """Draw nodal data."""
 
         _value: bool = True
 
@@ -359,12 +359,12 @@ class ContourDefn(GraphicsDefn):
             self._value = value
 
     class boundary_values(metaclass=PyLocalPropertyMeta):
-        """Show boundary values."""
+        """Draw boundary values."""
 
         value: bool = False
 
     class contour_lines(metaclass=PyLocalPropertyMeta):
-        """Show contour lines."""
+        """Draw contour lines."""
 
         value: bool = False
 
@@ -374,7 +374,7 @@ class ContourDefn(GraphicsDefn):
         value: bool = False
 
     class range(metaclass=PyLocalObjectMeta):
-        """Specify range options."""
+        """Range definition."""
 
         def _availability(self, name):
             if name == "auto_range_on":
@@ -394,7 +394,7 @@ class ContourDefn(GraphicsDefn):
                 return ["auto-range-on", "auto-range-off"]
 
         class auto_range_on(metaclass=PyLocalObjectMeta):
-            """Specify auto range on."""
+            """Auto range on definition."""
 
             class global_range(metaclass=PyLocalPropertyMeta):
                 """Show global range."""
@@ -402,7 +402,7 @@ class ContourDefn(GraphicsDefn):
                 value: bool = False
 
         class auto_range_off(metaclass=PyLocalObjectMeta):
-            """Specify auto range off."""
+            """Auto range off definition."""
 
             class clip_to_range(metaclass=PyLocalPropertyMeta):
                 """Clip contour within range."""
@@ -470,7 +470,7 @@ class ContourDefn(GraphicsDefn):
 
 
 class VectorDefn(GraphicsDefn):
-    """Vector graphics."""
+    """Vector graphics definition."""
 
     PLURAL = "Vectors"
 
@@ -512,7 +512,7 @@ class VectorDefn(GraphicsDefn):
         value: bool = False
 
     class range(metaclass=PyLocalObjectMeta):
-        """Specify range options."""
+        """Range definition."""
 
         def _availability(self, name):
             if name == "auto_range_on":
@@ -532,7 +532,7 @@ class VectorDefn(GraphicsDefn):
                 return ["auto-range-on", "auto-range-off"]
 
         class auto_range_on(metaclass=PyLocalObjectMeta):
-            """Specify auto range on."""
+            """Auto range on definition."""
 
             class global_range(metaclass=PyLocalPropertyMeta):
                 """Show global range."""
@@ -540,7 +540,7 @@ class VectorDefn(GraphicsDefn):
                 value: bool = False
 
         class auto_range_off(metaclass=PyLocalObjectMeta):
-            """Specify auto range off."""
+            """Auto range off definition."""
 
             class clip_to_range(metaclass=PyLocalPropertyMeta):
                 """Clip vector within range."""

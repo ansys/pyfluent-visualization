@@ -12,7 +12,20 @@ from ansys.fluent.visualization.post_object_defns import MonitorDefn, XYPlotDefn
 
 
 class Plots:
-    """Plot objects provider."""
+    """Matplotlib Plot objects manager.
+
+    It provides access to plot object containers for a given session,
+    from which plot objects can be created.
+    It takes session object as argument. Additionally local surface provider
+    can also be passed to access surfaces created in other modules e.g. pyVista.
+
+    Attributes
+    ----------
+    XYPlots : dict
+        Container for xyplot objects.
+    MonitorPlots : dict
+        Container for monitor plot objects.
+    """
 
     _sessions_state = {}
 
