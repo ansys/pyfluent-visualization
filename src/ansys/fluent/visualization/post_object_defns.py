@@ -1,6 +1,7 @@
 """Module providing visualization objects definition."""
 from abc import abstractmethod
 from typing import List, NamedTuple, Optional
+import warnings
 
 from ansys.fluent.core.meta import (
     Attribute,
@@ -293,7 +294,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Iso value property setter."""
                     if getattr(self, "_value", None) is None:
                         range = self.range
-                        self._value = range[0] if range else None
+                        self._value = (range[0] + range[1]) / 2.0 if range else None
                     return self._value
 
                 @value.setter
@@ -351,6 +352,9 @@ class ContourDefn(GraphicsDefn):
             filled = self._get_parent_by_type(ContourDefn).filled()
             auto_range_off = self._get_parent_by_type(ContourDefn).range.auto_range_off
             if not filled or (auto_range_off and auto_range_off.clip_to_range()):
+                warnings.warn(
+                    "For unfilled and clipped contours node values are diaplyed."
+                )
                 self._value = True
             return self._value
 
