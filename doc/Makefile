@@ -10,7 +10,8 @@ BUILDDIR      = _build
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-
+cp -f "$(SOURCEDIR)/_static/sphx_glr_post_processing_exhaust_manifold_011.png" "$(BUILDDIR)/html/_images/"
+cp -f "$(SOURCEDIR)/_static/sphx_glr_post_processing_exhaust_manifold_012.png" "$(BUILDDIR)/html/_images/"
 .PHONY: help Makefile
 
 # Catch-all target: route all unknown targets to Sphinx using the new
