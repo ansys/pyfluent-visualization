@@ -80,11 +80,38 @@ mesh1.show_edges = False
 mesh1.display("window-2")
 
 ###############################################################################
+# Create plane-surface XY plane
+
+surf_xy_plane = graphics.Surfaces["xy-plane"]
+surf_xy_plane.definition.type = "plane-surface"
+plane_surface_xy = surf_xy_plane.definition.plane_surface
+plane_surface_xy.z = -0.0441921
+surf_xy_plane.display("window-3")
+
+###############################################################################
+# Create plane-surface YZ plane
+
+surf_yz_plane = graphics.Surfaces["yz-plane"]
+surf_yz_plane.definition.type = "plane-surface"
+plane_surface_yz = surf_yz_plane.definition.plane_surface
+plane_surface_yz.x = -0.174628
+surf_yz_plane.display("window-4")
+
+###############################################################################
+# Create plane-surface ZX plane
+
+surf_zx_plane = graphics.Surfaces["zx-plane"]
+surf_zx_plane.definition.type = "plane-surface"
+plane_surface_zx = surf_zx_plane.definition.plane_surface
+plane_surface_zx.y = -0.0627297
+surf_zx_plane.display("window-5")
+
+###############################################################################
 # Create iso-surface on the outlet plane
 
 surf_outlet_plane = graphics.Surfaces["outlet-plane"]
-surf_outlet_plane.surface.type = "iso-surface"
-iso_surf1 = surf_outlet_plane.surface.iso_surface
+surf_outlet_plane.definition.type = "iso-surface"
+iso_surf1 = surf_outlet_plane.definition.iso_surface
 iso_surf1.field = "y-coordinate"
 iso_surf1.iso_value = -0.125017
 surf_outlet_plane.display("window-3")
@@ -93,8 +120,8 @@ surf_outlet_plane.display("window-3")
 # Create iso-surface on the mid-plane
 
 surf_mid_plane_x = graphics.Surfaces["mid-plane-x"]
-surf_mid_plane_x.surface.type = "iso-surface"
-iso_surf2 = surf_mid_plane_x.surface.iso_surface
+surf_mid_plane_x.definition.type = "iso-surface"
+iso_surf2 = surf_mid_plane_x.definition.iso_surface
 iso_surf2.field = "x-coordinate"
 iso_surf2.iso_value = -0.174
 surf_mid_plane_x.display("window-4")
@@ -103,8 +130,8 @@ surf_mid_plane_x.display("window-4")
 # Create iso-surface using the velocity magnitude
 
 surf_vel_contour = graphics.Surfaces["surf-vel-contour"]
-surf_vel_contour.surface.type = "iso-surface"
-iso_surf3 = surf_vel_contour.surface.iso_surface
+surf_vel_contour.definition.type = "iso-surface"
+iso_surf3 = surf_vel_contour.definition.iso_surface
 iso_surf3.field = "velocity-magnitude"
 iso_surf3.rendering = "contour"
 iso_surf3.iso_value = 0.0
@@ -174,7 +201,6 @@ residual.plot("window-8")
 session.solver.tui.solve.initialize.hyb_initialization()
 session.solver.tui.solve.set.number_of_iterations(50)
 session.solver.tui.solve.iterate()
-session.monitors_manager.get_monitor_set_names()
 matplotlib_plots1 = Plots(session)
 mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"

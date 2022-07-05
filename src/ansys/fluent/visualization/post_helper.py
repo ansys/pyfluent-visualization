@@ -25,8 +25,8 @@ class PostAPIHelper:
                 self.delete_surface_on_server()
 
         def create_surface_on_server(self):
-            if self.obj.surface.type() == "iso-surface":
-                iso_surface = self.obj.surface.iso_surface
+            if self.obj.definition.type() == "iso-surface":
+                iso_surface = self.obj.definition.iso_surface
                 field = iso_surface.field()
                 iso_value = iso_surface.iso_value()
                 if not field:
@@ -62,8 +62,8 @@ class PostAPIHelper:
                         (iso_value / unit_info[1]) - unit_info[2],
                         (),
                     )
-            elif self.obj.surface.type() == "plane-surface":
-                plane_surface = self.obj.surface.plane_surface
+            elif self.obj.definition.type() == "plane-surface":
+                plane_surface = self.obj.definition.plane_surface
                 xy_plane = plane_surface.xy_plane
                 yz_plane = plane_surface.yz_plane
                 zx_plane = plane_surface.zx_plane
