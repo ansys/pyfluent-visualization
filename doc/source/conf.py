@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import platform
 import subprocess
+import sys
 
 import ansys.fluent.core as pyfluent
 from ansys_sphinx_theme import ansys_favicon, pyansys_logo_black
@@ -54,6 +55,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_gallery.gen_gallery",
     "sphinxemoji.sphinxemoji",
+    "autodocclass",
 ]
 
 # Intersphinx mapping
@@ -254,3 +256,4 @@ epub_title = project
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ["search.html"]
+sys.path.append(os.path.abspath("./_ext"))

@@ -52,7 +52,7 @@ Features
 The package, ``ansys-fluent-visualization``, provides features such as:
 
 - Script post processing using Fluent's in-built post processing capabilities.
-  See the :ref:`ref_postprocessing` module for more information.
+  See the :ref:`ref_visualization` module for more information.
 - Plotting of Fluent geometry and meshes using `PyVista
   <https://docs.pyvista.org>`_ from within a Python script or an
   interactive `Jupyter notebook <https://jupyter.org/>`_.

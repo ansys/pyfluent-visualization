@@ -18,7 +18,24 @@ from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
 
 
 class Graphics:
-    """Graphics objects provider."""
+    """PyVista Graphics objects manager.
+
+    It provides access to graphics object containers for a given session,
+    from which grpahics objects can be created.
+    It takes session object as argument. Additionally local surface provider
+    can also be passed to access surfaces created in other modules.
+
+    Attributes
+    ----------
+    Meshes : dict
+        Container for mesh objects.
+    Surfaces : dict
+        Container for surface objects.
+    Contours : dict
+        Container for contour objects.
+    Vectors : dict
+        Container for vector objects.
+    """
 
     _sessions_state = {}
 
@@ -84,7 +101,18 @@ class Graphics:
 
 
 class Mesh(MeshDefn):
-    """Mesh graphics."""
+    """Mesh graphics.
+
+    .. code-block:: python
+
+        from ansys.fluent.visualization.pyvista import  Graphics
+
+        graphics_session = Graphics(session)
+        mesh1 = graphics_session.Meshes["mesh-1"]
+        mesh1.show_edges = True
+        mesh1.surfaces_list = ['wall']
+        mesh1.display("window-0")
+    """
 
     def display(self, window_id: Optional[str] = None):
         """Display mesh graphics.
@@ -98,7 +126,20 @@ class Mesh(MeshDefn):
 
 
 class Surface(SurfaceDefn):
-    """Surface graphics."""
+    """Surface graphics.
+
+    .. code-block:: python
+
+        from ansys.fluent.visualization.pyvista import  Graphics
+
+        graphics_session = Graphics(session)
+        surface1 = graphics_session.Surfaces["surface-1"]
+        surface1.definition.type = "iso-surface"
+        surface1.definition.iso_surface.field= "velocity-magnitude"
+        surface1.definition.iso_surface.rendering= "contour"
+        surface1.definition.iso_surface.iso_value = 0.0
+        surface1.display("window-0")
+    """
 
     def display(self, window_id: Optional[str] = None):
         """Display surface graphics.
@@ -112,7 +153,18 @@ class Surface(SurfaceDefn):
 
 
 class Contour(ContourDefn):
-    """Contour graphics."""
+    """Contour graphics.
+
+    .. code-block:: python
+
+        from ansys.fluent.visualization.pyvista import  Graphics
+
+        graphics_session = Graphics(session)
+        contour1 = graphics_session.Contours["contour-1"]
+        contour1.field = "velocity-magnitude"
+        contour1.surfaces_list = ['wall']
+        contour1.display("window-0")
+    """
 
     def display(self, window_id: Optional[str] = None):
         """Display contour graphics.
@@ -126,7 +178,19 @@ class Contour(ContourDefn):
 
 
 class Vector(VectorDefn):
-    """Vector graphics."""
+    """Vector graphics.
+
+    .. code-block:: python
+
+        from ansys.fluent.visualization.pyvista import  Graphics
+
+        graphics_session = Graphics(session)
+        vector1 = graphics_session.Vectors["vector-1"]
+        vector1.surfaces_list  = ['symmetry']
+        vector1.scale = 4.0
+        vector1.skip = 4
+        vector1.display("window-0")
+    """
 
     def display(self, window_id: Optional[str] = None):
         """Display vector graphics.

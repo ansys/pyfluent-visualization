@@ -380,17 +380,17 @@ def test_surface_object():
     surf1 = pyvista_graphics.Surfaces["surf-1"]
     field_info = surf1._api_helper.field_info()
 
-    surf1.surface.type = "iso-surface"
-    assert surf1.surface.plane_surface is None
-    surf1.surface.type = "plane-surface"
-    assert surf1.surface.iso_surface is None
+    surf1.definition.type = "iso-surface"
+    assert surf1.definition.plane_surface is None
+    surf1.definition.type = "plane-surface"
+    assert surf1.definition.iso_surface is None
 
-    surf1.surface.plane_surface.creation_method = "xy-plane"
-    assert surf1.surface.plane_surface.yz_plane is None
-    assert surf1.surface.plane_surface.zx_plane is None
+    surf1.definition.plane_surface.creation_method = "xy-plane"
+    assert surf1.definition.plane_surface.yz_plane is None
+    assert surf1.definition.plane_surface.zx_plane is None
 
-    surf1.surface.type = "iso-surface"
-    iso_surf = surf1.surface.iso_surface
+    surf1.definition.type = "iso-surface"
+    iso_surf = surf1.definition.iso_surface
 
     assert iso_surf.field.allowed_values == list(field_info.get_fields_info())
 

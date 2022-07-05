@@ -291,11 +291,11 @@ class PyVistaWindow(PostWindow):
         dummy_object = "dummy_object"
         post_session = obj._get_top_most_parent()
         if (
-            obj.surface.type() == "iso-surface"
-            and obj.surface.iso_surface.rendering() == "contour"
+            obj.definition.type() == "iso-surface"
+            and obj.definition.iso_surface.rendering() == "contour"
         ):
             contour = post_session.Contours[dummy_object]
-            contour.field = obj.surface.iso_surface.field()
+            contour.field = obj.definition.iso_surface.field()
             contour.surfaces_list = [obj._name]
             contour.show_edges = True
             contour.range.auto_range_on.global_range = True
