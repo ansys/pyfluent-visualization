@@ -3,8 +3,8 @@
 Visualization
 =============
 
-Post-processing of Fluent results can be done with either Fluent in-built post
-processing capabilities or with the PyVista/MatplotLib integration.
+Post-processing of Fluent results can be done with either Fluent in-built
+post-processing capabilities or with the PyVista/MatplotLib integration.
 
 Fluent
 ------
