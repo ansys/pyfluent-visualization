@@ -294,6 +294,7 @@ class SurfaceDefn(GraphicsDefn):
                     if getattr(self, "_value", None) is None:
                         range = self.range
                         self._value = range[0] if range else None
+
                     return self._value
 
                 @value.setter
@@ -305,7 +306,9 @@ class SurfaceDefn(GraphicsDefn):
                     """Iso value range."""
                     field = self._parent.field()
                     if field:
-                        return self._api_helper.field_info().get_range(field, True)
+                        range = self._api_helper.field_info().get_range(field, True)
+                        tol = (range[1] - range[0]) * 0.0000001
+                        return range[0] + tol, range[1] - tol
 
 
 class ContourDefn(GraphicsDefn):
