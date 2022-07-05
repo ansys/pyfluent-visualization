@@ -80,6 +80,33 @@ mesh1.show_edges = False
 mesh1.display("window-2")
 
 ###############################################################################
+# Create plane-surface XY plane
+
+surf_xy_plane = graphics.Surfaces["xy-plane"]
+surf_xy_plane.definition.type = "plane-surface"
+plane_surface_xy = surf_xy_plane.definition.plane_surface
+plane_surface_xy.z = -0.0441921
+surf_xy_plane.display("window-3")
+
+###############################################################################
+# Create plane-surface YZ plane
+
+surf_yz_plane = graphics.Surfaces["yz-plane"]
+surf_yz_plane.definition.type = "plane-surface"
+plane_surface_yz = surf_yz_plane.definition.plane_surface
+plane_surface_yz.x = -0.174628
+surf_yz_plane.display("window-4")
+
+###############################################################################
+# Create plane-surface ZX plane
+
+surf_zx_plane = graphics.Surfaces["zx-plane"]
+surf_zx_plane.definition.type = "plane-surface"
+plane_surface_zx = surf_zx_plane.definition.plane_surface
+plane_surface_zx.y = -0.0627297
+surf_zx_plane.display("window-5")
+
+###############################################################################
 # Create iso-surface on the outlet plane
 
 surf_outlet_plane = graphics.Surfaces["outlet-plane"]
