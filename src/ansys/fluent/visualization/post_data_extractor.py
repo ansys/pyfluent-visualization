@@ -58,8 +58,12 @@ class FieldDataExtractor:
 
         field_data.add_get_surfaces_request(surface_ids, *args, **kwargs)
         surface_tag = 0
-        surfaces_data = field_data.get_fields()[surface_tag]
-        obj._post_display()
+        try:
+            surfaces_data = field_data.get_fields()[surface_tag]
+        except:
+            raise RuntimeError("Error while requesting data from server.")
+        finally:
+            obj._post_display()
         return surfaces_data
 
     def _fetch_surface_data(self, obj, *args, **kwargs):
@@ -127,12 +131,15 @@ class FieldDataExtractor:
             else 0
         )
         surface_tag = 0
-
-        scalar_field_payload_data = field_data.get_fields()
-        data_tag = location_tag | boundary_value_tag
-        scalar_field_data = scalar_field_payload_data[data_tag]
-        surface_data = scalar_field_payload_data[surface_tag]
-        obj._post_display()
+        try:
+            scalar_field_payload_data = field_data.get_fields()
+            data_tag = location_tag | boundary_value_tag
+            scalar_field_data = scalar_field_payload_data[data_tag]
+            surface_data = scalar_field_payload_data[surface_tag]
+        except:
+            raise RuntimeError("Error while requesting data from server.")
+        finally:
+            obj._post_display()
         return self._merge(surface_data, scalar_field_data)
 
     def _fetch_vector_data(self, obj, *args, **kwargs):
@@ -155,8 +162,12 @@ class FieldDataExtractor:
         field_data.add_get_surfaces_request(surface_ids, *args, **kwargs)
         field_data.add_get_vector_fields_request(surface_ids, obj.vectors_of())
         vector_field_tag = 0
-        fields = field_data.get_fields()[vector_field_tag]
-        obj._post_display()
+        try:
+            fields = field_data.get_fields()[vector_field_tag]
+        except:
+            raise RuntimeError("Error while requesting data from server.")
+        finally:
+            obj._post_display()
         return fields
 
     def _merge(self, a, b):

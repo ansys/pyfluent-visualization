@@ -404,7 +404,7 @@ def test_surface_object():
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "temperature"
     range = field_info.get_range(iso_surf.field(), True)
-    assert range[0] == pytest.approx(iso_surf.iso_value())
+    assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
     # Setting out of range should throw exception
     with pytest.raises(ValueError) as value_error:
@@ -416,7 +416,7 @@ def test_surface_object():
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "pressure"
     range = field_info.get_range(iso_surf.field(), True)
-    assert range[0] == pytest.approx(iso_surf.iso_value())
+    assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
     # New surface should be in allowed values for graphics.
     cont1 = pyvista_graphics.Contours["surf-1"]
