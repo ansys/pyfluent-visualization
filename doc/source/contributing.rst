@@ -22,7 +22,6 @@ development mode:
    git clone https://github.com/pyansys/pyfluent-visualization.git
    cd pyfluent-visualization
    pip install pip -U
-   pip install install_data/ansys_api_fluent-0.1.0-py3-none-any.whl  # till public release
    pip install -e .
 
 Building Documentation
