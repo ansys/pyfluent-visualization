@@ -30,6 +30,8 @@ if errorlevel 9009 (
 )
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+xcopy /s "%SOURCEDIR%\_static\sphx_glr_post_processing_exhaust_manifold_011.png" "%BUILDDIR%\html\_images\" /Y
+xcopy /s "%SOURCEDIR%\_static\sphx_glr_post_processing_exhaust_manifold_012.png" "%BUILDDIR%\html\_images\" /Y
 goto end
 
 :clean
