@@ -29,13 +29,13 @@ will create animation.
     contour1.display("window-1")
     
     #Create callback which refreshes window-1.    
-    def auto_refersh_contour(session_id, event_info):    
+    def auto_refresh_contour(session_id, event_info):    
         pyvista_windows_manager.refresh_windows(session_id, ["window-1"])        
            
     #Register this callback with server events.    
-    cb_init_id = session.events_manager.register_callback('InitializedEvent', auto_refersh_contour)
-    cb_data_read_id = session.events_manager.register_callback('DataReadEvent', auto_refersh_contour)
-    cb_time_step_ended_id = session.events_manager.register_callback('TimestepEndedEvent', auto_refersh_contour)         
+    cb_init_id = session.events_manager.register_callback('InitializedEvent', auto_refresh_contour)
+    cb_data_read_id = session.events_manager.register_callback('DataReadEvent', auto_refresh_contour)
+    cb_time_step_ended_id = session.events_manager.register_callback('TimestepEndedEvent', auto_refresh_contour)         
 
     #Create animation for window-1 
     pyvista_windows_manager.animate_windows(session.id, ["window-1"])
