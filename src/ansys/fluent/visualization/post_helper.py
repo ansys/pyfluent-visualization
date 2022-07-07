@@ -116,7 +116,7 @@ class PostAPIHelper:
         if quantity == "*null*":
             return ""
         scheme_eval_str = f"(units/get-pretty-wb-units-from-dimension (units/inquire-dimension '{quantity}))"  # noqa: E501
-        return self._scheme_str_to_py_list(scheme_eval_str)[0]
+        return " ".join(self._scheme_str_to_py_list(scheme_eval_str))
 
     def _get_phases(self):
         scheme_eval_str = "(map domain-name (get-phase-domains))"
