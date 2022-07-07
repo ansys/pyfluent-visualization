@@ -7,6 +7,7 @@ on:
       - "*"
     branches:
       - main
+      - release/*
 
 concurrency:
   group: ${{ github.ref }}
@@ -191,15 +192,24 @@ jobs:
       - name: Display package file list
         run: ls -R
 
-      #- name: Upload to Private PyPi
-      #  run: |
-      #    pip install twine
-      #    python -m twine upload --skip-existing ./**/*.whl
-      #    python -m twine upload --skip-existing ./**/*.tar.gz
-      #  env:
-      #    TWINE_USERNAME: PAT
-      #    TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
-      #    TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
+      - name: Upload to Private PyPi
+        run: |
+          pip install twine
+          python -m twine upload --skip-existing ./**/*.whl
+          python -m twine upload --skip-existing ./**/*.tar.gz
+        env:
+          TWINE_USERNAME: PAT
+          TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
+
+      - name: Upload to Public PyPi
+        run: |
+          pip install twine
+          twine upload --skip-existing ./**/*.whl
+          python -m twine upload --skip-existing ./**/*.tar.gz
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
       - name: Release
         uses: softprops/action-gh-release@v1

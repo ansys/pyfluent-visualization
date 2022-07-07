@@ -42,12 +42,24 @@ Installation
 The ``ansys-fluent-visualization`` package currently supports Python 3.7 through Python
 3.10 on Windows and Linux.
 
-If you want to use PyFluent visualization please install the latest from `PyFluent Visualization GitHub
+If you're using Python 3.10, install the vtk package from .whl file
+`here in Windows <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-win_amd64.whl>`_ or
+`here in Linux <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl>`_.
+
+Install the latest release from `PyPI
+<https://pypi.org/project/ansys-fluent-visualization/>`_ with:
+
+.. code:: console
+
+   pip install ansys-fluent-visualization
+
+Alternatively, install the latest from `pyfluent-visualization GitHub
 <https://github.com/pyansys/pyfluent-visualization>`_ via:
 
 .. code:: console
 
    pip install git+https://github.com/pyansys/pyfluent-visualization.git
+
 
 If you plan on doing local "development" of PyFluent with Git, then install
 with:
@@ -57,7 +69,6 @@ with:
    git clone https://github.com/pyansys/pyfluent-visualization.git
    cd pyfluent-visualization
    pip install pip -U
-   pip install install_data/ansys_api_fluent-0.1.0-py3-none-any.whl  # till public release
    pip install -e .
 
 Dependencies

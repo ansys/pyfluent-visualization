@@ -111,6 +111,13 @@ class PostAPIHelper:
         scheme_eval_str = "(map car (apply append (map client-inquire-cell-vector-functions (inquire-domain-for-cell-functions))))"  # noqa: E501
         return self._scheme_str_to_py_list(scheme_eval_str)
 
+    def get_field_unit(self, field):
+        quantity = self._field_unit_quantity(field)
+        if quantity == "*null*":
+            return ""
+        scheme_eval_str = f"(units/get-pretty-wb-units-from-dimension (units/inquire-dimension '{quantity}))"  # noqa: E501
+        return " ".join(self._scheme_str_to_py_list(scheme_eval_str))
+
     def _get_phases(self):
         scheme_eval_str = "(map domain-name (get-phase-domains))"
         return self._scheme_str_to_py_list(scheme_eval_str)

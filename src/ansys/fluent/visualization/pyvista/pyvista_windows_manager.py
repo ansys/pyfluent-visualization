@@ -182,6 +182,8 @@ class PyVistaWindow(PostWindow):
     def _display_contour(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         # contour properties
         field = obj.field()
+        field_unit = obj._api_helper.get_field_unit(field)
+        field = f"{field}\n[{field_unit}]" if field_unit else field
         range_option = obj.range.option()
         filled = obj.filled()
         contour_lines = obj.contour_lines()
@@ -209,9 +211,9 @@ class PyVistaWindow(PostWindow):
                     faces=surface_data["faces"],
                 )
             if node_values:
-                mesh.point_data[field] = surface_data[field]
+                mesh.point_data[field] = surface_data[obj.field()]
             else:
-                mesh.cell_data[field] = surface_data[field]
+                mesh.cell_data[field] = surface_data[obj.field()]
             if range_option == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
                 if auto_range_off.clip_to_range():
@@ -262,7 +264,7 @@ class PyVistaWindow(PostWindow):
                         field_info = obj._api_helper.field_info()
                         plotter.add_mesh(
                             mesh,
-                            clim=field_info.get_range(field, False),
+                            clim=field_info.get_range(obj.field(), False),
                             scalars=field,
                             show_edges=obj.show_edges(),
                             scalar_bar_args=scalar_bar_args,
@@ -297,14 +299,14 @@ class PyVistaWindow(PostWindow):
             contour = post_session.Contours[dummy_object]
             contour.field = obj.definition.iso_surface.field()
             contour.surfaces_list = [obj._name]
-            contour.show_edges = True
+            contour.show_edges = obj.show_edges()
             contour.range.auto_range_on.global_range = True
             self._display_contour(contour, plotter)
             del post_session.Contours[dummy_object]
         else:
             mesh = post_session.Meshes[dummy_object]
             mesh.surfaces_list = [obj._name]
-            mesh.show_edges = True
+            mesh.show_edges = obj.show_edges()
             self._display_mesh(mesh, plotter)
             del post_session.Meshes[dummy_object]
         surface_api.delete_surface_on_server()
