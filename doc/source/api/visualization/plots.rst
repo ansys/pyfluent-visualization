@@ -5,7 +5,9 @@ Plots
 .. autoclass:: ansys.fluent.visualization.matplotlib.matplot_objects.Plots
 
 
-In the following example, a Plots object is instantiated with a Fluent session as its context. The Plots object is used to create and display a xy and monitor plots. 
+In the following example, a ``plots`` object is instantiated with a Fluent session
+as its context. The ``plots`` object is used to create and display an XY plot and
+monitor plots. 
 
 .. code-block:: python
 

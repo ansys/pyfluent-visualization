@@ -5,6 +5,7 @@ Fluent
 fluent
 Fluent's
 PyFluent
+PyFluent-Visualization
 EventsManager
 endblock
 endfor
@@ -14,10 +15,13 @@ hexahedral
 Matplotlib
 mesher
 meshing's
+MonitorPlot
 MonitorsManager
 numpy
 Postprocessing
 postprocessing
 postprocess
 Pythonic
+PyVista
 Util
+XY

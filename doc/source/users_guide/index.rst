@@ -1,9 +1,9 @@
 .. _ref_user_guide:
 
 ==========
-User Guide
+User guide
 ==========
-This guide provides information regarding using Ansys PyFluent and its
+This guide provides information regarding using PyFluent and its
 constituent modules and components.
 
 
@@ -18,8 +18,8 @@ constituent modules and components.
    postprocessing
 
 
-PyFluent Basic Overview
-=======================
+PyFluent overview
+==================
 Session objects are the main entry point when using the PyFluent library, where
 one or more Fluent server sessions can be launched simultaneously from the
 client. For example:
@@ -35,14 +35,14 @@ or
    meshing_session = pyfluent.launch_fluent(meshing_mode=True)
 
 Each session object provides access to multiple services, such as boundary
-contitions, meshing workflows, field data properties, and so forth.
+conditions, meshing workflows, field data properties, and so forth.
 
 PyFluent contains several basic service modules that provide access to core
 Fluent capabilities. 
 
    - General command and query services are encompassed in three modules: 
 
-      + The 'tui' modules are a collection of Python wrappers around the
+      + The ``tui`` module is a collection of Python wrappers around
         Fluent's traditional Text User Interface (TUI) command-based
         infrastructure.
 
@@ -50,7 +50,7 @@ Fluent capabilities.
 
          solver_session.tui.define.models.unsteady_2nd_order('yes’)​
 
-      + The 'settings' module is a Pythonic interface to access Fluent's setup
+      + The ``settings`` module is a Pythonic interface to access Fluent's setup
         and solution objects, where you can, for instance, enable a
         physics-based model for your simulation.
 
@@ -58,22 +58,22 @@ Fluent capabilities.
 
          session.solver.root.setup.models.energy.enabled = True
 
-      + The 'datamodel' module is a Python interface to access the
-        datamodel-driven aspects of Fluent, such as the meshing workflows.
+      + The ``datamodel`` module is a Python interface to access the
+        data model-driven aspects of Fluent, such as the meshing workflows.
 
       .. code::
 
          import_geometry.arguments.update_dict({'AppendMesh':True})
 
-   - Surface field and mesh data services are available using the 'field_data'
-     module, such as obtaining surface data for a specified surface.
+   - Surface field and mesh data services are available using ``field_data``
+     methods, such as the one for getting the surface data for a specified surface.
 
    .. code:: 
 
       surface_data = field_data.get_surfaces(surface_ids)​
 
-   - There are general modules available, such as 'health_check', 'transcript',
-     and 'events' that provide access to generic features that are useful to
+   - There are general methods available, such as ``health_check``, ``transcript``,
+     and ``events`` that provide access to generic features that are useful for
      running your simulation. For instance,
 
    .. code:: 
@@ -92,8 +92,7 @@ Fluent capabilities.
 
       events_service.begin_streaming()
 
-   - Finally, there is a 'scheme_eval' module that provides access to Scheme
-     function evaluation. For instance,
+   - Finally, there is a ``scheme_eval`` method that provides for evaluating the scheme.
 
    .. code:: 
 

@@ -1,10 +1,10 @@
 .. _getting_started:
 
 ===============
-Getting Started
+Getting started
 ===============
-To run pyfluent-visualization, you must have a local licensed copy of Ansys Fluent. 
-pyfluent-visualization supports Ansys Fluent versions 2022 R2 or newer.
+To run PyFluent-Visualization, you must have a local licensed copy of Ansys Fluent. 
+PyFluent-Visualization supports Ansys Fluent versions 2022 R2 and later.
 
 Visit `Ansys <https://www.ansys.com/>`_ for more information on
 getting a licensed copy of Ansys Fluent.
@@ -13,7 +13,7 @@ getting a licensed copy of Ansys Fluent.
 Installation
 ************
 
-Python Module
+Python module
 ~~~~~~~~~~~~~
 The ``ansys-fluent-visualization`` package supports Python 3.7 through
 Python 3.10 on Windows and Linux.
@@ -25,8 +25,8 @@ Install the latest release from `PyPi
 
    pip install ansys-fluent-visualization
 
-Alternatively, install the latest from `pyfluent-visualization GitHub
-<https://github.com/pyansys/pyfluent-visualization/issues>`_ via:
+Alternatively, install the latest version from `GitHub
+<https://github.com/pyansys/pyfluent-visualization/issues>`_ with:
 
 .. code::
 
@@ -41,11 +41,12 @@ For a local "development" version, install with:
    cd pyfluent-visualization
    pip install -e .
 
-Follow `README.rst. <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_ This will allow you to install the PyFluent Visualization ``ansys-fluent-visualization`` module
+Follow `README.rst. <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_ 
+This allows you to install the PyFluent Visualization ``ansys-fluent-visualization`` module
 and modify it locally and have the changes reflected in your setup
 after restarting the Python kernel.
 
-This will allow you to install the PyFluent ``ansys-fluent-visualization`` module
+This allows you to install the PyFluent ``ansys-fluent-visualization`` module
 and modify it locally and have the changes reflected in your setup
 after restarting the Python kernel.
 

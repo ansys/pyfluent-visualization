@@ -8,13 +8,13 @@ Overall guidance on contributing to a PyAnsys library appears in the
 in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar with
 it and `Coding Style
 <https://dev.docs.pyansys.com/coding-style/index.html#coding-style>`_ before attempting to
-contribute to PyFluent.
+contribute to PyFluent-Visualization.
  
-The following contribution information is specific to PyFluent Visualization.
+The following contribution information is specific to PyFluent-Visualization.
 
-Cloning the PyFluent Visualization Repository
----------------------------------------------
-Run this code to clone and install the latest version of PyFluent Visualization in
+Cloning the repository
+----------------------
+Run this code to clone and install the latest version of PyFluent-Visualization in
 development mode:
 
 .. code::
@@ -24,10 +24,10 @@ development mode:
    pip install pip -U
    pip install -e .
 
-Building Documentation
+Building documentation
 ----------------------
-To build the documentation locally you need to follow these steps at the root
-directory of the repository:
+To build the PyFluent-Visualization documentation locally, in the root
+directory of the repository, run:
 
 .. code:: 
 
@@ -35,22 +35,22 @@ directory of the repository:
     cd doc
     make html
 
-After the build completes the html documentation is located in the
+After the build completes, the HTML documentation is located in the
 ``_builds/html`` directory and you can load the ``index.html`` into a web
-browser.  To clean the documentation you can execute this command:
+browser. To clean the documentation, execute:
 
 .. code::
 
     make clean
 
-Posting Issues
+Posting issues
 --------------
 Use the `PyFluent Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues>`_
 page to submit questions, report bugs, and request new features.
 
 
-Code Style
-----------
+Adhering to code style
+----------------------
 PyFluent is compliant with `PyAnsys Development Code Style Guide
 <https://dev.docs.pyansys.com/coding_style/index.html>`_.  Code style is checked
 by making use of `pre-commit <https://pre-commit.com/>`_. Install this tool and

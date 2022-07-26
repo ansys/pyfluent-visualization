@@ -3,13 +3,13 @@
 Visualization
 =============
 
-Post-processing of Fluent results can be done with either Fluent in-built
-post-processing capabilities or with the PyVista/MatplotLib integration.
+Postprocessing of Fluent results can be done with either built-in Fluent
+postprocessing capabilities or with a PyVista or Matplotlib integration.
 
 Fluent
 ------
 
-Here visualization objects are constructed within Fluent.  Graphics can be
+Here visualization objects are constructed within Fluent. Graphics can be
 written to a file using standard Fluent commands.
 
 .. code:: python
@@ -23,11 +23,11 @@ written to a file using standard Fluent commands.
   session.solver.tui.display.objects.contour['contour-1'].rename('my-contour')
   del session.solver.tui.display.objects.contour['my-contour']
 
-PyVista Example (Graphics)
+PyVista example (graphics)
 --------------------------
 
 Here the field data is extracted from the Fluent session into the Python
-environment and PyVista is used to visualze the extracted data.
+environment and PyVista is used to visualize the extracted data.
 
 .. code:: python
 
@@ -81,11 +81,11 @@ environment and PyVista is used to visualze the extracted data.
   # To display in specific window e.g. window-2
   contour1.display("window-2")
   
-MatplotLib Example (XYPlots)
-----------------------------
+Matplotlib example (XY plots)
+-----------------------------
 
 Here the plot data is extracted from the Fluent session into the Python
-environment and data is plotted in MatplotLib.
+environment and data is plotted in Matplotlib.
 
 .. code:: python
 

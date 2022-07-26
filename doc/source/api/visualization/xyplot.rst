@@ -1,7 +1,7 @@
 .. _ref_xyplot:
 
-XYPlot
-======
+XY plot
+=======
 
 .. autopostdoc:: ansys.fluent.visualization.matplotlib.matplot_objects.XYPlot
 
