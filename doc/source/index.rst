@@ -66,7 +66,7 @@ In addition to installation and usage information, the PyFluent-Visualization
 documentation provides :ref:`API reference`, :ref:`Examples`, and :ref:`Contributing`
 sections.
 
-On the `PyFluent-Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues`_
+On the `PyFluent-Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues>`_
 page, you can create issues to submit questions, report bugs, and request new features.
 To reach the PyAnsys team, email pyansys.support@ansys.com.
 
