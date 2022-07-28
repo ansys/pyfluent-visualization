@@ -95,7 +95,7 @@ Plot data
 The following plotting operations are supported.
 
 Generate XY plot
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 This example shows how you can generate the XY plot:
 
 .. code:: python
