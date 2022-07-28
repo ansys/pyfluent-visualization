@@ -46,6 +46,7 @@ extensions = [
     "notfound.extension",
     "numpydoc",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
     "sphinx.ext.autosummary",
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
@@ -257,3 +258,6 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ["search.html"]
 sys.path.append(os.path.abspath("./_ext"))
+
+# Generate section labels up to four levels deep
+autosectionlabel_maxdepth = 4
