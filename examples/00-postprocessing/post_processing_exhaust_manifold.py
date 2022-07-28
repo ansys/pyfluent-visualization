@@ -118,7 +118,7 @@ surf_yz_plane.display("window-4")
 # Create plane-surface ZX plane
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface ZX plane.
- 
+
 surf_zx_plane = graphics.Surfaces["zx-plane"]
 surf_zx_plane.definition.type = "plane-surface"
 plane_surface_zx = surf_zx_plane.definition.plane_surface
