@@ -62,12 +62,13 @@ The package, ``ansys-fluent-visualization``, provides features such as:
 Documentation and issues
 ------------------------
 
-In addition to installation, usage, and contribution information, the PyFluent
-documentation provides API documentation, examples, and code guidelines.
+In addition to installation and usage information, the PyFluent-Visualization
+documentation provides :ref:`API reference`, :ref:`Examples`, and :ref:`Contributing`
+sections.
 
-On the PyFluent Issues page, you can create issues to submit questions,
-report bugs, and request new features. To reach the project support team,
-email pyansys.support@ansys.com.
+On the `PyFluent-Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues`_
+page, you can create issues to submit questions, report bugs, and request new features.
+To reach the PyAnsys team, email pyansys.support@ansys.com.
 
 License
 -------

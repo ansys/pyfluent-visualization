@@ -3,19 +3,19 @@
 ============
 Contributing
 ============
-Overall guidance on contributing to a PyAnsys library appears in the
-`Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_ topic
-in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar with
-it and `Coding Style
-<https://dev.docs.pyansys.com/coding-style/index.html#coding-style>`_ before attempting to
-contribute to PyFluent-Visualization.
+Overall guidance on contributing to a PyAnsys library appears in
+`Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_
+in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly
+familiar with this guide, paying particular attention to `Coding Style
+<https://dev.docs.pyansys.com/coding-style/index.html#coding-style>`_,
+before attempting to contribute to PyFluent-Visualization.
  
 The following contribution information is specific to PyFluent-Visualization.
 
 Cloning the repository
 ----------------------
-Run this code to clone and install the latest version of PyFluent-Visualization in
-development mode:
+To clone and install the latest version of PyFluent-Visualization in
+development mode, run:
 
 .. code::
 
@@ -36,8 +36,10 @@ directory of the repository, run:
     make html
 
 After the build completes, the HTML documentation is located in the
-``_builds/html`` directory and you can load the ``index.html`` into a web
-browser. To clean the documentation, execute:
+``_builds/html`` directory. You can load the ``index.html`` in this
+diectory into a web browser.
+
+You can clear all HTML files from the ``_builds/html`` directory with:
 
 .. code::
 
@@ -51,23 +53,23 @@ page to submit questions, report bugs, and request new features.
 
 Adhering to code style
 ----------------------
-PyFluent is compliant with `PyAnsys Development Code Style Guide
-<https://dev.docs.pyansys.com/coding_style/index.html>`_.  Code style is checked
-by making use of `pre-commit <https://pre-commit.com/>`_. Install this tool and
-activate it executing the following commands:
+PyFluent-Visualization is compliant with the `PyAnsys coding style
+<https://dev.docs.pyansys.com/coding-style/index.html>`_. It uses the
+tool `pre-commit <https://pre-commit.com/>`_ to check the code style.
+You can install and active this tool with:
 
 .. code:: bash
 
    python -m pip install pre-commit
    pre-commit install
 
-Then, you can use the ``style`` rule defined in the ``Makefile``:
+You can then use the ``style`` rule defined in ``Makefile`` with:
 
 .. code:: bash
 
    make style
 
-Or directly execute `pre-commit <https://pre-commit.com/>`_:
+Or, you can directly run `pre-commit <https://pre-commit.com/>`_ with:
 
 .. code:: bash
 
