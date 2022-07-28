@@ -1,13 +1,13 @@
-Analyzing Your Results
+Analyzing your results
 ======================
 PyFluent postprocessing supports graphics and plotting.
 
-Rendering Graphics Objects
+Rendering graphics objects
 --------------------------
 The visualization package library is used for rendering graphics objects.
 The following graphics operations are supported.
 
-Displaying Mesh Objects
+Displaying mesh objects
 ~~~~~~~~~~~~~~~~~~~~~~~
 The following example demonstrates how you can display the mesh object:
 
@@ -48,7 +48,7 @@ The following example demonstrates how you can display the mesh object:
     ]
     mesh1.display("window-1")
 
-Displaying Iso-Surfaces
+Displaying iso-surfaces
 ~~~~~~~~~~~~~~~~~~~~~~~
 The following example demonstrates how you can display the iso-surface:
 
@@ -61,7 +61,7 @@ The following example demonstrates how you can display the iso-surface:
     iso_surf1.iso_value = -0.125017
     surf_outlet_plane.display("window-2")
 
-Displaying Contours
+Displaying contours
 ~~~~~~~~~~~~~~~~~~~
 The following example demonstrates how you can display the contour object:
 
@@ -79,7 +79,7 @@ The following example demonstrates how you can display the contour object:
     ]
     temperature_contour_manifold.display("window-3")
 
-Displaying Vectors
+Displaying vectors
 ~~~~~~~~~~~~~~~~~~
 The following example demonstrates how you can display the vector object:
 
@@ -90,13 +90,13 @@ The following example demonstrates how you can display the vector object:
     velocity_vector.scale = 1
     velocity_vector.display("window-4")
 
-Plotting Your Data
+Plotting your data
 ------------------
 The following plotting operations are supported.
 
-Displaying XY Plots
+Displaying XY plots
 ~~~~~~~~~~~~~~~~~~~
-The following example demonstrates how you can display the xy plot:
+The following example demonstrates how you can display the XY plot:
 
 .. code:: python
 
@@ -106,9 +106,10 @@ The following example demonstrates how you can display the xy plot:
     xy_plot.y_axis_function = "temperature"
     xy_plot.plot("window-5")
 
-Plotting Residual
-~~~~~~~~~~~~~~~~~
-The following example demonstrates how you can plot solution residual:
+Plotting residual plots
+~~~~~~~~~~~~~~~~~~~~~~~~
+The following example demonstrates how you can plot solution residual
+plots:
 
 .. code:: python
 
@@ -118,7 +119,7 @@ The following example demonstrates how you can plot solution residual:
     residual.monitor_set_name = "residual"
     residual.plot("window-6")
 
-Plotting Solution Minitors
+Plotting solution monitors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 The following example demonstrates how you can plot solution monitors:
 

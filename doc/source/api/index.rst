@@ -1,9 +1,9 @@
 .. _ref_index_api:
 
 =============
-API Reference
+API reference
 =============
-Here we should discuss the different API modules at a high level.
+Here discuss the different API modules at a high level.
 
 .. currentmodule:: ansys.fluent
 

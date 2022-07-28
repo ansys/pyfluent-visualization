@@ -1,4 +1,4 @@
-pyfluent-visualization Documentation |version|
+PyFluent-Visualization documentation |version|
 ==============================================
 
 .. toctree::
@@ -38,7 +38,7 @@ lets you use Ansys Fluent within or alongside any other Python environment,
 whether it is in conjunction with other Ansys Python libraries and packages or
 with other external Python products.
 
-PyFluent implements a client-server architecture.  PyFluent launches or connects
+PyFluent implements a client-server architecture. PyFluent launches or connects
 with a running Fluent process as a server using Google remote procedure calls, 
 or gRPC interfaces, but all you need to interact with is the Python interface.
 
@@ -56,11 +56,10 @@ The package, ``ansys-fluent-visualization``, provides features such as:
 - Plotting of Fluent geometry and meshes using `PyVista
   <https://docs.pyvista.org>`_ from within a Python script or an
   interactive `Jupyter notebook <https://jupyter.org/>`_.
-- Access to Fluent surface based field data as Python objects via `NumPy
+- Access to Fluent surface-based field data as Python objects via `numpy
   <https://numpy.org/>`_ arrays
-- and more...
 
-Documentation and Issues
+Documentation and issues
 ------------------------
 
 In addition to installation, usage, and contribution information, the PyFluent
@@ -81,7 +80,7 @@ software. The use of the interactive control of PyFluent requires a legally
 licensed local copy of Ansys Fluent. For more information about Ansys Fluent,
 visit `Ansys Fluent <https://www.ansys.com/products/fluids/ansys-fluent>`_.
 
-Project Index
+Project index
 -------------
 
 * :ref:`genindex`

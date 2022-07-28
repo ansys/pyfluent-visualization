@@ -5,7 +5,9 @@ Graphics
  
 .. autopostdoc:: ansys.fluent.visualization.pyvista.pyvista_objects.Graphics   
 
-In the following example, a Graphics object is instantiated with a Fluent session as its context. The Graphics object is used to create mesh, contour, vector and surface objects. 
+In the following example, a ``Graphics`` object is instantiated with a Fluent
+session as its context. The ``Graphics`` object is used to create mesh, contour,
+vector, and surface objects. 
 
 .. code-block:: python
 
