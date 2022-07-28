@@ -24,7 +24,7 @@ every time step.
     plot1.y_axis_function = "temperature"
     
     
-    #Plot XY plot on window-1.
+    # Plot XY plot on window-1.
     plot1.plot("window-1")
     
     #Create monitor plot.
