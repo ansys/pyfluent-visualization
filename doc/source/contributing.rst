@@ -37,7 +37,7 @@ directory of the repository, run:
 
 After the build completes, the HTML documentation is located in the
 ``_builds/html`` directory. You can load the ``index.html`` in this
-diectory into a web browser.
+directory into a web browser.
 
 You can clear all HTML files from the ``_builds/html`` directory with:
 

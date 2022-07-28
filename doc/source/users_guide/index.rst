@@ -37,7 +37,7 @@ client.
    meshing_session = pyfluent.launch_fluent(meshing_mode=True)
 
 Each session object provides access to multiple services, such as boundary
-conditions, meshing workflows, an dfield data properties.
+conditions, meshing workflows, and field data properties.
 
 PyFluent contains several basic service modules that provide access to core
 Fluent capabilities. 

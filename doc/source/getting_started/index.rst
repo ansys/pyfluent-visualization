@@ -41,7 +41,7 @@ For a local *development* version, install with:
 
 For instructions on installing the ``pyfluent-visualization`` package
 and modfiyng it locally, see the `README <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_.
-The cahnges that you make are reflected in your setup after you restart
+The changes that you make are reflected in your setup after you restart
 the Python kernel.
 
 This allows you to install the PyFluent ``ansys-fluent-visualization`` module
