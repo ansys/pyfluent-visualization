@@ -4,7 +4,7 @@ Visualization
 =============
 
 Postprocessing of Fluent results can be done with either built-in Fluent
-postprocessing capabilities or with a PyVista or Matplotlib integration.
+postprocessing capabilities, PyVista, or Matplotlib integration.
 
 Fluent
 ------
