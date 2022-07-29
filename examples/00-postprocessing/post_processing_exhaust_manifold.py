@@ -200,9 +200,9 @@ velocity_vector.scale = 2
 velocity_vector.display("window-8")
 
 ###############################################################################
-# Start plot object
+# Create plot object
 # ~~~~~~~~~~~~~~~~~
-# Start the plot object for the session.
+# Create the plot object for the session.
 
 plots_session_1 = Plots(session)
 
@@ -222,7 +222,7 @@ xy_plot.surfaces_list = ["outlet"]
 xy_plot.y_axis_function = "temperature"
 
 ###############################################################################
-# Plot XY plot
+# Generate XY plot
 # ~~~~~~~~~~~~
 # Plot the generated XY plot.
 
