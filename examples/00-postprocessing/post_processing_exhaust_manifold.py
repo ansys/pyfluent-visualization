@@ -201,7 +201,7 @@ velocity_vector.display("window-8")
 
 ###############################################################################
 # Create plot object
-# ~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~
 # Create the plot object for the session.
 
 plots_session_1 = Plots(session)
@@ -223,7 +223,7 @@ xy_plot.y_axis_function = "temperature"
 
 ###############################################################################
 # Generate XY plot
-# ~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~
 # Plot the generated XY plot.
 
 xy_plot.plot("window-9")
