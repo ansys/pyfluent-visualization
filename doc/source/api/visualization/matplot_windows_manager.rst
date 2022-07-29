@@ -35,7 +35,7 @@ every time step.
     #Plot monitor on window-2.
     monitor1.plot("window-2")   
     
-    #Create callback that refreshes window-1 and window-2.    
+    # Create callback that refreshes window-1 and window-2.    
     def auto_refresh_plot(session_id, event_info):    
         matplot_windows_manager.refresh_windows(session_id, ["window-1", "window-2"])        
            
