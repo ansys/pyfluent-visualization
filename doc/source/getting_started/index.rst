@@ -3,18 +3,16 @@
 ===============
 Getting started
 ===============
-To run PyFluent-Visualization, you must have a local licensed copy of Ansys Fluent. 
-PyFluent-Visualization supports Ansys Fluent versions 2022 R2 and later.
+To run PyFluent-Visualization, you must have a licensed copy of Ansys Fluent
+installed locally. PyFluent-Visualization supports Ansys Fluent versions
+2022 R2 and later.
 
-Visit `Ansys <https://www.ansys.com/>`_ for more information on
-getting a licensed copy of Ansys Fluent.
+For more information on getting a licensed copy of Fluent, visit the
+`Ansys website <https://www.ansys.com/>`_.
 
-************
-Installation
-************
-
-Python module
-~~~~~~~~~~~~~
+***************
+Install package
+***************
 The ``ansys-fluent-visualization`` package supports Python 3.7 through
 Python 3.10 on Windows and Linux.
 
@@ -25,15 +23,15 @@ Install the latest release from `PyPi
 
    pip install ansys-fluent-visualization
 
-Alternatively, install the latest version from `GitHub
-<https://github.com/pyansys/pyfluent-visualization/issues>`_ with:
+Alternatively, install the latest version from the `GitHub repository
+<https://github.com/pyansys/pyfluent-visualization>`_ with:
 
 .. code::
 
    pip install git+https://github.com/pyansys/pyfluent-visualization.git
 
 
-For a local "development" version, install with:
+For a local *development* version, install with:
 
 .. code::
 
@@ -41,18 +39,18 @@ For a local "development" version, install with:
    cd pyfluent-visualization
    pip install -e .
 
-Follow `README.rst. <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_ 
-This allows you to install the PyFluent Visualization ``ansys-fluent-visualization`` module
-and modify it locally and have the changes reflected in your setup
-after restarting the Python kernel.
+For instructions on installing the ``pyfluent-visualization`` package
+and modfiyng it locally, see the `README <https://github.com/pyansys/pyfluent-visualization/blob/main/README.rst>`_.
+The changes that you make are reflected in your setup after you restart
+the Python kernel.
 
 This allows you to install the PyFluent ``ansys-fluent-visualization`` module
 and modify it locally and have the changes reflected in your setup
 after restarting the Python kernel.
 
-****************
-Launching Fluent
-****************
+*************
+Launch Fluent
+*************
 
 You can launch Fluent from Python using the ``launch_fluent`` function:
 
@@ -63,8 +61,8 @@ You can launch Fluent from Python using the ``launch_fluent`` function:
   session.check_health()
   session.start_transcript() # Streaming the transcript locally
 
-The ``visualization`` package provides integrations with both
-``pyvista`` and ``matplotlib``.
+The ``fluent-visualization`` package provides integrations with both
+`PyVista <https://www.pyvista.org/>`_ and `Matplotlib <https://matplotlib.org/>`_.
 
 If you want to interact with the Fluent graphical user interface, set the
 following environment variable:

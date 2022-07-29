@@ -5,8 +5,8 @@ Plots
 .. autoclass:: ansys.fluent.visualization.matplotlib.matplot_objects.Plots
 
 
-In the following example, a ``plots`` object is instantiated with a Fluent session
-as its context. The ``plots`` object is used to create and display an XY plot and
+In the following example, a ``Plots`` object is instantiated with a Fluent session
+as its context. The ``Plots`` object is used to generate and display an XY plot and
 monitor plots. 
 
 .. code-block:: python
@@ -20,7 +20,7 @@ monitor plots.
         plot1.plot("window-0")        
         
         
-        #To plot data on local surface created in pyVista
+        #To plot data on local surface created in PyVista
         
         from ansys.fluent.visualization.pyvista import  Graphics        
         pyvista_surface_provider = Graphics(session).Surfaces       

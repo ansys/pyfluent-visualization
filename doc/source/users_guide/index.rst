@@ -3,8 +3,8 @@
 ==========
 User guide
 ==========
-This guide provides information regarding using PyFluent and its
-constituent modules and components.
+Anyone who wants to use PyFluent-Visualization can import its Python
+modules and contribute Python code to control and monitor Ansys Fluent.
 
 
 ..
@@ -18,24 +18,26 @@ constituent modules and components.
    postprocessing
 
 
-PyFluent overview
-==================
-Session objects are the main entry point when using the PyFluent library, where
+Overview
+========
+Session objects are the main entry point when using PyFluent, where
 one or more Fluent server sessions can be launched simultaneously from the
-client. For example:
+client. 
+
+**Example 1**
 
 .. code:: python
 
    solver_session = pyfluent.launch_fluent()
 
-or
+**Example 2**
 
 .. code:: python
 
    meshing_session = pyfluent.launch_fluent(meshing_mode=True)
 
 Each session object provides access to multiple services, such as boundary
-conditions, meshing workflows, field data properties, and so forth.
+conditions, meshing workflows, and field data properties.
 
 PyFluent contains several basic service modules that provide access to core
 Fluent capabilities. 

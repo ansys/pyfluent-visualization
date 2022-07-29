@@ -4,10 +4,10 @@ Matplotlib windows manager
 ========================== 
 
 This class manages `Matplotlib` windows and provides methods to directly interact with them.
-By registering these methods with the EventsManager, plots can be updated during run 
+By registering these methods with ``EventsManager``, plots can be updated during run 
 time.
 
-The following example updates `window-1` and `window-2` during solution initialization and 
+The following example updates ``window-1`` and ``window-2`` during solution initialization and 
 whenever data is read. During the calculation, it also updates both windows at the end of
 every time step.
 
@@ -24,7 +24,7 @@ every time step.
     plot1.y_axis_function = "temperature"
     
     
-    #Plot xy plot on window-1.
+    # Plot XY plot on window-1.
     plot1.plot("window-1")
     
     #Create monitor plot.
@@ -35,7 +35,7 @@ every time step.
     #Plot monitor on window-2.
     monitor1.plot("window-2")   
     
-    #Create callback which refreshes window-1 and window-2.    
+    # Create callback that refreshes window-1 and window-2.    
     def auto_refresh_plot(session_id, event_info):    
         matplot_windows_manager.refresh_windows(session_id, ["window-1", "window-2"])        
            
