@@ -63,7 +63,7 @@ This example shows how you can display the iso-surface:
 
 Display contour
 ~~~~~~~~~~~~~~~
-This example demonstrates how you can display the contour object:
+This example shows how you can display the contour object:
 
 .. code:: python
 
