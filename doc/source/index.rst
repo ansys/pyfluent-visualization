@@ -13,8 +13,9 @@ PyFluent-Visualization documentation |version|
 
 Introduction
 ------------
-PyFluent-Visualization is an addin for `PyFluent <https://github.com/pyansys/pyfluent>`_. 
-With PyFluent-Visualization, you can:
+You can use PyFluent-Visualization to postprocess Fluent results
+to display graphics objects and plot data. With PyFluent-Visualization,
+you can:
 
 - Script postprocessing using Fluent's built-in postprocessing capabilities.
   For more information, see :ref:`ref_visualization`.

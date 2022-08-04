@@ -3,8 +3,8 @@
 ==========
 User guide
 ==========
-You can use PyFluent-Visualization during postprocessing to display
-graphics objects and plot data.
+You can use PyFluent-Visualization for postprocessing of Fluent results
+to display graphics objects and plot data.
 
 Graphics operations
 -------------------
