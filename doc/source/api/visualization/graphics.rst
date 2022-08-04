@@ -7,7 +7,7 @@ Graphics
 
 In the following example, a ``Graphics`` object is instantiated with a Fluent
 session as its context. The ``Graphics`` object is used to create a mesh,
-contour, vector, and surface object. The contour object is then deleted.
+contour, vector, and surface. The contour is then deleted.
 
 .. code-block:: python
 
