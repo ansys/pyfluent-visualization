@@ -259,7 +259,7 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         object: PlotDefn
             Object to plot.
         window_id : str, optional
-            Window ID for the plot. The default is ``None``, in wich
+            Window ID for the plot. The default is ``None``, in which
             case a unique ID is assigned.
 
         Raises

@@ -24,7 +24,7 @@ class Plots:
         local_surfaces_provider : object, optional
             Object providing local surfaces so that you can access surfaces
             created in other modules, such as PyVista. The default is ``None``.
-    
+
     Attributes
     ----------
     XYPlots : dict
@@ -77,10 +77,10 @@ class XYPlot(XYPlotDefn):
 
     Parameters
     ----------
-    name : 
-    
+    name :
+
     parent :
-    
+
     api_helper :
 
 
@@ -112,10 +112,10 @@ class MonitorPlot(MonitorDefn):
 
     Parameters
     ----------
-    name : 
-    
+    name :
+
     parent :
-    
+
     api_helper :
 
 

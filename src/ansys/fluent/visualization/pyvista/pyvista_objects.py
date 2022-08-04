@@ -22,7 +22,7 @@ class Graphics:
 
     This class provides access to ``Graphics`` object containers for a given
     session so that graphics objects can be created.
-    
+
     Parameters
     ----------
     session : obj
@@ -30,7 +30,7 @@ class Graphics:
     local_surfaces_provider : object, optional
         Object providing local surfaces so that you can access surfaces
         created in other modules, such as PyVista. The default is ``None``.
-    
+
     Attributes
     ----------
     Meshes : dict
@@ -112,10 +112,10 @@ class Mesh(MeshDefn):
 
     Parameters
     ----------
-    name : 
-    
+    name :
+
     parent :
-    
+
     api_helper :
 
 
@@ -147,11 +147,11 @@ class Surface(SurfaceDefn):
 
     Parameters
     ----------
-    name : 
-    
+    name :
+
     parent :
-    
-    api_helper :   
+
+    api_helper :
 
 
     .. code-block:: python
@@ -184,10 +184,10 @@ class Contour(ContourDefn):
 
     Parameters
     ----------
-    name : 
-    
+    name :
+
     parent :
-    
+
     api_helper :
 
 
@@ -219,13 +219,13 @@ class Vector(VectorDefn):
 
     Parameters
     ----------
-    name : 
-    
+    name :
+
     parent :
-    
+
     api_helper :
 
-    
+
     .. code-block:: python
 
         from ansys.fluent.visualization.pyvista import  Graphics
