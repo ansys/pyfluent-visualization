@@ -3,100 +3,140 @@
 ==========
 User guide
 ==========
-Anyone who wants to use PyFluent-Visualization can import its Python
-modules and contribute Python code to control and monitor Ansys Fluent.
+You can use PyFluent-Visualization during postprocessing to display
+graphics objects and plot data.
 
+Graphics operations
+-------------------
+Examples follow for graphics operations that PyFluent-Visualization
+supports.
 
-..
-   This toctreemust be a top level index to get it to show up in
-   pydata_sphinx_theme
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   postprocessing
-
-
-Overview
-========
-Session objects are the main entry point when using PyFluent, where
-one or more Fluent server sessions can be launched simultaneously from the
-client. 
-
-**Example 1**
+Display mesh
+~~~~~~~~~~~~
+This example shows how you can display a mesh:
 
 .. code:: python
 
-   solver_session = pyfluent.launch_fluent()
+    import ansys.fluent.core as pyfluent
+    from ansys.fluent.core import examples
+    from ansys.fluent.visualization import set_config
+    from ansys.fluent.visualization.matplotlib import Plots
+    from ansys.fluent.visualization.pyvista import Graphics
 
-**Example 2**
+    set_config(blocking=True, set_view_on_display="isometric")
+
+    import_case = examples.download_file(
+        filename="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
+    )
+
+    import_data = examples.download_file(
+        filename="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
+    )
+
+    session = pyfluent.launch_fluent(precision="double", processor_count=2)
+
+    session.solver.tui.file.read_case(case_file_name=import_case)
+    session.solver.tui.file.read_data(case_file_name=import_data)
+
+    graphics = Graphics(session=session)
+    mesh1 = graphics.Meshes["mesh-1"]
+    mesh1.show_edges = True
+    mesh1.surfaces_list = [
+        "in1",
+        "in2",
+        "in3",
+        "out1",
+        "solid_up:1",
+        "solid_up:1:830",
+        "solid_up:1:830-shadow",
+    ]
+    mesh1.display("window-1")
+
+Display iso-surface
+~~~~~~~~~~~~~~~~~~~
+This example shows how you can display an iso-surface:
 
 .. code:: python
 
-   meshing_session = pyfluent.launch_fluent(meshing_mode=True)
+    surf_outlet_plane = graphics.Surfaces["outlet-plane"]
+    surf_outlet_plane.surface.type = "iso-surface"
+    iso_surf1 = surf_outlet_plane.surface.iso_surface
+    iso_surf1.field = "y-coordinate"
+    iso_surf1.iso_value = -0.125017
+    surf_outlet_plane.display("window-2")
 
-Each session object provides access to multiple services, such as boundary
-conditions, meshing workflows, and field data properties.
+Display contour
+~~~~~~~~~~~~~~~
+This example shows how you can display a contour:
 
-PyFluent contains several basic service modules that provide access to core
-Fluent capabilities. 
+.. code:: python
 
-   - General command and query services are encompassed in three modules: 
+    temperature_contour_manifold = graphics.Contours["contour-temperature-manifold"]
+    temperature_contour_manifold.field = "temperature"
+    temperature_contour_manifold.surfaces_list = [
+        "in1",
+        "in2",
+        "in3",
+        "out1",
+        "solid_up:1",
+        "solid_up:1:830",
+    ]
+    temperature_contour_manifold.display("window-3")
 
-      + The ``tui`` module is a collection of Python wrappers around
-        Fluent's traditional Text User Interface (TUI) command-based
-        infrastructure.
+Display vector
+~~~~~~~~~~~~~~
+This example shows how you can display a vector:
 
-      .. code::
+.. code:: python
 
-         solver_session.tui.define.models.unsteady_2nd_order('yes’)​
+    velocity_vector = graphics.Vectors["velocity-vector"]
+    velocity_vector.surfaces_list = ["outlet-plane"]
+    velocity_vector.scale = 1
+    velocity_vector.display("window-4")
 
-      + The ``settings`` module is a Pythonic interface to access Fluent's setup
-        and solution objects, where you can, for instance, enable a
-        physics-based model for your simulation.
+Plot operations
+---------------
+Examples follow for plot operations that PyFluent-Visualization
+supports.
 
-      .. code::
+Display XY plot
+~~~~~~~~~~~~~~~
+This example shows how you can display the XY plot:
 
-         session.solver.root.setup.models.energy.enabled = True
+.. code:: python
 
-      + The ``datamodel`` module is a Python interface to access the
-        data model-driven aspects of Fluent, such as the meshing workflows.
+    plots_session_1 = Plots(session)
+    xy_plot = plots_session_1.XYPlots["xy-plot"]
+    xy_plot.surfaces_list = ["outlet"]
+    xy_plot.y_axis_function = "temperature"
+    xy_plot.plot("window-5")
 
-      .. code::
+Display solution residual plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how you can display the solution residual plot:
 
-         import_geometry.arguments.update_dict({'AppendMesh':True})
+.. code:: python
 
-   - Surface field and mesh data services are available using ``field_data``
-     methods, such as the one for getting the surface data for a specified surface.
 
-   .. code:: 
+    matplotlib_plots1 = Plots(session)
+    residual = matplotlib_plots1.Monitors["residual"]
+    residual.monitor_set_name = "residual"
+    residual.plot("window-6")
 
-      surface_data = field_data.get_surfaces(surface_ids)​
+Display solution monitors plot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This example shows how you can display the solution monitors plot:
 
-   - There are general methods available, such as ``health_check``, ``transcript``,
-     and ``events`` that provide access to generic features that are useful for
-     running your simulation. For instance,
+.. code:: python
 
-   .. code:: 
+    session.solver.tui.solve.initialize.hyb_initialization()
+    session.solver.tui.solve.set.number_of_iterations(50)
+    session.solver.tui.solve.iterate()
+    session.monitors_manager.get_monitor_set_names()
+    matplotlib_plots1 = Plots(session)
+    mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
+    mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+    mass_bal_rplot.plot("window-7")
 
-      health_check_service.check_health()​​
 
-   or
-
-   .. code:: 
-
-      transcript_service.begin_streaming()​​
-
-   or
-
-   .. code:: 
-
-      events_service.begin_streaming()
-
-   - Finally, there is a ``scheme_eval`` method that provides for evaluating the scheme.
-
-   .. code:: 
-
-      scheme_eval.string_eval("(rp-unsteady?)")​
 

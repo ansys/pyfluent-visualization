@@ -3,13 +3,13 @@
 Matplotlib windows manager
 ========================== 
 
-This class manages `Matplotlib` windows and provides methods to directly interact with them.
-By registering these methods with ``EventsManager``, plots can be updated during run 
-time.
+The ``MatplotWindowsManager`` class provides for managing and directly interacting
+with Matplotlib windows. By registering these methods with ``EventsManager``, you can
+update plots during run time.
 
-The following example updates ``window-1`` and ``window-2`` during solution initialization and 
-whenever data is read. During the calculation, it also updates both windows at the end of
-every time step.
+The following example updates ``window-1`` and ``window-2`` during solution initialization 
+and whenever data is read. During the calculation, it also updates both windows at the end
+of every time step.
 
 .. code-block:: python
 

@@ -17,6 +17,7 @@ mesher
 meshing's
 MonitorPlot
 MonitorsManager
+NumPy
 numpy
 Postprocessing
 postprocessing

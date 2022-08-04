@@ -12,17 +12,23 @@ from ansys.fluent.visualization.post_object_defns import MonitorDefn, XYPlotDefn
 
 
 class Plots:
-    """Matplotlib Plot objects manager.
+    """Provides the Matplotlib ``Plots`` objects manager.
 
-    It provides access to plot object containers for a given session,
-    from which plot objects can be created.
-    It takes session object as argument. Additionally local surface provider
-    can also be passed to access surfaces created in other modules e.g. pyVista.
+    This class provides access to ``Plots`` object containers for a given
+    session so that plots can be created.
 
+    Parameters
+        ----------
+        session : obj
+            Session object.
+        local_surfaces_provider : object, optional
+            Object providing local surfaces so that you can access surfaces
+            created in other modules, such as PyVista. The default is ``None``.
+    
     Attributes
     ----------
     XYPlots : dict
-        Container for xyplot objects.
+        Container for XY plot objects.
     MonitorPlots : dict
         Container for monitor plot objects.
     """
@@ -67,7 +73,16 @@ class Plots:
 
 
 class XYPlot(XYPlotDefn):
-    """XY Plot.
+    """Provides for displaying XY plots.
+
+    Parameters
+    ----------
+    name : 
+    
+    parent :
+    
+    api_helper :
+
 
     .. code-block:: python
 
@@ -86,13 +101,23 @@ class XYPlot(XYPlotDefn):
         Parameters
         ----------
         window_id : str, optional
-            Window id. If not specified unique id is used.
+            Window ID. If an ID is not specified, a unique ID is used.
+            The default is ``None``.
         """
         matplot_windows_manager.plot(self, window_id)
 
 
 class MonitorPlot(MonitorDefn):
-    """Monitor Plot.
+    """Provides for displaying monitor plots.
+
+    Parameters
+    ----------
+    name : 
+    
+    parent :
+    
+    api_helper :
+
 
     .. code-block:: python
 
@@ -110,6 +135,7 @@ class MonitorPlot(MonitorDefn):
         Parameters
         ----------
         window_id : str, optional
-            Window id. If not specified unique id is used.
+            Window ID. If an ID is not specified, a unique ID is used.
+            The default is ``None``.
         """
         matplot_windows_manager.plot(self, window_id)

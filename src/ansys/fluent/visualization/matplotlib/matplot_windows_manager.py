@@ -21,7 +21,7 @@ from ansys.fluent.visualization.post_windows_manager import (
 
 
 class _ProcessPlotterHandle:
-    """Class for process plotter handle."""
+    """Provides the process plotter handle."""
 
     def __init__(
         self,
@@ -69,15 +69,15 @@ class _ProcessPlotterHandle:
 
 
 class MatplotWindow(PostWindow):
-    """Class for MatplotWindow."""
+    """Provides for managing Matplotlib windows."""
 
     def __init__(self, id: str, post_object: PlotDefn):
-        """Instantiate a MatplotWindow.
+        """Instantiate a Matplotlib window.
 
         Parameters
         ----------
         id : str
-            Window id.
+            Window ID.
         post_object : PlotDefn
             Object to plot.
         """
@@ -88,7 +88,7 @@ class MatplotWindow(PostWindow):
         self.refresh: bool = False
 
     def plot(self):
-        """Draw plot."""
+        """Draw a plot."""
         if self.post_object is not None:
             plot = (
                 _XYPlot(self.post_object, self.plotter)
@@ -107,25 +107,25 @@ class MatplotWindow(PostWindow):
 
 
 class _XYPlot:
-    """Class for XYPlot."""
+    """Provides for drawing an XY plot."""
 
     def __init__(
         self, post_object: XYPlotDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
     ):
-        """Instantiate XYPlot.
+        """Instantiate an XY plot.
 
         Parameters
         ----------
         post_object : XYPlotDefn
             Object to plot.
         plotter: Union[_ProcessPlotterHandle, Plotter]
-            Plotter to plot data.
+            Plotter to plot the data.
         """
         self.post_object: XYPlotDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
 
     def __call__(self):
-        """Draw XY plot."""
+        """Draw an XY plot."""
         if not self.post_object:
             return
         xy_data = XYPlotDataExtractor(self.post_object).fetch_data()
@@ -149,25 +149,25 @@ class _XYPlot:
 
 
 class _MonitorPlot:
-    """Class MonitorPlot."""
+    """Provides for drawing monitor plots."""
 
     def __init__(
         self, post_object: MonitorDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
     ):
-        """Instantiate MonitorPlot.
+        """Instantiate a monitor plot.
 
         Parameters
         ----------
         post_object : MonitorDefn
             Object to plot.
         plotter: Union[_ProcessPlotterHandle, Plotter]
-            Plotter to plot data.
+            Plotter to plot the data.
         """
         self.post_object: MonitorDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
 
     def __call__(self):
-        """Draw Monitor plot."""
+        """Draw a monitor plot."""
         if not self.post_object:
             return
         monitors_manager = self.post_object._api_helper.monitors_manager()
@@ -201,24 +201,25 @@ class _MonitorPlot:
 
 
 class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
-    """Class for matplot windows manager."""
+    """Provides for managing Matplotlib windows."""
 
     def __init__(self):
         """Instantiate a windows manager for matplotlib."""
         self._post_windows: Dict[str, MatplotWindow] = {}
 
     def open_window(self, window_id: Optional[str] = None) -> str:
-        """Open new window.
+        """Open a new window.
 
         Parameters
         ----------
         window_id : str, optional
-            Id for new window. If not specified unique id is used.
+            ID for the new window. The default is ``None``, in which
+            case a unique ID is automatically assigned.
 
         Returns
         -------
         str
-            Window id.
+            ID for the new window.
         """
         if not window_id:
             window_id = self._get_unique_window_id()
@@ -226,20 +227,19 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         return window_id
 
     def set_object_for_window(self, object: PlotDefn, window_id: str) -> None:
-        """Associate visualization object with running window instance.
+        """Associate a visualization object with a running window instance.
 
         Parameters
         ----------
         object : PlotDefn
-            Post object to associate with window.
-
+            Post object to associate with a running window instance.
         window_id : str
-            Window id to associate.
+            Window ID for the association.
 
         Raises
         ------
         RuntimeError
-            If window does not support object.
+            If the window does not support the object.
         """
         if not isinstance(object, PlotDefn):
             raise RuntimeError("object not implemented.")
@@ -252,23 +252,23 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         object: PlotDefn,
         window_id: Optional[str] = None,
     ) -> None:
-        """Draw plot.
+        """Draw a plot.
 
         Parameters
         ----------
         object: PlotDefn
             Object to plot.
-
         window_id : str, optional
-            Window id for plot. If not specified unique id is used.
+            Window ID for the plot. The default is ``None``, in wich
+            case a unique ID is assigned.
 
         Raises
         ------
         RuntimeError
-            If window does not support object.
+            If the window does not support the object.
         """
         if not isinstance(object, PlotDefn):
-            raise RuntimeError("object not implemented.")
+            raise RuntimeError("Object is not implemented.")
         if not window_id:
             window_id = self._get_unique_window_id()
         window = self._open_window(window_id)
@@ -280,15 +280,15 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         window_id: str,
         format: str,
     ) -> None:
-        """Save graphics.
+        """Save a graphic.
 
         Parameters
         ----------
         window_id : str
-            Window id for which graphic should be saved.
+            Window ID for the graphic to save.
         format : str
-            Graphic format. Supported formats are eps, jpeg, jpg,
-            pdf, pgf, png, ps, raw, rgba, svg, svgz, tif and tiff.
+            Graphic file format. Supported formats are EPS, JPEG, JPG,
+            PDF, PGF, PNG, PS, RAW, RGBA, SVG, SVGZ, TIF, and TIFF.
 
         Raises
         ------
@@ -309,13 +309,12 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         Parameters
         ----------
         session_id : str, optional
-           Session id to refresh. If specified, all windows which belong to
-           specified session will be refreshed. Otherwise windows for all
-           sessions will be refreshed.
-
+           Session ID for refreshing the windows that belong only to this
+           session. The default is ``""``, in which case the windows in all
+           sessions are refreshed.
         windows_id : List[str], optional
-            Windows id to refresh. If not specified, all windows will be
-            refreshed.
+            IDs of the windows to refresh. The default is ``[]``, in which case
+            all windows are refreshed.
         """
         windows_id = self._get_windows_id(session_id, windows_id)
         for window_id in windows_id:
@@ -331,17 +330,15 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
     ) -> None:
         """Animate windows.
 
-        Parameters
+         Parameters
         ----------
         session_id : str, optional
-           Session id to animate. If specified, animation will be created
-           for windows which belong to specified session. Otherwise
-           animation will be created for all windows.
-
+           Session ID for animating the windows that belong only to this
+           session. The default is ``""``, in which case the windows in all
+           sessions are animated.
         windows_id : List[str], optional
-            Windows id to animate. If not specified, animation will be
-            created for all windows.
-
+            List of IDs for the windows to animate. The default is ``[]``, in which
+            case all windows are animated.
         Raises
         ------
         NotImplementedError
@@ -359,13 +356,12 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         Parameters
         ----------
         session_id : str, optional
-           Session id to close. If specified, windows which belong to
-           specified session will be closed. Otherwise windows for all
-           sessions will be closed.
-
+           Session ID for closing the windows that belong only to this session.
+           The default is ``""``, in which case the windows in all sessions
+           are closed.
         windows_id : List[str], optional
-            Windows id to close. If not specified, all windows will be
-            closed.
+            List of IDs for the windows to close. The default is ``[]``, in which
+            all windows are closed.
         """
         windows_id = self._get_windows_id(session_id, windows_id)
         for window_id in windows_id:

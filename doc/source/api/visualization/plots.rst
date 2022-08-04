@@ -6,8 +6,8 @@ Plots
 
 
 In the following example, a ``Plots`` object is instantiated with a Fluent session
-as its context. The ``Plots`` object is used to generate and display an XY plot and
-monitor plots. 
+as its context. The ``Plots`` object is used to generate and plot XY plots and
+a monitor plot. 
 
 .. code-block:: python
 

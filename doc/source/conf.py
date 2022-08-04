@@ -173,7 +173,7 @@ sphinx_gallery_conf = {
 
 
 # -- Options for HTML output -------------------------------------------------
-html_short_title = html_title = "pyfluent-visualization"
+html_short_title = html_title = "PyFluent-Visualization"
 html_theme = "ansys_sphinx_theme"
 html_logo = pyansys_logo_black
 html_theme_options = {

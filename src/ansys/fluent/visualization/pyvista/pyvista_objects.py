@@ -18,13 +18,19 @@ from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
 
 
 class Graphics:
-    """PyVista Graphics objects manager.
+    """Provides the PyVista ``Graphics`` objects manager.
 
-    It provides access to graphics object containers for a given session,
-    from which grpahics objects can be created.
-    It takes session object as argument. Additionally local surface provider
-    can also be passed to access surfaces created in other modules.
-
+    This class provides access to ``Graphics`` object containers for a given
+    session so that graphics objects can be created.
+    
+    Parameters
+    ----------
+    session : obj
+        Session object.
+    local_surfaces_provider : object, optional
+        Object providing local surfaces so that you can access surfaces
+        created in other modules, such as PyVista. The default is ``None``.
+    
     Attributes
     ----------
     Meshes : dict
@@ -40,14 +46,15 @@ class Graphics:
     _sessions_state = {}
 
     def __init__(self, session, local_surfaces_provider=None):
-        """Instantiate Graphics, container of graphics objects.
+        """Instantiate the ``Graphics`` object container.
 
         Parameters
         ----------
-        session :
+        session : obj
             Session object.
         local_surfaces_provider : object, optional
-            Object providing local surfaces.
+            Object providing local surfaces so that you can access surfaces
+            created in other modules, such as PyVista. The default is ``None``.
         """
         session_state = Graphics._sessions_state.get(session.id if session else 1)
         if not session_state:
@@ -76,7 +83,7 @@ class Graphics:
                 )
 
     def add_outline_mesh(self):
-        """Add mesh outline.
+        """Add a mesh outline.
 
         Parameters
         ----------
@@ -101,7 +108,16 @@ class Graphics:
 
 
 class Mesh(MeshDefn):
-    """Mesh graphics.
+    """Provides for displaying mesh graphics.
+
+    Parameters
+    ----------
+    name : 
+    
+    parent :
+    
+    api_helper :
+
 
     .. code-block:: python
 
@@ -120,17 +136,27 @@ class Mesh(MeshDefn):
         Parameters
         ----------
         window_id : str, optional
-            Window id. If not specified unique id is used.
+            Window ID. If an ID is not specified, a unique ID is used.
+            The default is ``None``.
         """
         pyvista_windows_manager.plot(self, window_id)
 
 
 class Surface(SurfaceDefn):
-    """Surface graphics.
+    """Provides for displaying surface graphics.
+
+    Parameters
+    ----------
+    name : 
+    
+    parent :
+    
+    api_helper :   
+
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization.pyvista import Graphics
 
         graphics_session = Graphics(session)
         surface1 = graphics_session.Surfaces["surface-1"]
@@ -147,13 +173,23 @@ class Surface(SurfaceDefn):
         Parameters
         ----------
         window_id : str, optional
-            Window id. If not specified unique id is used.
+            Window ID. If an ID is not specified, a unique ID is used.
+            The default is ``None``.
         """
         pyvista_windows_manager.plot(self, window_id)
 
 
 class Contour(ContourDefn):
-    """Contour graphics.
+    """Provides for displaying contour graphics.
+
+    Parameters
+    ----------
+    name : 
+    
+    parent :
+    
+    api_helper :
+
 
     .. code-block:: python
 
@@ -172,14 +208,24 @@ class Contour(ContourDefn):
         Parameters
         ----------
         window_id : str, optional
-            Window id. If not specified unique id is used.
+            Window ID. If an ID is not specified, a unique ID is used.
+            The default is ``None``.
         """
         pyvista_windows_manager.plot(self, window_id)
 
 
 class Vector(VectorDefn):
-    """Vector graphics.
+    """Provides for displaying vector graphics.
 
+    Parameters
+    ----------
+    name : 
+    
+    parent :
+    
+    api_helper :
+
+    
     .. code-block:: python
 
         from ansys.fluent.visualization.pyvista import  Graphics
@@ -198,6 +244,7 @@ class Vector(VectorDefn):
         Parameters
         ----------
         window_id : str, optional
-            Window id. If not specified unique id is used.
+            Window ID. If an ID is not specified, a unique ID is used.
+            The default is ``None``.
         """
         pyvista_windows_manager.plot(self, window_id)

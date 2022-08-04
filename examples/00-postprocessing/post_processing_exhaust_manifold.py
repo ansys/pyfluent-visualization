@@ -2,15 +2,13 @@
 
 Postprocessing using PyVista and Matplotlib
 -------------------------------------------
-This example uses PyVista and Matplot to demonstrate PyFluent
-postprocessing capabilities> The 3D model is of an exhaust
-manifold with high temperature flows passing through.
-The flow through the manifold is turbulent and
+This example uses PyVista and Matplotlib to demonstrate PyFluent
+postprocessing capabilities. The 3D model in this example
+is an exhaust manifold that has high temperature flows passing
+through it. The flow through the manifold is turbulent and
 involves conjugate heat transfer.
 
 """
-# sphinx_gallery_thumbnail_number = -5
-
 ###############################################################################
 # Perform required imports
 # ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,9 +46,9 @@ session.solver.tui.file.read_case(case_file_name=import_case)
 session.solver.tui.file.read_data(case_file_name=import_data)
 
 ###############################################################################
-# Get graphics object for mesh display
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Get the graphics object for the mesh display.
+# Get graphics object
+# ~~~~~~~~~~~~~~~~~~~
+# Get the graphics object.
 
 graphics = Graphics(session=session)
 
@@ -222,16 +220,16 @@ xy_plot.surfaces_list = ["outlet"]
 xy_plot.y_axis_function = "temperature"
 
 ###############################################################################
-# Generate XY plot
+# Display XY plot
 # ~~~~~~~~~~~~~~~~
-# Plot the generated XY plot.
+# Display the generated XY plot.
 
 xy_plot.plot("window-9")
 
 ###############################################################################
-# Generate residual plot
+# Create residual plot
 # ~~~~~~~~~~~~~~~~~~~~~~
-# Generate and display the residual plot.
+# Create and display the residual plot.
 
 matplotlib_plots1 = Plots(session)
 residual = matplotlib_plots1.Monitors["residual"]

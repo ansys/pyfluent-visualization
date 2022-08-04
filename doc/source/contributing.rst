@@ -12,8 +12,8 @@ before attempting to contribute to PyFluent-Visualization.
  
 The following contribution information is specific to PyFluent-Visualization.
 
-Cloning the repository
-----------------------
+Clone the repository
+--------------------
 To clone and install the latest version of PyFluent-Visualization in
 development mode, run:
 
@@ -24,8 +24,8 @@ development mode, run:
    pip install pip -U
    pip install -e .
 
-Building documentation
-----------------------
+Build documentation
+-------------------
 To build the PyFluent-Visualization documentation locally, in the root
 directory of the repository, run:
 
@@ -45,14 +45,14 @@ You can clear all HTML files from the ``_builds/html`` directory with:
 
     make clean
 
-Posting issues
---------------
+Post issues
+-----------
 Use the `PyFluent Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues>`_
 page to submit questions, report bugs, and request new features.
 
 
-Adhering to code style
-----------------------
+Adhere to code style
+--------------------
 PyFluent-Visualization is compliant with the `PyAnsys coding style
 <https://dev.docs.pyansys.com/coding-style/index.html>`_. It uses the
 tool `pre-commit <https://pre-commit.com/>`_ to check the code style.

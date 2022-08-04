@@ -19,15 +19,15 @@ from ansys.fluent.visualization.post_windows_manager import (
 
 
 class PyVistaWindow(PostWindow):
-    """Class for PyVista window."""
+    """Provides for managing PyVista windows."""
 
     def __init__(self, id: str, post_object: GraphicsDefn):
-        """Instantiate a PyVistaWindow.
+        """Instantiate a PyVista window.
 
         Parameters
         ----------
         id : str
-            Window id.
+            Window ID.
         post_object : GraphicsDefn
             Object to draw.
         """
@@ -352,12 +352,12 @@ class PyVistaWindow(PostWindow):
 
 
 class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
-    """Class for PyVista windows manager."""
+    """Provides for managing PyVista windows."""
 
     _condition = threading.Condition()
 
     def __init__(self):
-        """Instantiate WindowManager for PyVista."""
+        """Instantiate ``PyVistaWindow`` for PyVista."""
         self._post_windows: Dict[str:PyVistaWindow] = {}
         self._plotter_thread: threading.Thread = None
         self._post_object: GraphicsDefn = None
@@ -366,33 +366,34 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self._app = None
 
     def get_plotter(self, window_id: str) -> Union[BackgroundPlotter, pv.Plotter]:
-        """Get PyVista Plotter.
+        """Get the PyVista plotter.
 
         Parameters
         ----------
         window_id : str
-            Window Id for plotter.
+            Window ID for the plotter.
 
         Returns
         -------
         Union[BackgroundPlotter, pv.Plotter]
-            PyVista Plotter.
+            PyVista plotter.
         """
         with self._condition:
             return self._post_windows[window_id].plotter
 
     def open_window(self, window_id: Optional[str] = None) -> str:
-        """Open new window.
+        """Open a new window.
 
         Parameters
         ----------
         window_id : str, optional
-            Id for new window. If not specified unique id is used.
+            ID for the new window. The default is ``None``, in which
+            case a unique ID is automatically assigned.
 
         Returns
         -------
         str
-            Window id.
+            ID for the new window.
         """
         with self._condition:
             if not window_id:
@@ -404,20 +405,19 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             return window_id
 
     def set_object_for_window(self, object: GraphicsDefn, window_id: str) -> None:
-        """Associate visualization object with running window instance.
+        """Associate a visualization object with a running window instance.
 
         Parameters
         ----------
         object : GraphicsDefn
-            Post object to associate with window.
-
+            Post object to associate with a running window instance.
         window_id : str
-            Window id to associate.
+            Window ID for the association.
 
         Raises
         ------
         RuntimeError
-            If window does not support object.
+            If the window does not support the object.
         """
         if not isinstance(object, GraphicsDefn):
             raise RuntimeError("Object type currently not supported.")
@@ -427,20 +427,20 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 window.post_object = object
 
     def plot(self, object: GraphicsDefn, window_id: Optional[str] = None) -> None:
-        """Draw plot.
+        """Draw a plot.
 
         Parameters
         ----------
         object: GraphicsDefn
             Object to plot.
-
         window_id : str, optional
-            Window id for plot. If not specified unique id is used.
+            Window ID for the plot. The default is ``None``, in wich
+            case a unique ID is assigned.
 
         Raises
         ------
         RuntimeError
-            If window does not support object.
+            If the window does not support the object.
         """
         if not isinstance(object, GraphicsDefn):
             raise RuntimeError("Object type currently not supported.")
@@ -457,19 +457,19 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         window_id: str,
         format: str,
     ) -> None:
-        """Save graphics.
+        """Save a graphic.
 
         Parameters
         ----------
         window_id : str
-            Window id for which graphic should be saved.
+            Window ID for the graphic to save.
         format : str
-            Graphic format. Supported formats are svg, eps, ps, pdf and tex.
+            Graphic file format. Supported formats are SVG, EPS, PS, PDF, and TEX.
 
         Raises
         ------
         ValueError
-            If window does not support specified format.
+            If the window does not support the specified format.
         """
         with self._condition:
             window = self._post_windows.get(window_id)
@@ -486,13 +486,12 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         Parameters
         ----------
         session_id : str, optional
-           Session id to refresh. If specified, all windows which belong to
-           specified session will be refreshed. Otherwise windows for all
-           sessions will be refreshed.
-
+           Session ID for refreshing the windows that belong only to this
+           session. The default is ``""``, in which case the windows in all
+           sessions are refreshed.
         windows_id : List[str], optional
-            Windows id to refresh. If not specified, all windows will be
-            refreshed.
+            IDs of the windows to refresh. The default is ``[]``, in which case
+            all windows are refreshed.
         """
         with self._condition:
             windows_id = self._get_windows_id(session_id, windows_id)
@@ -512,13 +511,12 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         Parameters
         ----------
         session_id : str, optional
-           Session id to animate. If specified, animation will be created
-           for windows which belong to specified session. Otherwise
-           animation will be created for all windows.
-
+           Session ID for animating the windows that belong only to this
+           session. The default is ``""``, in which case the windows in all
+           sessions are animated.
         windows_id : List[str], optional
-            Windows id to animate. If not specified, animation will be
-            created for all windows.
+            List of IDs for the windows to animate. The default is ``[]``, in which
+            case all windows are animated.
 
         Raises
         ------
@@ -543,13 +541,12 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         Parameters
         ----------
         session_id : str, optional
-           Session id to close. If specified, windows which belong to
-           specified session will be closed. Otherwise windows for all
-           sessions will be closed.
-
+           Session ID for closing the windows that belong only to this session.
+           The default is ``""``, in which case the windows in all sessions
+           are closed.
         windows_id : List[str], optional
-            Windows id to close. If not specified, all windows will be
-            closed.
+            List of IDs for the windows to close. The default is ``[]``, in which
+            all windows are closed.
         """
         with self._condition:
             windows_id = self._get_windows_id(session_id, windows_id)
