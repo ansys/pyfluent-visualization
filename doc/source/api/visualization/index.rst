@@ -6,11 +6,11 @@ Visualization
 Postprocessing of Fluent results can be done with either built-in Fluent
 postprocessing capabilities, PyVista, or Matplotlib integration.
 
-Fluent
-------
+Fluent TUI command example
+--------------------------
 
-Here visualization objects are constructed within Fluent. Graphics can be
-written to a file using standard Fluent commands.
+Here visualization objects are constructed within Fluent. You can use
+standard Fluent commands to write graphics to a file.
 
 .. code:: python
 
@@ -26,8 +26,8 @@ written to a file using standard Fluent commands.
 PyVista example (graphics)
 --------------------------
 
-Here the field data is extracted from the Fluent session into the Python
-environment and PyVista is used to visualize the extracted data.
+Here field data is extracted from the Fluent session into the Python
+environment. PyVista is then used to visualize the extracted data.
 
 .. code:: python
 
@@ -84,8 +84,8 @@ environment and PyVista is used to visualize the extracted data.
 Matplotlib example (XY plots)
 -----------------------------
 
-Here the plot data is extracted from the Fluent session into the Python
-environment and data is plotted in Matplotlib.
+Here plot data is extracted from the Fluent session into the Python
+environment. Matplotlib is then used to plot data.
 
 .. code:: python
 

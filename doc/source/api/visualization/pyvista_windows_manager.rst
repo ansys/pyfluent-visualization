@@ -2,14 +2,13 @@
 
 PyVista windows manager
 =======================   
+The ``PyVistaWindowsManager`` class provides for managing and directly interacting
+with PyVista windows. By registering these methods with ``EventsManager``, you
+can update graphics during run time and create animations.
 
-This class manages PyVista windows and provides methods to directly interact with them.
-By registering these methods with ``EventsManager``, graphics can be updated during run 
-time and animations can be created.
-
-The following example updates `window-1` during solution initialization and whenever data 
-is read. During the calculation, it also updates `window-1` at the end of every time step
-and creates an animation.
+The following example updates ``window-1`` during solution initialization and
+whenever data is read. During the calculation, it also updates ``window-1`` at
+the end of every time step and creates an animation.
 
 .. note::
   The animation is saved when the window is closed.

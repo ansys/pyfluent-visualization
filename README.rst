@@ -24,27 +24,29 @@ PyFluent Visualization
 
 Overview
 --------
-The PyFluent Visualization project provides post-processing and visualization
-capabilities for PyFluent using `pyvista <https://docs.pyvista.org/>`_ and
-`matplotlib <https://matplotlib.org/>`_.
+PyFluent-Visualization provides postprocessing and visualization
+capabilities for `PyFluent <https://github.com/pyansys/pyfluent>`_
+using `PyVista <https://docs.pyvista.org/>`_ and
+`Matplotlib <https://matplotlib.org/>`_.
 
-Documentation and Issues
+Documentation and issues
 ------------------------
-Please see the latest release `documentation <https://fluentvisualization.docs.pyansys.com>`_
-page for more details.
+For comprehensive information on PyFluent-Visualization, see the latest release
+`documentation <https://fluentvisualization.docs.pyansys.com>`_.
 
-Please feel free to post issues and other questions at `PyFluent Visualization Issues
-<https://github.com/pyansys/pyfluent-visualization/issues>`_.  This is the best place
-to post questions and code.
+On the `PyFluent Visualization Issues
+<https://github.com/pyansys/pyfluent-visualization/issues>`_ page, you can create
+issues to submit questions, reports burgs, and request new features. To reach
+the support team, email `pyansys.support@ansys.com <pyansys.support@ansys.com>`_.
 
 Installation
 ------------
-The ``ansys-fluent-visualization`` package currently supports Python 3.7 through Python
+The ``ansys-fluent-visualization`` package supports Python 3.7 through Python
 3.10 on Windows and Linux.
 
-If you're using Python 3.10, install the vtk package from .whl file
-`here in Windows <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-win_amd64.whl>`_ or
-`here in Linux <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl>`_.
+If you are using Python 3.10, download and install the wheel file for the ``vtk`` package from
+`here for Windows <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-win_amd64.whl>`_
+or from `here for Linux <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl>`_.
 
 Install the latest release from `PyPI
 <https://pypi.org/project/ansys-fluent-visualization/>`_ with:
@@ -53,16 +55,16 @@ Install the latest release from `PyPI
 
    pip install ansys-fluent-visualization
 
-Alternatively, install the latest from `pyfluent-visualization GitHub
-<https://github.com/pyansys/pyfluent-visualization>`_ via:
+Alternatively, install the latest release from `GitHub
+<https://github.com/pyansys/pyfluent-visualization>`_ with:
 
 .. code:: console
 
    pip install git+https://github.com/pyansys/pyfluent-visualization.git
 
 
-If you plan on doing local "development" of PyFluent with Git, then install
-with:
+If you plan on doing local *development* of PyFluent-Visualization with Git,
+install with:
 
 .. code:: console
 
@@ -73,14 +75,20 @@ with:
 
 Dependencies
 ------------
-You will need a locally installed licensed copy of ANSYS to run Fluent, with the
-first supported version being Ansys 2022 R2.
+You must have a licensed copy of Ansys Fluent installed locally.
+PyFluent-Visualization supports Ansys Fluent 2022 R2 and
+later.
 
-Getting Started
+Getting started
 ---------------
 
-Basic Usage
+Basic usage
 ~~~~~~~~~~~
+The following code assumes that a PyFluent session has already been created
+and a Fluent case with input parameters has been set up. For a complete
+example, see `Analyzing your results
+<https://fluentvisualization.docs.pyansys.com/users_guide/postprocessing.html>`_ in
+the PyFluent-Visualization documentation.
 
 .. code:: python
 
@@ -91,19 +99,18 @@ Basic Usage
    temperature_contour.surfaces_list = ["in1", "in2", "out1"]
    temperature_contour.display("window-1")
 
-Above code assumes that a PyFluent session has already been created and a Fluent case
-with input parameters has been set up. The `Analyzing Your Results
-<https://fluentvisualization.docs.pyansys.com/users_guide/postprocessing.html>`_ in
-the user guide has a complete example.
 
-License and Acknowledgments
+
+License and acknowledgments
 ---------------------------
-``PyFluent Visualization`` is licensed under the MIT license.
+PyFluent-Visualization is licensed under the MIT license.
 
-This module, ``ansys-fluent-visualization`` makes no commercial claim over Ansys
-whatsoever. This tool extends the functionality of ``Fluent`` by adding a Python
-interface to the Fluent without changing the core behavior or license of the original
-software.  The use of the interactive Fluent control of ``PyFluent Visualization`` requires
-a legally licensed local copy of Ansys.
+PyFluent-Visualization makes no commercial claim over Ansys
+whatsoever. This tool extends the functionality of Ansys Fluent
+by adding a Python interface to Fluent without changing the
+core behavior or license of the original software. The use of the
+interactive Fluent control of PyFluent-Visualization requires
+a legally licensed local copy of Fluent.
 
-To get a copy of Ansys, please visit `Ansys <https://www.ansys.com/>`_.
+For more information on Fluent, visit the `Fluent <https://www.ansys.com/products/fluids/ansys-fluent>`_
+page on the Ansys website.
