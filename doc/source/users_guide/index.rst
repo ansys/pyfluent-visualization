@@ -99,8 +99,8 @@ Plot operations
 Examples follow for plot operations that PyFluent-Visualization
 supports.
 
-Display XY plot
-~~~~~~~~~~~~~~~
+Display plot
+~~~~~~~~~~~~
 This example shows how you can display the XY plot:
 
 .. code:: python
