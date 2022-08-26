@@ -39,7 +39,7 @@ import_data = examples.download_file(
 )
 
 session = pyfluent.launch_fluent(
-    precision="double", processor_count=2, start_transcript=False
+    precision="double", processor_count=2, start_transcript=False, mode="solver"
 )
 
 session.solver.tui.file.read_case(case_file_name=import_case)
