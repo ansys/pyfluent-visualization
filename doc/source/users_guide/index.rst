@@ -35,8 +35,8 @@ This example shows how you can display a mesh:
 
     solver_session = pyfluent.launch_fluent(precision="double", processor_count=2, mode="solver")
 
-    solver_session.tui.file.read_case(case_file_name=import_case)
-    solver_session.tui.file.read_data(case_file_name=import_data)
+    solver_session.tui.file.read_case(import_case)
+    solver_session.tui.file.read_data(import_data)
 
     graphics = Graphics(session=solver_session)
     mesh1 = graphics.Meshes["mesh-1"]
