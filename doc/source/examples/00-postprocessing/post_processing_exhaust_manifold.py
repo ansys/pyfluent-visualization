@@ -42,8 +42,8 @@ solver_session = pyfluent.launch_fluent(
     precision="double", processor_count=2, start_transcript=False, mode="solver"
 )
 
-solver_session.tui.file.read_case(case_file_name=import_case)
-solver_session.tui.file.read_data(case_file_name=import_data)
+solver_session.tui.file.read_case(import_case)
+solver_session.tui.file.read_data(import_data)
 
 ###############################################################################
 # Get graphics object
