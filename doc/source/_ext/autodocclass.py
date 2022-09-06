@@ -29,10 +29,10 @@ class PostDocumenter(ClassDocumenter):
         self.add_line("   ", self.get_sourcename())
 
     def add_content(
-        self, more_content: Optional[StringList], no_docstring: bool = False
+        self, more_content: Optional[StringList]
     ) -> None:
 
-        super().add_content(more_content, no_docstring)
+        super().add_content(more_content)
 
         source_name = self.get_sourcename()
         object = self.object
