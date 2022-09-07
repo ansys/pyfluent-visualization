@@ -99,7 +99,11 @@ the PyFluent-Visualization documentation.
    temperature_contour.surfaces_list = ["in1", "in2", "out1"]
    temperature_contour.display("window-1")
 
-
+Usage in a JupyterLab environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PyFluent-Visualization uses PyVista, which has the ability to display fully
+featured plots within a JupyterLab environment using ipyvtklink. Find out
+about using ipyvtklink with PyVista `here <https://docs.pyvista.org/user-guide/jupyter/ipyvtk_plotting.html>`
 
 License and acknowledgments
 ---------------------------
