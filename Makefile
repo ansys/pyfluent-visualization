@@ -7,6 +7,10 @@ install:
 	@python -m build
 	@pip install dist/*.whl --force-reinstall
 
+version-info:
+	@bash -c "date -u +'Build date: %B %d, %Y %H:%M UTC ShaID: <id>' | xargs -I date sed -i 's/_VERSION_INFO = .*/_VERSION_INFO = \"date\"/g' src/ansys/fluent/visualization/__init__.py"
+	@bash -c "git --no-pager log -n 1 --format='%h' | xargs -I hash sed -i 's/<id>/hash/g' src/ansys/fluent/visualization/__init__.py"
+
 docker-pull:
 	@pip install docker
 	@bash .ci/pull_fluent_image.sh
