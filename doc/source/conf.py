@@ -46,7 +46,6 @@ extensions = [
     "notfound.extension",
     "numpydoc",
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosectionlabel",
     "sphinx.ext.autosummary",
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
