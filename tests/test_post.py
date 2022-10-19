@@ -93,9 +93,9 @@ class MockFieldData:
     def add_get_vector_fields_request(
         self,
         surface_ids: List[int],
-        field_name: str,
+        vector_field: Optional[str] = "velocity",
     ) -> None:
-        self._request_to_serve["vector"].append((surface_ids, field_name))
+        self._request_to_serve["vector"].append((surface_ids, vector_field))
 
     def get_fields(self) -> Dict[int, Dict]:
         fields = {}
