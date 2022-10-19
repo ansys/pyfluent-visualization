@@ -193,16 +193,18 @@ def test_field_api():
     # Get vertices
     vertices_data = field_data.get_surface_data("wall", SurfaceDataType.Vertices)
 
+    transaction = field_data.new_transaction()
+
     # Get multiple fields
-    field_data.add_get_surfaces_request(
+    transaction.add_surfaces_request(
         surfaces_id[:1],
         provide_vertices=True,
         provide_faces_centroid=True,
         provide_faces=False,
     )
-    field_data.add_get_scalar_fields_request(surfaces_id[:1], "temperature", True)
-    field_data.add_get_scalar_fields_request(surfaces_id[:1], "temperature", False)
-    fields = field_data.get_fields()
+    transaction.add_scalar_fields_request(surfaces_id[:1], "temperature", True)
+    transaction.add_scalar_fields_request(surfaces_id[:1], "temperature", False)
+    fields = transaction.get_fields()
 
     surface_tag = 0
     vertices = fields[surface_tag][surfaces_id[0]]["vertices"]
