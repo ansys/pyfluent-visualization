@@ -3,7 +3,7 @@ import itertools
 import threading
 from typing import List, Optional, Union
 
-from ansys.fluent.core.session import Session
+from ansys.fluent.core.fluent_connection import _FluentConnection
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 import numpy as np
 import pyvista as pv
@@ -599,8 +599,8 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._post_object = obj
 
         if not self._plotter_thread:
-            if Session._monitor_thread:
-                Session._monitor_thread.cbs.append(self._exit)
+            if _FluentConnection._monitor_thread:
+                _FluentConnection._monitor_thread.cbs.append(self._exit)
             self._plotter_thread = threading.Thread(target=self._display, args=())
             self._plotter_thread.start()
 
