@@ -4,6 +4,7 @@ import itertools
 from typing import Dict
 
 from ansys.api.fluent.v0.field_data_pb2 import PayloadTag
+from ansys.fluent.core.services.field_data import _FieldDataConstants
 import numpy as np
 
 from ansys.fluent.visualization.post_object_defns import GraphicsDefn, PlotDefn
@@ -49,6 +50,7 @@ class FieldDataExtractor:
         obj._pre_display()
         field_info = obj._api_helper.field_info()
         field_data = obj._api_helper.field_data()
+        transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
@@ -56,10 +58,10 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        field_data.add_get_surfaces_request(surface_ids, *args, **kwargs)
+        transaction.add_surfaces_request(surface_ids, *args, **kwargs)
         surface_tag = 0
         try:
-            surfaces_data = field_data.get_fields()[surface_tag]
+            surfaces_data = transaction.get_fields()[surface_tag]
         except:
             raise RuntimeError("Error while requesting data from server.")
         finally:
@@ -105,6 +107,7 @@ class FieldDataExtractor:
 
         field_info = obj._api_helper.field_info()
         field_data = obj._api_helper.field_data()
+        transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
@@ -112,27 +115,27 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
         # get scalar field data
-        field_data.add_get_surfaces_request(surface_ids, *args, **kwargs)
-        field_data.add_get_scalar_fields_request(
-            surface_ids,
-            field,
-            node_values,
-            boundary_values,
+        transaction.add_surfaces_request(surface_ids=surface_ids, *args, **kwargs)
+        transaction.add_scalar_fields_request(
+            field_name=field,
+            surface_ids=surface_ids,
+            node_value=node_values,
+            boundary_value=boundary_values,
         )
 
         location_tag = (
-            field_data._payloadTags[PayloadTag.NODE_LOCATION]
+            _FieldDataConstants.payloadTags[PayloadTag.NODE_LOCATION]
             if node_values
-            else field_data._payloadTags[PayloadTag.ELEMENT_LOCATION]
+            else _FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION]
         )
         boundary_value_tag = (
-            field_data._payloadTags[PayloadTag.BOUNDARY_VALUES]
+            _FieldDataConstants.payloadTags[PayloadTag.BOUNDARY_VALUES]
             if boundary_values
             else 0
         )
         surface_tag = 0
         try:
-            scalar_field_payload_data = field_data.get_fields()
+            scalar_field_payload_data = transaction.get_fields()
             data_tag = location_tag | boundary_value_tag
             scalar_field_data = scalar_field_payload_data[data_tag]
             surface_data = scalar_field_payload_data[surface_tag]
@@ -151,6 +154,8 @@ class FieldDataExtractor:
         field_info = obj._api_helper.field_info()
         field_data = obj._api_helper.field_data()
 
+        transaction = field_data.new_transaction()
+
         # surface ids
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
@@ -159,11 +164,13 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        field_data.add_get_surfaces_request(surface_ids, *args, **kwargs)
-        field_data.add_get_vector_fields_request(surface_ids, obj.vectors_of())
+        transaction.add_surfaces_request(surface_ids=surface_ids, *args, **kwargs)
+        transaction.add_vector_fields_request(
+            field_name=obj.vectors_of(), surface_ids=surface_ids
+        )
         vector_field_tag = 0
         try:
-            fields = field_data.get_fields()[vector_field_tag]
+            fields = transaction.get_fields()[vector_field_tag]
         except:
             raise RuntimeError("Error while requesting data from server.")
         finally:
@@ -218,6 +225,7 @@ class XYPlotDataExtractor:
         surfaces_list = obj.surfaces_list()
         field_info = obj._api_helper.field_info()
         field_data = obj._api_helper.field_data()
+        transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
@@ -248,31 +256,31 @@ class XYPlotDataExtractor:
         ]
 
         # get scalar field data
-        field_data.add_get_surfaces_request(
-            surface_ids,
+        transaction.add_surfaces_request(
+            surface_ids=surface_ids,
             provide_faces=False,
             provide_vertices=True if node_values else False,
             provide_faces_centroid=False if node_values else True,
         )
-        field_data.add_get_scalar_fields_request(
-            surface_ids,
-            field,
-            node_values,
-            boundary_values,
+        transaction.add_scalar_fields_request(
+            field_name=field,
+            surface_ids=surface_ids,
+            node_value=node_values,
+            boundary_value=boundary_values,
         )
 
         location_tag = (
-            field_data._payloadTags[PayloadTag.NODE_LOCATION]
+            _FieldDataConstants.payloadTags[PayloadTag.NODE_LOCATION]
             if node_values
-            else field_data._payloadTags[PayloadTag.ELEMENT_LOCATION]
+            else _FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION]
         )
         boundary_value_tag = (
-            field_data._payloadTags[PayloadTag.BOUNDARY_VALUES]
+            _FieldDataConstants.payloadTags[PayloadTag.BOUNDARY_VALUES]
             if boundary_values
             else 0
         )
         surface_tag = 0
-        xyplot_payload_data = field_data.get_fields()
+        xyplot_payload_data = transaction.get_fields()
         data_tag = location_tag | boundary_value_tag
         if data_tag not in xyplot_payload_data:
             raise RuntimeError("Plot surface is not valid.")
