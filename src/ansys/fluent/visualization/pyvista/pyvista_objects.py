@@ -9,6 +9,7 @@ from ansys.fluent.core.meta import PyLocalContainer
 from ansys.fluent.visualization.post_object_defns import (
     ContourDefn,
     MeshDefn,
+    PathlinesDefn,
     SurfaceDefn,
     VectorDefn,
 )
@@ -128,6 +129,32 @@ class Mesh(MeshDefn):
         mesh1.show_edges = True
         mesh1.surfaces_list = ['wall']
         mesh1.display("window-0")
+    """
+
+    def display(self, window_id: Optional[str] = None):
+        """Display mesh graphics.
+
+        Parameters
+        ----------
+        window_id : str, optional
+            Window ID. If an ID is not specified, a unique ID is used.
+            The default is ``None``.
+        """
+        pyvista_windows_manager.plot(self, window_id)
+
+
+class Pathlines(PathlinesDefn):
+    """Pathlines definition for PyVista.
+
+    .. code-block:: python
+
+        from ansys.fluent.visualization.pyvista import  Graphics
+
+        graphics_session = Graphics(session)
+        pathlines1 = graphics_session.Pathlines["pathlines-1"]
+        pathlines1.field = "velocity-magnitude"
+        pathlines1.surfaces_list = ['inlet']
+        pathlines1.display("window-0")
     """
 
     def display(self, window_id: Optional[str] = None):
