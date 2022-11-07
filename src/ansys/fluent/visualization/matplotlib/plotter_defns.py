@@ -67,7 +67,6 @@ class Plotter:
         """
         if not data:
             return
-
         for curve in data:
             min_y_value = np.amin(data[curve]["yvalues"])
             max_y_value = np.amax(data[curve]["yvalues"])
