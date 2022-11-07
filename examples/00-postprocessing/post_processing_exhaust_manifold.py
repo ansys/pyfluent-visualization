@@ -193,9 +193,20 @@ temperature_contour_manifold.display("window-7")
 # Create a vector on a predefined surface.
 
 velocity_vector = graphics.Vectors["velocity-vector"]
+velocity_vector.field = "pressure"
 velocity_vector.surfaces_list = ["solid_up:1:830"]
 velocity_vector.scale = 2
 velocity_vector.display("window-8")
+
+###############################################################################
+# Create Pathlines
+# ~~~~~~~~~~~~~~~~
+# Create a pathlines on a predefined surface.
+
+pathlines = graphics.Pathlines["pathlines"]
+pathlines.field = "velocity-magnitude"
+pathlines.surfaces_list = ["inlet", "inlet1", "inlet2"]
+# pathlines.display("window-9")
 
 ###############################################################################
 # Create plot object
