@@ -52,7 +52,7 @@ You can launch Fluent from PyFluent using the ``launch_fluent`` function:
 .. code:: python
 
   import ansys.fluent.core as pyfluent
-  session = pyfluent.launch_fluent(precision="double", processor_count=2)
+  session = pyfluent.launch_fluent(precision="double", processor_count=2, mode="solver")
   session.check_health()
   session.start_transcript() # Streaming the transcript locally
 

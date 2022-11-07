@@ -14,14 +14,14 @@ standard Fluent commands to write graphics to a file.
 
 .. code:: python
 
-  session.solver.tui.display.objects.contour['contour-1'] = {'boundary_values': True, 'color_map': {'color': 'field-velocity', 'font_automatic': True, 'font_name': 'Helvetica', 'font_size': 0.032, 'format': '%0.2e', 'length': 0.54, 'log_scale': False, 'position': 1, 'show_all': True, 'size': 100, 'user_skip': 9, 'visible': True, 'width': 6.0}, 'coloring': {'smooth': False}, 'contour_lines': False, 'display_state_name': 'None', 'draw_mesh': False, 'field': 'pressure', 'filled': True, 'mesh_object': '', 'node_values': True, 'range_option': {'auto_range_on': {'global_range': True}}, 'surfaces_list': [2, 5]}
-  session.solver.tui.display.objects.contour['contour-1']()
-  session.solver.tui.display.objects.contour['contour-1'].field.set_state('velocity-magnitude')
-  session.solver.tui.display.objects.contour['contour-1'].field()
-  session.solver.tui.display.objects.contour['contour-1'].color_map.size.set_state(80.0)
-  session.solver.tui.display.objects.contour['contour-1'].color_map.size()
-  session.solver.tui.display.objects.contour['contour-1'].rename('my-contour')
-  del session.solver.tui.display.objects.contour['my-contour']
+  solver_session.tui.display.objects.contour['contour-1'] = {'boundary_values': True, 'color_map': {'color': 'field-velocity', 'font_automatic': True, 'font_name': 'Helvetica', 'font_size': 0.032, 'format': '%0.2e', 'length': 0.54, 'log_scale': False, 'position': 1, 'show_all': True, 'size': 100, 'user_skip': 9, 'visible': True, 'width': 6.0}, 'coloring': {'smooth': False}, 'contour_lines': False, 'display_state_name': 'None', 'draw_mesh': False, 'field': 'pressure', 'filled': True, 'mesh_object': '', 'node_values': True, 'range_option': {'auto_range_on': {'global_range': True}}, 'surfaces_list': [2, 5]}
+  solver_session.tui.display.objects.contour['contour-1']()
+  solver_session.tui.display.objects.contour['contour-1'].field.set_state('velocity-magnitude')
+  solver_session.tui.display.objects.contour['contour-1'].field()
+  solver_session.tui.display.objects.contour['contour-1'].color_map.size.set_state(80.0)
+  solver_session.tui.display.objects.contour['contour-1'].color_map.size()
+  solver_session.tui.display.objects.contour['contour-1'].rename('my-contour')
+  del solver_session.tui.display.objects.contour['my-contour']
 
 PyVista example (graphics)
 --------------------------
@@ -36,7 +36,7 @@ environment. PyVista is then used to visualize the extracted data.
 
   # get the graphics objects for the session
 
-  graphics_session1 = Graphics(session)
+  graphics_session1 = Graphics(solver_session)
   mesh1 = graphics_session1.Meshes["mesh-1"]
   contour1 = graphics_session1.Contours["contour-1"]
   contour2 = graphics_session1.Contours["contour-2"]
@@ -93,7 +93,7 @@ environment. Matplotlib is then used to plot data.
   from ansys.fluent.visualization.matplotlib import Plots
 
   # get the plots object for the session
-  plots_session1 = Plots(session)
+  plots_session1 = Plots(solver_session)
   
   #get xyplot object
   plot1=plots_session1.XYPlots["plot-1"]
@@ -105,7 +105,7 @@ environment. Matplotlib is then used to plot data.
   #Draw plot
   plot1.plot("window-1")
 
-  session.exit()
+  solver_session.exit()
 
 .. currentmodule:: ansys.fluent.visualization
 

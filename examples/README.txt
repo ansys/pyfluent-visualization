@@ -3,7 +3,6 @@
 ========
 Examples
 ========
-Add examples here for PyFluent-Visualization.
 
 ..
    This toctree must be a top level index to get it to show up in

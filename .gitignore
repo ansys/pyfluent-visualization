@@ -74,6 +74,9 @@ instance/
 
 # Sphinx documentation
 doc/_build/
+_autosummary
+doc/source/examples
+doc/build_errors.txt
 
 # PyBuilder
 .pybuilder/
@@ -118,9 +121,9 @@ celerybeat.pid
 # Environments
 .env
 .venv
-env/
-venv/
-ENV/
+env*/
+venv*/
+ENV*/
 env.bak/
 venv.bak/
 

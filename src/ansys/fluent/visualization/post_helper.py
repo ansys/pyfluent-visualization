@@ -16,7 +16,7 @@ class PostAPIHelper:
             return "_dummy_surface_for_pyfluent:" + local_surface_name.lower()
 
         def _get_api_handle(self):
-            return self.obj._get_top_most_parent().session.solver.tui.surface
+            return self.obj._get_top_most_parent().session.tui.surface
 
         def _delete_if_exist_on_server(self):
             field_info = self.obj._api_helper.field_info()

@@ -33,12 +33,12 @@ This example shows how you can display a mesh:
         filename="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
     )
 
-    session = pyfluent.launch_fluent(precision="double", processor_count=2)
+    solver_session = pyfluent.launch_fluent(precision="double", processor_count=2, mode="solver")
 
-    session.solver.tui.file.read_case(case_file_name=import_case)
-    session.solver.tui.file.read_data(case_file_name=import_data)
+    solver_session.tui.file.read_case(import_case)
+    solver_session.tui.file.read_data(import_data)
 
-    graphics = Graphics(session=session)
+    graphics = Graphics(session=solver_session)
     mesh1 = graphics.Meshes["mesh-1"]
     mesh1.show_edges = True
     mesh1.surfaces_list = [
@@ -105,7 +105,7 @@ This example shows how you can display the XY plot:
 
 .. code:: python
 
-    plots_session_1 = Plots(session)
+    plots_session_1 = Plots(solver_session)
     xy_plot = plots_session_1.XYPlots["xy-plot"]
     xy_plot.surfaces_list = ["outlet"]
     xy_plot.y_axis_function = "temperature"
@@ -118,7 +118,7 @@ This example shows how you can display the solution residual plot:
 .. code:: python
 
 
-    matplotlib_plots1 = Plots(session)
+    matplotlib_plots1 = Plots(solver_session)
     residual = matplotlib_plots1.Monitors["residual"]
     residual.monitor_set_name = "residual"
     residual.plot("window-6")
@@ -129,14 +129,11 @@ This example shows how you can display the solution monitors plot:
 
 .. code:: python
 
-    session.solver.tui.solve.initialize.hyb_initialization()
-    session.solver.tui.solve.set.number_of_iterations(50)
-    session.solver.tui.solve.iterate()
-    session.monitors_manager.get_monitor_set_names()
-    matplotlib_plots1 = Plots(session)
+    solver_session.tui.solve.initialize.hyb_initialization()
+    solver_session.tui.solve.set.number_of_iterations(50)
+    solver_session.tui.solve.iterate()
+    solver_session.monitors_manager.get_monitor_set_names()
+    matplotlib_plots1 = Plots(solver_session)
     mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
     mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
     mass_bal_rplot.plot("window-7")
-
-
-

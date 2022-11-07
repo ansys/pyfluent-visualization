@@ -38,19 +38,19 @@ import_data = examples.download_file(
     filename="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
 )
 
-session = pyfluent.launch_fluent(
-    precision="double", processor_count=2, start_transcript=False
+solver_session = pyfluent.launch_fluent(
+    precision="double", processor_count=2, start_transcript=False, mode="solver"
 )
 
-session.solver.tui.file.read_case(case_file_name=import_case)
-session.solver.tui.file.read_data(case_file_name=import_data)
+solver_session.tui.file.read_case(import_case)
+solver_session.tui.file.read_data(import_data)
 
 ###############################################################################
 # Get graphics object
 # ~~~~~~~~~~~~~~~~~~~
 # Get the graphics object.
 
-graphics = Graphics(session=session)
+graphics = Graphics(session=solver_session)
 
 ###############################################################################
 # Create graphics object for mesh display
@@ -193,16 +193,27 @@ temperature_contour_manifold.display("window-7")
 # Create a vector on a predefined surface.
 
 velocity_vector = graphics.Vectors["velocity-vector"]
+velocity_vector.field = "pressure"
 velocity_vector.surfaces_list = ["solid_up:1:830"]
 velocity_vector.scale = 2
 velocity_vector.display("window-8")
+
+###############################################################################
+# Create Pathlines
+# ~~~~~~~~~~~~~~~~
+# Create a pathlines on a predefined surface.
+
+pathlines = graphics.Pathlines["pathlines"]
+pathlines.field = "velocity-magnitude"
+pathlines.surfaces_list = ["inlet", "inlet1", "inlet2"]
+# pathlines.display("window-9")
 
 ###############################################################################
 # Create plot object
 # ~~~~~~~~~~~~~~~~~~
 # Create the plot object for the session.
 
-plots_session_1 = Plots(session)
+plots_session_1 = Plots(solver_session)
 
 ###############################################################################
 # Create XY plot
@@ -231,7 +242,7 @@ xy_plot.plot("window-9")
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Create and display the residual plot.
 
-matplotlib_plots1 = Plots(session)
+matplotlib_plots1 = Plots(solver_session)
 residual = matplotlib_plots1.Monitors["residual"]
 residual.monitor_set_name = "residual"
 residual.plot("window-10")
@@ -241,15 +252,15 @@ residual.plot("window-10")
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Solve and plot solution monitors.
 
-session.solver.tui.solve.initialize.hyb_initialization()
-session.solver.tui.solve.set.number_of_iterations(50)
-session.solver.tui.solve.iterate()
-matplotlib_plots1 = Plots(session)
+solver_session.tui.solve.initialize.hyb_initialization()
+solver_session.tui.solve.set.number_of_iterations(50)
+solver_session.tui.solve.iterate()
+matplotlib_plots1 = Plots(solver_session)
 mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
 mass_bal_rplot.plot("window-11")
 
-matplotlib_plots1 = Plots(session)
+matplotlib_plots1 = Plots(solver_session)
 point_vel_rplot = matplotlib_plots1.Monitors["point-vel-rplot"]
 point_vel_rplot.monitor_set_name = "point-vel-rplot"
 point_vel_rplot.plot("window-12")
@@ -259,4 +270,4 @@ point_vel_rplot.plot("window-12")
 # ~~~~~~~~~~~~
 # Close Fluent.
 
-session.exit()
+solver_session.exit()
