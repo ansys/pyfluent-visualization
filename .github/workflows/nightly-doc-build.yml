@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        image-tag: [latest]
+        image-tag: [v22.2.0, v23.1.0]
 
     steps:
       - uses: actions/checkout@v3
@@ -57,7 +57,7 @@ jobs:
           FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
       - name: Deploy
-        if: ${{ matrix.image-tag == 'latest'}}
+        if: matrix.image-tag == 'v22.2.0'
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           repository-name: pyansys/pyfluent-visualization-dev-docs
