@@ -3,7 +3,7 @@ import itertools
 import threading
 from typing import List, Optional, Union
 
-from ansys.fluent.core.session import Session
+from ansys.fluent.core.fluent_connection import _FluentConnection
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 import numpy as np
 import pyvista as pv
@@ -64,6 +64,8 @@ class PyVistaWindow(PostWindow):
             self._display_contour(obj, plotter)
         elif obj.__class__.__name__ == "Vector":
             self._display_vector(obj, plotter)
+        elif obj.__class__.__name__ == "Pathlines":
+            self._display_pathlines(obj, plotter)
         if self.animate:
             plotter.write_frame()
         view = get_config()["set_view_on_display"]
@@ -111,16 +113,9 @@ class PyVistaWindow(PostWindow):
         # scalar bar properties
         scalar_bar_args = self._scalar_bar_default_properties()
 
-        # field
-        field = (
-            "rel-velocity-magnitude"
-            if "relative" in vectors_of
-            else "velocity-magnitude"
-        )
-
-        phases = list(filter(vectors_of.startswith, obj._api_helper._get_phases()))
-        if phases:
-            field = f"{phases[0]}-{field}"
+        field = obj.field()
+        field_unit = obj._api_helper.get_field_unit(field)
+        field = f"{field}\n[{field_unit}]" if field_unit else field
 
         for surface_id, mesh_data in vector_field_data.items():
             if "vertices" not in mesh_data or "faces" not in mesh_data:
@@ -143,6 +138,7 @@ class PyVistaWindow(PostWindow):
                     faces=mesh_data["faces"],
                 )
             mesh.cell_data["vectors"] = mesh_data[obj.vectors_of()]
+            scalar_field = mesh_data[obj.field()]
             velocity_magnitude = np.linalg.norm(mesh_data[obj.vectors_of()], axis=1)
             if obj.range.option() == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
@@ -156,15 +152,16 @@ class PyVistaWindow(PostWindow):
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
-                    range = field_info.get_range(field, False)
+                    range = field_info.get_range(obj.field(), False)
                 else:
-                    range = [np.min(velocity_magnitude), np.max(velocity_magnitude)]
+                    range = [np.min(scalar_field), np.max(scalar_field)]
 
             if obj.skip():
                 vmag = np.zeros(velocity_magnitude.size)
                 vmag[:: obj.skip() + 1] = velocity_magnitude[:: obj.skip() + 1]
                 velocity_magnitude = vmag
             mesh.cell_data["Velocity Magnitude"] = velocity_magnitude
+            mesh.cell_data[field] = scalar_field
             glyphs = mesh.glyph(
                 orient="vectors",
                 scale="Velocity Magnitude",
@@ -173,11 +170,43 @@ class PyVistaWindow(PostWindow):
             )
             plotter.add_mesh(
                 glyphs,
+                scalars=field,
                 scalar_bar_args=scalar_bar_args,
                 clim=range,
             )
             if obj.show_edges():
                 plotter.add_mesh(mesh, show_edges=True, color="white")
+
+    def _display_pathlines(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
+        field = obj.field()
+        field_unit = obj._api_helper.get_field_unit(field)
+        field = f"{field}\n[{field_unit}]" if field_unit else field
+        node_values = True
+
+        # scalar bar properties
+        scalar_bar_args = self._scalar_bar_default_properties()
+        data = FieldDataExtractor(obj).fetch_data()
+
+        # loop over all meshes
+        for surface_id, surface_data in data.items():
+            if "vertices" not in surface_data or "faces" not in surface_data:
+                continue
+            surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
+
+            mesh = pv.PolyData(
+                surface_data["vertices"],
+                lines=surface_data["faces"],
+            )
+
+            if node_values:
+                mesh.point_data[field] = surface_data[obj.field()]
+            else:
+                mesh.cell_data[field] = surface_data[obj.field()]
+            plotter.add_mesh(
+                mesh,
+                scalars=field,
+                scalar_bar_args=scalar_bar_args,
+            )
 
     def _display_contour(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         # contour properties
@@ -599,8 +628,8 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._post_object = obj
 
         if not self._plotter_thread:
-            if Session._monitor_thread:
-                Session._monitor_thread.cbs.append(self._exit)
+            if _FluentConnection._monitor_thread:
+                _FluentConnection._monitor_thread.cbs.append(self._exit)
             self._plotter_thread = threading.Thread(target=self._display, args=())
             self._plotter_thread.start()
 
