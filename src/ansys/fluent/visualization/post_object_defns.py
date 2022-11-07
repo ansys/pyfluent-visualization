@@ -161,6 +161,34 @@ class MeshDefn(GraphicsDefn):
         value: bool = False
 
 
+class PathlinesDefn(GraphicsDefn):
+    """Pathlines definition."""
+
+    PLURAL = "Pathlines"
+
+    class field(metaclass=PyLocalPropertyMeta):
+        """Pathlines field."""
+
+        value: str
+
+        @Attribute
+        def allowed_values(self):
+            """Field allowed values."""
+            return list(self._api_helper.field_info().get_fields_info())
+
+    class surfaces_list(metaclass=PyLocalPropertyMeta):
+        """List of surfaces for pathlines."""
+
+        value: List[str]
+
+        @Attribute
+        def allowed_values(self):
+            """Surface list allowed values."""
+            return list(
+                (self._api_helper.field_info().get_surfaces_info().keys())
+            ) + list(self._get_top_most_parent()._local_surfaces_provider())
+
+
 class SurfaceDefn(GraphicsDefn):
     """Surface graphics definition."""
 
@@ -487,6 +515,16 @@ class VectorDefn(GraphicsDefn):
         def allowed_values(self):
             """Vectors of allowed values."""
             return list(self._api_helper.get_vector_fields())
+
+    class field(metaclass=PyLocalPropertyMeta):
+        """Vector color field."""
+
+        value: str
+
+        @Attribute
+        def allowed_values(self):
+            """Field allowed values."""
+            return list(self._api_helper.field_info().get_fields_info())
 
     class surfaces_list(metaclass=PyLocalPropertyMeta):
         """List of surfaces for vector graphics."""

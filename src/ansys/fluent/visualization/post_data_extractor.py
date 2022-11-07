@@ -3,8 +3,11 @@
 import itertools
 from typing import Dict
 
-from ansys.api.fluent.v0.field_data_pb2 import PayloadTag
-from ansys.fluent.core.services.field_data import _FieldDataConstants
+from ansys.api.fluent.v0.field_data_pb2 import DataLocation, PayloadTag
+from ansys.fluent.core.services.field_data import (
+    _FieldDataConstants,
+    merge_pathlines_data,
+)
 import numpy as np
 
 from ansys.fluent.visualization.post_object_defns import GraphicsDefn, PlotDefn
@@ -43,6 +46,8 @@ class FieldDataExtractor:
             return self._fetch_contour_data(self._post_object, *args, **kwargs)
         elif self._post_object.__class__.__name__ == "Vector":
             return self._fetch_vector_data(self._post_object, *args, **kwargs)
+        elif self._post_object.__class__.__name__ == "Pathlines":
+            return self._fetch_pathlines_data(self._post_object, *args, **kwargs)
 
     def _fetch_mesh_data(self, obj, *args, **kwargs):
         if not obj.surfaces_list():
@@ -59,9 +64,10 @@ class FieldDataExtractor:
         ]
 
         transaction.add_surfaces_request(surface_ids, *args, **kwargs)
-        surface_tag = 0
         try:
-            surfaces_data = transaction.get_fields()[surface_tag]
+            fields = transaction.get_fields()
+            # 0 is old tag
+            surfaces_data = fields.get(0) or fields[(("type", "surface-data"),)]
         except:
             raise RuntimeError("Error while requesting data from server.")
         finally:
@@ -133,17 +139,62 @@ class FieldDataExtractor:
             if boundary_values
             else 0
         )
-        surface_tag = 0
+
         try:
-            scalar_field_payload_data = transaction.get_fields()
+            fields = transaction.get_fields()
             data_tag = location_tag | boundary_value_tag
-            scalar_field_data = scalar_field_payload_data[data_tag]
-            surface_data = scalar_field_payload_data[surface_tag]
-        except:
+            scalar_field_data = (
+                fields.get(data_tag)
+                or fields[
+                    (
+                        ("type", "scalar-field"),
+                        (
+                            "dataLocation",
+                            DataLocation.Nodes
+                            if node_values
+                            else DataLocation.Elements,
+                        ),
+                        ("boundaryValues", boundary_values),
+                    )
+                ]
+            )
+            surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
+        except Exception:
             raise RuntimeError("Error while requesting data from server.")
         finally:
             obj._post_display()
         return self._merge(surface_data, scalar_field_data)
+
+    def _fetch_pathlines_data(self, obj, *args, **kwargs):
+        if not obj.surfaces_list() or not obj.field():
+            raise RuntimeError("Ptahline definition is incomplete.")
+
+        obj._pre_display()
+        field = obj.field()
+        surfaces_list = obj.surfaces_list()
+
+        field_info = obj._api_helper.field_info()
+        field_data = obj._api_helper.field_data()
+        surfaces_info = field_info.get_surfaces_info()
+        transaction = field_data.new_transaction()
+        surface_ids = [
+            id
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
+            for id in surfaces_info[surf]["surface_id"]
+        ]
+        transaction.add_pathlines_fields_request(
+            surface_ids=surface_ids, field_name=field
+        )
+
+        try:
+            fields = transaction.get_fields()
+            pathlines_data = fields[(("type", "pathlines-field"), ("field", field))]
+            data = merge_pathlines_data(pathlines_data, field)
+        except Exception as e:
+            raise RuntimeError("Error while requesting data from server." + str(e))
+        finally:
+            obj._post_display()
+        return data
 
     def _fetch_vector_data(self, obj, *args, **kwargs):
 
@@ -151,6 +202,9 @@ class FieldDataExtractor:
             raise RuntimeError("Vector definition is incomplete.")
 
         obj._pre_display()
+        field = obj.field()
+        if not field:
+            field = obj.field = "velocity-magnitude"
         field_info = obj._api_helper.field_info()
         field_data = obj._api_helper.field_data()
 
@@ -165,19 +219,42 @@ class FieldDataExtractor:
         ]
 
         transaction.add_surfaces_request(surface_ids=surface_ids, *args, **kwargs)
-        transaction.add_vector_fields_request(
-            field_name=obj.vectors_of(), surface_ids=surface_ids
+        transaction.add_scalar_fields_request(
+            surface_ids=surface_ids,
+            field_name=field,
+            node_value=False,
+            boundary_value=False,
         )
-        vector_field_tag = 0
+        transaction.add_vector_fields_request(
+            surface_ids=surface_ids, field_name=obj.vectors_of()
+        )
         try:
-            fields = transaction.get_fields()[vector_field_tag]
+            fields = transaction.get_fields()
+            vector_field = fields.get(0) or fields[(("type", "vector-field"),)]
+            scalar_field = (
+                fields.get(_FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION])
+                or fields[
+                    (
+                        ("type", "scalar-field"),
+                        (
+                            "dataLocation",
+                            DataLocation.Elements,
+                        ),
+                        ("boundaryValues", False),
+                    )
+                ]
+            )
+            surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
         except:
             raise RuntimeError("Error while requesting data from server.")
         finally:
             obj._post_display()
-        return fields
+        data = self._merge(surface_data, vector_field)
+        return self._merge(data, scalar_field)
 
     def _merge(self, a, b):
+        if a is b:
+            return a
         if b is not None:
             for k, v in a.items():
                 if b.get(k):
@@ -283,7 +360,17 @@ class XYPlotDataExtractor:
         xyplot_payload_data = transaction.get_fields()
         data_tag = location_tag | boundary_value_tag
         if data_tag not in xyplot_payload_data:
-            raise RuntimeError("Plot surface is not valid.")
+            data_tag = (
+                ("type", "scalar-field"),
+                (
+                    "dataLocation",
+                    DataLocation.Nodes if node_values else DataLocation.Elements,
+                ),
+                ("boundaryValues", boundary_values),
+            )
+            surface_tag = (("type", "surface-data"),)
+            if data_tag not in xyplot_payload_data:
+                raise RuntimeError("Plot surface is not valid.")
         xyplot_data = xyplot_payload_data[data_tag]
         surface_data = xyplot_payload_data[surface_tag]
 
