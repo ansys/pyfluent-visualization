@@ -19,6 +19,7 @@ contour, vector, and surface. The contour is then deleted.
         contour1 = graphics_session.Contours["contour-1"]
         vector1 = graphics_session.Vectors["vector-1"]
         surface1 = graphics_session.Surfaces["surface-1"]
+        pathlines1 = graphics_session.Pathlines["pathlines-1"]
         
         #Delete object
         del graphics_session.Contours["contour-1"] 
@@ -30,4 +31,5 @@ contour, vector, and surface. The contour is then deleted.
    mesh
    surface
    contour  
-   vector   
+   vector 
+   pathlines   
