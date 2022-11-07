@@ -26,3 +26,5 @@ Pythonic
 PyVista
 Util
 XY
+pathlines
+Pathlines
