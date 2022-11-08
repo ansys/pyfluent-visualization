@@ -18,11 +18,82 @@ def patch_mock_api_helper(mocker) -> None:
     )
 
 
+class MockFieldTransaction:
+    def __init__(self, session_data, field_request):
+        self.service = session_data
+        self.fields_request = field_request
+
+    def add_surfaces_request(
+        self,
+        surface_ids: List[int],
+        overset_mesh: bool = False,
+        provide_vertices=True,
+        provide_faces=True,
+        provide_faces_centroid=False,
+        provide_faces_normal=False,
+    ) -> None:
+        self.fields_request["surf"].append(
+            (
+                surface_ids,
+                overset_mesh,
+                provide_vertices,
+                provide_faces,
+                provide_faces_centroid,
+                provide_faces_normal,
+            )
+        )
+
+    def add_scalar_fields_request(
+        self,
+        surface_ids: List[int],
+        field_name: str,
+        node_value: Optional[bool] = True,
+        boundary_value: Optional[bool] = False,
+    ) -> None:
+        self.fields_request["scalar"].append(
+            (surface_ids, field_name, node_value, boundary_value)
+        )
+
+    def add_vector_fields_request(
+        self,
+        surface_ids: List[int],
+        field_name: str,
+    ) -> None:
+        self.fields_request["vector"].append((surface_ids, field_name))
+
+    def get_fields(self) -> Dict[int, Dict]:
+        fields = {}
+        for request_type, requests in self.fields_request.items():
+            for request in requests:
+                if request_type == "surf":
+                    tag_id = 0
+                if request_type == "scalar":
+                    location_tag = 4 if request[2] else 2
+                    boundary_tag = 8 if request[3] else 0
+                    tag_id = location_tag | boundary_tag
+                if request_type == "vector":
+                    tag_id = 0
+
+                field_requests = fields.get(tag_id)
+                if not field_requests:
+                    field_requests = fields[tag_id] = {}
+                surf_ids = request[0]
+                for surf_id in surf_ids:
+                    surface_requests = field_requests.get(surf_id)
+                    if not surface_requests:
+                        surface_requests = field_requests[surf_id] = {}
+                    surface_requests.update(self.service["fields"][tag_id][surf_id])
+        return fields
+
+
 class MockFieldData:
     def __init__(self, solver_data, field_info):
         self._session_data = solver_data
         self._request_to_serve = {"surf": [], "scalar": [], "vector": []}
         self._field_info = field_info
+
+    def new_transaction(self):
+        return MockFieldTransaction(self._session_data, self._request_to_serve)
 
     def get_surface_data(
         self,
@@ -58,70 +129,6 @@ class MockFieldData:
             ]
             for surface_id in surface_ids
         }
-
-    def add_get_surfaces_request(
-        self,
-        surface_ids: List[int],
-        overset_mesh: bool = False,
-        provide_vertices=True,
-        provide_faces=True,
-        provide_faces_centroid=False,
-        provide_faces_normal=False,
-    ) -> None:
-        self._request_to_serve["surf"].append(
-            (
-                surface_ids,
-                overset_mesh,
-                provide_vertices,
-                provide_faces,
-                provide_faces_centroid,
-                provide_faces_normal,
-            )
-        )
-
-    def add_get_scalar_fields_request(
-        self,
-        surface_ids: List[int],
-        field_name: str,
-        node_value: Optional[bool] = True,
-        boundary_value: Optional[bool] = False,
-    ) -> None:
-        self._request_to_serve["scalar"].append(
-            (surface_ids, field_name, node_value, boundary_value)
-        )
-
-    def add_get_vector_fields_request(
-        self,
-        surface_ids: List[int],
-        vector_field: Optional[str] = "velocity",
-    ) -> None:
-        self._request_to_serve["vector"].append((surface_ids, vector_field))
-
-    def get_fields(self) -> Dict[int, Dict]:
-        fields = {}
-        for request_type, requests in self._request_to_serve.items():
-            for request in requests:
-                if request_type == "surf":
-                    tag_id = 0
-                if request_type == "scalar":
-                    location_tag = 4 if request[2] else 2
-                    boundary_tag = 8 if request[3] else 0
-                    tag_id = location_tag | boundary_tag
-                if request_type == "vector":
-                    tag_id = 0
-
-                field_requests = fields.get(tag_id)
-                if not field_requests:
-                    field_requests = fields[tag_id] = {}
-                surf_ids = request[0]
-                for surf_id in surf_ids:
-                    surface_requests = field_requests.get(surf_id)
-                    if not surface_requests:
-                        surface_requests = field_requests[surf_id] = {}
-                    surface_requests.update(
-                        self._session_data["fields"][tag_id][surf_id]
-                    )
-        return fields
 
 
 class MockFieldInfo:
@@ -186,16 +193,18 @@ def test_field_api():
     # Get vertices
     vertices_data = field_data.get_surface_data("wall", SurfaceDataType.Vertices)
 
+    transaction = field_data.new_transaction()
+
     # Get multiple fields
-    field_data.add_get_surfaces_request(
+    transaction.add_surfaces_request(
         surfaces_id[:1],
         provide_vertices=True,
         provide_faces_centroid=True,
         provide_faces=False,
     )
-    field_data.add_get_scalar_fields_request(surfaces_id[:1], "temperature", True)
-    field_data.add_get_scalar_fields_request(surfaces_id[:1], "temperature", False)
-    fields = field_data.get_fields()
+    transaction.add_scalar_fields_request(surfaces_id[:1], "temperature", True)
+    transaction.add_scalar_fields_request(surfaces_id[:1], "temperature", False)
+    fields = transaction.get_fields()
 
     surface_tag = 0
     vertices = fields[surface_tag][surfaces_id[0]]["vertices"]

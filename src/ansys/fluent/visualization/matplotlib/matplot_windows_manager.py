@@ -1,9 +1,9 @@
 """Module for matplotlib windows management."""
 import itertools
 import multiprocessing as mp
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
-from ansys.fluent.core.session import Session
+from ansys.fluent.core.fluent_connection import _FluentConnection
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 
 from ansys.fluent.visualization import get_config
@@ -38,7 +38,7 @@ class _ProcessPlotterHandle:
             target=self.plotter, args=(plotter_pipe,), daemon=True
         )
         self.plot_process.start()
-        Session._monitor_thread.cbs.append(self.close)
+        _FluentConnection._monitor_thread.cbs.append(self.close)
 
     def plot(self, data):
         self.plot_pipe.send(data)
