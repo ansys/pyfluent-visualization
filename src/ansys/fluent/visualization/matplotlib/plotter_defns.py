@@ -151,7 +151,7 @@ class Plotter:
             self._data[curve_name]["xvalues"] = []
             self._data[curve_name]["yvalues"] = []
             self.ax.plot([], [], label=curve_name)
-        self.fig.canvas.set_window_title("PyFluent [" + self._window_id + "]")
+        self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
         plt.title(self._title)
         plt.xlabel(self._xlabel)
         plt.ylabel(self._ylabel)
