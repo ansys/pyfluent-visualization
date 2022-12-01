@@ -189,13 +189,13 @@ class PyVistaWindow(PostWindow):
 
         # loop over all meshes
         for surface_id, surface_data in data.items():
-            if "vertices" not in surface_data or "faces" not in surface_data:
+            if "vertices" not in surface_data or "lines" not in surface_data:
                 continue
             surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
 
             mesh = pv.PolyData(
                 surface_data["vertices"],
-                lines=surface_data["faces"],
+                lines=surface_data["lines"],
             )
 
             if node_values:
