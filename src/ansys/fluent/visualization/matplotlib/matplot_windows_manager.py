@@ -4,16 +4,16 @@ import multiprocessing as mp
 from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import _FluentConnection
+from ansys.fluent.core.post_objects.post_object_definitions import (
+    MonitorDefn,
+    PlotDefn,
+    XYPlotDefn,
+)
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 
 from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.matplotlib.plotter_defns import Plotter, ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
-from ansys.fluent.visualization.post_object_defns import (
-    MonitorDefn,
-    PlotDefn,
-    XYPlotDefn,
-)
 from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
     PostWindowsManager,

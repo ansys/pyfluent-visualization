@@ -4,6 +4,7 @@ import threading
 from typing import List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import _FluentConnection
+from ansys.fluent.core.post_objects.post_object_definitions import GraphicsDefn
 from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 import numpy as np
 import pyvista as pv
@@ -11,7 +12,6 @@ from pyvistaqt import BackgroundPlotter
 
 from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.post_data_extractor import FieldDataExtractor
-from ansys.fluent.visualization.post_object_defns import GraphicsDefn
 from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
     PostWindowsManager,

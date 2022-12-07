@@ -1,111 +1,18 @@
 """Module providing visualization objects for PyVista."""
 
-import inspect
-import sys
 from typing import Optional
 
-from ansys.fluent.core.meta import PyLocalContainer
-
-from ansys.fluent.visualization.post_object_defns import (
+from ansys.fluent.core.post_objects.post_object_definitions import (
     ContourDefn,
     MeshDefn,
     PathlinesDefn,
     SurfaceDefn,
     VectorDefn,
 )
+
 from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
     pyvista_windows_manager,
 )
-
-
-class Graphics:
-    """Provides the PyVista ``Graphics`` objects manager.
-
-    This class provides access to ``Graphics`` object containers for a given
-    session so that graphics objects can be created.
-
-    Parameters
-    ----------
-    session : obj
-        Session object.
-    local_surfaces_provider : object, optional
-        Object providing local surfaces so that you can access surfaces
-        created in other modules, such as PyVista. The default is ``None``.
-
-    Attributes
-    ----------
-    Meshes : dict
-        Container for mesh objects.
-    Surfaces : dict
-        Container for surface objects.
-    Contours : dict
-        Container for contour objects.
-    Vectors : dict
-        Container for vector objects.
-    """
-
-    _sessions_state = {}
-
-    def __init__(self, session, local_surfaces_provider=None):
-        """Instantiate the ``Graphics`` object container.
-
-        Parameters
-        ----------
-        session : obj
-            Session object.
-        local_surfaces_provider : object, optional
-            Object providing local surfaces so that you can access surfaces
-            created in other modules, such as PyVista. The default is ``None``.
-        """
-        session_state = Graphics._sessions_state.get(session.id if session else 1)
-        if not session_state:
-            session_state = self.__dict__
-            Graphics._sessions_state[session.id if session else 1] = session_state
-            self.session = session
-            self._init_module(self, sys.modules[__name__])
-        else:
-            self.__dict__ = session_state
-        self._local_surfaces_provider = lambda: local_surfaces_provider or getattr(
-            self, "Surfaces", []
-        )
-
-    def _init_module(self, obj, mod):
-        from ansys.fluent.visualization.post_helper import PostAPIHelper
-
-        for name, cls in mod.__dict__.items():
-
-            if cls.__class__.__name__ in (
-                "PyLocalNamedObjectMetaAbstract",
-            ) and not inspect.isabstract(cls):
-                setattr(
-                    obj,
-                    cls.PLURAL,
-                    PyLocalContainer(self, cls, PostAPIHelper),
-                )
-
-    def add_outline_mesh(self):
-        """Add a mesh outline.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        meshes = getattr(self, "Meshes", None)
-        if meshes is not None:
-            outline_mesh_id = "Mesh-outline"
-            outline_mesh = meshes[outline_mesh_id]
-            outline_mesh.surfaces_list = [
-                k
-                for k, v in outline_mesh._api_helper.field_info()
-                .get_surfaces_info()
-                .items()
-                if v["type"] == "zone-surf" and v["zone_type"] != "interior"
-            ]
-            return outline_mesh
 
 
 class Mesh(MeshDefn):
@@ -122,7 +29,7 @@ class Mesh(MeshDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.core.post_objects.post_objects import  Graphics
 
         graphics_session = Graphics(session)
         mesh1 = graphics_session.Meshes["mesh-1"]
@@ -220,7 +127,7 @@ class Contour(ContourDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.core.post_objects.post_objects import  Graphics
 
         graphics_session = Graphics(session)
         contour1 = graphics_session.Contours["contour-1"]
@@ -255,7 +162,7 @@ class Vector(VectorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.core.post_objects.post_objects import  Graphics
 
         graphics_session = Graphics(session)
         vector1 = graphics_session.Vectors["vector-1"]
