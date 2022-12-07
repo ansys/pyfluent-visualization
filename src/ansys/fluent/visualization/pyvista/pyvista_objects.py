@@ -10,7 +10,9 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     SurfaceDefn,
     VectorDefn,
 )
-from ansys.fluent.core.post_objects.post_objects import Graphics as GraphicsBase
+from ansys.fluent.core.post_objects.post_objects_container import (
+    Graphics as GraphicsBase,
+)
 
 from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
     pyvista_windows_manager,

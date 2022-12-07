@@ -6,7 +6,7 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     MonitorDefn,
     XYPlotDefn,
 )
-from ansys.fluent.core.post_objects.post_objects import Plots as PlotsBase
+from ansys.fluent.core.post_objects.post_objects_container import Plots as PlotsBase
 
 from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
     matplot_windows_manager,
@@ -67,7 +67,7 @@ class MonitorPlot(MonitorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.core.post_objects.post_objects import Plots
+        from ansys.fluent.visualization.matplotlib import Plots
 
         matplotlib_plots =  Plots(session)
         plot1 = matplotlib_plots.Monitors["plot-1"]
