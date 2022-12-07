@@ -1,14 +1,21 @@
 """Module providing visualization objects for Matplotlib."""
+import sys
 from typing import Optional
 
 from ansys.fluent.core.post_objects.post_object_definitions import (
     MonitorDefn,
     XYPlotDefn,
 )
+from ansys.fluent.core.post_objects.post_objects import Plots as PlotsBase
 
 from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
     matplot_windows_manager,
 )
+
+
+class Plots(PlotsBase):
+    def __init__(self, session, local_surfaces_provider=None):
+        super().__init__(session, sys.modules[__name__], local_surfaces_provider)
 
 
 class XYPlot(XYPlotDefn):

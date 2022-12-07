@@ -1,5 +1,6 @@
 """Module providing visualization objects for PyVista."""
 
+import sys
 from typing import Optional
 
 from ansys.fluent.core.post_objects.post_object_definitions import (
@@ -9,10 +10,16 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     SurfaceDefn,
     VectorDefn,
 )
+from ansys.fluent.core.post_objects.post_objects import Graphics as GraphicsBase
 
 from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
     pyvista_windows_manager,
 )
+
+
+class Graphics(GraphicsBase):
+    def __init__(self, session, local_surfaces_provider=None):
+        super().__init__(session, sys.modules[__name__], local_surfaces_provider)
 
 
 class Mesh(MeshDefn):
