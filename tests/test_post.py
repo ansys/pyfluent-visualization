@@ -2,16 +2,18 @@ from pathlib import Path
 import pickle
 from typing import Dict, List, Optional, Union
 
-from ansys.fluent.core.post_objects.post_objects import Graphics, Plots
 from ansys.fluent.core.services.field_data import SurfaceDataType
 import numpy as np
 import pytest
+
+from ansys.fluent.visualization.matplotlib import Plots
+from ansys.fluent.visualization.pyvista import Graphics
 
 
 @pytest.fixture(autouse=True)
 def patch_mock_api_helper(mocker) -> None:
     mocker.patch(
-        "ansys.fluent.core.post_objects.post_helper.PostAPIHelper",
+        "ansys.fluent.visualization.post_helper.PostAPIHelper",
         MockAPIHelper,
     )
 

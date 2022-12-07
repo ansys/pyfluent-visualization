@@ -36,7 +36,7 @@ class Mesh(MeshDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.core.post_objects.post_objects import  Graphics
+        from ansys.fluent.visualization.pyvista import  Graphics
 
         graphics_session = Graphics(session)
         mesh1 = graphics_session.Meshes["mesh-1"]
@@ -134,7 +134,7 @@ class Contour(ContourDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.core.post_objects.post_objects import  Graphics
+        from ansys.fluent.visualization.pyvista import  Graphics
 
         graphics_session = Graphics(session)
         contour1 = graphics_session.Contours["contour-1"]
@@ -169,7 +169,7 @@ class Vector(VectorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.core.post_objects.post_objects import  Graphics
+        from ansys.fluent.visualization.pyvista import  Graphics
 
         graphics_session = Graphics(session)
         vector1 = graphics_session.Vectors["vector-1"]
