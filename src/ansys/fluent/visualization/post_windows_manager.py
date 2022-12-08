@@ -5,7 +5,10 @@ PostWindowManager is container for PostWindow.
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional, Union
 
-from ansys.fluent.visualization.post_object_defns import GraphicsDefn, PlotDefn
+from ansys.fluent.core.post_objects.post_object_definitions import (
+    GraphicsDefn,
+    PlotDefn,
+)
 
 
 class PostWindow:
