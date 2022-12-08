@@ -16,6 +16,11 @@ from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
 
 
 class Plots(PlotsContainer):
+    """
+    This class provides access to ``Plots`` object containers for a given
+    session so that plots can be created.
+    """
+
     def __init__(self, session, local_surfaces_provider=None):
         super().__init__(session, sys.modules[__name__], local_surfaces_provider)
 

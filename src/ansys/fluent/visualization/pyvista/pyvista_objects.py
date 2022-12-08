@@ -20,6 +20,11 @@ from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
 
 
 class Graphics(GraphicsContainer):
+    """
+    This class provides access to ``Graphics`` object containers for a given
+    session so that graphics objects can be created.
+    """
+
     def __init__(self, session, local_surfaces_provider=None):
         super().__init__(session, sys.modules[__name__], local_surfaces_provider)
 
