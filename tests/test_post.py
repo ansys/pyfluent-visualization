@@ -13,7 +13,7 @@ from ansys.fluent.visualization.pyvista import Graphics
 @pytest.fixture(autouse=True)
 def patch_mock_api_helper(mocker) -> None:
     mocker.patch(
-        "ansys.fluent.visualization.post_helper.PostAPIHelper",
+        "ansys.fluent.core.post_objects.post_helper.PostAPIHelper",
         MockAPIHelper,
     )
 
