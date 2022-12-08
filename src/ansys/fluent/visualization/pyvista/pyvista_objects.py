@@ -11,7 +11,7 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     VectorDefn,
 )
 from ansys.fluent.core.post_objects.post_objects_container import (
-    Graphics as GraphicsBase,
+    Graphics as GraphicsContainer,
 )
 
 from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
@@ -19,7 +19,7 @@ from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
 )
 
 
-class Graphics(GraphicsBase):
+class Graphics(GraphicsContainer):
     def __init__(self, session, local_surfaces_provider=None):
         super().__init__(session, sys.modules[__name__], local_surfaces_provider)
 

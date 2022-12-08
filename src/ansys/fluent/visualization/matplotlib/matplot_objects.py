@@ -6,14 +6,16 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     MonitorDefn,
     XYPlotDefn,
 )
-from ansys.fluent.core.post_objects.post_objects_container import Plots as PlotsBase
+from ansys.fluent.core.post_objects.post_objects_container import (
+    Plots as PlotsContainer,
+)
 
 from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
     matplot_windows_manager,
 )
 
 
-class Plots(PlotsBase):
+class Plots(PlotsContainer):
     def __init__(self, session, local_surfaces_provider=None):
         super().__init__(session, sys.modules[__name__], local_surfaces_provider)
 
