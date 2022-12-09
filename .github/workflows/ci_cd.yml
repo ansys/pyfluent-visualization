@@ -149,11 +149,16 @@ jobs:
           DOCS_CNAME: fluentvisualization.docs.pyansys.com
           FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
+      - name: Zip HTML Documentation before upload
+        run: |
+          sudo apt install zip -y
+          zip -r doc.zip doc/_build/html
+
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v3
         with:
           name: HTML-Documentation-tag-${{ matrix.image-tag }}
-          path: doc/_build/html
+          path: doc.zip
           retention-days: 7
 
       - name: Deploy
