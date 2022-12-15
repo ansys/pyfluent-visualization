@@ -8,9 +8,7 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
-from ansys.fluent.core.services.field_data import (
-    _FieldDataConstants,
-)
+from ansys.fluent.core.services.field_data import _FieldDataConstants
 import numpy as np
 
 
