@@ -8,10 +8,7 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
-from ansys.fluent.core.services.field_data import (
-    _FieldDataConstants,
-    merge_pathlines_data,
-)
+from ansys.fluent.core.services.field_data import _FieldDataConstants
 import numpy as np
 
 
@@ -170,7 +167,6 @@ class FieldDataExtractor:
     def _fetch_pathlines_data(self, obj, *args, **kwargs):
         if not obj.surfaces_list() or not obj.field():
             raise RuntimeError("Ptahline definition is incomplete.")
-
         obj._pre_display()
         field = obj.field()
         surfaces_list = obj.surfaces_list()
@@ -191,12 +187,11 @@ class FieldDataExtractor:
         try:
             fields = transaction.get_fields()
             pathlines_data = fields[(("type", "pathlines-field"), ("field", field))]
-            data = merge_pathlines_data(pathlines_data, field)
         except Exception as e:
             raise RuntimeError("Error while requesting data from server." + str(e))
         finally:
             obj._post_display()
-        return data
+        return pathlines_data
 
     def _fetch_vector_data(self, obj, *args, **kwargs):
 
