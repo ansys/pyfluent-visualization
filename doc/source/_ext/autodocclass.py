@@ -59,7 +59,7 @@ class PostDocumenter(ClassDocumenter):
                 if the_member_name.startswith("_"):
                     continue
                 cls = getattr(clss, the_member_name)
-                the_member_value = cls.__doc__.split("\n")[0]
+                the_member_value = (cls.__doc__ or "").split("\n")[0]
                 if cls.__class__.__name__ in (
                     "PyLocalPropertyMeta",
                     "PyLocalObjectMeta",

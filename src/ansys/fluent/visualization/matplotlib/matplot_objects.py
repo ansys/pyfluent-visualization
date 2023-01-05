@@ -2,6 +2,7 @@
 import sys
 from typing import Optional
 
+from ansys.fluent.core.meta import Command
 from ansys.fluent.core.post_objects.post_object_definitions import (
     MonitorDefn,
     XYPlotDefn,
@@ -48,6 +49,7 @@ class XYPlot(XYPlotDefn):
         plot1.plot("window-0")
     """
 
+    @Command
     def plot(self, window_id: Optional[str] = None):
         """Draw XYPlot.
 
@@ -82,6 +84,7 @@ class MonitorPlot(MonitorDefn):
         plot1.plot("window-0")
     """
 
+    @Command
     def plot(self, window_id: Optional[str] = None):
         """Draw Monitor Plot.
 
