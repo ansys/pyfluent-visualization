@@ -68,7 +68,7 @@ jobs:
           retention-days: 7
 
       - name: Deploy
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        if: matrix.image-tag == 'v23.1.0'
         uses: pyansys/actions/doc-deploy-stable@v2
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
