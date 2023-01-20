@@ -5,6 +5,10 @@ on:
     - cron:  '0 4 * * *'
   workflow_dispatch:
 
+env:
+  DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
+  DOC_DEPLOYMENT_IMAGE_TAG: v23.1.0
+  
 jobs:
   nightly_docs_build:
     runs-on: ubuntu-20.04
@@ -53,15 +57,23 @@ jobs:
         env:
           ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
           PYFLUENT_START_INSTANCE: 0
-          DOCS_CNAME: dev.fluentvisualization.docs.pyansys.com
           FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
-      - name: Deploy
-        if: ${{ matrix.image-tag == 'latest'}}
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+      - name: Upload HTML Documentation
+        uses: actions/upload-artifact@v3
         with:
-          repository-name: pyansys/pyfluent-visualization-dev-docs
-          token: ${{ secrets.DOC_DEPLOYMENT_PAT }}
-          BRANCH: gh-pages
-          FOLDER: doc/_build/html
-          CLEAN: true
+          name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
+          path: doc/_build/html
+
+          retention-days: 7
+
+      - name: Deploy
+        if: matrix.image-tag == 'v23.1.0'
+        uses: pyansys/actions/doc-deploy-dev@v3
+        with:
+          doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+
