@@ -68,8 +68,8 @@ jobs:
           retention-days: 7
 
       - name: Deploy
-        if: matrix.image-tag == 'v23.1.0'
-        uses: pyansys/actions/doc-deploy-dev@v3
+        if: matrix.image-tag ==  DOC_DEPLOYMENT_IMAGE_TAG        
+        uses: pyansys/actions/doc-deploy-dev@v3 
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
           cname: ${{ env.DOCUMENTATION_CNAME }}
