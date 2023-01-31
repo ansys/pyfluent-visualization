@@ -2,6 +2,8 @@
 import sys
 from typing import Optional
 
+from ansys.fluent.core.meta import Command
+from ansys.fluent.core.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.core.post_objects.post_object_definitions import (
     MonitorDefn,
     XYPlotDefn,
@@ -21,8 +23,12 @@ class Plots(PlotsContainer):
     session so that plots can be created.
     """
 
-    def __init__(self, session, local_surfaces_provider=None):
-        super().__init__(session, sys.modules[__name__], local_surfaces_provider)
+    def __init__(
+        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider=None
+    ):
+        super().__init__(
+            session, sys.modules[__name__], post_api_helper, local_surfaces_provider
+        )
 
 
 class XYPlot(XYPlotDefn):
@@ -48,6 +54,7 @@ class XYPlot(XYPlotDefn):
         plot1.plot("window-0")
     """
 
+    @Command
     def plot(self, window_id: Optional[str] = None):
         """Draw XYPlot.
 
@@ -82,6 +89,7 @@ class MonitorPlot(MonitorDefn):
         plot1.plot("window-0")
     """
 
+    @Command
     def plot(self, window_id: Optional[str] = None):
         """Draw Monitor Plot.
 

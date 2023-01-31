@@ -3,6 +3,8 @@
 import sys
 from typing import Optional
 
+from ansys.fluent.core.meta import Command
+from ansys.fluent.core.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.core.post_objects.post_object_definitions import (
     ContourDefn,
     MeshDefn,
@@ -25,8 +27,12 @@ class Graphics(GraphicsContainer):
     session so that graphics objects can be created.
     """
 
-    def __init__(self, session, local_surfaces_provider=None):
-        super().__init__(session, sys.modules[__name__], local_surfaces_provider)
+    def __init__(
+        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider=None
+    ):
+        super().__init__(
+            session, sys.modules[__name__], post_api_helper, local_surfaces_provider
+        )
 
 
 class Mesh(MeshDefn):
@@ -52,6 +58,7 @@ class Mesh(MeshDefn):
         mesh1.display("window-0")
     """
 
+    @Command
     def display(self, window_id: Optional[str] = None):
         """Display mesh graphics.
 
@@ -78,6 +85,7 @@ class Pathlines(PathlinesDefn):
         pathlines1.display("window-0")
     """
 
+    @Command
     def display(self, window_id: Optional[str] = None):
         """Display mesh graphics.
 
@@ -115,6 +123,7 @@ class Surface(SurfaceDefn):
         surface1.display("window-0")
     """
 
+    @Command
     def display(self, window_id: Optional[str] = None):
         """Display surface graphics.
 
@@ -150,6 +159,7 @@ class Contour(ContourDefn):
         contour1.display("window-0")
     """
 
+    @Command
     def display(self, window_id: Optional[str] = None):
         """Display contour graphics.
 
@@ -186,6 +196,7 @@ class Vector(VectorDefn):
         vector1.display("window-0")
     """
 
+    @Command
     def display(self, window_id: Optional[str] = None):
         """Display vector graphics.
 
