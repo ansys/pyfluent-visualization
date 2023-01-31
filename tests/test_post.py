@@ -181,8 +181,9 @@ class MockAPIHelper:
 
 
 def test_field_api():
-    pyvista_graphics = Graphics(session=None)
+    pyvista_graphics = Graphics(session=None, post_api_helper=MockAPIHelper)
     contour1 = pyvista_graphics.Contours["contour-1"]
+
     field_info = contour1._api_helper.field_info()
     field_data = contour1._api_helper.field_data()
 
@@ -432,21 +433,23 @@ def test_surface_object():
     assert "surf-1" in cont1.surfaces_list.allowed_values
 
     # New surface is not available in allowed values for plots.
-    matplotlib_plots = Plots(session=None)
+    matplotlib_plots = Plots(session=None, post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
     assert "surf-1" not in p1.surfaces_list.allowed_values
 
     # With local surface provider it becomes available.
     local_surfaces_provider = Graphics(session=None).Surfaces
     matplotlib_plots = Plots(
-        session=None, local_surfaces_provider=local_surfaces_provider
+        session=None,
+        post_api_helper=MockAPIHelper,
+        local_surfaces_provider=local_surfaces_provider,
     )
     assert "surf-1" in p1.surfaces_list.allowed_values
 
 
 def test_create_plot_objects():
-    matplotlib_plots1 = Plots(session=None)
-    matplotlib_plots2 = Plots(session=None)
+    matplotlib_plots1 = Plots(session=None, post_api_helper=MockAPIHelper)
+    matplotlib_plots2 = Plots(session=None, post_api_helper=MockAPIHelper)
     matplotlib_plots1.XYPlots["p-1"]
     matplotlib_plots2.XYPlots["p-2"]
 
@@ -457,7 +460,7 @@ def test_create_plot_objects():
 
 def test_xyplot_object():
 
-    matplotlib_plots = Plots(session=None)
+    matplotlib_plots = Plots(session=None, post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
     field_info = p1._api_helper.field_info()
 
