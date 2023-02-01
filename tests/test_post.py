@@ -182,7 +182,7 @@ class MockAPIHelper:
 
 def test_field_api():
     pyvista_graphics = Graphics(session=None)
-    contour1 = pyvista_graphics.Contours["contour-1"]
+    contour1 = pyvista_graphics.Contour["contour-1"]
     field_info = contour1._api_helper.field_info()
     field_data = contour1._api_helper.field_data()
 
@@ -224,8 +224,8 @@ def test_field_api():
 def test_graphics_operations():
     pyvista_graphics1 = Graphics(session=None)
     pyvista_graphics2 = Graphics(session=None)
-    contour1 = pyvista_graphics1.Contours["contour-1"]
-    contour2 = pyvista_graphics2.Contours["contour-2"]
+    contour1 = pyvista_graphics1.Contour["contour-1"]
+    contour2 = pyvista_graphics2.Contour["contour-2"]
 
     # create
     assert pyvista_graphics1 is not pyvista_graphics2
@@ -260,7 +260,7 @@ def test_graphics_operations():
 def test_contour_object():
 
     pyvista_graphics = Graphics(session=None)
-    contour1 = pyvista_graphics.Contours["contour-1"]
+    contour1 = pyvista_graphics.Contour["contour-1"]
     field_info = contour1._api_helper.field_info()
 
     # Surfaces allowed values should be all surfaces.
@@ -347,7 +347,7 @@ def test_contour_object():
 def test_vector_object():
 
     pyvista_graphics = Graphics(session=None)
-    vector1 = pyvista_graphics.Vectors["contour-1"]
+    vector1 = pyvista_graphics.Vector["contour-1"]
     field_info = vector1._api_helper.field_info()
 
     assert vector1.surfaces_list.allowed_values == list(
@@ -386,7 +386,7 @@ def test_vector_object():
 def test_surface_object():
 
     pyvista_graphics = Graphics(session=None)
-    surf1 = pyvista_graphics.Surfaces["surf-1"]
+    surf1 = pyvista_graphics.Surface["surf-1"]
     field_info = surf1._api_helper.field_info()
 
     surf1.definition.type = "iso-surface"
@@ -432,21 +432,21 @@ def test_surface_object():
     assert "surf-1" in cont1.surfaces_list.allowed_values
 
     # New surface is not available in allowed values for plots.
-    matplotlib_plots = Plots(session=None)
+    matplotlib_plots = Plot(session=None)
     p1 = matplotlib_plots.XYPlots["p-1"]
     assert "surf-1" not in p1.surfaces_list.allowed_values
 
     # With local surface provider it becomes available.
-    local_surfaces_provider = Graphics(session=None).Surfaces
-    matplotlib_plots = Plots(
+    local_surfaces_provider = Graphics(session=None).Surface
+    matplotlib_plots = Plot(
         session=None, local_surfaces_provider=local_surfaces_provider
     )
     assert "surf-1" in p1.surfaces_list.allowed_values
 
 
 def test_create_plot_objects():
-    matplotlib_plots1 = Plots(session=None)
-    matplotlib_plots2 = Plots(session=None)
+    matplotlib_plots1 = Plot(session=None)
+    matplotlib_plots2 = Plot(session=None)
     matplotlib_plots1.XYPlots["p-1"]
     matplotlib_plots2.XYPlots["p-2"]
 
@@ -457,7 +457,7 @@ def test_create_plot_objects():
 
 def test_xyplot_object():
 
-    matplotlib_plots = Plots(session=None)
+    matplotlib_plots = Plot(session=None)
     p1 = matplotlib_plots.XYPlots["p-1"]
     field_info = p1._api_helper.field_info()
 
