@@ -181,7 +181,7 @@ class MockAPIHelper:
 
 
 def test_field_api():
-    pyvista_graphics = Graphics(session=None, post_api_helper=MockAPIHelper)
+    pyvista_graphics = Graphics(session=None)
     contour1 = pyvista_graphics.Contours["contour-1"]
     field_info = contour1._api_helper.field_info()
     field_data = contour1._api_helper.field_data()
