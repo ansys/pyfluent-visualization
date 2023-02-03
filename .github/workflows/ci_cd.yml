@@ -60,6 +60,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
         python-version: ['3.7', '3.8', '3.9', '3.10']
+
       fail-fast: false
 
     steps:
@@ -87,7 +88,7 @@ jobs:
     name: Documentation
     runs-on: [self-hosted, pyfluent]
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v23.1.0
+      DOC_DEPLOYMENT_IMAGE_TAG: v22.2.0
       DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
 
     steps:
@@ -105,7 +106,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: 3.9
+          python-version: 3.8
 
       - name: Install OS packages
         run: |
@@ -125,7 +126,7 @@ jobs:
       - name: Pull Fluent docker image
         run: make docker-pull
         env:
-          FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
+          FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
       - name: Retrieve pyfluent-visualization version
         run: |
