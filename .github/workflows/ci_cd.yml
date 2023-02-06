@@ -106,18 +106,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: 3.8
-
-      - name: Install OS packages
-        run: |
-          sudo apt update
-          sudo apt install pandoc libegl1
+          python-version: 3.9
 
       - name: Install pyfluent-visualization
         run: make install
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v
         with:
           registry: ghcr.io
           username: ${{ secrets.GH_USERNAME }}
