@@ -88,7 +88,7 @@ jobs:
     name: Documentation
     runs-on: [self-hosted, pyfluent]
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v23.1.0
+      DOC_DEPLOYMENT_IMAGE_TAG: v22.2.0
       DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
 
     steps:
@@ -112,7 +112,7 @@ jobs:
         run: make install
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ secrets.GH_USERNAME }}
