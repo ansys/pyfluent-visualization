@@ -65,7 +65,6 @@ extensions = [
 # Intersphinx mapping
 intersphinx_mapping = {
     "python": ("https://docs.python.org/dev", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "pandas": ("https://pandas.pydata.org/docs/", None),
@@ -113,7 +112,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -176,7 +175,7 @@ sphinx_gallery_conf = {
 
 
 # -- Options for HTML output -------------------------------------------------
-html_short_title = html_title = "PyFluent-Visualization"
+html_short_title = html_title = "pyfluent-visualization"
 html_theme = "ansys_sphinx_theme"
 html_logo = pyansys_logo_black
 html_theme_options = {
