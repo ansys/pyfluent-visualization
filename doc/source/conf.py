@@ -49,7 +49,6 @@ extensions = [
     "notfound.extension",
     "numpydoc",
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosectionlabel",
     "sphinx.ext.autosummary",
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
@@ -65,6 +64,7 @@ extensions = [
 # Intersphinx mapping
 intersphinx_mapping = {
     "python": ("https://docs.python.org/dev", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "pandas": ("https://pandas.pydata.org/docs/", None),
@@ -156,7 +156,7 @@ sphinx_gallery_conf = {
     "examples_dirs": ["../../examples/"],
     # path where to save gallery generated examples
     "gallery_dirs": ["examples"],
-    # Patter to search for example files
+    # Pattern to search for example files
     "filename_pattern": r"\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
@@ -175,7 +175,7 @@ sphinx_gallery_conf = {
 
 
 # -- Options for HTML output -------------------------------------------------
-html_short_title = html_title = "pyfluent-visualization"
+html_short_title = html_title = "PyFluent-Visualization"
 html_theme = "ansys_sphinx_theme"
 html_logo = pyansys_logo_black
 html_theme_options = {
