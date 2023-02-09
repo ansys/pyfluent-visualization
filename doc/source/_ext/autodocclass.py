@@ -28,11 +28,9 @@ class PostDocumenter(ClassDocumenter):
         super().add_directive_header(sig)
         self.add_line("   ", self.get_sourcename())
 
-    def add_content(
-        self, more_content: Optional[StringList], no_docstring: bool = False
-    ) -> None:
+    def add_content(self, more_content: Optional[StringList]) -> None:
 
-        super().add_content(more_content, no_docstring)
+        super().add_content(more_content)
 
         source_name = self.get_sourcename()
         object = self.object
@@ -61,7 +59,7 @@ class PostDocumenter(ClassDocumenter):
                 if the_member_name.startswith("_"):
                     continue
                 cls = getattr(clss, the_member_name)
-                the_member_value = cls.__doc__.split("\n")[0]
+                the_member_value = (cls.__doc__ or "").split("\n")[0]
                 if cls.__class__.__name__ in (
                     "PyLocalPropertyMeta",
                     "PyLocalObjectMeta",
