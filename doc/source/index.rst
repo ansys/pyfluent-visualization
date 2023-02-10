@@ -28,8 +28,7 @@ you can:
 Documentation and issues
 ------------------------
 In addition to installation and usage information, the PyFluent-Visualization
-documentation provides :ref:`API reference`, :ref:`Examples`, and :ref:`Contributing`
-sections.
+documentation provides :ref:`ref_index_api`, :ref:`ref_example_gallery`, and :ref:`ref_contributing` sections.
 
 On the `PyFluent Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues>`_
 page, you can create issues to submit questions, reports burgs, and request new features. To reach
