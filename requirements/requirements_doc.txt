@@ -13,7 +13,7 @@ sphinxcontrib-websupport==1.2.4
 sphinxemoji==0.2.0
 pandas==1.5.2
 vtk==9.1.0
-pyvista==0.37.0
+pyvista==0.38.2
 pyvistaqt==0.9.0
 pyside6==6.4.2
 matplotlib==3.6.3
