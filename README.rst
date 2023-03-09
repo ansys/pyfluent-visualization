@@ -1,4 +1,4 @@
-PyFluent Visualization
+PyFluent-Visualization
 ======================
 |pyansys| |pypi| |GH-CI| |MIT| |black| |pre-commit|
 
