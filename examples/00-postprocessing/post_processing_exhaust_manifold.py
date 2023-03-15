@@ -69,7 +69,7 @@ mesh1.show_edges = True
 ###############################################################################
 # Get surfaces list
 # ~~~~~~~~~~~~~~~~~
-# Get the surfaccase list.
+# Get the surfaces list.
 
 mesh1.surfaces_list = [
     "in1",
