@@ -96,15 +96,13 @@ class PyVistaWindow(PostWindow):
         elif obj.__class__.__name__ == "Pathlines":
             self._fetch_pathlines(obj)
 
-    def render(self, overlay=None):
+    def render(self):
         """Plot graphics."""
         if not self.post_object:
             return
         obj = self.post_object
         plotter = self.plotter
         camera = plotter.camera.copy()
-        if overlay is not None:
-            self.overlay = overlay
         if not self.overlay:
             if in_notebook() and self.plotter.theme._jupyter_backend == "pythreejs":
                 plotter.remove_actor(plotter.renderer.actors.copy())
@@ -140,12 +138,10 @@ class PyVistaWindow(PostWindow):
             plotter.show()
             self._visible = True
 
-    def plot(self, overlay=None):
+    def plot(self):
         """Plot graphics."""
-        if overlay is not None:
-            self.overlay = overlay
         self.fetch()
-        self.render(self.overlay)
+        self.render()
 
     # private methods
 
@@ -737,7 +733,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._condition.notify()
 
     def _open_and_plot_console(
-        self, obj: object, window_id: str, fetch_data: bool
+        self, obj: object, window_id: str, fetch_data: bool = False
     ) -> None:
         if self._exit_thread:
             return
