@@ -79,10 +79,11 @@ class PyVistaWindow(PostWindow):
         }
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
+        """Set data for graphics."""
         self._data[data_type] = data
 
     def fetch(self):
-        """Plot graphics."""
+        """Fetch data for graphics."""
         if not self.post_object:
             return
         obj = self.post_object
@@ -98,7 +99,7 @@ class PyVistaWindow(PostWindow):
             self._fetch_pathlines(obj)
 
     def render(self):
-        """Plot graphics."""
+        """Render graphics."""
         if not self.post_object:
             return
         obj = self.post_object
@@ -140,7 +141,7 @@ class PyVistaWindow(PostWindow):
             self._visible = True
 
     def plot(self):
-        """Plot graphics."""
+        """Display graphics."""
         self.fetch()
         self.render()
 
