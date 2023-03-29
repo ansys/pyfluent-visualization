@@ -50,6 +50,7 @@ class PyVistaWindow(PostWindow):
         )
         self.overlay: bool = False
         self.fetch_data: bool = False
+        self.show_window: bool = True
         self.animate: bool = False
         self.close: bool = False
         self.refresh: bool = False
@@ -134,7 +135,7 @@ class PyVistaWindow(PostWindow):
             view_fun()
         else:
             plotter.camera = camera.copy()
-        if not self._visible:
+        if not self._visible and self.show_window:
             plotter.show()
             self._visible = True
 
