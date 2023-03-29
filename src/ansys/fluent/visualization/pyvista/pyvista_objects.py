@@ -68,7 +68,7 @@ class Mesh(MeshDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        pyvista_windows_manager.plot(self, window_id, True)
+        pyvista_windows_manager.plot(self, window_id=window_id, fetch_data=True)
 
 
 class Pathlines(PathlinesDefn):
@@ -95,7 +95,7 @@ class Pathlines(PathlinesDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        pyvista_windows_manager.plot(self, window_id, True)
+        pyvista_windows_manager.plot(self, window_id=window_id, fetch_data=True)
 
 
 class Surface(SurfaceDefn):
@@ -133,7 +133,7 @@ class Surface(SurfaceDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        pyvista_windows_manager.plot(self, window_id, True)
+        pyvista_windows_manager.plot(self, window_id=window_id, fetch_data=True)
 
 
 class Contour(ContourDefn):
@@ -169,7 +169,7 @@ class Contour(ContourDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        pyvista_windows_manager.plot(self, window_id, True)
+        pyvista_windows_manager.plot(self, window_id=window_id, fetch_data=True)
 
 
 class Vector(VectorDefn):
@@ -206,4 +206,4 @@ class Vector(VectorDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        pyvista_windows_manager.plot(self, window_id, True)
+        pyvista_windows_manager.plot(self, window_id=window_id, fetch_data=True)
