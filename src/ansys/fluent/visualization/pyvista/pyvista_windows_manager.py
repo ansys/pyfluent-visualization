@@ -1,7 +1,7 @@
 """Module for pyVista windows management."""
 import itertools
 import threading
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import _FluentConnection
 from ansys.fluent.core.post_objects.post_object_definitions import GraphicsDefn
@@ -9,7 +9,7 @@ from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 import numpy as np
 import pyvista as pv
 from pyvistaqt import BackgroundPlotter
-
+from enum import Enum
 from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.post_data_extractor import FieldDataExtractor
 from ansys.fluent.visualization.post_windows_manager import (
@@ -17,7 +17,14 @@ from ansys.fluent.visualization.post_windows_manager import (
     PostWindowsManager,
 )
 
+class FieldDataType(Enum):
+    """Provides surface data types."""
 
+    Meshes = 1
+    Vectors = 2
+    Contours = 3
+    Pathlines = 4
+    
 class PyVistaWindow(PostWindow):
     """Provides for managing PyVista windows."""
 
@@ -38,13 +45,15 @@ class PyVistaWindow(PostWindow):
             if in_notebook() or get_config()["blocking"]
             else BackgroundPlotter(title=f"PyFluent ({self.id})")
         )
-        self.animate: bool = False
         self.overlay: bool = False
+        self.fetch_data : bool = False        
+        self.animate: bool = False
         self.close: bool = False
         self.refresh: bool = False
         self.update: bool = False
         self._visible: bool = False
         self._init_properties()
+        self._data = {}
         self._colors = {
             "red": [255, 0, 0],
             "lime": [0, 255, 0],
@@ -65,6 +74,9 @@ class PyVistaWindow(PostWindow):
             "white": [255, 255, 255],
         }
 
+    def set_data(self, data_type:FieldDataType, data: Dict[int, Dict[str, np.array]]):
+        self._data[data_type] = data
+    
     def fetch(self):
         """Plot graphics."""
         if not self.post_object:
@@ -152,7 +164,8 @@ class PyVistaWindow(PostWindow):
         )
 
     def _fetch_vector(self, obj):
-        self._vector_data = FieldDataExtractor(obj).fetch_data()
+        if self._data.get(FieldDataType.Vectors) is None or self.fetch_data:
+            self._data[FieldDataType.Vectors] = FieldDataExtractor(obj).fetch_data()
 
     def _display_vector(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         field_info = obj._api_helper.field_info()
@@ -164,7 +177,7 @@ class PyVistaWindow(PostWindow):
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
 
-        for surface_id, mesh_data in self._vector_data.items():
+        for surface_id, mesh_data in self._data[FieldDataType.Vectors].items():
             if "vertices" not in mesh_data or "faces" not in mesh_data:
                 continue
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
@@ -225,7 +238,8 @@ class PyVistaWindow(PostWindow):
                 plotter.add_mesh(mesh, show_edges=True, color="white")
 
     def _fetch_pathlines(self, obj):
-        self._pathlines_data = FieldDataExtractor(obj).fetch_data()
+        if self._data.get(FieldDataType.Pathlines) is None or self.fetch_data:
+            self._data[FieldDataType.Pathlines] = FieldDataExtractor(obj).fetch_data()
 
     def _display_pathlines(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         field = obj.field()
@@ -237,7 +251,7 @@ class PyVistaWindow(PostWindow):
         scalar_bar_args = self._scalar_bar_default_properties()
 
         # loop over all meshes
-        for surface_id, surface_data in self._pathlines_data.items():
+        for surface_id, surface_data in self._data[FieldDataType.Pathlines].items():
             if "vertices" not in surface_data or "lines" not in surface_data:
                 continue
             surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
@@ -258,7 +272,8 @@ class PyVistaWindow(PostWindow):
             )
 
     def _fetch_contour(self, obj):
-        self._contour_data = FieldDataExtractor(obj).fetch_data()
+        if self._data.get(FieldDataType.Contours) is None or self.fetch_data:
+            self._data[FieldDataType.Contours] = FieldDataExtractor(obj).fetch_data()    
 
     def _display_contour(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         # contour properties
@@ -275,7 +290,7 @@ class PyVistaWindow(PostWindow):
         scalar_bar_args = self._scalar_bar_default_properties()
 
         # loop over all meshes
-        for surface_id, surface_data in self._contour_data.items():
+        for surface_id, surface_data in self._data[FieldDataType.Contours].items():
             if "vertices" not in surface_data or "faces" not in surface_data:
                 continue
             surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
@@ -413,13 +428,12 @@ class PyVistaWindow(PostWindow):
             del post_session.Meshes[dummy_object]
 
     def _fetch_mesh(self, obj):
-        try:
-            self._mesh_data = FieldDataExtractor(obj).fetch_data()
-        except RuntimeError:
-            pass
+        if self._data.get(FieldDataType.Meshes) is None or self.fetch_data:
+            self._data[FieldDataType.Meshes] = FieldDataExtractor(obj).fetch_data() 
 
+            
     def _display_mesh(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
-        for surface_id, mesh_data in self._mesh_data.items():
+        for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
             if "vertices" not in mesh_data or "faces" not in mesh_data:
                 continue
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
@@ -549,7 +563,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             if window:
                 window.post_object = object
 
-    def plot(self, object: GraphicsDefn, window_id: Optional[str] = None) -> None:
+    def plot(self, object: GraphicsDefn, window_id: Optional[str] = None, fetch_data: Optional[bool] = False) -> None:
         """Draw a plot.
 
         Parameters
@@ -571,9 +585,9 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             if not window_id:
                 window_id = self._get_unique_window_id()
             if in_notebook() or get_config()["blocking"]:
-                self._plot_notebook(object, window_id)
+                self._plot_notebook(object, window_id, fetch_data)
             else:
-                self._open_and_plot_console(object, window_id)
+                self._open_and_plot_console(object, window_id, fetch_data)
 
     def save_graphic(
         self,
@@ -700,6 +714,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                             100,
                         )
                     window.post_object = self._post_object
+                    window.fetch_data = self._fetch_data
                     window.animate = animate
                     window.update = True
                     self._post_windows[self._window_id] = window
@@ -714,12 +729,13 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._post_windows.clear()
             self._condition.notify()
 
-    def _open_and_plot_console(self, obj: object, window_id: str) -> None:
+    def _open_and_plot_console(self, obj: object, window_id: str, fetch_data: bool) -> None:
         if self._exit_thread:
             return
         with self._condition:
             self._window_id = window_id
             self._post_object = obj
+            self._fetch_data = fetch_data
 
         if not self._plotter_thread:
             if _FluentConnection._monitor_thread:
@@ -740,9 +756,10 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._post_windows[window_id] = window
         return window
 
-    def _plot_notebook(self, obj: object, window_id: str) -> None:
+    def _plot_notebook(self, obj: object, window_id: str, fetch_data: bool) -> None:
         window = self._open_window_notebook(window_id)
         window.post_object = obj
+        window.fetch_data = fetch_data
         plotter = window.plotter
         window.plot()
 
