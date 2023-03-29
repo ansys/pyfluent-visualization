@@ -1,4 +1,5 @@
 """Module for pyVista windows management."""
+from enum import Enum
 import itertools
 import threading
 from typing import Dict, List, Optional, Union
@@ -9,13 +10,14 @@ from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
 import numpy as np
 import pyvista as pv
 from pyvistaqt import BackgroundPlotter
-from enum import Enum
+
 from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.post_data_extractor import FieldDataExtractor
 from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
     PostWindowsManager,
 )
+
 
 class FieldDataType(Enum):
     """Provides surface data types."""
@@ -24,7 +26,8 @@ class FieldDataType(Enum):
     Vectors = 2
     Contours = 3
     Pathlines = 4
-    
+
+
 class PyVistaWindow(PostWindow):
     """Provides for managing PyVista windows."""
 
@@ -46,7 +49,7 @@ class PyVistaWindow(PostWindow):
             else BackgroundPlotter(title=f"PyFluent ({self.id})")
         )
         self.overlay: bool = False
-        self.fetch_data : bool = False        
+        self.fetch_data: bool = False
         self.animate: bool = False
         self.close: bool = False
         self.refresh: bool = False
@@ -74,9 +77,9 @@ class PyVistaWindow(PostWindow):
             "white": [255, 255, 255],
         }
 
-    def set_data(self, data_type:FieldDataType, data: Dict[int, Dict[str, np.array]]):
+    def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         self._data[data_type] = data
-    
+
     def fetch(self):
         """Plot graphics."""
         if not self.post_object:
@@ -273,7 +276,7 @@ class PyVistaWindow(PostWindow):
 
     def _fetch_contour(self, obj):
         if self._data.get(FieldDataType.Contours) is None or self.fetch_data:
-            self._data[FieldDataType.Contours] = FieldDataExtractor(obj).fetch_data()    
+            self._data[FieldDataType.Contours] = FieldDataExtractor(obj).fetch_data()
 
     def _display_contour(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         # contour properties
@@ -429,9 +432,8 @@ class PyVistaWindow(PostWindow):
 
     def _fetch_mesh(self, obj):
         if self._data.get(FieldDataType.Meshes) is None or self.fetch_data:
-            self._data[FieldDataType.Meshes] = FieldDataExtractor(obj).fetch_data() 
+            self._data[FieldDataType.Meshes] = FieldDataExtractor(obj).fetch_data()
 
-            
     def _display_mesh(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
             if "vertices" not in mesh_data or "faces" not in mesh_data:
@@ -563,7 +565,12 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             if window:
                 window.post_object = object
 
-    def plot(self, object: GraphicsDefn, window_id: Optional[str] = None, fetch_data: Optional[bool] = False) -> None:
+    def plot(
+        self,
+        object: GraphicsDefn,
+        window_id: Optional[str] = None,
+        fetch_data: Optional[bool] = False,
+    ) -> None:
         """Draw a plot.
 
         Parameters
@@ -729,7 +736,9 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._post_windows.clear()
             self._condition.notify()
 
-    def _open_and_plot_console(self, obj: object, window_id: str, fetch_data: bool) -> None:
+    def _open_and_plot_console(
+        self, obj: object, window_id: str, fetch_data: bool
+    ) -> None:
         if self._exit_thread:
             return
         with self._condition:

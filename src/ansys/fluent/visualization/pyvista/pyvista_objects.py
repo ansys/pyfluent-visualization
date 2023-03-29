@@ -169,7 +169,7 @@ class Contour(ContourDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        pyvista_windows_manager.plot(self, window_id,  True)
+        pyvista_windows_manager.plot(self, window_id, True)
 
 
 class Vector(VectorDefn):
@@ -206,4 +206,4 @@ class Vector(VectorDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        pyvista_windows_manager.plot(self, window_id,  True)
+        pyvista_windows_manager.plot(self, window_id, True)
