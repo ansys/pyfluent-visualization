@@ -486,18 +486,18 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self._exit_thread: bool = False
         self._app = None
 
-    def get_window(self, window_id: str) -> Union[BackgroundPlotter, pv.Plotter]:
-        """Get the PyVista plotter.
+    def get_window(self, window_id: str) -> PyVistaWindow:
+        """Get the PyVista window.
 
         Parameters
         ----------
         window_id : str
-            Window ID for the plotter.
+            Window ID.
 
         Returns
         -------
-        Union[BackgroundPlotter, pv.Plotter]
-            PyVista plotter.
+        PyVistaWindow
+            PyVista window.
         """
         with self._condition:
             return self._post_windows.get(window_id, None)
