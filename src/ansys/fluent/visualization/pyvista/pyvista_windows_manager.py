@@ -568,6 +568,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         object: GraphicsDefn,
         window_id: Optional[str] = None,
         fetch_data: Optional[bool] = False,
+        overlay: Optional[bool] = False,
     ) -> None:
         """Draw a plot.
 
@@ -578,7 +579,10 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         window_id : str, optional
             Window ID for the plot. The default is ``None``, in which
             case a unique ID is assigned.
-
+        fetch_data : bool, optional
+            If set to `True`,data will always be fetched.
+        overlay : bool, optional
+            If set to `True`, new graphics will be overlaid over existing.
         Raises
         ------
         RuntimeError
@@ -590,9 +594,9 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             if not window_id:
                 window_id = self._get_unique_window_id()
             if in_notebook() or get_config()["blocking"]:
-                self._plot_notebook(object, window_id, fetch_data)
+                self._plot_notebook(object, window_id, fetch_data, overlay)
             else:
-                self._open_and_plot_console(object, window_id, fetch_data)
+                self._open_and_plot_console(object, window_id, fetch_data, overlay)
 
     def save_graphic(
         self,
@@ -720,6 +724,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                         )
                     window.post_object = self._post_object
                     window.fetch_data = self._fetch_data
+                    window.overlay = self._overlay
                     window.animate = animate
                     window.update = True
                     self._post_windows[self._window_id] = window
@@ -735,7 +740,11 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._condition.notify()
 
     def _open_and_plot_console(
-        self, obj: object, window_id: str, fetch_data: bool = False
+        self,
+        obj: object,
+        window_id: str,
+        fetch_data: bool = False,
+        overlay: bool = False,
     ) -> None:
         if self._exit_thread:
             return
@@ -743,6 +752,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._window_id = window_id
             self._post_object = obj
             self._fetch_data = fetch_data
+            self._overlay = overlay
 
         if not self._plotter_thread:
             if _FluentConnection._monitor_thread:
@@ -763,10 +773,13 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._post_windows[window_id] = window
         return window
 
-    def _plot_notebook(self, obj: object, window_id: str, fetch_data: bool) -> None:
+    def _plot_notebook(
+        self, obj: object, window_id: str, fetch_data: bool, overlay: bool
+    ) -> None:
         window = self._open_window_notebook(window_id)
         window.post_object = obj
         window.fetch_data = fetch_data
+        window.overlay = overlay
         plotter = window.plotter
         window.plot()
 
