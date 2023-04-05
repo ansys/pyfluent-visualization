@@ -582,7 +582,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         fetch_data : bool, optional
             Whether to fetch data. The default is ``False``.
         overlay : bool, optional
-            If set to `True`, new graphics will be overlaid over existing.
+            Whether to overlay graphics over existing graphics. The default is ``False``.
         Raises
         ------
         RuntimeError
