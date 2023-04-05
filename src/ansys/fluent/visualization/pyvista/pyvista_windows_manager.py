@@ -580,7 +580,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             Window ID for the plot. The default is ``None``, in which
             case a unique ID is assigned.
         fetch_data : bool, optional
-            If set to `True`,data will always be fetched.
+            Whether to fetch data. The default is ``False``.
         overlay : bool, optional
             If set to `True`, new graphics will be overlaid over existing.
         Raises
