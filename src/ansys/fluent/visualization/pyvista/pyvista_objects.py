@@ -143,7 +143,7 @@ class Surface(SurfaceDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         overlay : bool, optional
-            If set to ``True``, graphics will be overlaid over existing graphics.
+            Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
         pyvista_windows_manager.plot(
