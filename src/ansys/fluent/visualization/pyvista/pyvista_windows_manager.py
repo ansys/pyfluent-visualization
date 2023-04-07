@@ -213,7 +213,7 @@ class PyVistaWindow(PostWindow):
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
-                    range = field_info.get_range(obj.field(), False)
+                    range = field_info.get_scalar_fields_range(obj.field(), False)
                 else:
                     range = [np.min(scalar_field), np.max(scalar_field)]
 
@@ -360,7 +360,7 @@ class PyVistaWindow(PostWindow):
                         field_info = obj._api_helper.field_info()
                         plotter.add_mesh(
                             mesh,
-                            clim=field_info.get_range(obj.field(), False),
+                            clim=field_info.get_scalar_fields_range(obj.field(), False),
                             scalars=field,
                             show_edges=obj.show_edges(),
                             scalar_bar_args=scalar_bar_args,
@@ -397,6 +397,7 @@ class PyVistaWindow(PostWindow):
             contour.surfaces_list = [obj._name]
             contour.show_edges = obj.show_edges()
             contour.range.auto_range_on.global_range = True
+            contour.boundary_values = True
             self._fetch_contour(contour)
             del post_session.Contours[dummy_object]
         else:
@@ -419,6 +420,7 @@ class PyVistaWindow(PostWindow):
             contour.surfaces_list = [obj._name]
             contour.show_edges = obj.show_edges()
             contour.range.auto_range_on.global_range = True
+            contour.boundary_values = True
             self._display_contour(contour, plotter)
             del post_session.Contours[dummy_object]
         else:
@@ -582,7 +584,8 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         fetch_data : bool, optional
             Whether to fetch data. The default is ``False``.
         overlay : bool, optional
-            Whether to overlay graphics over existing graphics. The default is ``False``.
+            Whether to overlay graphics over existing graphics.
+            The default is ``False``.
         Raises
         ------
         RuntimeError
