@@ -59,7 +59,7 @@ class Mesh(MeshDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None):
+    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
         """Display mesh graphics.
 
         Parameters
@@ -67,8 +67,13 @@ class Mesh(MeshDefn):
         window_id : str, optional
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
+        overlay : bool, optional
+            Whether to overlay graphics over existing graphics.
+            The default is ``False``.
         """
-        pyvista_windows_manager.plot(self, window_id)
+        pyvista_windows_manager.plot(
+            self, window_id=window_id, overlay=overlay, fetch_data=True
+        )
 
 
 class Pathlines(PathlinesDefn):
@@ -86,7 +91,7 @@ class Pathlines(PathlinesDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None):
+    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
         """Display mesh graphics.
 
         Parameters
@@ -94,8 +99,13 @@ class Pathlines(PathlinesDefn):
         window_id : str, optional
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
+        overlay : bool, optional
+            Whether to overlay graphics over existing graphics.
+            The default is ``False``.
         """
-        pyvista_windows_manager.plot(self, window_id)
+        pyvista_windows_manager.plot(
+            self, window_id=window_id, overlay=overlay, fetch_data=True
+        )
 
 
 class Surface(SurfaceDefn):
@@ -124,7 +134,7 @@ class Surface(SurfaceDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None):
+    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
         """Display surface graphics.
 
         Parameters
@@ -132,8 +142,13 @@ class Surface(SurfaceDefn):
         window_id : str, optional
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
+        overlay : bool, optional
+            Whether to overlay graphics over existing graphics.
+            The default is ``False``.
         """
-        pyvista_windows_manager.plot(self, window_id)
+        pyvista_windows_manager.plot(
+            self, window_id=window_id, overlay=overlay, fetch_data=True
+        )
 
 
 class Contour(ContourDefn):
@@ -160,7 +175,7 @@ class Contour(ContourDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None):
+    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
         """Display contour graphics.
 
         Parameters
@@ -168,8 +183,13 @@ class Contour(ContourDefn):
         window_id : str, optional
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
+        overlay : bool, optional
+            Whether to overlay graphics over existing graphics.
+            The default is ``False``.
         """
-        pyvista_windows_manager.plot(self, window_id)
+        pyvista_windows_manager.plot(
+            self, window_id=window_id, overlay=overlay, fetch_data=True
+        )
 
 
 class Vector(VectorDefn):
@@ -197,7 +217,7 @@ class Vector(VectorDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None):
+    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
         """Display vector graphics.
 
         Parameters
@@ -205,5 +225,10 @@ class Vector(VectorDefn):
         window_id : str, optional
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
+        overlay : bool, optional
+            Whether to overlay graphics over existing graphics.
+            The default is ``False``.
         """
-        pyvista_windows_manager.plot(self, window_id)
+        pyvista_windows_manager.plot(
+            self, window_id=window_id, overlay=overlay, fetch_data=True
+        )
