@@ -135,7 +135,7 @@ class MockFieldInfo:
     def __init__(self, solver_data):
         self._session_data = solver_data
 
-    def get_range(
+    def get_scalar_fields_range(
         self, field: str, node_value: bool = False, surface_ids: List[int] = []
     ) -> List[float]:
         if not surface_ids:
