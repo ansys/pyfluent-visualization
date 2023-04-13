@@ -135,7 +135,7 @@ class MockFieldInfo:
     def __init__(self, solver_data):
         self._session_data = solver_data
 
-    def get_range(
+    def get_scalar_fields_range(
         self, field: str, node_value: bool = False, surface_ids: List[int] = []
     ) -> List[float]:
         if not surface_ids:
@@ -152,7 +152,7 @@ class MockFieldInfo:
             maximum = max(range[1], maximum) if maximum else range[1]
         return [minimum, maximum]
 
-    def get_fields_info(self) -> dict:
+    def get_scalar_fields_info(self) -> dict:
         return self._session_data["scalar_fields_info"]
 
     def get_vector_fields_info(self) -> dict:
@@ -281,7 +281,7 @@ def test_contour_object():
     contour1.surfaces_list = contour1.surfaces_list.allowed_values
 
     # Field allowed values should be all fields.
-    assert contour1.field.allowed_values == list(field_info.get_fields_info())
+    assert contour1.field.allowed_values == list(field_info.get_scalar_fields_info())
 
     # Important. Because there is no type checking so following passes.
     contour1.field = [contour1.field.allowed_values[0]]
@@ -328,19 +328,25 @@ def test_contour_object():
         if k in contour1.surfaces_list()
     ]
 
-    range = field_info.get_range(contour1.field(), contour1.node_values(), surfaces_id)
+    range = field_info.get_scalar_fields_range(
+        contour1.field(), contour1.node_values(), surfaces_id
+    )
     assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
     assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
 
     # Range should adjust to min/max of cell field values.
     contour1.node_values = False
-    range = field_info.get_range(contour1.field(), contour1.node_values(), surfaces_id)
+    range = field_info.get_scalar_fields_range(
+        contour1.field(), contour1.node_values(), surfaces_id
+    )
     assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
     assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
 
     # Range should adjust to min/max of node field values
     contour1.field = "pressure"
-    range = field_info.get_range(contour1.field(), contour1.node_values(), surfaces_id)
+    range = field_info.get_scalar_fields_range(
+        contour1.field(), contour1.node_values(), surfaces_id
+    )
     assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
     assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
 
@@ -375,7 +381,7 @@ def test_vector_object():
         if k in vector1.surfaces_list()
     ]
 
-    range = field_info.get_range("velocity-magnitude", False)
+    range = field_info.get_scalar_fields_range("velocity-magnitude", False)
     assert range == pytest.approx(
         [
             vector1.range.auto_range_off.minimum(),
@@ -402,7 +408,7 @@ def test_surface_object():
     surf1.definition.type = "iso-surface"
     iso_surf = surf1.definition.iso_surface
 
-    assert iso_surf.field.allowed_values == list(field_info.get_fields_info())
+    assert iso_surf.field.allowed_values == list(field_info.get_scalar_fields_info())
 
     # Important. Because there is no type checking so following test passes.
     iso_surf.field = [iso_surf.field.allowed_values[0]]
@@ -413,7 +419,7 @@ def test_surface_object():
 
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "temperature"
-    range = field_info.get_range(iso_surf.field(), True)
+    range = field_info.get_scalar_fields_range(iso_surf.field(), True)
     assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
     # Setting out of range should throw exception
@@ -425,7 +431,7 @@ def test_surface_object():
 
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "pressure"
-    range = field_info.get_range(iso_surf.field(), True)
+    range = field_info.get_scalar_fields_range(iso_surf.field(), True)
     assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
     # New surface should be in allowed values for graphics.
@@ -476,7 +482,9 @@ def test_xyplot_object():
 
     p1.surfaces_list = p1.surfaces_list.allowed_values
 
-    assert p1.y_axis_function.allowed_values == list(field_info.get_fields_info())
+    assert p1.y_axis_function.allowed_values == list(
+        field_info.get_scalar_fields_info()
+    )
 
     # Important. Because there is no type checking so following passes.
     p1.y_axis_function = [p1.y_axis_function.allowed_values[0]]
