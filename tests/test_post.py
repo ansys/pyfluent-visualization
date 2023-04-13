@@ -145,7 +145,7 @@ class MockFieldInfo:
             ]
         minimum, maximum = None, None
         for surface_id in surface_ids:
-            range = self._session_data["range"][fields[0]][surface_id][
+            range = self._session_data["range"][fields][surface_id][
                 "node_value" if node_value else "cell_value"
             ]
             minimum = min(range[0], minimum) if minimum else range[0]
