@@ -13,8 +13,8 @@ page on the Ansys website.
 ***************
 Install package
 ***************
-The ``ansys-fluent-visualization`` package supports Python 3.7 through
-Python 3.10 on Windows and Linux.
+The ``ansys-fluent-visualization`` package supports Python 3.8 through
+Python 3.11 on Windows and Linux.
 
 Install the latest release from `PyPi
 <https://pypi.org/project/ansys-fluent-visualization/>`_ with:

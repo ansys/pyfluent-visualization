@@ -36,28 +36,6 @@ required_libraries = {
 }
 
 
-# def _get_vtk_install_cmd(reinstall=False):
-#     is64 = struct.calcsize("P") * 8 == 64
-#     if sys.version_info.minor == 10 and is64:
-#         if platform.system().lower() == "linux":
-#             return f"  Please {'reinstall' if reinstall else 'install'} vtk with `pip install {'-I' if reinstall else ''} https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl`"  # noqa: E501
-#
-#         elif platform.system().lower() == "windows":
-#             return f"  Please {'reinstall' if reinstall else 'install'} vtk with `pip install {'-I' if reinstall else ''} https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-win_amd64.whl`"  # noqa: E501
-#     else:
-#         return (
-#             f"  Please {'reinstall' if reinstall else 'install'} "
-#             f"vtk with `pip install vtk=={required_libraries[lib]}`."
-#         )
-
-
-# def _update_vtk_version():
-#     is64 = struct.calcsize("P") * 8 == 64
-#     if sys.version_info.minor in (9, 10) and is64:
-#         required_libraries.update({"vtk": "9.1.0.dev0"})
-
-
-# _update_vtk_version()
 installed = {pkg.key for pkg in pkg_resources.working_set}
 installed_libraries = [
     lib for lib, version in required_libraries.items() if lib in installed
@@ -73,8 +51,6 @@ if missing_libraries:
             (
                 f"  Please install {lib} with "
                 f"`pip install {lib}=={required_libraries[lib]}`."
-                # if lib != "vtk"
-                # else _get_vtk_install_cmd()
             )
         )
 if installed_libraries:
@@ -97,8 +73,6 @@ if installed_libraries:
                 (
                     f"  Please re-install {lib} with "
                     f"`pip install -I {lib}=={required_libraries[lib]}`."
-                    # if lib != "vtk"
-                    # else _get_vtk_install_cmd(True)
                 )
             )
 
