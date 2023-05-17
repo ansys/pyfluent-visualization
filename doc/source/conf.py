@@ -184,7 +184,7 @@ html_theme_options = {
         "version_match": get_version_match(__version__),
     },
     "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
-    "github_url": "https://github.com/pyansys/pyfluent-visualization",
+    "github_url": "https://github.com/ansys/pyfluent-visualization",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [

@@ -19,7 +19,7 @@ development mode, run:
 
 .. code::
 
-   git clone https://github.com/pyansys/pyfluent-visualization.git
+   git clone https://github.com/ansys/pyfluent-visualization.git
    cd pyfluent-visualization
    pip install pip -U
    pip install -e .
@@ -47,7 +47,7 @@ You can clear all HTML files from the ``_builds/html`` directory with:
 
 Post issues
 -----------
-Use the `PyFluent Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues>`_
+Use the `PyFluent Visualization Issues <https://github.com/ansys/pyfluent-visualization/issues>`_
 page to submit questions, report bugs, and request new features.
 
 
