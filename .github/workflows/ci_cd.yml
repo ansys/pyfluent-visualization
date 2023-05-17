@@ -99,8 +99,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ secrets.GH_USERNAME }}
-          password: ${{ secrets.REPO_DOWNLOAD_PAT }}
+          username: ${{ secrets.BOT_APPLICATION_ID }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull Fluent docker image
         run: make docker-pull
