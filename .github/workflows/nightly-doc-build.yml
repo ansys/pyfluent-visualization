@@ -69,7 +69,7 @@ jobs:
 
       - name: Deploy
         if: matrix.image-tag ==  DOC_DEPLOYMENT_IMAGE_TAG        
-        uses: pyansys/actions/doc-deploy-dev@v3 
+        uses: ansys/actions/doc-deploy-dev@v4
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
           cname: ${{ env.DOCUMENTATION_CNAME }}
