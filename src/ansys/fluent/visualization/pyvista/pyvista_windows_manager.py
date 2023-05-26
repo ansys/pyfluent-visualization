@@ -642,6 +642,8 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         windows_id : List[str], optional
             IDs of the windows to refresh. The default is ``[]``, in which case
             all windows are refreshed.
+        overlay : bool, Optional
+            Overlay graphics over existing graphics.
         """
         with self._condition:
             windows_id = self._get_windows_id(session_id, windows_id)
