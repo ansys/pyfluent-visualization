@@ -629,6 +629,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self,
         session_id: Optional[str] = "",
         windows_id: Optional[List[str]] = [],
+        overlay: Optional[bool] = False,
     ) -> None:
         """Refresh windows.
 
@@ -648,7 +649,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 window = self._post_windows.get(window_id)
                 if window:
                     window.refresh = True
-                    self.plot(window.post_object, window.id)
+                    self.plot(window.post_object, window.id, overlay=overlay)
 
     def animate_windows(
         self,

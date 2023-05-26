@@ -110,6 +110,7 @@ class PostWindowsManager(metaclass=ABCMeta):
         self,
         session_id: Optional[str] = "",
         windows_id: Optional[List[str]] = [],
+        overlay: Optional[bool] = False,
     ) -> None:
         """Refresh windows.
 
