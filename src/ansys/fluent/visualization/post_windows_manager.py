@@ -110,6 +110,7 @@ class PostWindowsManager(metaclass=ABCMeta):
         self,
         session_id: Optional[str] = "",
         windows_id: Optional[List[str]] = [],
+        overlay: Optional[bool] = False,
     ) -> None:
         """Refresh windows.
 
@@ -123,6 +124,9 @@ class PostWindowsManager(metaclass=ABCMeta):
         windows_id : List[str], optional
             Windows id to refresh. If not specified, all windows will be
             refreshed.
+
+        overlay : bool, Optional
+            Overlay graphics over existing graphics.
         """
         pass
 
