@@ -46,7 +46,6 @@ jobs:
 
       - name: Generate the documentation
         run: make build-doc
-        continue-on-error: true  # temporary
         env:
           ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
           PYFLUENT_START_INSTANCE: 0
