@@ -11,7 +11,7 @@ env:
   
 jobs:
   nightly_docs_build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         image-tag: [v22.2.0, v23.1.0, v23.2.0]
@@ -36,8 +36,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ secrets.BOT_APPLICATION_ID }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GH_USERNAME }}
+          password: ${{ secrets.REPO_DOWNLOAD_PAT }}
 
       - name: Pull Fluent docker image
         run: make docker-pull
@@ -60,7 +60,7 @@ jobs:
           retention-days: 7
 
       - name: Deploy
-        if: matrix.image-tag == 'v23.1.0'
+        if: matrix.image-tag == env.DOC_DEPLOYMENT_IMAGE_TAG
         uses: ansys/actions/doc-deploy-dev@v4
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
