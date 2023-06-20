@@ -393,7 +393,6 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         session_id: Optional[str] = "",
         windows_id: Optional[List[str]] = [],
     ) -> List[str]:
-
         return [
             window_id
             for window_id in [

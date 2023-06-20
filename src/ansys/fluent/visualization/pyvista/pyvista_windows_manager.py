@@ -456,7 +456,6 @@ class PyVistaWindow(PostWindow):
 
     def _get_refresh_for_plotter(self, window: "PyVistaWindow"):
         def refresh():
-
             with PyVistaWindowsManager._condition:
                 plotter = window.plotter
                 if window.close:

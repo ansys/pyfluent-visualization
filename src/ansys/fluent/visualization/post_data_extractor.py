@@ -194,7 +194,6 @@ class FieldDataExtractor:
         return pathlines_data
 
     def _fetch_vector_data(self, obj, *args, **kwargs):
-
         if not obj.surfaces_list():
             raise RuntimeError("Vector definition is incomplete.")
 
