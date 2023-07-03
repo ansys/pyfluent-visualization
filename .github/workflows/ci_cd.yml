@@ -20,6 +20,7 @@ env:
   # you might end up reusing a previous cache if it haven't been deleted already.
   # It applies 7 days retention policy by default.
   RESET_EXAMPLES_CACHE: 0
+  PYFLUENT_LAUNCH_CONTAINER: 1
 
 jobs:
 
