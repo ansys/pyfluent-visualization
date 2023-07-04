@@ -135,7 +135,7 @@ class MockFieldInfo:
     def __init__(self, solver_data):
         self._session_data = solver_data
 
-    def get_scalar_fields_range(
+    def get_scalar_field_range(
         self, field: str, node_value: bool = False, surface_ids: List[int] = []
     ) -> List[float]:
         if not surface_ids:
@@ -328,7 +328,7 @@ def test_contour_object():
         if k in contour1.surfaces_list()
     ]
 
-    range = field_info.get_scalar_fields_range(
+    range = field_info.get_scalar_field_range(
         contour1.field(), contour1.node_values(), surfaces_id
     )
     assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
@@ -336,7 +336,7 @@ def test_contour_object():
 
     # Range should adjust to min/max of cell field values.
     contour1.node_values = False
-    range = field_info.get_scalar_fields_range(
+    range = field_info.get_scalar_field_range(
         contour1.field(), contour1.node_values(), surfaces_id
     )
     assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
@@ -344,7 +344,7 @@ def test_contour_object():
 
     # Range should adjust to min/max of node field values
     contour1.field = "pressure"
-    range = field_info.get_scalar_fields_range(
+    range = field_info.get_scalar_field_range(
         contour1.field(), contour1.node_values(), surfaces_id
     )
     assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
@@ -381,7 +381,7 @@ def test_vector_object():
         if k in vector1.surfaces_list()
     ]
 
-    range = field_info.get_scalar_fields_range("velocity-magnitude", False)
+    range = field_info.get_scalar_field_range("velocity-magnitude", False)
     assert range == pytest.approx(
         [
             vector1.range.auto_range_off.minimum(),
@@ -419,7 +419,7 @@ def test_surface_object():
 
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "temperature"
-    range = field_info.get_scalar_fields_range(iso_surf.field(), True)
+    range = field_info.get_scalar_field_range(iso_surf.field(), True)
     assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
     # Setting out of range should throw exception
@@ -431,7 +431,7 @@ def test_surface_object():
 
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "pressure"
-    range = field_info.get_scalar_fields_range(iso_surf.field(), True)
+    range = field_info.get_scalar_field_range(iso_surf.field(), True)
     assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
     # New surface should be in allowed values for graphics.
