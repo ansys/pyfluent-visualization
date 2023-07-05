@@ -137,7 +137,7 @@ jobs:
           retention-days: 7
 
       - name: Deploy
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && not contains(github.ref, 'dev')
         uses: ansys/actions/doc-deploy-stable@v4
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
