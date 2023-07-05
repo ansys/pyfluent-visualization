@@ -213,7 +213,7 @@ class PyVistaWindow(PostWindow):
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
-                    range = field_info.get_scalar_fields_range(obj.field(), False)
+                    range = field_info.get_scalar_field_range(obj.field(), False)
                 else:
                     range = [np.min(scalar_field), np.max(scalar_field)]
 
@@ -360,7 +360,7 @@ class PyVistaWindow(PostWindow):
                         field_info = obj._api_helper.field_info()
                         plotter.add_mesh(
                             mesh,
-                            clim=field_info.get_scalar_fields_range(obj.field(), False),
+                            clim=field_info.get_scalar_field_range(obj.field(), False),
                             scalars=field,
                             show_edges=obj.show_edges(),
                             scalar_bar_args=scalar_bar_args,
@@ -629,6 +629,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self,
         session_id: Optional[str] = "",
         windows_id: Optional[List[str]] = [],
+        overlay: Optional[bool] = False,
     ) -> None:
         """Refresh windows.
 
@@ -641,6 +642,8 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         windows_id : List[str], optional
             IDs of the windows to refresh. The default is ``[]``, in which case
             all windows are refreshed.
+        overlay : bool, Optional
+            Overlay graphics over existing graphics.
         """
         with self._condition:
             windows_id = self._get_windows_id(session_id, windows_id)
@@ -648,7 +651,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 window = self._post_windows.get(window_id)
                 if window:
                     window.refresh = True
-                    self.plot(window.post_object, window.id)
+                    self.plot(window.post_object, window.id, overlay=overlay)
 
     def animate_windows(
         self,

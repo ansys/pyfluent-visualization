@@ -36,7 +36,7 @@ for switching from viewing the documentation for the latest stable release
 to viewing the documentation for the development version or previously
 released versions.
 
-On the `PyFluent-Visualization Issues <https://github.com/pyansys/pyfluent-visualization/issues>`_
+On the `PyFluent-Visualization Issues <https://github.com/ansys/pyfluent-visualization/issues>`_
 page, you can create issues to submit questions, reports burgs, and request new features. To reach
 the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 

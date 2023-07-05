@@ -10,8 +10,8 @@ PyFluent-Visualization
    :target: https://pypi.org/project/ansys-fluent-visualization
    :alt: PyPI
 
-.. |GH-CI| image:: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/pyansys/pyfluent-visualization/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/ansys/pyfluent-visualization/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/ansys/pyfluent-visualization/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -22,14 +22,14 @@ PyFluent-Visualization
    :target: https://github.com/psf/black
    :alt: Black
 
-.. |pre-commit| image:: https://results.pre-commit.ci/badge/github/pyansys/pyfluent-visualization/main.svg
-   :target: https://results.pre-commit.ci/latest/github/pyansys/pyfluent-visualization/main
+.. |pre-commit| image:: https://results.pre-commit.ci/badge/github/ansys/pyfluent-visualization/main.svg
+   :target: https://results.pre-commit.ci/latest/github/ansys/pyfluent-visualization/main
    :alt: pre-commit.ci status
 
 Overview
 --------
 PyFluent-Visualization provides postprocessing and visualization
-capabilities for `PyFluent <https://github.com/pyansys/pyfluent>`_
+capabilities for `PyFluent <https://github.com/ansys/pyfluent>`_
 using `PyVista <https://docs.pyvista.org/>`_ and
 `Matplotlib <https://matplotlib.org/>`_.
 
@@ -44,14 +44,14 @@ to viewing the documentation for the development version or previously
 released versions.
 
 On the `PyFluent Visualization Issues
-<https://github.com/pyansys/pyfluent-visualization/issues>`_ page, you can create
+<https://github.com/ansys/pyfluent-visualization/issues>`_ page, you can create
 issues to submit questions, reports burgs, and request new features. To reach
 the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
 Installation
 ------------
-The ``ansys-fluent-visualization`` package supports Python 3.7 through Python
-3.10 on Windows and Linux.
+The ``ansys-fluent-visualization`` package supports Python 3.8 through Python
+3.11 on Windows and Linux.
 
 If you are using Python 3.10, download and install the wheel file for the ``vtk`` package from
 `here for Windows <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-win_amd64.whl>`_
@@ -65,11 +65,11 @@ Install the latest release from `PyPI
    pip install ansys-fluent-visualization
 
 Alternatively, install the latest release from `GitHub
-<https://github.com/pyansys/pyfluent-visualization>`_ with:
+<https://github.com/ansys/pyfluent-visualization>`_ with:
 
 .. code:: console
 
-   pip install git+https://github.com/pyansys/pyfluent-visualization.git
+   pip install git+https://github.com/ansys/pyfluent-visualization.git
 
 
 If you plan on doing local *development* of PyFluent-Visualization with Git,
@@ -77,7 +77,7 @@ install with:
 
 .. code:: console
 
-   git clone https://github.com/pyansys/pyfluent-visualization.git
+   git clone https://github.com/ansys/pyfluent-visualization.git
    cd pyfluent-visualization
    pip install pip -U
    pip install -e .

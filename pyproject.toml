@@ -11,7 +11,7 @@ license = "MIT"
 authors = ["ANSYS, Inc. <ansys.support@ansys.com>"]
 maintainers = ["PyAnsys developers <pyansys.maintainers@ansys.com>"]
 readme = "README.rst"
-repository = "https://github.com/pyansys/pyfluent-visualization"
+repository = "https://github.com/ansys/pyfluent-visualization"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
@@ -23,11 +23,11 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4.0"
+python = ">=3.8,<4.0"
 importlib-metadata = {version = "^4.0", python = "<3.8"}
-ansys-fluent-core = "~=0.13.dev0"
-vtk = {version = ">=9.0.3", python = "<=3.9"}
-pyvista = ">=0.33.2"
+ansys-fluent-core = "~=0.14.dev0"
+vtk = ">=9.2.6"
+pyvista = ">=0.39.0"
 pyvistaqt = ">=0.7.0"
 pyside6 = ">=6.2.3"
 matplotlib = ">=3.5.1"
