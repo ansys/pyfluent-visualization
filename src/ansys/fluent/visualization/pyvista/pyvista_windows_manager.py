@@ -213,7 +213,7 @@ class PyVistaWindow(PostWindow):
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
-                    range = field_info.get_scalar_fields_range(obj.field(), False)
+                    range = field_info.get_scalar_field_range(obj.field(), False)
                 else:
                     range = [np.min(scalar_field), np.max(scalar_field)]
 
@@ -360,7 +360,7 @@ class PyVistaWindow(PostWindow):
                         field_info = obj._api_helper.field_info()
                         plotter.add_mesh(
                             mesh,
-                            clim=field_info.get_scalar_fields_range(obj.field(), False),
+                            clim=field_info.get_scalar_field_range(obj.field(), False),
                             scalars=field,
                             show_edges=obj.show_edges(),
                             scalar_bar_args=scalar_bar_args,
