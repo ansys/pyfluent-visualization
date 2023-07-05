@@ -259,7 +259,6 @@ def test_graphics_operations():
 
 
 def test_contour_object():
-
     pyvista_graphics = Graphics(session=None)
     contour1 = pyvista_graphics.Contours["contour-1"]
     field_info = contour1._api_helper.field_info()
@@ -352,7 +351,6 @@ def test_contour_object():
 
 
 def test_vector_object():
-
     pyvista_graphics = Graphics(session=None)
     vector1 = pyvista_graphics.Vectors["contour-1"]
     field_info = vector1._api_helper.field_info()
@@ -391,7 +389,6 @@ def test_vector_object():
 
 
 def test_surface_object():
-
     pyvista_graphics = Graphics(session=None)
     surf1 = pyvista_graphics.Surfaces["surf-1"]
     field_info = surf1._api_helper.field_info()
@@ -465,7 +462,6 @@ def test_create_plot_objects():
 
 
 def test_xyplot_object():
-
     matplotlib_plots = Plots(session=None, post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
     field_info = p1._api_helper.field_info()
