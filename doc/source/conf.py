@@ -180,11 +180,11 @@ html_theme = "ansys_sphinx_theme"
 html_logo = pyansys_logo_black
 html_theme_options = {
     "switcher": {
-        "json_url": f"https://{cname}/release/versions.json",
+        "json_url": f"https://{cname}/versions.json",
         "version_match": get_version_match(__version__),
     },
     "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
-    "github_url": "https://github.com/pyansys/pyfluent-visualization",
+    "github_url": "https://github.com/ansys/pyfluent-visualization",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [

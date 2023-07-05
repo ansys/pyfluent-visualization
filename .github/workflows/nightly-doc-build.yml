@@ -8,24 +8,19 @@ on:
 env:
   DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
   DOC_DEPLOYMENT_IMAGE_TAG: v23.1.0
+  ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  PYFLUENT_TIMEOUT_FORCE_EXIT: 5
+  PYFLUENT_LAUNCH_CONTAINER: 1
   
 jobs:
   nightly_docs_build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         image-tag: [v22.2.0, v23.1.0, v23.2.0]
 
     steps:
       - uses: actions/checkout@v3
-
-      # used for documentation deployment
-      - name: Get Bot Application Token
-        id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v2
-        with:
-          application_id: ${{ secrets.BOT_APPLICATION_ID }}
-          application_private_key: ${{ secrets.BOT_APPLICATION_PRIVATE_KEY }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -55,8 +50,6 @@ jobs:
       - name: Generate the documentation
         run: make build-doc
         env:
-          ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-          PYFLUENT_START_INSTANCE: 0
           FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
 
       - name: Upload HTML Documentation
@@ -68,8 +61,8 @@ jobs:
           retention-days: 7
 
       - name: Deploy
-        if: matrix.image-tag == 'v23.1.0'
-        uses: pyansys/actions/doc-deploy-dev@v3.0.7 
+        if: matrix.image-tag == env.DOC_DEPLOYMENT_IMAGE_TAG
+        uses: ansys/actions/doc-deploy-dev@v4
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
           cname: ${{ env.DOCUMENTATION_CNAME }}

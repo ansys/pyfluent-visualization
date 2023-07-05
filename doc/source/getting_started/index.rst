@@ -24,11 +24,11 @@ Install the latest release from `PyPi
    pip install ansys-fluent-visualization
 
 Alternatively, install the latest version from the `GitHub
-<https://github.com/pyansys/pyfluent-visualization>`_ with:
+<https://github.com/ansys/pyfluent-visualization>`_ with:
 
 .. code::
 
-   pip install git+https://github.com/pyansys/pyfluent-visualization.git
+   pip install git+https://github.com/ansys/pyfluent-visualization.git
 
 
 If you plan on doing local *development* of PyFluent-Visualization with Git,
@@ -36,7 +36,7 @@ install with:
 
 .. code::
 
-   git clone https://github.com/pyansys/pyfluent-visualization.git
+   git clone https://github.com/ansys/pyfluent-visualization.git
    cd pyfluent-visualization
    pip install -e .
 
