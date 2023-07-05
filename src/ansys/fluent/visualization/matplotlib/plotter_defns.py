@@ -155,7 +155,7 @@ class Plotter:
         plt.title(self._title)
         plt.xlabel(self._xlabel)
         plt.ylabel(self._ylabel)
-        plt.legend(loc="upper right")
+        plt.legend(labels=self._curves, loc="upper right")
 
 
 class ProcessPlotter(Plotter):
