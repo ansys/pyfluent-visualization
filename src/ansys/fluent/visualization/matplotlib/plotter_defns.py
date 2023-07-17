@@ -12,7 +12,7 @@ class Plotter:
     def __init__(
         self,
         window_id: str,
-        curves: Optional[List[str]] = [],
+        curves: Optional[List[str]] = None,
         title: Optional[str] = "XY Plot",
         xlabel: Optional[str] = "position",
         ylabel: Optional[str] = "",
@@ -39,7 +39,7 @@ class Plotter:
         remote_process: bool, optional
             Is remote process.
         """
-        self._curves = curves
+        self._curves = [] if curves is None else curves
         self._title = title
         self._xlabel = xlabel
         self._ylabel = ylabel

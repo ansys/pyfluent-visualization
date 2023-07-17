@@ -182,8 +182,8 @@ class PyVistaWindow(PostWindow):
             if "vertices" not in mesh_data or "faces" not in mesh_data:
                 continue
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
-            mesh_data[obj.vectors_of()].shape = (
-                mesh_data[obj.vectors_of()].size // 3,
+            mesh_data[vectors_of].shape = (
+                mesh_data[vectors_of].size // 3,
                 3,
             )
             vector_scale = mesh_data["vector-scale"][0]
@@ -198,12 +198,12 @@ class PyVistaWindow(PostWindow):
                     mesh_data["vertices"],
                     faces=mesh_data["faces"],
                 )
-            mesh.cell_data["vectors"] = mesh_data[obj.vectors_of()]
+            mesh.cell_data["vectors"] = mesh_data[vectors_of]
             scalar_field = mesh_data[obj.field()]
-            velocity_magnitude = np.linalg.norm(mesh_data[obj.vectors_of()], axis=1)
+            velocity_magnitude = np.linalg.norm(mesh_data[vectors_of], axis=1)
             if obj.range.option() == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
-                range = [auto_range_off.minimum(), auto_range_off.maximum()]
+                range_ = [auto_range_off.minimum(), auto_range_off.maximum()]
                 if auto_range_off.clip_to_range():
                     velocity_magnitude = np.ma.masked_outside(
                         velocity_magnitude,
@@ -213,9 +213,9 @@ class PyVistaWindow(PostWindow):
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
-                    range = field_info.get_scalar_field_range(obj.field(), False)
+                    range_ = field_info.get_scalar_field_range(obj.field(), False)
                 else:
-                    range = [np.min(scalar_field), np.max(scalar_field)]
+                    range_ = [np.min(scalar_field), np.max(scalar_field)]
 
             if obj.skip():
                 vmag = np.zeros(velocity_magnitude.size)
@@ -233,7 +233,7 @@ class PyVistaWindow(PostWindow):
                 glyphs,
                 scalars=field,
                 scalar_bar_args=scalar_bar_args,
-                clim=range,
+                clim=range_,
             )
             if obj.show_edges():
                 plotter.add_mesh(mesh, show_edges=True, color="white")
@@ -246,7 +246,6 @@ class PyVistaWindow(PostWindow):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
-        node_values = True
 
         # scalar bar properties
         scalar_bar_args = self._scalar_bar_default_properties()
@@ -262,10 +261,7 @@ class PyVistaWindow(PostWindow):
                 lines=surface_data["lines"],
             )
 
-            if node_values:
-                mesh.point_data[field] = surface_data[obj.field()]
-            else:
-                mesh.cell_data[field] = surface_data[obj.field()]
+            mesh.point_data[field] = surface_data[obj.field()]
             plotter.add_mesh(
                 mesh,
                 scalars=field,
@@ -285,7 +281,6 @@ class PyVistaWindow(PostWindow):
         filled = obj.filled()
         contour_lines = obj.contour_lines()
         node_values = obj.node_values()
-        boundary_values = obj.boundary_values()
 
         # scalar bar properties
         scalar_bar_args = self._scalar_bar_default_properties()
@@ -483,7 +478,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self._post_windows: Dict[str:PyVistaWindow] = {}
         self._plotter_thread: threading.Thread = None
         self._post_object: GraphicsDefn = None
-        self._window_id: str = None
+        self._window_id: Optional[str] = None
         self._exit_thread: bool = False
         self._app = None
 
@@ -537,7 +532,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             if not window_id:
                 window_id = self._get_unique_window_id()
             if in_notebook() or get_config()["blocking"]:
-                window = self._open_window_notebook(window_id)
+                self._open_window_notebook(window_id)
             else:
                 self._open_and_plot_console(None, window_id)
             return window_id
@@ -770,7 +765,6 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
     def _open_window_notebook(self, window_id: str) -> pv.Plotter:
         window = self._post_windows.get(window_id)
-        plotter = None
         if window and not window.close and window.refresh:
             window.refresh = False
         else:
@@ -785,7 +779,6 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         window.post_object = obj
         window.fetch_data = fetch_data
         window.overlay = overlay
-        plotter = window.plotter
         window.plot()
 
     def _get_windows_id(
