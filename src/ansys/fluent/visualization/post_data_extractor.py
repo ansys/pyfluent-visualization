@@ -12,6 +12,12 @@ from ansys.fluent.core.services.field_data import _FieldDataConstants
 import numpy as np
 
 
+class ServerDataRequestError(RuntimeError):
+    """Exception class for server data errors."""
+    def __init__(self):            
+        super().__init__("Error while requesting data from server.")
+
+
 class FieldDataExtractor:
     """FieldData DataExtractor."""
 
@@ -67,8 +73,8 @@ class FieldDataExtractor:
             fields = transaction.get_fields()
             # 0 is old tag
             surfaces_data = fields.get(0) or fields[(("type", "surface-data"),)]
-        except:
-            raise RuntimeError("Error while requesting data from server.")
+        except Exception as e:
+            raise ServerDataRequestError() from e
         finally:
             obj._post_display()
         return surfaces_data
@@ -104,9 +110,6 @@ class FieldDataExtractor:
         # contour properties
         obj._pre_display()
         field = obj.field()
-        range_option = obj.range.option()
-        filled = obj.filled()
-        contour_lines = obj.contour_lines()
         node_values = obj.node_values()
         boundary_values = obj.boundary_values()
 
@@ -158,8 +161,8 @@ class FieldDataExtractor:
                 ]
             )
             surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
-        except Exception:
-            raise RuntimeError("Error while requesting data from server.")
+        except Exception as e:
+            raise ServerDataRequestError() from e
         finally:
             obj._post_display()
         return self._merge(surface_data, scalar_field_data)
@@ -169,7 +172,6 @@ class FieldDataExtractor:
             raise RuntimeError("Ptahline definition is incomplete.")
         obj._pre_display()
         field = obj.field()
-        surfaces_list = obj.surfaces_list()
 
         field_info = obj._api_helper.field_info()
         field_data = obj._api_helper.field_data()
@@ -188,7 +190,7 @@ class FieldDataExtractor:
             fields = transaction.get_fields()
             pathlines_data = fields[(("type", "pathlines-field"), ("field", field))]
         except Exception as e:
-            raise RuntimeError("Error while requesting data from server." + str(e))
+            raise ServerDataRequestError() from e
         finally:
             obj._post_display()
         return pathlines_data
@@ -241,8 +243,8 @@ class FieldDataExtractor:
                 ]
             )
             surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
-        except:
-            raise RuntimeError("Error while requesting data from server.")
+        except Exception as e:
+            raise ServerDataRequestError() from e
         finally:
             obj._post_display()
         data = self._merge(surface_data, vector_field)

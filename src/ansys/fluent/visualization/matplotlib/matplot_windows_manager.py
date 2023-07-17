@@ -374,7 +374,6 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
     def _open_window(self, window_id: str) -> Union[Plotter, _ProcessPlotterHandle]:
         window = self._post_windows.get(window_id)
-        plotter = None
         if (
             window
             and not window.plotter.is_closed()
