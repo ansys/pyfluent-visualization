@@ -14,7 +14,8 @@ import numpy as np
 
 class ServerDataRequestError(RuntimeError):
     """Exception class for server data errors."""
-    def __init__(self):            
+
+    def __init__(self):
         super().__init__("Error while requesting data from server.")
 
 
