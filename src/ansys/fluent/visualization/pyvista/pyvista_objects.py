@@ -35,6 +35,52 @@ class Graphics(GraphicsContainer):
         )
 
 
+class Contours:
+    def error_check(self, solver):
+        allowed_fields = (
+            solver.field_data.get_scalar_field_data.field_name.allowed_values()
+        )
+        allowed_surfaces = (
+            solver.field_data.get_scalar_field_data.surface_name.allowed_values()
+        )
+        if self.field not in allowed_fields:
+            raise ValueError(
+                f"{self.field} is not valid field. Valid fields are - {allowed_fields}"
+            )
+        for surface in self.surfaces:
+            if surface not in allowed_surfaces:
+                raise ValueError(
+                    f"{surface} is not valid surface. Valid surfaces are - {allowed_surfaces}"  # noqa: E501
+                )
+
+    def __init__(self, *args):
+        if len(args) == 2:
+            self.field, self.surfaces = args[0], args[1]
+        elif len(args) == 3:
+            self.solver = args[2]
+            self.error_check(self.solver)
+            self.field, self.surfaces = args[0], args[1]
+
+    def draw(self, solver, target):
+        self.error_check(solver)
+        existing_contours = solver.results.graphics.contour.get_object_names()
+        import time
+
+        contour_name = f"Contour_{time.time()}"
+        graphics_mode = target
+        if graphics_mode.__class__.__name__ == "Graphics":
+            contour = graphics_mode.Contours[contour_name]
+        elif (
+            graphics_mode.__class__.__name__ == "Solver" and len(existing_contours) != 0
+        ):
+            contour = solver.results.graphics.contour[existing_contours[0]]
+        else:
+            contour = solver.results.graphics.contour[contour_name]
+        contour.field = self.field
+        contour.surfaces_list = self.surfaces
+        contour.display()
+
+
 class Mesh(MeshDefn):
     """Provides for displaying mesh graphics.
 
