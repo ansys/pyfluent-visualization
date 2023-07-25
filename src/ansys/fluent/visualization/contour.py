@@ -42,10 +42,11 @@ class Contour:
                 contour.field = self.field
                 contour.surfaces_list = self.surfaces
                 contour.display()
-                return None
+                return contour
             elif graphics_mode.__class__.__name__ == "Solver":
                 solver.results.graphics.contour[contour_name] = {
                     "field": self.field,
                     "surfaces_list": self.surfaces,
                 }
+                solver.results.graphics.contour.display(object_name=contour_name)
                 return solver.results.graphics.contour[contour_name]
