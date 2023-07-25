@@ -35,11 +35,15 @@ class Contour:
         graphics_mode = target
         if graphics_mode.__class__.__name__ == "Graphics":
             contour = graphics_mode.Contours[contour_name]
+            contour.field = self.field
+            contour.surfaces_list = self.surfaces
+            contour.display()
         elif (
             graphics_mode.__class__.__name__ == "Solver"
             and contour_name not in existing_contours
         ):
-            contour = solver.results.graphics.contour[contour_name]
-        contour.field = self.field
-        contour.surfaces_list = self.surfaces
-        contour.display()
+            solver.results.graphics.contour[contour_name] = {
+                "field": self.field,
+                "surfaces_list": self.surfaces,
+            }
+            solver.results.graphics.contour.display(object_name=contour_name)
