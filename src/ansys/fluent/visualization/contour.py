@@ -26,24 +26,26 @@ class Contour:
             self.solver = solver
             self.error_check(self.solver)
 
+    def _get_contour_name(self):
+        import time
+
+        return f"Contour_{time.time()}"
+
     def draw(self, solver, target):
         self.error_check(solver)
         existing_contours = solver.results.graphics.contour.get_object_names()
-        import time
-
-        contour_name = f"Contour_{time.time()}"
         graphics_mode = target
-        if graphics_mode.__class__.__name__ == "Graphics":
-            contour = graphics_mode.Contours[contour_name]
-            contour.field = self.field
-            contour.surfaces_list = self.surfaces
-            contour.display()
-        elif (
-            graphics_mode.__class__.__name__ == "Solver"
-            and contour_name not in existing_contours
-        ):
-            solver.results.graphics.contour[contour_name] = {
-                "field": self.field,
-                "surfaces_list": self.surfaces,
-            }
-            solver.results.graphics.contour.display(object_name=contour_name)
+        contour_name = self._get_contour_name()
+        if contour_name not in existing_contours:
+            if graphics_mode.__class__.__name__ == "Graphics":
+                contour = graphics_mode.Contours[contour_name]
+                contour.field = self.field
+                contour.surfaces_list = self.surfaces
+                contour.display()
+                return None
+            elif graphics_mode.__class__.__name__ == "Solver":
+                solver.results.graphics.contour[contour_name] = {
+                    "field": self.field,
+                    "surfaces_list": self.surfaces,
+                }
+                return solver.results.graphics.contour[contour_name]
