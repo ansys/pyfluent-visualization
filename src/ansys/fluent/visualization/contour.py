@@ -33,8 +33,12 @@ class Contour:
 
     def draw(self, solver, target):
         self._error_check(solver)
-        existing_contours = solver.results.graphics.contour.get_object_names()
         graphics_mode = target
+        existing_contours = (
+            solver.results.graphics.contour.get_object_names()
+            if graphics_mode.__class__.__name__ == "Solver"
+            else graphics_mode.Contours.allowed_values()
+        )
         contour_name = self._get_contour_name()
         if contour_name not in existing_contours:
             if graphics_mode.__class__.__name__ == "Graphics":
