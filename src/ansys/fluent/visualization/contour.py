@@ -2,7 +2,7 @@ from typing import List, Optional
 
 
 class Contour:
-    def error_check(self, solver):
+    def _error_check(self, solver):
         allowed_fields = (
             solver.field_data.get_scalar_field_data.field_name.allowed_values()
         )
@@ -11,12 +11,12 @@ class Contour:
         )
         if self.field not in allowed_fields:
             raise ValueError(
-                f"{self.field} is not valid field. Valid fields are - {allowed_fields}"
+                f"{self.field} is not valid field. Valid fields are {allowed_fields}"
             )
         for surface in self.surfaces:
             if surface not in allowed_surfaces:
                 raise ValueError(
-                    f"{surface} is not valid surface. Valid surfaces are - {allowed_surfaces}"  # noqa: E501
+                    f"{surface} is not valid surface. Valid surfaces are {allowed_surfaces}"  # noqa: E501
                 )
 
     def __init__(self, field: str, surfaces: List[str], solver: Optional = None):
@@ -24,7 +24,7 @@ class Contour:
         self.surfaces = surfaces
         if solver:
             self.solver = solver
-            self.error_check(self.solver)
+            self._error_check(self.solver)
 
     def _get_contour_name(self):
         import time
@@ -32,7 +32,7 @@ class Contour:
         return f"Contour_{time.time()}"
 
     def draw(self, solver, target):
-        self.error_check(solver)
+        self._error_check(solver)
         existing_contours = solver.results.graphics.contour.get_object_names()
         graphics_mode = target
         contour_name = self._get_contour_name()
@@ -48,5 +48,6 @@ class Contour:
                     "field": self.field,
                     "surfaces_list": self.surfaces,
                 }
-                solver.results.graphics.contour.display(object_name=contour_name)
-                return solver.results.graphics.contour[contour_name]
+                contour = solver.results.graphics.contour[contour_name]
+                contour.display()
+                return contour
