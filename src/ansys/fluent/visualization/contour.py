@@ -52,6 +52,5 @@ class Contour:
                     "field": self.field,
                     "surfaces_list": self.surfaces,
                 }
-                contour = solver.results.graphics.contour[contour_name]
-                contour.display()
-                return contour
+                solver.results.graphics.contour.display(object_name=contour_name)
+                return solver.results.graphics.contour[contour_name]
