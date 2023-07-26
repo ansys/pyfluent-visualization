@@ -1,8 +1,24 @@
+"""Contour objects based on field name and surfaces list."""
+
 from typing import List, Optional
 
 
 class Contour:
+    """Provides contour objects based on field name and surfaces list.
+
+    Parameters
+    ----------
+    field : str
+        field name
+
+    surfaces : List[str]
+        surfaces list
+    """
+
     def _error_check(self, solver):
+        """
+        Checks field and surface names.
+        """
         allowed_fields = (
             solver.field_data.get_scalar_field_data.field_name.allowed_values()
         )
@@ -20,6 +36,17 @@ class Contour:
                 )
 
     def __init__(self, field: str, surfaces: List[str], solver: Optional = None):
+        """Create contour using field name and surfaces list.
+
+        Parameters
+        ----------
+        field : str
+            field name
+        surfaces : List[str]
+            surfaces name list
+        solver : Optional
+            solver session
+        """
         self.field = field
         self.surfaces = surfaces
         if solver:
@@ -27,11 +54,23 @@ class Contour:
             self._error_check(self.solver)
 
     def _get_contour_name(self):
+        """Get random contour name."""
         import time
 
         return f"Contour_{time.time()}"
 
     def draw(self, solver, target):
+        """Creates a Graphics(solver) or solver based contour object.
+
+        Parameters
+        ----------
+        solver : solver session.
+        target : either Graphics(solver) or solver session.
+
+        Returns
+        -------
+        Graphics(solver) or solver based contour object.
+        """
         self._error_check(solver)
         graphics_mode = target
         existing_contours = (
