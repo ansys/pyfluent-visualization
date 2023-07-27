@@ -60,18 +60,18 @@ class Contour:
         return f"Contour_{time.time()}"
 
     def draw(self, solver, target):
-        """Create a Graphics (solver) or solver-based contour object.
+        """Create a `Graphics(solver)` or solver-based contour object.
 
         Parameters
         ----------
         solver :
             solver session.
         target :
-            either Graphics (solver) or solver session.
+            either `Graphics(solver)` or solver session.
 
         Returns
         -------
-        Graphics (solver) or solver-based contour object.
+        `Graphics(solver)` or solver-based contour object.
         """
         self._error_check(solver)
         graphics_mode = target
