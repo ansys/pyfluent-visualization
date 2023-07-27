@@ -9,15 +9,15 @@ class Contour:
     Parameters
     ----------
     field : str
-        field name
+        Field name.
 
     surfaces : List[str]
-        surfaces list
+        List of surfaces.
     """
 
     def _error_check(self, solver):
         """
-        Checks field and surface names.
+        Check field and surface names.
         """
         allowed_fields = (
             solver.field_data.get_scalar_field_data.field_name.allowed_values()
@@ -41,11 +41,11 @@ class Contour:
         Parameters
         ----------
         field : str
-            field name
+            Field name.
         surfaces : List[str]
-            surfaces name list
+            List of surfaces.
         solver : Optional
-            solver session
+            Solver session.
         """
         self.field = field
         self.surfaces = surfaces
@@ -60,16 +60,18 @@ class Contour:
         return f"Contour_{time.time()}"
 
     def draw(self, solver, target):
-        """Creates a Graphics(solver) or solver based contour object.
+        """Create a Graphics (solver) or solver-based contour object.
 
         Parameters
         ----------
-        solver : solver session.
-        target : either Graphics(solver) or solver session.
+        solver :
+            solver session.
+        target :
+            either Graphics(solver) or solver session.
 
         Returns
         -------
-        Graphics(solver) or solver based contour object.
+        Graphics (solver) or solver-based contour object.
         """
         self._error_check(solver)
         graphics_mode = target
