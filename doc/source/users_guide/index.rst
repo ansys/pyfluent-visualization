@@ -22,6 +22,7 @@ This example shows how you can display a mesh:
     from ansys.fluent.visualization import set_config
     from ansys.fluent.visualization.matplotlib import Plots
     from ansys.fluent.visualization.pyvista import Graphics
+    from ansys.fluent.visualization.contour import Contour
 
     set_config(blocking=True, set_view_on_display="isometric")
 
@@ -82,6 +83,26 @@ This example shows how you can display a contour:
         "solid_up:1:830",
     ]
     temperature_contour_manifold.display("window-3")
+
+Instantiate a contour object independent of solver session using field name and list of surfaces. Target is either
+Graphics(solver_session) or solver_session.
+
+.. code:: python
+
+    temperature_contour_manifold = Contour(field="temperature",
+                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",])
+    temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
+    temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
+
+Instantiate a contour object using field name, list of surfaces and solver session.
+
+.. code:: python
+
+    temperature_contour_manifold = Contour(field="temperature",
+                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",],
+                                           solver=solver_session)
+    temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
+    temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
 
 Display vector
 ~~~~~~~~~~~~~~
