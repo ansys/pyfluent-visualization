@@ -67,7 +67,7 @@ class Contour:
         solver :
             solver session.
         target :
-            either Graphics(solver) or solver session.
+            either Graphics (solver) or solver session.
 
         Returns
         -------
