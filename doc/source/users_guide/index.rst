@@ -99,10 +99,10 @@ Target is either Graphics or solver session.
 .. code:: python
 
     # Create and render contour object on client side.
-    temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
+    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
 
     # Create and render contour object on server side.
-    temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
+    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
 
 Display vector
 ~~~~~~~~~~~~~~
