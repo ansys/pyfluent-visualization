@@ -85,7 +85,7 @@ This example shows how you can display a contour:
     temperature_contour_manifold.display("window-3")
 
 Instantiate a contour object with or without solver session using field name and list of surfaces as follows.
-Target is either Graphics or solver_session.
+Target is either Graphics or solver session.
 
 .. code:: python
 
