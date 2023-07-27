@@ -84,27 +84,20 @@ This example shows how you can display a contour:
     ]
     temperature_contour_manifold.display("window-3")
 
-Instantiate a contour object independent of solver session using field name and list of surfaces. Target is either
-`Graphics(solver_session)` or `solver_session`.
+Instantiate a contour object with or without solver session using field name and list of surfaces as follows.
+Target is either Graphics or solver_session.
 
 .. code:: python
 
     temperature_contour_manifold = Contour(field="temperature",
                                            surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",])
 
-    # Create and render contour object on client side.
-    temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
-
-    # Create and render contour object on server side.
-    temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
-
-Instantiate a contour object using field name, list of surfaces and solver session.
-
-.. code:: python
-
     temperature_contour_manifold = Contour(field="temperature",
                                            surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",],
                                            solver=solver_session)
+
+.. code:: python
+
     # Create and render contour object on client side.
     temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
 
