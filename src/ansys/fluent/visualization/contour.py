@@ -65,9 +65,9 @@ class Contour:
         Parameters
         ----------
         solver :
-            solver session.
+            Solver session.
         target :
-            either Graphics or solver session.
+            Either Graphics or solver session.
 
         Returns
         -------
