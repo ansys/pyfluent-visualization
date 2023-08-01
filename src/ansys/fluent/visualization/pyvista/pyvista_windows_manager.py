@@ -382,7 +382,7 @@ class PyVistaWindow(PostWindow):
         surface_api = obj._api_helper.surface_api
         surface_api.create_surface_on_server()
         dummy_object = "dummy_object"
-        post_session = obj._get_top_most_parent()
+        post_session = obj.get_root()
         if (
             obj.definition.type() == "iso-surface"
             and obj.definition.iso_surface.rendering() == "contour"
@@ -405,7 +405,7 @@ class PyVistaWindow(PostWindow):
 
     def _display_surface(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         dummy_object = "dummy_object"
-        post_session = obj._get_top_most_parent()
+        post_session = obj.get_root()
         if (
             obj.definition.type() == "iso-surface"
             and obj.definition.iso_surface.rendering() == "contour"
