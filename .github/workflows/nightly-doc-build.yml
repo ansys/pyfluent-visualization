@@ -20,7 +20,7 @@ jobs:
         image-tag: [v22.2.0, v23.1.0, v23.2.0]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
