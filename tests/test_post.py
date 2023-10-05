@@ -313,10 +313,10 @@ def test_contour_object():
     assert contour1.node_values() == True
 
     contour1.range.option = "auto-range-on"
-    assert contour1.range.auto_range_off is None
+    assert contour1.range.auto_range_off() is None
 
     contour1.range.option = "auto-range-off"
-    assert contour1.range.auto_range_on is None
+    assert contour1.range.auto_range_on() is None
 
     # Range should adjust to min/max of node field values.
     contour1.node_values = True
@@ -368,10 +368,10 @@ def test_vector_object():
     vector1.surfaces_list = vector1.surfaces_list.allowed_values
 
     vector1.range.option = "auto-range-on"
-    assert vector1.range.auto_range_off is None
+    assert vector1.range.auto_range_off() is None
 
     vector1.range.option = "auto-range-off"
-    assert vector1.range.auto_range_on is None
+    assert vector1.range.auto_range_on() is None
 
     surfaces_id = [
         v["surface_id"][0]
@@ -394,13 +394,13 @@ def test_surface_object():
     field_info = surf1._api_helper.field_info()
 
     surf1.definition.type = "iso-surface"
-    assert surf1.definition.plane_surface is None
+    assert surf1.definition.plane_surface() is None
     surf1.definition.type = "plane-surface"
-    assert surf1.definition.iso_surface is None
+    assert surf1.definition.iso_surface() is None
 
     surf1.definition.plane_surface.creation_method = "xy-plane"
-    assert surf1.definition.plane_surface.yz_plane is None
-    assert surf1.definition.plane_surface.zx_plane is None
+    assert surf1.definition.plane_surface.yz_plane() is None
+    assert surf1.definition.plane_surface.zx_plane() is None
 
     surf1.definition.type = "iso-surface"
     iso_surf = surf1.definition.iso_surface
