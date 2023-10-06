@@ -29,6 +29,7 @@ ansys-fluent-core = "~=0.14.dev0"
 vtk = ">=9.3.0.rc0"
 pyvista = ">=0.39.0"
 pyvistaqt = ">=0.7.0"
+pyside6 = ">=6.2.3"
 matplotlib = ">=3.5.1"
 
 [tool.black]
