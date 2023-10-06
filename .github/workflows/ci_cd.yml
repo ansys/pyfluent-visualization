@@ -21,6 +21,7 @@ env:
   # It applies 7 days retention policy by default.
   RESET_EXAMPLES_CACHE: 0
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  MAIN_PYTHON_VERSION: '3.9'
   PYFLUENT_TIMEOUT_FORCE_EXIT: 5
   PYFLUENT_LAUNCH_CONTAINER: 1
 
@@ -50,7 +51,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11']
       fail-fast: false
 
     steps:
@@ -88,7 +89,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: Install OS packages
         run: |
@@ -155,7 +156,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: Add version information
         run: make version-info
@@ -185,7 +186,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - uses: actions/download-artifact@v3
 
