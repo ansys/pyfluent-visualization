@@ -32,6 +32,11 @@ pyvistaqt = ">=0.7.0"
 pyside6 = ">=6.2.3"
 matplotlib = ">=3.5.1"
 
+[tool.poetry.urls]
+"Documentation" = "https://visualization.fluent.docs.pyansys.com/"
+"Source" = "https://github.com/ansys/pyfluent-visualization"
+"Tracker" = "https://github.com/ansys/pyfluent-visualization/issues"
+
 [tool.black]
 line-length = 88
 
