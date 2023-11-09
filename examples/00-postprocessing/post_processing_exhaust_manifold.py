@@ -31,11 +31,11 @@ set_config(blocking=True, set_view_on_display="isometric")
 # files.
 
 import_case = examples.download_file(
-    file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
+    "exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
 )
 
 import_data = examples.download_file(
-    file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
+    "exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
 )
 
 solver_session = pyfluent.launch_fluent(
