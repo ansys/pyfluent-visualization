@@ -50,7 +50,7 @@ the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>
 
 Installation
 ------------
-The ``ansys-fluent-visualization`` package supports Python 3.8 through Python
+The ``ansys-fluent-visualization`` package supports Python 3.9 through Python
 3.11 on Windows and Linux.
 
 If you are using Python 3.10, download and install the wheel file for the ``vtk`` package from
