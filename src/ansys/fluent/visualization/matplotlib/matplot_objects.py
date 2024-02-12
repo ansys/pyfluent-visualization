@@ -1,4 +1,5 @@
 """Module providing visualization objects for Matplotlib."""
+
 import sys
 from typing import Optional
 
