@@ -58,8 +58,11 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_gallery.gen_gallery",
     "sphinxemoji.sphinxemoji",
+    "sphinx_toggleprompt",
     "autodocclass",
 ]
+
+toggleprompt_offset_right = 35
 
 # Intersphinx mapping
 intersphinx_mapping = {
