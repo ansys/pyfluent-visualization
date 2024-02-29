@@ -1,4 +1,5 @@
 """Module for pyVista windows management."""
+
 from enum import Enum
 import itertools
 import threading

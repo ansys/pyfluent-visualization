@@ -31,7 +31,7 @@ jobs:
     name: Documentation Style Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
   
       - name: Running Vale
         uses: errata-ai/vale-action@reviewdog
@@ -55,7 +55,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -84,7 +84,7 @@ jobs:
       DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -100,7 +100,7 @@ jobs:
         run: make install
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.BOT_APPLICATION_ID }}
@@ -151,7 +151,7 @@ jobs:
     needs: [tests, docs]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
