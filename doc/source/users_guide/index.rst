@@ -27,11 +27,11 @@ This example shows how you can display a mesh:
     set_config(blocking=True, set_view_on_display="isometric")
 
     import_case = examples.download_file(
-        filename="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
+        file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
     )
 
     import_data = examples.download_file(
-        filename="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
+        file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
     )
 
     solver_session = pyfluent.launch_fluent(precision="double", processor_count=2, mode="solver")
