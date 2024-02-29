@@ -153,9 +153,11 @@ class FieldDataExtractor:
                         ("type", "scalar-field"),
                         (
                             "dataLocation",
-                            DataLocation.Nodes
-                            if node_values
-                            else DataLocation.Elements,
+                            (
+                                DataLocation.Nodes
+                                if node_values
+                                else DataLocation.Elements
+                            ),
                         ),
                         ("boundaryValues", boundary_values),
                     )
@@ -314,9 +316,11 @@ class XYPlotDataExtractor:
         surfaces_list_expanded = [
             expanded_surf_name
             for expanded_surf_name_list in itertools.starmap(
-                lambda local_surface_name, id_list: [local_surface_name]
-                if len(id_list) == 1
-                else [f"{local_surface_name}:{id}" for id in id_list],
+                lambda local_surface_name, id_list: (
+                    [local_surface_name]
+                    if len(id_list) == 1
+                    else [f"{local_surface_name}:{id}" for id in id_list]
+                ),
                 [
                     (
                         local_surface_name,
