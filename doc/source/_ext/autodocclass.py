@@ -55,7 +55,7 @@ class PostDocumenter(ClassDocumenter):
                 ] = f"{parent_name}'s child"
 
             for the_member_name in dir(clss):
-                if the_member_name.startswith("_"):
+                if the_member_name.startswith("_") or the_member_name == "is_active":
                     continue
                 cls = getattr(clss, the_member_name)
                 the_member_value = (cls.__doc__ or "").split("\n")[0]
@@ -80,6 +80,8 @@ class PostDocumenter(ClassDocumenter):
                     dic["cmd"][the_member_name] = the_member_value
 
             for name in dir(clss):
+                if name == "is_active":
+                    continue
                 cls = getattr(clss, name)
                 if cls.__class__.__name__ in ("PyLocalObjectMeta",):
                     _update(cls, name, obj_name, data_dicts[obj_name]["path"])

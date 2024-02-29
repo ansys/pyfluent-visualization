@@ -26,11 +26,16 @@ packages = [
 python = ">=3.8,<4.0"
 importlib-metadata = {version = "^4.0", python = "<3.8"}
 ansys-fluent-core = "~=0.14.dev0"
-vtk = ">=9.2.6"
+vtk = ">=9.3.0.rc0"
 pyvista = ">=0.39.0"
 pyvistaqt = ">=0.7.0"
 pyside6 = ">=6.2.3"
 matplotlib = ">=3.5.1"
+
+[tool.poetry.urls]
+"Documentation" = "https://visualization.fluent.docs.pyansys.com/"
+"Source" = "https://github.com/ansys/pyfluent-visualization"
+"Tracker" = "https://github.com/ansys/pyfluent-visualization/issues"
 
 [tool.black]
 line-length = 88

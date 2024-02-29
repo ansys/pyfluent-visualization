@@ -84,7 +84,7 @@ class FieldDataExtractor:
         surface_api = obj._api_helper.surface_api
         surface_api.create_surface_on_server()
         dummy_object = "dummy_object"
-        post_session = obj._get_top_most_parent()
+        post_session = obj.get_root()
         if (
             obj.definition.type() == "iso-surface"
             and obj.definition.iso_surface.rendering() == "contour"
@@ -153,9 +153,11 @@ class FieldDataExtractor:
                         ("type", "scalar-field"),
                         (
                             "dataLocation",
-                            DataLocation.Nodes
-                            if node_values
-                            else DataLocation.Elements,
+                            (
+                                DataLocation.Nodes
+                                if node_values
+                                else DataLocation.Elements
+                            ),
                         ),
                         ("boundaryValues", boundary_values),
                     )
@@ -314,9 +316,11 @@ class XYPlotDataExtractor:
         surfaces_list_expanded = [
             expanded_surf_name
             for expanded_surf_name_list in itertools.starmap(
-                lambda local_surface_name, id_list: [local_surface_name]
-                if len(id_list) == 1
-                else [f"{local_surface_name}:{id}" for id in id_list],
+                lambda local_surface_name, id_list: (
+                    [local_surface_name]
+                    if len(id_list) == 1
+                    else [f"{local_surface_name}:{id}" for id in id_list]
+                ),
                 [
                     (
                         local_surface_name,

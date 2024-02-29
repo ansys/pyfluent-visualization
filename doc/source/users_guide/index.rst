@@ -22,15 +22,16 @@ This example shows how you can display a mesh:
     from ansys.fluent.visualization import set_config
     from ansys.fluent.visualization.matplotlib import Plots
     from ansys.fluent.visualization.pyvista import Graphics
+    from ansys.fluent.visualization.contour import Contour
 
     set_config(blocking=True, set_view_on_display="isometric")
 
     import_case = examples.download_file(
-        filename="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
+        file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
     )
 
     import_data = examples.download_file(
-        filename="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
+        file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
     )
 
     solver_session = pyfluent.launch_fluent(precision="double", processor_count=2, mode="solver")
@@ -82,6 +83,26 @@ This example shows how you can display a contour:
         "solid_up:1:830",
     ]
     temperature_contour_manifold.display("window-3")
+
+Instantiate a contour object with or without a solver session, using a field name and a list of surfaces, as follows.
+Target is either a Graphics object or a solver session.
+
+.. code:: python
+
+    temperature_contour_manifold = Contour(field="temperature",
+                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",])
+
+    temperature_contour_manifold = Contour(field="temperature",
+                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",],
+                                           solver=solver_session)
+
+.. code:: python
+
+    # Create and render contour object on client side.
+    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
+
+    # Create and render contour object on server side.
+    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
 
 Display vector
 ~~~~~~~~~~~~~~
