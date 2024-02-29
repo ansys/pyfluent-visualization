@@ -23,8 +23,8 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
-importlib-metadata = {version = "^7.0.1", python = "<3.8"}
+python = ">=3.9,<4.0"
+importlib-metadata = {version = "^7.0.1", python = "<3.9"}
 ansys-fluent-core = "~=0.20.dev1"
 vtk = ">=9.3.0.rc0"
 pyvista = ">=0.43.3"
