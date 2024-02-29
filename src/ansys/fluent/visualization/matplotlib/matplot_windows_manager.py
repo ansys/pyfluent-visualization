@@ -1,4 +1,5 @@
 """Module for matplotlib windows management."""
+
 import itertools
 import multiprocessing as mp
 from typing import Dict, List, Optional, Union
@@ -141,9 +142,9 @@ class _XYPlot:
             try:
                 self.plotter.set_properties(properties)
             except BrokenPipeError:
-                self.plotter: Union[
-                    _ProcessPlotterHandle, Plotter
-                ] = self._get_plotter()
+                self.plotter: Union[_ProcessPlotterHandle, Plotter] = (
+                    self._get_plotter()
+                )
                 self.plotter.set_properties(properties)
         self.plotter.plot(xy_data)
 
@@ -192,9 +193,9 @@ class _MonitorPlot:
             try:
                 self.plotter.set_properties(properties)
             except BrokenPipeError:
-                self.plotter: Union[
-                    _ProcessPlotterHandle, Plotter
-                ] = self._get_plotter()
+                self.plotter: Union[_ProcessPlotterHandle, Plotter] = (
+                    self._get_plotter()
+                )
                 self.plotter.set_properties(properties)
         if xy_data:
             self.plotter.plot(xy_data)

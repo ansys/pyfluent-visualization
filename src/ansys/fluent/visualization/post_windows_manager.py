@@ -2,6 +2,7 @@
 
 PostWindowManager is container for PostWindow.
 """
+
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional, Union
 

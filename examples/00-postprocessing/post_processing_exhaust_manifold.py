@@ -9,6 +9,7 @@ through it. The flow through the manifold is turbulent and
 involves conjugate heat transfer.
 
 """
+
 ###############################################################################
 # Perform required imports
 # ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,11 +32,11 @@ set_config(blocking=True, set_view_on_display="isometric")
 # files.
 
 import_case = examples.download_file(
-    filename="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
+    file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
 )
 
 import_data = examples.download_file(
-    filename="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
+    file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
 )
 
 solver_session = pyfluent.launch_fluent(
