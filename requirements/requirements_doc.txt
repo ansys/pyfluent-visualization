@@ -6,10 +6,11 @@ pypandoc==1.11
 pytest-sphinx==0.5.0
 sphinx-autobuild==2021.3.14
 sphinx-copybutton==0.5.2
-sphinx-autodoc-typehints==1.23.3
+sphinx-autodoc-typehints==1.24.0
 sphinx-gallery==0.14.0
 sphinx-notfound-page==0.8.3
 sphinxcontrib-websupport==1.2.6
 sphinxemoji==0.2.0
+sphinx-toggleprompt==0.5.2
 pyvista[trame]>=0.39.0
 matplotlib>=3.5.1
