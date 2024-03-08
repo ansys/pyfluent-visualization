@@ -25,7 +25,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
 importlib-metadata = {version = "^4.0", python = "<3.9"}
-ansys-fluent-core = "~=0.14.dev0"
+ansys-fluent-core = "~=0.20.dev7"
 vtk = ">=9.3.0.rc0"
 pyvista = ">=0.39.0"
 pyvistaqt = ">=0.7.0"

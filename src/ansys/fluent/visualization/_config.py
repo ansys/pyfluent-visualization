@@ -25,6 +25,14 @@ def set_config(blocking: bool = False, set_view_on_display: str = None):
         If specified, then graphics will always be displayed in the specified view.
         Valid values are xy, xz, yx, yz, zx, zy and isometric.
     """
+    if set_view_on_display not in set_config.allowed_views:
+        raise ValueError(
+            f"'{set_view_on_display}' is not an allowed view.\n"
+            f"Allowed views are: {set_config.allowed_views}"
+        )
 
     _global_config["blocking"] = blocking
     _global_config["set_view_on_display"] = set_view_on_display
+
+
+set_config.allowed_views = ["xy", "xz", "yx", "yz", "zx", "zy", "isometric"]
