@@ -1,7 +1,7 @@
 Sphinx==7.2.6
 jupyter_sphinx==0.5.3
 numpydoc==1.6.0
-ansys-sphinx-theme==0.14.0
+ansys-sphinx-theme==0.14.1
 pypandoc==1.13
 pytest-sphinx==0.6.0
 sphinx-autobuild==2024.2.4
