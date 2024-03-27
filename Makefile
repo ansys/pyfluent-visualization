@@ -3,7 +3,7 @@ style:
 	@pre-commit run --all-files --show-diff-on-failure
 
 install:
-	@pip install --no-cache-dir -r requirements/requirements_build.txt
+	@pip install -r requirements/requirements_build.txt
 	@python -m build
 	@pip install dist/*.whl --force-reinstall
 
