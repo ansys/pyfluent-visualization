@@ -15,9 +15,6 @@ env:
 jobs:
   nightly_docs_build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image-tag: [v22.2.0, v23.1.0, v23.2.0, v24.1.0, v24.2.0]
 
     steps:
       - uses: actions/checkout@v4
@@ -45,12 +42,12 @@ jobs:
       - name: Pull Fluent docker image
         run: make docker-pull
         env:
-          FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
+          FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
       - name: Generate the documentation
         run: make build-doc
         env:
-          FLUENT_IMAGE_TAG: ${{ matrix.image-tag }}
+          FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v4
@@ -61,7 +58,6 @@ jobs:
           retention-days: 7
 
       - name: Deploy
-        if: matrix.image-tag == env.DOC_DEPLOYMENT_IMAGE_TAG
         uses: ansys/actions/doc-deploy-dev@v5
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
