@@ -7,7 +7,8 @@ on:
 
 env:
   DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
-  DOC_DEPLOYMENT_IMAGE_TAG: v24.1.0
+  MAIN_PYTHON_VERSION: '3.9'
+  DOC_DEPLOYMENT_IMAGE_TAG: v24.2.0
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYFLUENT_TIMEOUT_FORCE_EXIT: 5
   PYFLUENT_LAUNCH_CONTAINER: 1
@@ -22,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: Install OS packages
         run: |

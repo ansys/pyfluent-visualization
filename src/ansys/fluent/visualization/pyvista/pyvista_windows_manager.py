@@ -6,8 +6,9 @@ import threading
 from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import FluentConnection
+from ansys.fluent.core.post_objects.check_in_notebook import in_notebook
 from ansys.fluent.core.post_objects.post_object_definitions import GraphicsDefn
-from ansys.fluent.core.utils.generic import AbstractSingletonMeta, in_notebook
+from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
 import numpy as np
 import pyvista as pv
 from pyvistaqt import BackgroundPlotter
