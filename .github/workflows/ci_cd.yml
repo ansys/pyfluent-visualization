@@ -51,7 +51,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
       fail-fast: false
 
     steps:
@@ -80,7 +80,7 @@ jobs:
     needs: docs-style
     runs-on: [self-hosted, pyfluent]
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v24.1.0
+      DOC_DEPLOYMENT_IMAGE_TAG: v24.2.0
       DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
 
     steps:

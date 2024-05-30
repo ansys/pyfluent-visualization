@@ -3,7 +3,7 @@
 import sys
 from typing import Optional
 
-from ansys.fluent.core.meta import Command
+from ansys.fluent.core.post_objects.meta import Command
 from ansys.fluent.core.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.core.post_objects.post_object_definitions import (
     ContourDefn,
