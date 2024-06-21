@@ -42,9 +42,8 @@ import_data = examples.download_file(
 solver_session = pyfluent.launch_fluent(
     precision="double", processor_count=2, start_transcript=False, mode="solver"
 )
-
-solver_session.tui.file.read_case(import_case)
-solver_session.tui.file.read_data(import_data)
+solver_session.file.read_case(file_name=import_case)
+solver_session.file.read_data(file_name=import_data)
 
 ###############################################################################
 # Get graphics object
@@ -98,7 +97,8 @@ mesh1.display("window-2")
 
 surf_xy_plane = graphics.Surfaces["xy-plane"]
 surf_xy_plane.definition.type = "plane-surface"
-plane_surface_xy = surf_xy_plane.definition.plane_surface
+surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
+plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
 plane_surface_xy.z = -0.0441921
 surf_xy_plane.display("window-3")
 
@@ -109,7 +109,8 @@ surf_xy_plane.display("window-3")
 
 surf_yz_plane = graphics.Surfaces["yz-plane"]
 surf_yz_plane.definition.type = "plane-surface"
-plane_surface_yz = surf_yz_plane.definition.plane_surface
+surf_yz_plane.definition.plane_surface.creation_method = "yz-plane"
+plane_surface_yz = surf_yz_plane.definition.plane_surface.yz_plane
 plane_surface_yz.x = -0.174628
 surf_yz_plane.display("window-4")
 
@@ -120,7 +121,8 @@ surf_yz_plane.display("window-4")
 
 surf_zx_plane = graphics.Surfaces["zx-plane"]
 surf_zx_plane.definition.type = "plane-surface"
-plane_surface_zx = surf_zx_plane.definition.plane_surface
+surf_zx_plane.definition.plane_surface.creation_method = "zx-plane"
+plane_surface_zx = surf_zx_plane.definition.plane_surface.zx_plane
 plane_surface_zx.y = -0.0627297
 surf_zx_plane.display("window-5")
 
@@ -134,7 +136,7 @@ surf_outlet_plane.definition.type = "iso-surface"
 iso_surf1 = surf_outlet_plane.definition.iso_surface
 iso_surf1.field = "y-coordinate"
 iso_surf1.iso_value = -0.125017
-surf_outlet_plane.display("window-3")
+surf_outlet_plane.display("window-3.1")
 
 ###############################################################################
 # Create iso-surface on mid-plane
@@ -146,7 +148,7 @@ surf_mid_plane_x.definition.type = "iso-surface"
 iso_surf2 = surf_mid_plane_x.definition.iso_surface
 iso_surf2.field = "x-coordinate"
 iso_surf2.iso_value = -0.174
-surf_mid_plane_x.display("window-4")
+surf_mid_plane_x.display("window-4.1")
 
 ###############################################################################
 # Create iso-surface using velocity magnitude
@@ -159,7 +161,7 @@ iso_surf3 = surf_vel_contour.definition.iso_surface
 iso_surf3.field = "velocity-magnitude"
 iso_surf3.rendering = "contour"
 iso_surf3.iso_value = 0.0
-surf_vel_contour.display("window-5")
+surf_vel_contour.display("window-5.1")
 
 ###############################################################################
 # Create temperature contour on mid-plane and outlet
@@ -207,7 +209,7 @@ velocity_vector.display("window-8")
 pathlines = graphics.Pathlines["pathlines"]
 pathlines.field = "velocity-magnitude"
 pathlines.surfaces_list = ["inlet", "inlet1", "inlet2"]
-# pathlines.display("window-9")
+pathlines.display("window-9")
 
 ###############################################################################
 # Create plot object
@@ -253,9 +255,8 @@ residual.plot("window-10")
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Solve and plot solution monitors.
 
-solver_session.tui.solve.initialize.hyb_initialization()
-solver_session.tui.solve.set.number_of_iterations(50)
-solver_session.tui.solve.iterate()
+solver_session.solution.initialization.hybrid_initialize()
+solver_session.solution.run_calculation.iterate(iter_count=50)
 matplotlib_plots1 = Plots(solver_session)
 mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
