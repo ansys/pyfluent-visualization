@@ -14,6 +14,8 @@ from ansys.fluent.visualization.pyvista.pyvista_objects import (
 
 
 class Format(Enum):
+    """Format of the data label."""
+
     DATA_ONLY = 1
     INDEX_AND_DATA = 2
 
@@ -27,7 +29,7 @@ def display_solution_variables_data(
     precision: int = 2,
     font_size: int = 10,
     bold: bool = False,
-) -> "Plotter":
+):
     """Display solution variables data. The data is displayed as point labels
     on the centroid of mesh-elements of the specified zones.
 
@@ -36,14 +38,15 @@ def display_solution_variables_data(
     session : Solver
         PyFluent solver session from which solution variables data will be fetched.
     variables : list[str]
-        List of solution variable names. To see the list of available solution
-        variable names, execute
-        ``session.fields.solution_variable_info.get_variables_info(zones, domain).solution_variables``.  # noqa: E501
+        List of solution variable names whose data will be displayed. To see the
+        list of available solution variable names, execute
+        ``session.fields.solution_variable_info.get_variables_info(zones,
+        domain).solution_variables``.
     zones : list[str]
-        List of zone names.
+        List of zone names over which the data will be displayed.
     domain : str, optional
         Domain name, by default ``"mixture"``.
-    format : Union[Format, Callable], optional
+    format : Format or Callable, optional
         How to format the data label, by default ``Format.INDEX_AND_DATA``.
         If a callable is provided, it should accept the index and the data as arguments.
     precision : int, optional
@@ -60,10 +63,18 @@ def display_solution_variables_data(
 
     Examples
     --------
-    Display pressure and temperature data of "inlet1".
-    >>> display_solution_variables_data(session=session, variables=["SV_P", "SV_T"], zones=["inlet1"])  # noqa: E501
-    Display pressure and temperature data of "inlet1" with custom format.
-    >>> display_solution_variables_data(session=session, variables=["SV_P", "SV_T"], zones=["inlet1"], format=lambda i, x, y: f"{i}: {x:.2f}, {y:.2f}")  # noqa: E501
+    Display pressure and temperature data of zone "inlet1".
+
+    >>> display_solution_variables_data(
+    ...     session=session, variables=["SV_P", "SV_T"], zones=["inlet1"]
+    ... )
+
+    Display pressure and temperature data of zone "inlet1" using a format function.
+
+    >>> display_solution_variables_data(
+    ...     session=session, variables=["SV_P", "SV_T"], zones=["inlet1"],
+    ...     format=lambda i, x, y: f"{i}: {x:.2f}, {y:.2f}"
+    ... )
     """
     centroid_data = session.fields.solution_variable_data.get_data(
         solution_variable_name="SV_CENTROID", zone_names=zones, domain_name=domain
@@ -92,7 +103,7 @@ def display_solution_variables_data(
             return format(index, *data)
 
     poly = pv.PolyData(centroid_data)
-    poly["Pressure"] = [
+    poly["Data"] = [
         format_fn(index, *data) for index, data in enumerate(zip(*variables_data))
     ]
     graphics = Graphics(session=session)
@@ -105,7 +116,7 @@ def display_solution_variables_data(
     plotter = pyvista_windows_manager.get_plotter(window_id)
     plotter.add_point_labels(
         poly,
-        "Pressure",
+        "Data",
         point_color="black",
         font_size=font_size,
         bold=bold,
