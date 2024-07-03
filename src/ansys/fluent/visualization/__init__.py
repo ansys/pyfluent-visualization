@@ -23,3 +23,5 @@ def version_info() -> str:
 
 
 from ansys.fluent.visualization._config import get_config, set_config  # noqa: F401
+from ansys.fluent.visualization.matplotlib import Plots  # noqa: F401
+from ansys.fluent.visualization.pyvista import Graphics  # noqa: F401
