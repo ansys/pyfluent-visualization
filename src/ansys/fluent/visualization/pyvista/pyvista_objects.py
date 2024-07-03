@@ -340,8 +340,8 @@ class SolutionVariablesGraphics(SolutionVariablesGraphicsDefn):
 
         graphics_session = Graphics(session)
         svg1 = graphics_session.SolutionVariablesGraphics["svg-1"]
-        svg1.variables=["SV_P", "SV_T"]
         svg1.zones=["inlet2"]
+        svg1.variables=["SV_P", "SV_T"]
         svg1.display("window-0")
     """
 
