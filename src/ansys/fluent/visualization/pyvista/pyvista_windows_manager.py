@@ -381,8 +381,6 @@ class PyVistaWindow(PostWindow):
                         plotter.add_mesh(mesh.contour(isosurfaces=20))
 
     def _fetch_surface(self, obj):
-        surface_api = obj._api_helper.surface_api
-        surface_api.create_surface_on_server()
         dummy_object = "dummy_object"
         post_session = obj.get_root()
         if (
@@ -403,7 +401,6 @@ class PyVistaWindow(PostWindow):
             mesh.show_edges = obj.show_edges()
             self._fetch_mesh(mesh)
             del post_session.Meshes[dummy_object]
-        surface_api.delete_surface_on_server()
 
     def _display_surface(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
         dummy_object = "dummy_object"
