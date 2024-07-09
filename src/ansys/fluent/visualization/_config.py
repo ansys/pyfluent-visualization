@@ -14,7 +14,7 @@ def get_config() -> dict:
     return _global_config.copy()
 
 
-def set_config(blocking: bool = False, set_view_on_display: str = None):
+def set_config(blocking: bool = True, set_view_on_display: str = None):
     """Set visualization configuration.
 
     Parameters
