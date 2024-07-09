@@ -30,7 +30,6 @@ vtk = ">=9.3.0.rc0"
 pyvista = ">=0.39.0"
 pyvistaqt = ">=0.7.0"
 matplotlib = ">=3.5.1"
-requests = "==2.31.0"
 
 [tool.poetry.urls]
 "Documentation" = "https://visualization.fluent.docs.pyansys.com/"
