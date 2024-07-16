@@ -8,7 +8,7 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
-from ansys.fluent.core.services.field_data import _FieldDataConstants
+from ansys.fluent.core.services.field_data import SurfaceDataType, _FieldDataConstants
 import numpy as np
 
 
@@ -69,7 +69,12 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        transaction.add_surfaces_request(surface_ids, *args, **kwargs)
+        transaction.add_surfaces_request(
+            surfaces=surface_ids,
+            data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
+            *args,
+            **kwargs,
+        )
         try:
             fields = transaction.get_fields()
             # 0 is old tag
@@ -124,10 +129,15 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
         # get scalar field data
-        transaction.add_surfaces_request(surface_ids=surface_ids, *args, **kwargs)
+        transaction.add_surfaces_request(
+            surfaces=surface_ids,
+            data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
+            *args,
+            **kwargs,
+        )
         transaction.add_scalar_fields_request(
             field_name=field,
-            surface_ids=surface_ids,
+            surfaces=surface_ids,
             node_value=node_values,
             boundary_value=boundary_values,
         )
@@ -185,9 +195,7 @@ class FieldDataExtractor:
             for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
             for id in surfaces_info[surf]["surface_id"]
         ]
-        transaction.add_pathlines_fields_request(
-            surface_ids=surface_ids, field_name=field
-        )
+        transaction.add_pathlines_fields_request(surfaces=surface_ids, field_name=field)
 
         try:
             fields = transaction.get_fields()
@@ -219,15 +227,20 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        transaction.add_surfaces_request(surface_ids=surface_ids, *args, **kwargs)
+        transaction.add_surfaces_request(
+            surfaces=surface_ids,
+            data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
+            *args,
+            **kwargs,
+        )
         transaction.add_scalar_fields_request(
-            surface_ids=surface_ids,
+            surfaces=surface_ids,
             field_name=field,
             node_value=False,
             boundary_value=False,
         )
         transaction.add_vector_fields_request(
-            surface_ids=surface_ids, field_name=obj.vectors_of()
+            surfaces=surface_ids, field_name=obj.vectors_of()
         )
         try:
             fields = transaction.get_fields()
@@ -337,14 +350,16 @@ class XYPlotDataExtractor:
 
         # get scalar field data
         transaction.add_surfaces_request(
-            surface_ids=surface_ids,
-            provide_faces=False,
-            provide_vertices=True if node_values else False,
-            provide_faces_centroid=False if node_values else True,
+            surfaces=surface_ids,
+            data_types=(
+                [SurfaceDataType.Vertices]
+                if node_values
+                else [SurfaceDataType.FacesCentroid]
+            ),
         )
         transaction.add_scalar_fields_request(
             field_name=field,
-            surface_ids=surface_ids,
+            surfaces=surface_ids,
             node_value=node_values,
             boundary_value=boundary_values,
         )
