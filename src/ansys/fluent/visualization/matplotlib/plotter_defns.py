@@ -52,9 +52,8 @@ class Plotter:
         self._data = {}
         self._closed = False
         self._visible = False
-        if not remote_process:
-            self.fig = plt.figure(num=self._window_id)
-            self.ax = self.fig.add_subplot(111)
+        self._remote_process = remote_process
+        self.fig = None
 
     def plot(self, data: dict) -> None:
         """Draw plot in window.
@@ -79,11 +78,12 @@ class Plotter:
             self._min_x = min(self._min_x, min_x_value) if self._min_x else min_x_value
             self._max_x = max(self._max_x, max_x_value) if self._max_x else max_x_value
 
-        curve_lines = self.ax.lines
-        for curve, curve_line in zip(self._curves, curve_lines):
-            curve_line.set_data(
-                self._data[curve]["xvalues"], self._data[curve]["yvalues"]
-            )
+        if not self._remote_process:
+            self.fig = plt.figure(num=self._window_id)
+            self.ax = self.fig.add_subplot(111)
+        for curve in self._curves:
+            self.ax.plot(self._data[curve]["xvalues"], self._data[curve]["yvalues"])
+
         if self._max_x > self._min_x:
             self.ax.set_xlim(self._min_x, self._max_x)
         y_range = self._max_y - self._min_y
@@ -142,14 +142,17 @@ class Plotter:
 
     # private methods
     def _reset(self):
+        for curve_name in self._curves:
+            self._data[curve_name] = {}
+            self._data[curve_name]["xvalues"] = []
+            self._data[curve_name]["yvalues"] = []
+        if not self.fig:
+            return
         plt.figure(self.fig.number)
         self.ax.cla()
         if self._yscale:
             self.ax.set_yscale(self._yscale)
         for curve_name in self._curves:
-            self._data[curve_name] = {}
-            self._data[curve_name]["xvalues"] = []
-            self._data[curve_name]["yvalues"] = []
             self.ax.plot([], [], label=curve_name)
         self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
         plt.title(self._title)
