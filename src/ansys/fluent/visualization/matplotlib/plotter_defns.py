@@ -81,8 +81,15 @@ class Plotter:
         if not self._remote_process:
             self.fig = plt.figure(num=self._window_id)
             self.ax = self.fig.add_subplot(111)
+        if self._yscale:
+            self.ax.set_yscale(self._yscale)
+        self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
+        plt.title(self._title)
+        plt.xlabel(self._xlabel)
+        plt.ylabel(self._ylabel)
         for curve in self._curves:
             self.ax.plot(self._data[curve]["xvalues"], self._data[curve]["yvalues"])
+        plt.legend(labels=self._curves, loc="upper right")
 
         if self._max_x > self._min_x:
             self.ax.set_xlim(self._min_x, self._max_x)
@@ -150,15 +157,8 @@ class Plotter:
             return
         plt.figure(self.fig.number)
         self.ax.cla()
-        if self._yscale:
-            self.ax.set_yscale(self._yscale)
         for curve_name in self._curves:
             self.ax.plot([], [], label=curve_name)
-        self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
-        plt.title(self._title)
-        plt.xlabel(self._xlabel)
-        plt.ylabel(self._ylabel)
-        plt.legend(labels=self._curves, loc="upper right")
 
 
 class ProcessPlotter(Plotter):
