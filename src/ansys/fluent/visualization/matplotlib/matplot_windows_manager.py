@@ -172,8 +172,8 @@ class _MonitorPlot:
         """Draw a monitor plot."""
         if not self.post_object:
             return
-        monitors_manager = self.post_object._api_helper.monitors_manager()
-        indices, columns_data = monitors_manager.get_monitor_set_data(
+        monitors = self.post_object._api_helper.monitors
+        indices, columns_data = monitors.get_monitor_set_data(
             self.post_object.monitor_set_name()
         )
         xy_data = {}
@@ -183,8 +183,8 @@ class _MonitorPlot:
         properties = {
             "curves": list(xy_data.keys()),
             "title": monitor_set_name,
-            "xlabel": monitors_manager.get_monitor_set_prop(monitor_set_name, "xlabel"),
-            "ylabel": monitors_manager.get_monitor_set_prop(monitor_set_name, "ylabel"),
+            "xlabel": monitors.get_monitor_set_prop(monitor_set_name, "xlabel"),
+            "ylabel": monitors.get_monitor_set_prop(monitor_set_name, "ylabel"),
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
