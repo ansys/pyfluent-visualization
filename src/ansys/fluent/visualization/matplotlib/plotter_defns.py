@@ -119,7 +119,10 @@ class Plotter:
         file_name : str
             File name to save graphic.
         """
-        plt.savefig(file_name)
+        if self.fig:
+            self.fig.savefig(file_name)
+        else:
+            plt.savefig(file_name)
 
     def set_properties(self, properties: dict):
         """Set plot properties.
