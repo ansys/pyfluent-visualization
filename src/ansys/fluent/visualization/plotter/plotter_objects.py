@@ -46,9 +46,9 @@ class XYPlot(XYPlotDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.matplotlib import Plots
+        from ansys.fluent.visualization import Plots
 
-        matplotlib_plots =  Plots(session)
+        plots =  Plots(session)
         plot1 = matplotlib_plots.XYPlots["plot-1"]
         plot1.surfaces_list = ['symmetry', 'wall']
         plot1.y_axis_function = "temperature"
@@ -82,9 +82,9 @@ class MonitorPlot(MonitorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.matplotlib import Plots
+        from ansys.fluent.visualization import Plots
 
-        matplotlib_plots =  Plots(session)
+        plots =  Plots(session)
         plot1 = matplotlib_plots.Monitors["plot-1"]
         plot1.monitor_set_name = 'residuals'
         plot1.plot("window-0")

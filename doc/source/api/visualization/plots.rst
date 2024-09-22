@@ -2,7 +2,7 @@
 
 Plots
 =====
-.. autoclass:: ansys.fluent.visualization.matplotlib.matplot_objects.Plots
+.. autoclass:: ansys.fluent.visualization.plotter.plotter_objects.Plots
 
 
 In the following example, a ``Plots`` object is instantiated with a Fluent session
@@ -11,7 +11,7 @@ a monitor plot.
 
 .. code-block:: python
 
-        from ansys.fluent.visualization.matplotlib import Plots
+        from ansys.fluent.visualization import Plots
     
         plots_session = Plots(session)
         plot1 = plots_session.XYPlots["plot-1"]        

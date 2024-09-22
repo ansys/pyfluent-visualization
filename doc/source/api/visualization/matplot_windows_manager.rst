@@ -13,8 +13,8 @@ of every time step.
 
 .. code-block:: python
 
-    from ansys.fluent.visualization.matplotlib import Plots
-    from ansys.fluent.visualization.matplotlib import matplot_windows_manager
+    from ansys.fluent.visualization import Plots
+    from ansys.fluent.visualization.plotter import matplot_windows_manager
     
     plots_session = Plots(session)
     
@@ -45,5 +45,5 @@ of every time step.
     cb_time_step_ended_id = session.events_manager.register_callback('TimestepEndedEvent', auto_refresh_plot)         
 
 
-.. autoclass:: ansys.fluent.visualization.matplotlib.matplot_windows_manager.MatplotWindowsManager
+.. autoclass:: ansys.fluent.visualization.plotter.plotter_windows_manager.MatplotWindowsManager
    :members:

@@ -90,7 +90,7 @@ environment. Matplotlib is then used to plot data.
 .. code:: python
 
   # import module
-  from ansys.fluent.visualization.matplotlib import Plots
+  from ansys.fluent.visualization import Plots
 
   # get the plots object for the session
   plots_session1 = Plots(solver_session)
