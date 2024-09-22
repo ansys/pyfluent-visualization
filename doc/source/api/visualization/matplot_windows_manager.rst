@@ -14,7 +14,7 @@ of every time step.
 .. code-block:: python
 
     from ansys.fluent.visualization import Plots
-    from ansys.fluent.visualization.plotter import matplot_windows_manager
+    from ansys.fluent.visualization.plotter import plotter_windows_manager
     
     plots_session = Plots(session)
     
@@ -37,7 +37,7 @@ of every time step.
     
     # Create callback that refreshes window-1 and window-2.    
     def auto_refresh_plot(session_id, event_info):    
-        matplot_windows_manager.refresh_windows(session_id, ["window-1", "window-2"])        
+        plotter.refresh_windows(session_id, ["window-1", "window-2"])
            
     #Register this callback with server events.    
     cb_init_id = session.events_manager.register_callback('InitializedEvent', auto_refresh_plot)
@@ -45,5 +45,5 @@ of every time step.
     cb_time_step_ended_id = session.events_manager.register_callback('TimestepEndedEvent', auto_refresh_plot)         
 
 
-.. autoclass:: ansys.fluent.visualization.plotter.plotter_windows_manager.MatplotWindowsManager
+.. autoclass:: ansys.fluent.visualization.plotter.plotter_windows_manager.PlotterWindowsManager
    :members:
