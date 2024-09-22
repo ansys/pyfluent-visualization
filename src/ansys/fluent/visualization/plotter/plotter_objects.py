@@ -13,8 +13,8 @@ from ansys.fluent.core.post_objects.post_objects_container import (
     Plots as PlotsContainer,
 )
 
-from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
-    matplot_windows_manager,
+from ansys.fluent.visualization.plotter.plotter_windows_manager import (
+    plotter_windows_manager,
 )
 
 
@@ -65,7 +65,7 @@ class XYPlot(XYPlotDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        matplot_windows_manager.plot(self, window_id)
+        plotter_windows_manager.plot(self, window_id)
 
 
 class MonitorPlot(MonitorDefn):
@@ -100,4 +100,4 @@ class MonitorPlot(MonitorDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        matplot_windows_manager.plot(self, window_id)
+        plotter_windows_manager.plot(self, window_id)
