@@ -17,7 +17,7 @@ from ansys.fluent.core.post_objects.post_objects_container import (
 )
 
 from ansys.fluent.visualization.graphic.graphic_windows_manager import (
-    graphic_windows_manager,
+    graphics_windows_manager,
 )
 
 
@@ -71,7 +71,7 @@ class Mesh(MeshDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        graphic_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -103,7 +103,7 @@ class Pathlines(PathlinesDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        graphic_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -146,7 +146,7 @@ class Surface(SurfaceDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        graphic_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -187,7 +187,7 @@ class Contour(ContourDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        graphic_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -229,6 +229,6 @@ class Vector(VectorDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        graphic_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
