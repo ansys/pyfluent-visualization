@@ -3,8 +3,10 @@ from typing import List, Optional
 import numpy as np
 import pyvista as pv
 
+from ansys.fluent.visualization.plotter.abstract_plotter_defns import AbstractPlotter
 
-class Plotter:
+
+class Plotter(AbstractPlotter):
     """Class for pyvista chart 2D plotter."""
 
     def __init__(
@@ -16,7 +18,7 @@ class Plotter:
         ylabel: Optional[str] = "",
         remote_process: Optional[bool] = False,
     ):
-        """Instantiate a matplotlib plotter.
+        """Instantiate a pyvista chart 2D plotter.
 
         Parameters
         ----------

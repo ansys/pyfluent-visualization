@@ -5,8 +5,10 @@ from typing import List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 
+from ansys.fluent.visualization.plotter.abstract_plotter_defns import AbstractPlotter
 
-class Plotter:
+
+class Plotter(AbstractPlotter):
     """Class for matplotlib plotter."""
 
     def __init__(
