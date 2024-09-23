@@ -6,6 +6,8 @@ from ansys.fluent.visualization.graphic.pyvista.graphic_defns import (
 
 
 class GraphicWindowsManager(PyVistaWindowsManager):
+    """Provides for managing graphic windows."""
+
     pass
 
 
