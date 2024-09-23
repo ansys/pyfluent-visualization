@@ -125,7 +125,7 @@ class Plotter(AbstractPlotter):
         Parameters
         ----------
         file_name : str
-            File name to save graphic.
+            File name to save graphics.
         """
         self.plotter.save_graphic(file_name)
 

@@ -6,7 +6,7 @@
    
    graphics
    plots
-   graphic_windows_manager
+   graphics_windows_manager
    plotter_windows_manager
    
    

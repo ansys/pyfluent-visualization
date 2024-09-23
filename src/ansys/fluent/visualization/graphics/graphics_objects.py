@@ -16,7 +16,7 @@ from ansys.fluent.core.post_objects.post_objects_container import (
     Graphics as GraphicsContainer,
 )
 
-from ansys.fluent.visualization.graphic.graphic_windows_manager import (
+from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     graphics_windows_manager,
 )
 

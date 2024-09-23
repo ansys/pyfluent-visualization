@@ -1,6 +1,4 @@
-"""Module for graphic windows management."""
-
-"""Module for pyVista windows management."""
+"""Module for graphics windows management."""
 
 from enum import Enum
 import itertools
@@ -32,7 +30,7 @@ class FieldDataType(Enum):
     Pathlines = 4
 
 
-from ansys.fluent.visualization.graphic.pyvista.graphic_defns import Renderer
+from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
 
 
 class GraphicsWindow(PostWindow):
@@ -548,12 +546,12 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         window_id: str,
         format: str,
     ) -> None:
-        """Save a graphic.
+        """Save a graphics.
 
         Parameters
         ----------
         window_id : str
-            Window ID for the graphic to save.
+            Window ID for the graphics to save.
         format : str
             Graphic file format. Supported formats are SVG, EPS, PS, PDF, and TEX.
 

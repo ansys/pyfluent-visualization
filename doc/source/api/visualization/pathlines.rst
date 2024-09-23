@@ -3,4 +3,4 @@
 Pathlines
 =========   
 
-.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Pathlines
+.. autopostdoc:: ansys.fluent.visualization.graphics.graphics_objects.Pathlines

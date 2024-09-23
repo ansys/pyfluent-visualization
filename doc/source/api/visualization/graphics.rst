@@ -3,7 +3,7 @@
 Graphics
 ======== 
  
-.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Graphics
+.. autopostdoc:: ansys.fluent.visualization.graphics.graphics_objects.Graphics
 
 In the following example, a ``Graphics`` object is instantiated with a Fluent
 session as its context. The ``Graphics`` object is used to create a mesh,

@@ -3,4 +3,4 @@
 Vector
 ======  
 
-.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Vector
+.. autopostdoc:: ansys.fluent.visualization.graphics.graphics_objects.Vector

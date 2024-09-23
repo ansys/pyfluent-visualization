@@ -4,6 +4,6 @@
 Surface
 =======
 
-.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Surface
+.. autopostdoc:: ansys.fluent.visualization.graphics.graphics_objects.Surface
   
 

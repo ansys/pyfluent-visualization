@@ -1,4 +1,4 @@
-.. _ref_graphic_windows_manager:
+.. _ref_graphics_windows_manager:
 
 Graphic windows manager
 =======================   
@@ -16,7 +16,7 @@ the end of every time step and creates an animation.
 .. code-block:: python
 
     from ansys.fluent.visualization import Graphics
-    from ansys.fluent.visualization.graphic import graphic_windows_manager
+    from ansys.fluent.visualization.graphics import graphics_windows_manager
     
     graphics_session = Graphics(session)
     
@@ -30,7 +30,7 @@ the end of every time step and creates an animation.
     
     #Create callback that refreshes window-1.    
     def auto_refresh_contour(session_id, event_info):    
-        graphic_windows_manager.refresh_windows(session_id, ["window-1"])
+        graphics_windows_manager.refresh_windows(session_id, ["window-1"])
            
     #Register this callback with server events.    
     cb_init_id = session.events_manager.register_callback('InitializedEvent', auto_refresh_contour)
@@ -38,8 +38,8 @@ the end of every time step and creates an animation.
     cb_time_step_ended_id = session.events_manager.register_callback('TimestepEndedEvent', auto_refresh_contour)         
 
     #Create animation for window-1. 
-    graphic_windows_manager.animate_windows(session.id, ["window-1"])
+    graphics_windows_manager.animate_windows(session.id, ["window-1"])
     
     
-.. autoclass:: ansys.fluent.visualization.graphic.graphic_windows_manager.GraphicWindowsManager
+.. autoclass:: ansys.fluent.visualization.graphics.graphics_windows_manager.GraphicWindowsManager
    :members:
