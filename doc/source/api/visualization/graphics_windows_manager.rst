@@ -1,8 +1,8 @@
 .. _ref_graphics_windows_manager:
 
-Graphic windows manager
-=======================   
-The ``GraphicWindowsManager`` class provides for managing and directly interacting
+Graphics windows manager
+========================
+The ``GraphicsWindowsManager`` class provides for managing and directly interacting
 with PyVista windows. By registering these methods with ``EventsManager``, you
 can update graphics during run time and create animations.
 
@@ -41,5 +41,5 @@ the end of every time step and creates an animation.
     graphics_windows_manager.animate_windows(session.id, ["window-1"])
     
     
-.. autoclass:: ansys.fluent.visualization.graphics.graphics_windows_manager.GraphicWindowsManager
+.. autoclass:: ansys.fluent.visualization.graphics.graphics_windows_manager.GraphicsWindowsManager
    :members:
