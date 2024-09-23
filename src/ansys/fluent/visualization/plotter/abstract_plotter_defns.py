@@ -1,4 +1,4 @@
-"""Module providing matplotlib plotter functionality."""
+"""Abstract module providing plotter functionality."""
 
 from abc import ABC, abstractmethod
 

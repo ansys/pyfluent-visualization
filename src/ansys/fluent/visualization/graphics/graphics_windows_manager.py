@@ -24,10 +24,10 @@ from ansys.fluent.visualization.post_windows_manager import (
 class FieldDataType(Enum):
     """Provides surface data types."""
 
-    Meshes = 1
-    Vectors = 2
-    Contours = 3
-    Pathlines = 4
+    Meshes = "Mesh"
+    Vectors = "Vector"
+    Contours = "Contour"
+    Pathlines = "Pathlines"
 
 
 from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
@@ -68,16 +68,10 @@ class GraphicsWindow(PostWindow):
         if not self.post_object:
             return
         obj = self.post_object
-        if obj.__class__.__name__ == "Mesh":
-            self._fetch_mesh(obj)
-        elif obj.__class__.__name__ == "Surface":
+        if obj.__class__.__name__ == "Surface":
             self._fetch_surface(obj)
-        elif obj.__class__.__name__ == "Contour":
-            self._fetch_contour(obj)
-        elif obj.__class__.__name__ == "Vector":
-            self._fetch_vector(obj)
-        elif obj.__class__.__name__ == "Pathlines":
-            self._fetch_pathlines(obj)
+        else:
+            self._fetch_data(obj, FieldDataType(obj.__class__.__name__))
 
     def render(self):
         """Render graphics."""
@@ -110,10 +104,31 @@ class GraphicsWindow(PostWindow):
         self.render()
 
     # private methods
+    def _fetch_data(self, obj, data_type: FieldDataType):
+        if self._data.get(data_type) is None or self.fetch_data:
+            self._data[data_type] = FieldDataExtractor(obj).fetch_data()
 
-    def _fetch_vector(self, obj):
-        if self._data.get(FieldDataType.Vectors) is None or self.fetch_data:
-            self._data[FieldDataType.Vectors] = FieldDataExtractor(obj).fetch_data()
+    def _fetch_surface(self, obj):
+        dummy_object = "dummy_object"
+        post_session = obj.get_root()
+        if (
+            obj.definition.type() == "iso-surface"
+            and obj.definition.iso_surface.rendering() == "contour"
+        ):
+            contour = post_session.Contours[dummy_object]
+            contour.field = obj.definition.iso_surface.field()
+            contour.surfaces_list = [obj._name]
+            contour.show_edges = obj.show_edges()
+            contour.range.auto_range_on.global_range = True
+            contour.boundary_values = True
+            self._fetch_data(contour, FieldDataType.Contours)
+            del post_session.Contours[dummy_object]
+        else:
+            mesh = post_session.Meshes[dummy_object]
+            mesh.surfaces_list = [obj._name]
+            mesh.show_edges = obj.show_edges()
+            self._fetch_data(mesh, FieldDataType.Meshes)
+            del post_session.Meshes[dummy_object]
 
     def _display_vector(self, obj):
         field_info = obj._api_helper.field_info()
@@ -185,10 +200,6 @@ class GraphicsWindow(PostWindow):
             if obj.show_edges():
                 self.renderer.render(mesh, show_edges=True, color="white")
 
-    def _fetch_pathlines(self, obj):
-        if self._data.get(FieldDataType.Pathlines) is None or self.fetch_data:
-            self._data[FieldDataType.Pathlines] = FieldDataExtractor(obj).fetch_data()
-
     def _display_pathlines(self, obj):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
@@ -214,10 +225,6 @@ class GraphicsWindow(PostWindow):
                 scalars=field,
                 scalar_bar_args=scalar_bar_args,
             )
-
-    def _fetch_contour(self, obj):
-        if self._data.get(FieldDataType.Contours) is None or self.fetch_data:
-            self._data[FieldDataType.Contours] = FieldDataExtractor(obj).fetch_data()
 
     def _display_contour(self, obj):
         # contour properties
@@ -327,28 +334,6 @@ class GraphicsWindow(PostWindow):
                     ):
                         self.renderer.render(mesh.contour(isosurfaces=20))
 
-    def _fetch_surface(self, obj):
-        dummy_object = "dummy_object"
-        post_session = obj.get_root()
-        if (
-            obj.definition.type() == "iso-surface"
-            and obj.definition.iso_surface.rendering() == "contour"
-        ):
-            contour = post_session.Contours[dummy_object]
-            contour.field = obj.definition.iso_surface.field()
-            contour.surfaces_list = [obj._name]
-            contour.show_edges = obj.show_edges()
-            contour.range.auto_range_on.global_range = True
-            contour.boundary_values = True
-            self._fetch_contour(contour)
-            del post_session.Contours[dummy_object]
-        else:
-            mesh = post_session.Meshes[dummy_object]
-            mesh.surfaces_list = [obj._name]
-            mesh.show_edges = obj.show_edges()
-            self._fetch_mesh(mesh)
-            del post_session.Meshes[dummy_object]
-
     def _display_surface(self, obj):
         dummy_object = "dummy_object"
         post_session = obj.get_root()
@@ -370,10 +355,6 @@ class GraphicsWindow(PostWindow):
             mesh.show_edges = obj.show_edges()
             self._display_mesh(mesh)
             del post_session.Meshes[dummy_object]
-
-    def _fetch_mesh(self, obj):
-        if self._data.get(FieldDataType.Meshes) is None or self.fetch_data:
-            self._data[FieldDataType.Meshes] = FieldDataExtractor(obj).fetch_data()
 
     def _display_mesh(self, obj):
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
