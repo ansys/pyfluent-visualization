@@ -32,7 +32,7 @@ environment. PyVista is then used to visualize the extracted data.
 .. code:: python
 
   # import module
-  from ansys.fluent.visualization.pyvista import Graphics
+  from ansys.fluent.visualization import Graphics
 
   # get the graphics objects for the session
 

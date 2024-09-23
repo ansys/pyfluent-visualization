@@ -3,7 +3,7 @@
 Graphics
 ======== 
  
-.. autopostdoc:: ansys.fluent.visualization.pyvista.pyvista_objects.Graphics   
+.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Graphics
 
 In the following example, a ``Graphics`` object is instantiated with a Fluent
 session as its context. The ``Graphics`` object is used to create a mesh,
@@ -11,7 +11,7 @@ contour, vector, and surface. The contour is then deleted.
 
 .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
         graphics_session = Graphics(session)
         
         #Create object

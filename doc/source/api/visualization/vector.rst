@@ -3,4 +3,4 @@
 Vector
 ======  
 
-.. autopostdoc:: ansys.fluent.visualization.pyvista.pyvista_objects.Vector
+.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Vector

@@ -815,6 +815,3 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 window_id = f"window-{next(itr_count)}"
                 if window_id not in self._post_windows:
                     return window_id
-
-
-pyvista_windows_manager = PyVistaWindowsManager()

@@ -3,6 +3,6 @@
 Mesh
 ==== 
 
-.. autopostdoc:: ansys.fluent.visualization.pyvista.pyvista_objects.Mesh
+.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Mesh
          
 

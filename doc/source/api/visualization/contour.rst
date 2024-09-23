@@ -3,4 +3,4 @@
 Contour
 =======   
 
-.. autopostdoc:: ansys.fluent.visualization.pyvista.pyvista_objects.Contour
+.. autopostdoc:: ansys.fluent.visualization.graphic.graphic_objects.Contour

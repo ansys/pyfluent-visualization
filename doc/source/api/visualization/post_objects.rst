@@ -6,8 +6,8 @@
    
    graphics
    plots
-   pyvista_windows_manager
-   matplot_windows_manager
+   graphic_windows_manager
+   plotter_windows_manager
    
    
   

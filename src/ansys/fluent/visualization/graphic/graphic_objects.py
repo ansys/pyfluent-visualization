@@ -16,8 +16,8 @@ from ansys.fluent.core.post_objects.post_objects_container import (
     Graphics as GraphicsContainer,
 )
 
-from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
-    pyvista_windows_manager,
+from ansys.fluent.visualization.graphic.graphic_windows_manager import (
+    graphic_windows_manager,
 )
 
 
@@ -49,7 +49,7 @@ class Mesh(MeshDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         mesh1 = graphics_session.Meshes["mesh-1"]
@@ -71,7 +71,7 @@ class Mesh(MeshDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphic_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -81,7 +81,7 @@ class Pathlines(PathlinesDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         pathlines1 = graphics_session.Pathlines["pathlines-1"]
@@ -103,7 +103,7 @@ class Pathlines(PathlinesDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphic_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -122,7 +122,7 @@ class Surface(SurfaceDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import Graphics
+        from ansys.fluent.visualization import Graphics
 
         graphics_session = Graphics(session)
         surface1 = graphics_session.Surfaces["surface-1"]
@@ -146,7 +146,7 @@ class Surface(SurfaceDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphic_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -165,7 +165,7 @@ class Contour(ContourDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         contour1 = graphics_session.Contours["contour-1"]
@@ -187,7 +187,7 @@ class Contour(ContourDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphic_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -206,7 +206,7 @@ class Vector(VectorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         vector1 = graphics_session.Vectors["vector-1"]
@@ -229,6 +229,6 @@ class Vector(VectorDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphic_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )

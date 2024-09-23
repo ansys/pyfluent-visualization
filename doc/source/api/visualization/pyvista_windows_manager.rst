@@ -1,8 +1,8 @@
-.. _ref_pyvista_windows_manager:
+.. _ref_graphic_windows_manager:
 
-PyVista windows manager
+Graphic windows manager
 =======================   
-The ``PyVistaWindowsManager`` class provides for managing and directly interacting
+The ``GraphicWindowsManager`` class provides for managing and directly interacting
 with PyVista windows. By registering these methods with ``EventsManager``, you
 can update graphics during run time and create animations.
 
@@ -15,8 +15,8 @@ the end of every time step and creates an animation.
 
 .. code-block:: python
 
-    from ansys.fluent.visualization.pyvista import Graphics
-    from ansys.fluent.visualization.pyvista import pyvista_windows_manager
+    from ansys.fluent.visualization import Graphics
+    from ansys.fluent.visualization.graphic import graphic_windows_manager
     
     graphics_session = Graphics(session)
     
@@ -30,7 +30,7 @@ the end of every time step and creates an animation.
     
     #Create callback that refreshes window-1.    
     def auto_refresh_contour(session_id, event_info):    
-        pyvista_windows_manager.refresh_windows(session_id, ["window-1"])        
+        graphic_windows_manager.refresh_windows(session_id, ["window-1"])
            
     #Register this callback with server events.    
     cb_init_id = session.events_manager.register_callback('InitializedEvent', auto_refresh_contour)
@@ -38,8 +38,8 @@ the end of every time step and creates an animation.
     cb_time_step_ended_id = session.events_manager.register_callback('TimestepEndedEvent', auto_refresh_contour)         
 
     #Create animation for window-1. 
-    pyvista_windows_manager.animate_windows(session.id, ["window-1"])
+    graphic_windows_manager.animate_windows(session.id, ["window-1"])
     
     
-.. autoclass:: ansys.fluent.visualization.pyvista.pyvista_windows_manager.PyVistaWindowsManager
+.. autoclass:: ansys.fluent.visualization.graphic.graphic_windows_manager.GraphicWindowsManager
    :members:

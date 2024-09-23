@@ -1,9 +1,9 @@
-.. _ref_matplot_windows_manager:
+.. _ref_plotter_windows_manager:
 
-Matplotlib windows manager
-========================== 
+Plotter windows manager
+=======================
 
-The ``MatplotWindowsManager`` class provides for managing and directly interacting
+The ``PlotterWindowsManager`` class provides for managing and directly interacting
 with Matplotlib windows. By registering these methods with ``EventsManager``, you can
 update plots during run time.
 
@@ -37,7 +37,7 @@ of every time step.
     
     # Create callback that refreshes window-1 and window-2.    
     def auto_refresh_plot(session_id, event_info):    
-        plotter.refresh_windows(session_id, ["window-1", "window-2"])
+        plotter_windows_manager.refresh_windows(session_id, ["window-1", "window-2"])
            
     #Register this callback with server events.    
     cb_init_id = session.events_manager.register_callback('InitializedEvent', auto_refresh_plot)
