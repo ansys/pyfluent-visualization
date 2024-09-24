@@ -152,8 +152,7 @@ class Plotter(AbstractPlotter):
     def __call__(self):
         """Reset and show plot."""
         self._reset()
-        self._visible = True
-        self.plotter.show()
+        self._visible = False
 
     # private methods
     def _reset(self):
