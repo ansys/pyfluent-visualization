@@ -108,7 +108,7 @@ class GraphicsWindow(PostWindow):
         if self._data.get(data_type) is None or self.fetch_data:
             self._data[data_type] = FieldDataExtractor(obj).fetch_data()
 
-    def _fetch_surface(self, obj):
+    def _fetch_or_display_surface(self, obj, fetch: bool):
         dummy_object = "dummy_object"
         post_session = obj.get_root()
         if (
@@ -121,14 +121,23 @@ class GraphicsWindow(PostWindow):
             contour.show_edges = obj.show_edges()
             contour.range.auto_range_on.global_range = True
             contour.boundary_values = True
-            self._fetch_data(contour, FieldDataType.Contours)
+            if fetch:
+                self._fetch_data(contour, FieldDataType.Contours)
+            else:
+                self._display_contour(contour)
             del post_session.Contours[dummy_object]
         else:
             mesh = post_session.Meshes[dummy_object]
             mesh.surfaces_list = [obj._name]
             mesh.show_edges = obj.show_edges()
-            self._fetch_data(mesh, FieldDataType.Meshes)
+            if fetch:
+                self._fetch_data(mesh, FieldDataType.Meshes)
+            else:
+                self._display_mesh(mesh)
             del post_session.Meshes[dummy_object]
+
+    def _fetch_surface(self, obj):
+        self._fetch_or_display_surface(obj, fetch=True)
 
     def _resolve_mesh_data(self, mesh_data):
         topology = "line" if mesh_data["faces"][0] == 2 else "face"
@@ -328,26 +337,7 @@ class GraphicsWindow(PostWindow):
                         self.renderer.render(mesh.contour(isosurfaces=20))
 
     def _display_surface(self, obj):
-        dummy_object = "dummy_object"
-        post_session = obj.get_root()
-        if (
-            obj.definition.type() == "iso-surface"
-            and obj.definition.iso_surface.rendering() == "contour"
-        ):
-            contour = post_session.Contours[dummy_object]
-            contour.field = obj.definition.iso_surface.field()
-            contour.surfaces_list = [obj._name]
-            contour.show_edges = obj.show_edges()
-            contour.range.auto_range_on.global_range = True
-            contour.boundary_values = True
-            self._display_contour(contour)
-            del post_session.Contours[dummy_object]
-        else:
-            mesh = post_session.Meshes[dummy_object]
-            mesh.surfaces_list = [obj._name]
-            mesh.show_edges = obj.show_edges()
-            self._display_mesh(mesh)
-            del post_session.Meshes[dummy_object]
+        self._fetch_or_display_surface(obj, fetch=False)
 
     def _display_mesh(self, obj):
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
