@@ -544,7 +544,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             window = self._post_windows.get(window_id)
             if window:
-                window.renderer.plotter.save_graphic(f"{window_id}.{format}")
+                window.renderer.save_graphic(f"{window_id}.{format}")
 
     def refresh_windows(
         self,
@@ -602,7 +602,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
                 window = self._post_windows.get(window_id)
                 if window:
                     window.animate = True
-                    window.renderer.plotter.open_gif(f"{window.id}.gif")
+                    window.renderer.get_animation(window.id)
 
     def close_windows(
         self,

@@ -3,8 +3,10 @@
 import pyvista as pv
 from pyvistaqt import BackgroundPlotter
 
+from ansys.fluent.visualization.graphics.abstract_graphics_defns import AbstractRenderer
 
-class Renderer:
+
+class Renderer(AbstractRenderer):
     def __init__(self, win_id: str, in_notebook: bool, non_interactive: bool):
         self.plotter: Union[BackgroundPlotter, pv.Plotter] = (
             pv.Plotter(title=f"PyFluent ({win_id})")
@@ -67,10 +69,39 @@ class Renderer:
         self.plotter.write_frame()
 
     def show(self):
+        """Show graphics."""
         self.plotter.show()
 
     def render(self, mesh, **kwargs):
+        """Render graphics in window.
+
+        Parameters
+        ----------
+        mesh : pyvista.DataSet
+            Any PyVista or VTK mesh is supported.
+        """
         self.plotter.add_mesh(mesh, **kwargs)
 
+    def save_graphic(self, file_name: str):
+        """Save graphics to the specified file.
+
+        Parameters
+        ----------
+        file_name : str
+            File name to save graphic.
+        """
+        self.plotter.save_graphic(file_name)
+
+    def get_animation(self, win_id: str):
+        """Animate windows.
+
+        Parameters
+        ----------
+        win_id : str
+            ID for the window to animate.
+        """
+        self.plotter.open_gif(f"{win_id}.gif")
+
     def close(self):
+        """Close graphics window."""
         self.plotter.close()
