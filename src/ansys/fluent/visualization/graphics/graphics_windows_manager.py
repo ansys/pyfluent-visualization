@@ -130,6 +130,19 @@ class GraphicsWindow(PostWindow):
             self._fetch_data(mesh, FieldDataType.Meshes)
             del post_session.Meshes[dummy_object]
 
+    def _resolve_mesh_data(self, mesh_data):
+        topology = "line" if mesh_data["faces"][0] == 2 else "face"
+        if topology == "line":
+            return pv.PolyData(
+                mesh_data["vertices"],
+                lines=mesh_data["faces"],
+            )
+        else:
+            return pv.PolyData(
+                mesh_data["vertices"],
+                faces=mesh_data["faces"],
+            )
+
     def _display_vector(self, obj):
         field_info = obj._api_helper.field_info()
         vectors_of = obj.vectors_of()
@@ -149,17 +162,7 @@ class GraphicsWindow(PostWindow):
                 3,
             )
             vector_scale = mesh_data["vector-scale"][0]
-            topology = "line" if mesh_data["faces"][0] == 2 else "face"
-            if topology == "line":
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    lines=mesh_data["faces"],
-                )
-            else:
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    faces=mesh_data["faces"],
-                )
+            mesh = self._resolve_mesh_data(mesh_data)
             mesh.cell_data["vectors"] = mesh_data[vectors_of]
             scalar_field = mesh_data[obj.field()]
             velocity_magnitude = np.linalg.norm(mesh_data[vectors_of], axis=1)
@@ -244,17 +247,7 @@ class GraphicsWindow(PostWindow):
             if "vertices" not in surface_data or "faces" not in surface_data:
                 continue
             surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
-            topology = "line" if surface_data["faces"][0] == 2 else "face"
-            if topology == "line":
-                mesh = pv.PolyData(
-                    surface_data["vertices"],
-                    lines=surface_data["faces"],
-                )
-            else:
-                mesh = pv.PolyData(
-                    surface_data["vertices"],
-                    faces=surface_data["faces"],
-                )
+            mesh = self._resolve_mesh_data(surface_data)
             if node_values:
                 mesh.point_data[field] = surface_data[obj.field()]
             else:
@@ -361,17 +354,7 @@ class GraphicsWindow(PostWindow):
             if "vertices" not in mesh_data or "faces" not in mesh_data:
                 continue
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
-            topology = "line" if mesh_data["faces"][0] == 2 else "face"
-            if topology == "line":
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    lines=mesh_data["faces"],
-                )
-            else:
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    faces=mesh_data["faces"],
-                )
+            mesh = self._resolve_mesh_data(mesh_data)
             color_size = len(self.renderer._colors)
             color = list(self.renderer._colors.values())[surface_id % color_size]
             self.renderer.render(mesh, show_edges=obj.show_edges(), color=color)
