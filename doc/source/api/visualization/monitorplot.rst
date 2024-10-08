@@ -3,6 +3,6 @@
 MonitorPlot
 ===========
 
-.. autopostdoc:: ansys.fluent.visualization.matplotlib.matplot_objects.MonitorPlot
+.. autopostdoc:: ansys.fluent.visualization.plotter.plotter_objects.MonitorPlot
   
 

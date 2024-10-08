@@ -3,7 +3,7 @@
 XY plot
 =======
 
-.. autopostdoc:: ansys.fluent.visualization.matplotlib.matplot_objects.XYPlot
+.. autopostdoc:: ansys.fluent.visualization.plotter.plotter_objects.XYPlot
 
 
         

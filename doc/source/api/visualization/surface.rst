@@ -4,6 +4,6 @@
 Surface
 =======
 
-.. autopostdoc:: ansys.fluent.visualization.pyvista.pyvista_objects.Surface
+.. autopostdoc:: ansys.fluent.visualization.graphics.graphics_objects.Surface
   
 

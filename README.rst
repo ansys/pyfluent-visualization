@@ -101,7 +101,7 @@ the PyFluent-Visualization documentation.
 
 .. code:: python
 
-   from ansys.fluent.visualization.pyvista import Graphics
+   from ansys.fluent.visualization import Graphics
    graphics = Graphics(session=session)
    temperature_contour = graphics.Contours["contour-temperature"]
    temperature_contour.field = "temperature"

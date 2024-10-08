@@ -1,4 +1,4 @@
-"""Module for pyVista windows management."""
+"""Module for graphics windows management."""
 
 from enum import Enum
 import itertools
@@ -24,17 +24,20 @@ from ansys.fluent.visualization.post_windows_manager import (
 class FieldDataType(Enum):
     """Provides surface data types."""
 
-    Meshes = 1
-    Vectors = 2
-    Contours = 3
-    Pathlines = 4
+    Meshes = "Mesh"
+    Vectors = "Vector"
+    Contours = "Contour"
+    Pathlines = "Pathlines"
 
 
-class PyVistaWindow(PostWindow):
-    """Provides for managing PyVista windows."""
+from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
+
+
+class GraphicsWindow(PostWindow):
+    """Provides for managing Graphics windows."""
 
     def __init__(self, id: str, post_object: GraphicsDefn):
-        """Instantiate a PyVista window.
+        """Instantiate a Graphics window.
 
         Parameters
         ----------
@@ -45,11 +48,7 @@ class PyVistaWindow(PostWindow):
         """
         self.post_object: GraphicsDefn = post_object
         self.id: str = id
-        self.plotter: Union[BackgroundPlotter, pv.Plotter] = (
-            pv.Plotter(title=f"PyFluent ({self.id})")
-            if in_notebook() or get_config()["blocking"]
-            else BackgroundPlotter(title=f"PyFluent ({self.id})")
-        )
+        self.renderer = Renderer(id, in_notebook(), get_config()["blocking"])
         self.overlay: bool = False
         self.fetch_data: bool = False
         self.show_window: bool = True
@@ -58,27 +57,7 @@ class PyVistaWindow(PostWindow):
         self.refresh: bool = False
         self.update: bool = False
         self._visible: bool = False
-        self._init_properties()
         self._data = {}
-        self._colors = {
-            "red": [255, 0, 0],
-            "lime": [0, 255, 0],
-            "blue": [0, 0, 255],
-            "yellow": [255, 255, 0],
-            "cyan": [0, 255, 255],
-            "magenta": [255, 0, 255],
-            "silver": [192, 192, 192],
-            "gray": [128, 128, 128],
-            "maroon": [128, 0, 0],
-            "olive": [128, 128, 0],
-            "green": [0, 128, 0],
-            "purple": [128, 0, 128],
-            "teal": [0, 128, 128],
-            "navy": [0, 0, 128],
-            "orange": [255, 165, 0],
-            "brown": [210, 105, 30],
-            "white": [255, 255, 255],
-        }
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""
@@ -89,57 +68,34 @@ class PyVistaWindow(PostWindow):
         if not self.post_object:
             return
         obj = self.post_object
-        if obj.__class__.__name__ == "Mesh":
-            self._fetch_mesh(obj)
-        elif obj.__class__.__name__ == "Surface":
+        if obj.__class__.__name__ == "Surface":
             self._fetch_surface(obj)
-        elif obj.__class__.__name__ == "Contour":
-            self._fetch_contour(obj)
-        elif obj.__class__.__name__ == "Vector":
-            self._fetch_vector(obj)
-        elif obj.__class__.__name__ == "Pathlines":
-            self._fetch_pathlines(obj)
+        else:
+            self._fetch_data(obj, FieldDataType(obj.__class__.__name__))
 
     def render(self):
         """Render graphics."""
         if not self.post_object:
             return
         obj = self.post_object
-        plotter = self.plotter
-        camera = plotter.camera.copy()
+
         if not self.overlay:
-            if in_notebook() and self.plotter.theme._jupyter_backend == "pythreejs":
-                plotter.remove_actor(plotter.renderer.actors.copy())
-            else:
-                plotter.clear()
+            self.renderer._clear_plotter(in_notebook())
         if obj.__class__.__name__ == "Mesh":
-            self._display_mesh(obj, plotter)
+            self._display_mesh(obj)
         elif obj.__class__.__name__ == "Surface":
-            self._display_surface(obj, plotter)
+            self._display_surface(obj)
         elif obj.__class__.__name__ == "Contour":
-            self._display_contour(obj, plotter)
+            self._display_contour(obj)
         elif obj.__class__.__name__ == "Vector":
-            self._display_vector(obj, plotter)
+            self._display_vector(obj)
         elif obj.__class__.__name__ == "Pathlines":
-            self._display_pathlines(obj, plotter)
+            self._display_pathlines(obj)
         if self.animate:
-            plotter.write_frame()
-        view = get_config()["set_view_on_display"]
-        view_fun = {
-            "xy": plotter.view_xy,
-            "xz": plotter.view_xz,
-            "yx": plotter.view_yx,
-            "yz": plotter.view_yz,
-            "zx": plotter.view_zx,
-            "zy": plotter.view_zy,
-            "isometric": plotter.view_isometric,
-        }.get(view)
-        if view_fun:
-            view_fun()
-        else:
-            plotter.camera = camera.copy()
+            self.renderer.write_frame()
+        self.renderer._set_camera(get_config()["set_view_on_display"])
         if not self._visible and self.show_window:
-            plotter.show()
+            self.renderer.show()
             self._visible = True
 
     def plot(self):
@@ -148,33 +104,59 @@ class PyVistaWindow(PostWindow):
         self.render()
 
     # private methods
+    def _fetch_data(self, obj, data_type: FieldDataType):
+        if self._data.get(data_type) is None or self.fetch_data:
+            self._data[data_type] = FieldDataExtractor(obj).fetch_data()
 
-    def _init_properties(self):
-        self.plotter.theme.cmap = "jet"
-        self.plotter.background_color = "white"
-        self.plotter.theme.font.color = "black"
+    def _fetch_or_display_surface(self, obj, fetch: bool):
+        dummy_object = "dummy_object"
+        post_session = obj.get_root()
+        if (
+            obj.definition.type() == "iso-surface"
+            and obj.definition.iso_surface.rendering() == "contour"
+        ):
+            contour = post_session.Contours[dummy_object]
+            contour.field = obj.definition.iso_surface.field()
+            contour.surfaces_list = [obj._name]
+            contour.show_edges = obj.show_edges()
+            contour.range.auto_range_on.global_range = True
+            contour.boundary_values = True
+            if fetch:
+                self._fetch_data(contour, FieldDataType.Contours)
+            else:
+                self._display_contour(contour)
+            del post_session.Contours[dummy_object]
+        else:
+            mesh = post_session.Meshes[dummy_object]
+            mesh.surfaces_list = [obj._name]
+            mesh.show_edges = obj.show_edges()
+            if fetch:
+                self._fetch_data(mesh, FieldDataType.Meshes)
+            else:
+                self._display_mesh(mesh)
+            del post_session.Meshes[dummy_object]
 
-    def _scalar_bar_default_properties(self) -> dict:
-        return dict(
-            title_font_size=20,
-            label_font_size=16,
-            shadow=True,
-            fmt="%.6e",
-            font_family="arial",
-            vertical=True,
-            position_x=0.06,
-            position_y=0.3,
-        )
+    def _fetch_surface(self, obj):
+        self._fetch_or_display_surface(obj, fetch=True)
 
-    def _fetch_vector(self, obj):
-        if self._data.get(FieldDataType.Vectors) is None or self.fetch_data:
-            self._data[FieldDataType.Vectors] = FieldDataExtractor(obj).fetch_data()
+    def _resolve_mesh_data(self, mesh_data):
+        topology = "line" if mesh_data["faces"][0] == 2 else "face"
+        if topology == "line":
+            return pv.PolyData(
+                mesh_data["vertices"],
+                lines=mesh_data["faces"],
+            )
+        else:
+            return pv.PolyData(
+                mesh_data["vertices"],
+                faces=mesh_data["faces"],
+            )
 
-    def _display_vector(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
+    def _display_vector(self, obj):
         field_info = obj._api_helper.field_info()
         vectors_of = obj.vectors_of()
         # scalar bar properties
-        scalar_bar_args = self._scalar_bar_default_properties()
+        scalar_bar_args = self.renderer._scalar_bar_default_properties()
 
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
@@ -189,17 +171,7 @@ class PyVistaWindow(PostWindow):
                 3,
             )
             vector_scale = mesh_data["vector-scale"][0]
-            topology = "line" if mesh_data["faces"][0] == 2 else "face"
-            if topology == "line":
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    lines=mesh_data["faces"],
-                )
-            else:
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    faces=mesh_data["faces"],
-                )
+            mesh = self._resolve_mesh_data(mesh_data)
             mesh.cell_data["vectors"] = mesh_data[vectors_of]
             scalar_field = mesh_data[obj.field()]
             velocity_magnitude = np.linalg.norm(mesh_data[vectors_of], axis=1)
@@ -231,26 +203,22 @@ class PyVistaWindow(PostWindow):
                 factor=vector_scale * obj.scale(),
                 geom=pv.Arrow(),
             )
-            plotter.add_mesh(
+            self.renderer.render(
                 glyphs,
                 scalars=field,
                 scalar_bar_args=scalar_bar_args,
                 clim=range_,
             )
             if obj.show_edges():
-                plotter.add_mesh(mesh, show_edges=True, color="white")
+                self.renderer.render(mesh, show_edges=True, color="white")
 
-    def _fetch_pathlines(self, obj):
-        if self._data.get(FieldDataType.Pathlines) is None or self.fetch_data:
-            self._data[FieldDataType.Pathlines] = FieldDataExtractor(obj).fetch_data()
-
-    def _display_pathlines(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
+    def _display_pathlines(self, obj):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
 
         # scalar bar properties
-        scalar_bar_args = self._scalar_bar_default_properties()
+        scalar_bar_args = self.renderer._scalar_bar_default_properties()
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Pathlines].items():
@@ -264,17 +232,13 @@ class PyVistaWindow(PostWindow):
             )
 
             mesh.point_data[field] = surface_data[obj.field()]
-            plotter.add_mesh(
+            self.renderer.render(
                 mesh,
                 scalars=field,
                 scalar_bar_args=scalar_bar_args,
             )
 
-    def _fetch_contour(self, obj):
-        if self._data.get(FieldDataType.Contours) is None or self.fetch_data:
-            self._data[FieldDataType.Contours] = FieldDataExtractor(obj).fetch_data()
-
-    def _display_contour(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
+    def _display_contour(self, obj):
         # contour properties
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
@@ -285,24 +249,14 @@ class PyVistaWindow(PostWindow):
         node_values = obj.node_values()
 
         # scalar bar properties
-        scalar_bar_args = self._scalar_bar_default_properties()
+        scalar_bar_args = self.renderer._scalar_bar_default_properties()
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Contours].items():
             if "vertices" not in surface_data or "faces" not in surface_data:
                 continue
             surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
-            topology = "line" if surface_data["faces"][0] == 2 else "face"
-            if topology == "line":
-                mesh = pv.PolyData(
-                    surface_data["vertices"],
-                    lines=surface_data["faces"],
-                )
-            else:
-                mesh = pv.PolyData(
-                    surface_data["vertices"],
-                    faces=surface_data["faces"],
-                )
+            mesh = self._resolve_mesh_data(surface_data)
             if node_values:
                 mesh.point_data[field] = surface_data[obj.field()]
             else:
@@ -322,7 +276,7 @@ class PyVistaWindow(PostWindow):
                                 value=auto_range_off.minimum(),
                             )
                             if filled:
-                                plotter.add_mesh(
+                                self.renderer.render(
                                     minimum_above,
                                     scalars=field,
                                     show_edges=obj.show_edges(),
@@ -333,10 +287,12 @@ class PyVistaWindow(PostWindow):
                                 np.min(minimum_above[field])
                                 != np.max(minimum_above[field])
                             ):
-                                plotter.add_mesh(minimum_above.contour(isosurfaces=20))
+                                self.renderer.render(
+                                    minimum_above.contour(isosurfaces=20)
+                                )
                 else:
                     if filled:
-                        plotter.add_mesh(
+                        self.renderer.render(
                             mesh,
                             clim=[
                                 auto_range_off.minimum(),
@@ -349,13 +305,13 @@ class PyVistaWindow(PostWindow):
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        plotter.add_mesh(mesh.contour(isosurfaces=20))
+                        self.renderer.render(mesh.contour(isosurfaces=20))
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
                         field_info = obj._api_helper.field_info()
-                        plotter.add_mesh(
+                        self.renderer.render(
                             mesh,
                             clim=field_info.get_scalar_field_range(obj.field(), False),
                             scalars=field,
@@ -365,11 +321,11 @@ class PyVistaWindow(PostWindow):
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        plotter.add_mesh(mesh.contour(isosurfaces=20))
+                        self.renderer.render(mesh.contour(isosurfaces=20))
 
                 else:
                     if filled:
-                        plotter.add_mesh(
+                        self.renderer.render(
                             mesh,
                             scalars=field,
                             show_edges=obj.show_edges(),
@@ -378,80 +334,25 @@ class PyVistaWindow(PostWindow):
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        plotter.add_mesh(mesh.contour(isosurfaces=20))
+                        self.renderer.render(mesh.contour(isosurfaces=20))
 
-    def _fetch_surface(self, obj):
-        dummy_object = "dummy_object"
-        post_session = obj.get_root()
-        if (
-            obj.definition.type() == "iso-surface"
-            and obj.definition.iso_surface.rendering() == "contour"
-        ):
-            contour = post_session.Contours[dummy_object]
-            contour.field = obj.definition.iso_surface.field()
-            contour.surfaces_list = [obj._name]
-            contour.show_edges = obj.show_edges()
-            contour.range.auto_range_on.global_range = True
-            contour.boundary_values = True
-            self._fetch_contour(contour)
-            del post_session.Contours[dummy_object]
-        else:
-            mesh = post_session.Meshes[dummy_object]
-            mesh.surfaces_list = [obj._name]
-            mesh.show_edges = obj.show_edges()
-            self._fetch_mesh(mesh)
-            del post_session.Meshes[dummy_object]
+    def _display_surface(self, obj):
+        self._fetch_or_display_surface(obj, fetch=False)
 
-    def _display_surface(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
-        dummy_object = "dummy_object"
-        post_session = obj.get_root()
-        if (
-            obj.definition.type() == "iso-surface"
-            and obj.definition.iso_surface.rendering() == "contour"
-        ):
-            contour = post_session.Contours[dummy_object]
-            contour.field = obj.definition.iso_surface.field()
-            contour.surfaces_list = [obj._name]
-            contour.show_edges = obj.show_edges()
-            contour.range.auto_range_on.global_range = True
-            contour.boundary_values = True
-            self._display_contour(contour, plotter)
-            del post_session.Contours[dummy_object]
-        else:
-            mesh = post_session.Meshes[dummy_object]
-            mesh.surfaces_list = [obj._name]
-            mesh.show_edges = obj.show_edges()
-            self._display_mesh(mesh, plotter)
-            del post_session.Meshes[dummy_object]
-
-    def _fetch_mesh(self, obj):
-        if self._data.get(FieldDataType.Meshes) is None or self.fetch_data:
-            self._data[FieldDataType.Meshes] = FieldDataExtractor(obj).fetch_data()
-
-    def _display_mesh(self, obj, plotter: Union[BackgroundPlotter, pv.Plotter]):
+    def _display_mesh(self, obj):
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
             if "vertices" not in mesh_data or "faces" not in mesh_data:
                 continue
             mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
-            topology = "line" if mesh_data["faces"][0] == 2 else "face"
-            if topology == "line":
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    lines=mesh_data["faces"],
-                )
-            else:
-                mesh = pv.PolyData(
-                    mesh_data["vertices"],
-                    faces=mesh_data["faces"],
-                )
-            color_size = len(self._colors.values())
-            color = list(self._colors.values())[surface_id % color_size]
-            plotter.add_mesh(mesh, show_edges=obj.show_edges(), color=color)
+            mesh = self._resolve_mesh_data(mesh_data)
+            color_size = len(self.renderer._colors)
+            color = list(self.renderer._colors.values())[surface_id % color_size]
+            self.renderer.render(mesh, show_edges=obj.show_edges(), color=color)
 
-    def _get_refresh_for_plotter(self, window: "PyVistaWindow"):
+    def _get_refresh_for_plotter(self, window: "GraphicsWindow"):
         def refresh():
-            with PyVistaWindowsManager._condition:
-                plotter = window.plotter
+            with GraphicsWindowsManager._condition:
+                plotter = window.renderer
                 if window.close:
                     window.animate = False
                     plotter.close()
@@ -462,27 +363,27 @@ class PyVistaWindow(PostWindow):
                 try:
                     window.plot()
                 finally:
-                    PyVistaWindowsManager._condition.notify()
+                    GraphicsWindowsManager._condition.notify()
 
         return refresh
 
 
-class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
-    """Provides for managing PyVista windows."""
+class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+    """Provides for managing Graphics windows."""
 
     _condition = threading.Condition()
 
     def __init__(self):
-        """Instantiate ``PyVistaWindow`` for PyVista."""
-        self._post_windows: Dict[str:PyVistaWindow] = {}
+        """Instantiate ``GraphicsWindow`` for Graphics."""
+        self._post_windows: Dict[str:GraphicsWindow] = {}
         self._plotter_thread: threading.Thread = None
         self._post_object: GraphicsDefn = None
         self._window_id: Optional[str] = None
         self._exit_thread: bool = False
         self._app = None
 
-    def get_window(self, window_id: str) -> PyVistaWindow:
-        """Get the PyVista window.
+    def get_window(self, window_id: str) -> GraphicsWindow:
+        """Get the Graphics window.
 
         Parameters
         ----------
@@ -491,8 +392,8 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
         Returns
         -------
-        PyVistaWindow
-            PyVista window.
+        GraphicsWindow
+            Graphics window.
         """
         with self._condition:
             return self._post_windows.get(window_id, None)
@@ -511,7 +412,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             PyVista plotter.
         """
         with self._condition:
-            return self._post_windows[window_id].plotter
+            return self._post_windows[window_id].renderer.plotter
 
     def open_window(self, window_id: Optional[str] = None) -> str:
         """Open a new window.
@@ -599,12 +500,12 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         window_id: str,
         format: str,
     ) -> None:
-        """Save a graphic.
+        """Save a graphics.
 
         Parameters
         ----------
         window_id : str
-            Window ID for the graphic to save.
+            Window ID for the graphics to save.
         format : str
             Graphic file format. Supported formats are SVG, EPS, PS, PDF, and TEX.
 
@@ -616,7 +517,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         with self._condition:
             window = self._post_windows.get(window_id)
             if window:
-                window.plotter.save_graphic(f"{window_id}.{format}")
+                window.renderer.save_graphic(f"{window_id}.{format}")
 
     def refresh_windows(
         self,
@@ -674,7 +575,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 window = self._post_windows.get(window_id)
                 if window:
                     window.animate = True
-                    window.plotter.open_gif(f"{window.id}.gif")
+                    window.renderer.get_animation(window.id)
 
     def close_windows(
         self,
@@ -699,7 +600,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 window = self._post_windows.get(window_id)
                 if window:
                     if in_notebook() or get_config()["blocking"]:
-                        window.plotter.close()
+                        window.renderer.plotter.close()
                     window.close = True
 
     # private methods
@@ -711,11 +612,11 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                     break
                 if self._window_id:
                     window = self._post_windows.get(self._window_id)
-                    plotter = window.plotter if window else None
+                    plotter = window.renderer.plotter if window else None
                     animate = window.animate if window else False
                     if not plotter or plotter._closed:
-                        window = PyVistaWindow(self._window_id, self._post_object)
-                        plotter = window.plotter
+                        window = GraphicsWindow(self._window_id, self._post_object)
+                        plotter = window.renderer.plotter
                         self._app = plotter.app
                         plotter.add_callback(
                             window._get_refresh_for_plotter(window),
@@ -732,7 +633,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             self._app.processEvents()
         with self._condition:
             for window in self._post_windows.values():
-                plotter = window.plotter
+                plotter = window.renderer.plotter
                 plotter.close()
                 plotter.app.quit()
             self._post_windows.clear()
@@ -767,7 +668,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         if window and not window.close and window.refresh:
             window.refresh = False
         else:
-            window = PyVistaWindow(window_id, None)
+            window = GraphicsWindow(window_id, None)
             self._post_windows[window_id] = window
         return window
 
@@ -791,7 +692,7 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 for window_id in [
                     window_id
                     for window_id, window in self._post_windows.items()
-                    if not window.plotter._closed
+                    if not window.renderer.plotter._closed
                     and (
                         not session_id
                         or session_id == window.post_object._api_helper.id()
@@ -817,4 +718,4 @@ class PyVistaWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                     return window_id
 
 
-pyvista_windows_manager = PyVistaWindowsManager()
+graphics_windows_manager = GraphicsWindowsManager()

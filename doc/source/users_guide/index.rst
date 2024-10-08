@@ -20,8 +20,8 @@ This example shows how you can display a mesh:
     import ansys.fluent.core as pyfluent
     from ansys.fluent.core import examples
     from ansys.fluent.visualization import set_config
-    from ansys.fluent.visualization.matplotlib import Plots
-    from ansys.fluent.visualization.pyvista import Graphics
+    from ansys.fluent.visualization import Plots
+    from ansys.fluent.visualization import Graphics
     from ansys.fluent.visualization.contour import Contour
 
     set_config(blocking=True, set_view_on_display="isometric")
