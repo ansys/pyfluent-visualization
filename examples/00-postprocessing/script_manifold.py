@@ -1,3 +1,14 @@
+""".. _ref_script_manifold:
+
+Triggering callbacks and Animation
+----------------------------------
+This example uses PyVista and Matplotlib to demonstrate the use
+of callback mechanisms. The 3D model in this example
+is an exhaust manifold.
+"""
+
+###############################################################################
+# Run the following in command prompt to execute this file:
 # exec(open("script_manifold.py").read())
 
 import ansys.fluent.core as pyfluent
