@@ -692,7 +692,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
                 for window_id in [
                     window_id
                     for window_id, window in self._post_windows.items()
-                    if not window.plotter._closed
+                    if not window.renderer.plotter._closed
                     and (
                         not session_id
                         or session_id == window.post_object._api_helper.id()
