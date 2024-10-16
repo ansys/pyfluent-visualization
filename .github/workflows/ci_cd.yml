@@ -113,8 +113,8 @@ jobs:
 
       - name: Retrieve pyfluent-visualization version
         run: |
-          echo "::set-output name=PYFLUENT_VISUALIZATION_VERSION::$(python -c "from ansys.fluent.visualization import __version__; print(__version__)")"
-          echo "pyfluent-visualization version is: $(python -c "from ansys.fluent.visualization import __version__; print(__version__)")"
+          echo "PYFLUENT_VISUALIZATION_VERSION=$(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)" >> $GITHUB_OUTPUT
+          echo "pyfluent-visualization version is: $(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)"
         id: version
 
       - name: Cache examples
@@ -139,7 +139,7 @@ jobs:
 
       - name: Deploy
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'dev')
-        uses: ansys/actions/doc-deploy-stable@v6
+        uses: ansys/actions/doc-deploy-stable@v8
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
           cname: ${{ env.DOCUMENTATION_CNAME }}
