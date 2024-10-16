@@ -36,6 +36,7 @@ class GraphicsWindow(PostWindow):
             Window ID.
         """
         self.renderer = Renderer(None, in_notebook(), get_config()["blocking"])
+        self.overlay: bool = False
         self._data = {}
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
