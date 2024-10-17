@@ -1,4 +1,4 @@
-"""Module for matplotlib windows management."""
+"""Module for plotter windows management."""
 
 import itertools
 import multiprocessing as mp
@@ -13,8 +13,14 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
 )
 from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
 
-from ansys.fluent.visualization import get_config
-from ansys.fluent.visualization.matplotlib.plotter_defns import Plotter, ProcessPlotter
+from ansys.fluent.visualization import PLOTTER, get_config
+
+if PLOTTER == "matplotlib":
+    from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import Plotter
+else:
+    from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
+
+from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
 from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
@@ -70,11 +76,11 @@ class _ProcessPlotterHandle:
             pass
 
 
-class MatplotWindow(PostWindow):
-    """Provides for managing Matplotlib windows."""
+class PlotterWindow(PostWindow):
+    """Provides for managing Plotter windows."""
 
     def __init__(self, id: str, post_object: PlotDefn):
-        """Instantiate a Matplotlib window.
+        """Instantiate a plotter window.
 
         Parameters
         ----------
@@ -202,12 +208,12 @@ class _MonitorPlot:
             self.plotter.plot(xy_data)
 
 
-class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
-    """Provides for managing Matplotlib windows."""
+class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+    """Provides for managing Plotter windows."""
 
     def __init__(self):
-        """Instantiate a windows manager for matplotlib."""
-        self._post_windows: Dict[str, MatplotWindow] = {}
+        """Instantiate a windows manager for the plotter."""
+        self._post_windows: Dict[str, PlotterWindow] = {}
 
     def open_window(self, window_id: Optional[str] = None) -> str:
         """Open a new window.
@@ -383,7 +389,7 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         ):
             window.refresh = False
         else:
-            window = MatplotWindow(window_id, None)
+            window = PlotterWindow(window_id, None)
             self._post_windows[window_id] = window
             if in_notebook():
                 window.plotter()
@@ -415,4 +421,4 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 return window_id
 
 
-matplot_windows_manager = MatplotWindowsManager()
+plotter_windows_manager = PlotterWindowsManager()

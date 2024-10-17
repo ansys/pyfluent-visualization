@@ -6,9 +6,7 @@ from ansys.fluent.core.services.field_data import SurfaceDataType
 import numpy as np
 import pytest
 
-from ansys.fluent.visualization import get_config, set_config
-from ansys.fluent.visualization.matplotlib import Plots
-from ansys.fluent.visualization.pyvista import Graphics
+from ansys.fluent.visualization import Graphics, Plots, get_config, set_config
 
 
 @pytest.fixture(autouse=True)
