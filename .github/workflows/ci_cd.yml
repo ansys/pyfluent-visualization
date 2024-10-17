@@ -31,19 +31,10 @@ jobs:
     name: Documentation Style Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-  
       - name: Running Vale
-        uses: errata-ai/vale-action@reviewdog
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        uses: ansys/actions/doc-style@v8
         with:
-          files: doc
-          reporter: github-pr-check
-          level: error
-          filter_mode: nofilter
-          fail_on_error: true
-          vale_flags: "--config=doc/.vale.ini"
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   tests:
     name: Tests and coverage
@@ -113,8 +104,8 @@ jobs:
 
       - name: Retrieve pyfluent-visualization version
         run: |
-          echo "::set-output name=PYFLUENT_VISUALIZATION_VERSION::$(python -c "from ansys.fluent.visualization import __version__; print(__version__)")"
-          echo "pyfluent-visualization version is: $(python -c "from ansys.fluent.visualization import __version__; print(__version__)")"
+          echo "PYFLUENT_VISUALIZATION_VERSION=$(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)" >> $GITHUB_OUTPUT
+          echo "pyfluent-visualization version is: $(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)"
         id: version
 
       - name: Cache examples
