@@ -36,8 +36,6 @@ jobs:
         uses: ansys/actions/doc-style@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: doc
-          vale-config: doc/.vale.ini
 
   tests:
     name: Tests and coverage
