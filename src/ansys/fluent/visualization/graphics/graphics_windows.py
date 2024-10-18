@@ -35,7 +35,9 @@ class GraphicsWindow(PostWindow):
         id : str|None
             Window ID.
         """
-        self.renderer = Renderer("-", in_notebook(), get_config()["blocking"])
+        self.renderer = Renderer(
+            id if id else "-", in_notebook(), get_config()["blocking"]
+        )
         self.overlay: bool = False
         self.animate: bool = False
         self._data = {}
