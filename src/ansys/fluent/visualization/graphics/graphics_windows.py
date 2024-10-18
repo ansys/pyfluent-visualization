@@ -78,7 +78,7 @@ class GraphicsWindow(PostWindow):
             self.renderer.write_frame()
         self.renderer._set_camera(get_config()["set_view_on_display"])
 
-    def plot(self, post_object=None):
+    def plot(self, post_object):
         """Render graphics.
 
         Parameters
