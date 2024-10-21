@@ -7,7 +7,7 @@ class GraphicsWrapper:
         self.graphics_window = graphics_windows_manager._post_windows.get(
             self.window_id
         )
-        self.renderer = self.graphics_window.renderer
+        self._renderer = self.graphics_window.renderer
         self.plotter = self.graphics_window.renderer.plotter
 
     def plot(
@@ -48,7 +48,7 @@ class GraphicsWrapper:
         ValueError
             If the window does not support the specified format.
         """
-        self.graphics_window.renderer.save_graphic(f"{self.window_id}.{format}")
+        self._renderer.save_graphic(f"{self.window_id}.{format}")
 
     def refresh_windows(
         self,

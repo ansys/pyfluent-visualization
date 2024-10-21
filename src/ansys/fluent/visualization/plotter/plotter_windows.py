@@ -1,158 +1,95 @@
-"""Module for plotter windows management."""
-
-from typing import Union
-
-from ansys.fluent.core.post_objects.check_in_notebook import in_notebook
-from ansys.fluent.core.post_objects.post_object_definitions import (
-    MonitorDefn,
-    XYPlotDefn,
-)
-
-from ansys.fluent.visualization import PLOTTER, get_config
-
-if PLOTTER == "matplotlib":
-    from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import Plotter
-else:
-    from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
-
-from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
-from ansys.fluent.visualization.post_windows_manager import PostWindow
+from ansys.fluent.visualization.plotter import plotter_windows_manager
 
 
-class _ProcessPlotterHandle:
-    """Provides the process plotter handle."""
+class PlotterWrapper:
+    def __init__(self):
+        self.window_id = plotter_windows_manager.open_window()
+        self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
+        self.plotter = self.plotter_window.plotter
 
-    pass
-
-
-class PlotterWindow(PostWindow):
-    """Provides for managing Plotter windows."""
-
-    def __init__(self, id: str | None = None):
-        """Instantiate a plotter window.
+    def plot(self, object) -> None:
+        """Draw a plot.
 
         Parameters
         ----------
-        id : str|None
-            Window ID.
-        """
-        self.id: str = id if id else "-"
-        self.plotter: Union[_ProcessPlotterHandle, Plotter] = self._get_plotter()
-
-    def plot(self, post_object):
-        """Create a plot.
-
-        Parameters
-        ----------
-        post_object : PlotDefn
+        object: PlotDefn
             Object to plot.
         """
-        self.post_object = post_object
-        plot = (
-            _XYPlot(self.post_object, self.plotter)
-            if self.post_object.__class__.__name__ == "XYPlot"
-            else _MonitorPlot(self.post_object, self.plotter)
-        )
-        plot()
-
-    # private methods
-    def _get_plotter(self):
-        return (
-            Plotter(self.id)
-            if in_notebook() or get_config()["blocking"]
-            else _ProcessPlotterHandle(self.id)
+        plotter_windows_manager.plot(
+            object=object,
+            window_id=self.window_id,
         )
 
-
-class _XYPlot:
-    """Provides for drawing an XY plot."""
-
-    def __init__(
-        self, post_object: XYPlotDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
-    ):
-        """Instantiate an XY plot.
+    def save_graphic(
+        self,
+        format: str,
+    ) -> None:
+        """Save a graphics.
 
         Parameters
         ----------
-        post_object : XYPlotDefn
-            Object to plot.
-        plotter: Union[_ProcessPlotterHandle, Plotter]
-            Plotter to plot the data.
+        format : str
+            Graphic file format. Supported formats are SVG, EPS, PS, PDF, and TEX.
+
+        Raises
+        ------
+        ValueError
+            If the window does not support the specified format.
         """
-        self.post_object: XYPlotDefn = post_object
-        self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
+        self.plotter_window.plotter.save_graphic(f"{self.window_id}.{format}")
 
-    def __call__(self):
-        """Draw an XY plot."""
-        if not self.post_object:
-            return
-        xy_data = XYPlotDataExtractor(self.post_object).fetch_data()
-        properties = {
-            "curves": list(xy_data),
-            "title": "XY Plot",
-            "xlabel": "position",
-            "ylabel": self.post_object.y_axis_function(),
-        }
-        if in_notebook() or get_config()["blocking"]:
-            self.plotter.set_properties(properties)
-        else:
-            try:
-                self.plotter.set_properties(properties)
-            except BrokenPipeError:
-                self.plotter: Union[_ProcessPlotterHandle, Plotter] = (
-                    self._get_plotter()
-                )
-                self.plotter.set_properties(properties)
-        self.plotter.plot(xy_data)
-
-
-class _MonitorPlot:
-    """Provides for drawing monitor plots."""
-
-    def __init__(
-        self, post_object: MonitorDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
-    ):
-        """Instantiate a monitor plot.
+    def refresh_windows(
+        self,
+        session_id: str | None = "",
+    ) -> None:
+        """Refresh windows.
 
         Parameters
         ----------
-        post_object : MonitorDefn
-            Object to plot.
-        plotter: Union[_ProcessPlotterHandle, Plotter]
-            Plotter to plot the data.
+        session_id : str, optional
+           Session ID for refreshing the windows that belong only to this
+           session. The default is ``""``, in which case the windows in all
+           sessions are refreshed.
         """
-        self.post_object: MonitorDefn = post_object
-        self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
-
-    def __call__(self):
-        """Draw a monitor plot."""
-        if not self.post_object:
-            return
-        monitors = self.post_object._api_helper.monitors
-        indices, columns_data = monitors.get_monitor_set_data(
-            self.post_object.monitor_set_name()
+        plotter_windows_manager.refresh_windows(
+            windows_id=[self.window_id], session_id=session_id
         )
-        xy_data = {}
-        for column_name, column_data in columns_data.items():
-            xy_data[column_name] = {"xvalues": indices, "yvalues": column_data}
-        monitor_set_name = self.post_object.monitor_set_name()
-        properties = {
-            "curves": list(xy_data.keys()),
-            "title": monitor_set_name,
-            "xlabel": monitors.get_monitor_set_prop(monitor_set_name, "xlabel"),
-            "ylabel": monitors.get_monitor_set_prop(monitor_set_name, "ylabel"),
-            "yscale": "log" if monitor_set_name == "residual" else "linear",
-        }
 
-        if in_notebook() or get_config()["blocking"]:
-            self.plotter.set_properties(properties)
-        else:
-            try:
-                self.plotter.set_properties(properties)
-            except BrokenPipeError:
-                self.plotter: Union[_ProcessPlotterHandle, Plotter] = (
-                    self._get_plotter()
-                )
-                self.plotter.set_properties(properties)
-        if xy_data:
-            self.plotter.plot(xy_data)
+    def animate_windows(
+        self,
+        session_id: str | None = "",
+    ) -> None:
+        """Animate windows.
+
+        Parameters
+        ----------
+        session_id : str, optional
+           Session ID for animating the windows that belong only to this
+           session. The default is ``""``, in which case the windows in all
+           sessions are animated.
+
+        Raises
+        ------
+        NotImplementedError
+            If not implemented.
+        """
+        plotter_windows_manager.animate_windows(
+            windows_id=[self.window_id], session_id=session_id
+        )
+
+    def close_windows(
+        self,
+        session_id: str | None = "",
+    ) -> None:
+        """Close windows.
+
+        Parameters
+        ----------
+        session_id : str, optional
+           Session ID for closing the windows that belong only to this session.
+           The default is ``""``, in which case the windows in all sessions
+           are closed.
+        """
+        plotter_windows_manager.close_windows(
+            windows_id=[self.window_id], session_id=session_id
+        )
