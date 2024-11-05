@@ -163,7 +163,8 @@ sphinx_gallery_conf = {
     # Pattern to search for example files
     "filename_pattern": r"\.py",
     # Disabled example scripts
-    "ignore_pattern": r"script_manifold\.py|flycheck*",
+    "ignore_pattern": r"script_manifold\.py|"
+    r"updated_script_manifold_example\.py|flycheck*",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
