@@ -32,7 +32,7 @@ environment. PyVista is then used to visualize the extracted data.
 .. code:: python
 
   # import module
-  from ansys.fluent.visualization.pyvista import Graphics
+  from ansys.fluent.visualization import Graphics
 
   # get the graphics objects for the session
 
@@ -90,7 +90,7 @@ environment. Matplotlib is then used to plot data.
 .. code:: python
 
   # import module
-  from ansys.fluent.visualization.matplotlib import Plots
+  from ansys.fluent.visualization import Plots
 
   # get the plots object for the session
   plots_session1 = Plots(solver_session)

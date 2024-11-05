@@ -2,7 +2,7 @@
 
 Plots
 =====
-.. autoclass:: ansys.fluent.visualization.matplotlib.matplot_objects.Plots
+.. autoclass:: ansys.fluent.visualization.plotter.plotter_objects.Plots
 
 
 In the following example, a ``Plots`` object is instantiated with a Fluent session
@@ -11,7 +11,7 @@ a monitor plot.
 
 .. code-block:: python
 
-        from ansys.fluent.visualization.matplotlib import Plots
+        from ansys.fluent.visualization import Plots
     
         plots_session = Plots(session)
         plot1 = plots_session.XYPlots["plot-1"]        
@@ -22,7 +22,7 @@ a monitor plot.
         
         #To plot data on local surface created in PyVista
         
-        from ansys.fluent.visualization.pyvista import  Graphics        
+        from ansys.fluent.visualization import  Graphics
         pyvista_surface_provider = Graphics(session).Surfaces       
         plots_session = Plots(session, pyvista_surface_provider)
         plot2 = plots_session.XYPlots["plot-2"]         
