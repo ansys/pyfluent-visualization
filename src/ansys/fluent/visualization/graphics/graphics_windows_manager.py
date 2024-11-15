@@ -36,7 +36,7 @@ from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
 class GraphicsWindow(PostWindow):
     """Provides for managing Graphics windows."""
 
-    def __init__(self, id: str, post_object: GraphicsDefn):
+    def __init__(self, id: str, post_object: GraphicsDefn, grid: tuple | None = (1, 1)):
         """Instantiate a Graphics window.
 
         Parameters
@@ -45,10 +45,12 @@ class GraphicsWindow(PostWindow):
             Window ID.
         post_object : GraphicsDefn
             Object to draw.
+        grid: tuple, optional
+            Layout or arrangement of the graphics window. The default is ``(1, 1)``.
         """
         self.post_object: GraphicsDefn = post_object
         self.id: str = id
-        self.renderer = Renderer(id, in_notebook(), get_config()["blocking"])
+        self.renderer = Renderer(id, in_notebook(), get_config()["blocking"], grid)
         self.overlay: bool = False
         self.fetch_data: bool = False
         self.show_window: bool = True
@@ -58,6 +60,8 @@ class GraphicsWindow(PostWindow):
         self.update: bool = False
         self._visible: bool = False
         self._data = {}
+        self._subplot = None
+        self._opacity = None
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""
@@ -75,25 +79,44 @@ class GraphicsWindow(PostWindow):
 
     def render(self):
         """Render graphics."""
+        self._render_graphics()
+        if not self._visible and self.show_window:
+            self.renderer.show()
+            self._visible = True
+
+    def _render_graphics(self, position=(0, 0), opacity=1):
+        """Render graphics."""
         if not self.post_object:
             return
         obj = self.post_object
+        if self._subplot:
+            position = self._subplot
+        if self._opacity:
+            opacity = self._opacity
 
         if not self.overlay:
             self.renderer._clear_plotter(in_notebook())
         if obj.__class__.__name__ == "Mesh":
-            self._display_mesh(obj)
+            self._display_mesh(obj, position, opacity)
         elif obj.__class__.__name__ == "Surface":
-            self._display_surface(obj)
+            self._display_surface(obj, position, opacity)
         elif obj.__class__.__name__ == "Contour":
-            self._display_contour(obj)
+            self._display_contour(obj, position, opacity)
         elif obj.__class__.__name__ == "Vector":
-            self._display_vector(obj)
+            self._display_vector(obj, position, opacity)
         elif obj.__class__.__name__ == "Pathlines":
-            self._display_pathlines(obj)
+            self._display_pathlines(obj, position, opacity)
         if self.animate:
             self.renderer.write_frame()
         self.renderer._set_camera(get_config()["set_view_on_display"])
+
+    def add_graphics(self, position, opacity=1):
+        """Fetch and render graphics."""
+        self.fetch()
+        self._render_graphics(position, opacity)
+
+    def show_graphics(self):
+        """Display graphics."""
         if not self._visible and self.show_window:
             self.renderer.show()
             self._visible = True
@@ -108,7 +131,7 @@ class GraphicsWindow(PostWindow):
         if self._data.get(data_type) is None or self.fetch_data:
             self._data[data_type] = FieldDataExtractor(obj).fetch_data()
 
-    def _fetch_or_display_surface(self, obj, fetch: bool):
+    def _fetch_or_display_surface(self, obj, fetch: bool, position=[0, 0], opacity=1):
         dummy_object = "dummy_object"
         post_session = obj.get_root()
         if (
@@ -124,7 +147,7 @@ class GraphicsWindow(PostWindow):
             if fetch:
                 self._fetch_data(contour, FieldDataType.Contours)
             else:
-                self._display_contour(contour)
+                self._display_contour(contour, position=position, opacity=opacity)
             del post_session.Contours[dummy_object]
         else:
             mesh = post_session.Meshes[dummy_object]
@@ -133,7 +156,7 @@ class GraphicsWindow(PostWindow):
             if fetch:
                 self._fetch_data(mesh, FieldDataType.Meshes)
             else:
-                self._display_mesh(mesh)
+                self._display_mesh(mesh, position=position, opacity=opacity)
             del post_session.Meshes[dummy_object]
 
     def _fetch_surface(self, obj):
@@ -152,7 +175,7 @@ class GraphicsWindow(PostWindow):
                 faces=mesh_data["faces"],
             )
 
-    def _display_vector(self, obj):
+    def _display_vector(self, obj, position=(0, 0), opacity=1):
         field_info = obj._api_helper.field_info()
         vectors_of = obj.vectors_of()
         # scalar bar properties
@@ -208,11 +231,19 @@ class GraphicsWindow(PostWindow):
                 scalars=field,
                 scalar_bar_args=scalar_bar_args,
                 clim=range_,
+                position=position,
+                opacity=opacity,
             )
             if obj.show_edges():
-                self.renderer.render(mesh, show_edges=True, color="white")
+                self.renderer.render(
+                    mesh,
+                    show_edges=True,
+                    color="white",
+                    position=position,
+                    opacity=opacity,
+                )
 
-    def _display_pathlines(self, obj):
+    def _display_pathlines(self, obj, position=(0, 0), opacity=1):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
@@ -236,9 +267,11 @@ class GraphicsWindow(PostWindow):
                 mesh,
                 scalars=field,
                 scalar_bar_args=scalar_bar_args,
+                position=position,
+                opacity=opacity,
             )
 
-    def _display_contour(self, obj):
+    def _display_contour(self, obj, position=(0, 0), opacity=1):
         # contour properties
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
@@ -281,6 +314,8 @@ class GraphicsWindow(PostWindow):
                                     scalars=field,
                                     show_edges=obj.show_edges(),
                                     scalar_bar_args=scalar_bar_args,
+                                    position=position,
+                                    opacity=opacity,
                                 )
 
                             if (not filled or contour_lines) and (
@@ -288,7 +323,9 @@ class GraphicsWindow(PostWindow):
                                 != np.max(minimum_above[field])
                             ):
                                 self.renderer.render(
-                                    minimum_above.contour(isosurfaces=20)
+                                    minimum_above.contour(isosurfaces=20),
+                                    position=position,
+                                    opacity=opacity,
                                 )
                 else:
                     if filled:
@@ -301,11 +338,17 @@ class GraphicsWindow(PostWindow):
                             scalars=field,
                             show_edges=obj.show_edges(),
                             scalar_bar_args=scalar_bar_args,
+                            position=position,
+                            opacity=opacity,
                         )
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        self.renderer.render(mesh.contour(isosurfaces=20))
+                        self.renderer.render(
+                            mesh.contour(isosurfaces=20),
+                            position=position,
+                            opacity=opacity,
+                        )
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
@@ -317,11 +360,17 @@ class GraphicsWindow(PostWindow):
                             scalars=field,
                             show_edges=obj.show_edges(),
                             scalar_bar_args=scalar_bar_args,
+                            position=position,
+                            opacity=opacity,
                         )
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        self.renderer.render(mesh.contour(isosurfaces=20))
+                        self.renderer.render(
+                            mesh.contour(isosurfaces=20),
+                            position=position,
+                            opacity=opacity,
+                        )
 
                 else:
                     if filled:
@@ -330,16 +379,24 @@ class GraphicsWindow(PostWindow):
                             scalars=field,
                             show_edges=obj.show_edges(),
                             scalar_bar_args=scalar_bar_args,
+                            position=position,
+                            opacity=opacity,
                         )
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        self.renderer.render(mesh.contour(isosurfaces=20))
+                        self.renderer.render(
+                            mesh.contour(isosurfaces=20),
+                            position=position,
+                            opacity=opacity,
+                        )
 
-    def _display_surface(self, obj):
-        self._fetch_or_display_surface(obj, fetch=False)
+    def _display_surface(self, obj, position=(0, 0), opacity=1):
+        self._fetch_or_display_surface(
+            obj, fetch=False, position=position, opacity=opacity
+        )
 
-    def _display_mesh(self, obj):
+    def _display_mesh(self, obj, position=(0, 0), opacity=1):
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
             if "vertices" not in mesh_data or "faces" not in mesh_data:
                 continue
@@ -347,7 +404,13 @@ class GraphicsWindow(PostWindow):
             mesh = self._resolve_mesh_data(mesh_data)
             color_size = len(self.renderer._colors)
             color = list(self.renderer._colors.values())[surface_id % color_size]
-            self.renderer.render(mesh, show_edges=obj.show_edges(), color=color)
+            self.renderer.render(
+                mesh,
+                show_edges=obj.show_edges(),
+                color=color,
+                position=position,
+                opacity=opacity,
+            )
 
     def _get_refresh_for_plotter(self, window: "GraphicsWindow"):
         def refresh():
@@ -414,7 +477,9 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             return self._post_windows[window_id].renderer.plotter
 
-    def open_window(self, window_id: Optional[str] = None) -> str:
+    def open_window(
+        self, window_id: str | None = None, grid: tuple | None = (1, 1)
+    ) -> str:
         """Open a new window.
 
         Parameters
@@ -422,6 +487,8 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         window_id : str, optional
             ID for the new window. The default is ``None``, in which
             case a unique ID is automatically assigned.
+        grid: tuple, optional
+            Layout or arrangement of the graphics window. The default is ``(1, 1)``.
 
         Returns
         -------
@@ -432,9 +499,9 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             if not window_id:
                 window_id = self._get_unique_window_id()
             if in_notebook() or get_config()["blocking"]:
-                self._open_window_notebook(window_id)
+                self._open_window_notebook(window_id, grid)
             else:
-                self._open_and_plot_console(None, window_id)
+                self._open_and_plot_console(None, window_id, grid=grid)
             return window_id
 
     def set_object_for_window(self, object: GraphicsDefn, window_id: str) -> None:
@@ -494,6 +561,55 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
                 self._plot_notebook(object, window_id, fetch_data, overlay)
             else:
                 self._open_and_plot_console(object, window_id, fetch_data, overlay)
+
+    def add_graphics(
+        self,
+        object: GraphicsDefn,
+        window_id: str = None,
+        fetch_data: bool | None = False,
+        overlay: bool | None = False,
+        position: tuple | None = (0, 0),
+        opacity: float | None = 1,
+    ) -> None:
+        """Draw a plot.
+
+        Parameters
+        ----------
+        object: GraphicsDefn
+            Object to plot.
+        window_id : str
+            Window ID for the plot.
+        fetch_data : bool, optional
+            Whether to fetch data. The default is ``False``.
+        overlay : bool, optional
+            Whether to overlay graphics over existing graphics.
+            The default is ``False``.
+        position: tuple, optional
+            Position of the sub-plot.
+        opacity: float, optional
+            Transparency of the sub-plot.
+        Raises
+        ------
+        RuntimeError
+            If the window does not support the object.
+        """
+        if not isinstance(object, GraphicsDefn):
+            raise RuntimeError("Object type currently not supported.")
+        with self._condition:
+            if in_notebook() or get_config()["blocking"]:
+                self._add_graphics_in_notebook(
+                    object, window_id, fetch_data, overlay, position, opacity
+                )
+            else:
+                self._open_and_plot_console(
+                    object, window_id, fetch_data, overlay, position, opacity
+                )
+
+    def show_graphics(self, window_id: str):
+        """Display the graphics window."""
+        with self._condition:
+            if in_notebook() or get_config()["blocking"]:
+                self._show_graphics_in_notebook(window_id)
 
     def save_graphic(
         self,
@@ -605,7 +721,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
 
     # private methods
 
-    def _display(self) -> None:
+    def _display(self, grid=(1, 1)) -> None:
         while True:
             with self._condition:
                 if self._exit_thread:
@@ -615,7 +731,9 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
                     plotter = window.renderer.plotter if window else None
                     animate = window.animate if window else False
                     if not plotter or plotter._closed:
-                        window = GraphicsWindow(self._window_id, self._post_object)
+                        window = GraphicsWindow(
+                            self._window_id, self._post_object, grid=self._grid
+                        )
                         plotter = window.renderer.plotter
                         self._app = plotter.app
                         plotter.add_callback(
@@ -623,6 +741,8 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
                             100,
                         )
                     window.post_object = self._post_object
+                    window._subplot = self._subplot
+                    window._opacity = self._opacity
                     window.fetch_data = self._fetch_data
                     window.overlay = self._overlay
                     window.animate = animate
@@ -645,6 +765,9 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         window_id: str,
         fetch_data: bool = False,
         overlay: bool = False,
+        position=(0, 0),
+        opacity=1,
+        grid=(1, 1),
     ) -> None:
         if self._exit_thread:
             return
@@ -653,6 +776,9 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             self._post_object = obj
             self._fetch_data = fetch_data
             self._overlay = overlay
+            self._subplot = position
+            self._opacity = opacity
+            self._grid = grid
 
         if not self._plotter_thread:
             if FluentConnection._monitor_thread:
@@ -663,12 +789,14 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             self._condition.wait()
 
-    def _open_window_notebook(self, window_id: str) -> pv.Plotter:
+    def _open_window_notebook(
+        self, window_id: str, grid: tuple | None = (1, 1)
+    ) -> pv.Plotter:
         window = self._post_windows.get(window_id)
         if window and not window.close and window.refresh:
             window.refresh = False
         else:
-            window = GraphicsWindow(window_id, None)
+            window = GraphicsWindow(window_id, None, grid)
             self._post_windows[window_id] = window
         return window
 
@@ -680,6 +808,24 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         window.fetch_data = fetch_data
         window.overlay = overlay
         window.plot()
+
+    def _add_graphics_in_notebook(
+        self,
+        obj: object,
+        window_id: str,
+        fetch_data: bool,
+        overlay: bool,
+        position=(0, 0),
+        opacity=1,
+    ) -> None:
+        window = self._post_windows.get(window_id)
+        window.post_object = obj
+        window.fetch_data = fetch_data
+        window.overlay = overlay
+        window.add_graphics(position, opacity)
+
+    def _show_graphics_in_notebook(self, window_id: str):
+        self._post_windows[window_id].show_graphics()
 
     def _get_windows_id(
         self,

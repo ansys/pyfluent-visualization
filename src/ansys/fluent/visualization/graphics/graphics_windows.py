@@ -1,36 +1,51 @@
+"""A wrapper to improve the user interface of graphics."""
+
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 
 
-class GraphicsWrapper:
-    def __init__(self):
-        self.window_id = graphics_windows_manager.open_window()
+class GraphicsWindow:
+    def __init__(self, grid: tuple = (1, 1)):
+        self._grid = grid
+        self._graphics_objs = []
+        self.window_id = None
+
+    def add_graphics(
+        self,
+        object,
+        position: tuple = (0, 0),
+        opacity: float = 1,
+    ) -> None:
+        """Add data to a plot.
+
+        Parameters
+        ----------
+        object: GraphicsDefn
+            Object to plot as a sub-plot.
+        position: tuple, optional
+            Position of the sub-plot.
+        opacity: float, optional
+            Transparency of the sub-plot.
+        """
+        self._graphics_objs.append({**locals()})
+
+    def show(self) -> None:
+        """Render the objects in window and display the same."""
+        self.window_id = graphics_windows_manager.open_window(grid=self._grid)
         self.graphics_window = graphics_windows_manager._post_windows.get(
             self.window_id
         )
         self._renderer = self.graphics_window.renderer
         self.plotter = self.graphics_window.renderer.plotter
-
-    def plot(
-        self, object, fetch_data: bool | None = False, overlay: bool | None = False
-    ) -> None:
-        """Draw a plot.
-
-        Parameters
-        ----------
-        object: GraphicsDefn
-            Object to plot.
-        fetch_data : bool|None
-            Whether to fetch data. The default is ``False``.
-        overlay : bool|None
-            Whether to overlay graphics over existing graphics.
-            The default is ``False``.
-        """
-        graphics_windows_manager.plot(
-            object=object,
-            window_id=self.window_id,
-            fetch_data=fetch_data,
-            overlay=overlay,
-        )
+        for i in range(len(self._graphics_objs)):
+            graphics_windows_manager.add_graphics(
+                object=self._graphics_objs[i]["object"].obj,
+                window_id=self.window_id,
+                fetch_data=True,
+                overlay=True,
+                position=self._graphics_objs[i]["position"],
+                opacity=self._graphics_objs[i]["opacity"],
+            )
+        graphics_windows_manager.show_graphics(self.window_id)
 
     def save_graphic(
         self,
@@ -48,7 +63,8 @@ class GraphicsWrapper:
         ValueError
             If the window does not support the specified format.
         """
-        self._renderer.save_graphic(f"{self.window_id}.{format}")
+        if self.window_id:
+            self._renderer.save_graphic(f"{self.window_id}.{format}")
 
     def refresh_windows(
         self,
@@ -66,9 +82,10 @@ class GraphicsWrapper:
         overlay : bool, Optional
             Overlay graphics over existing graphics.
         """
-        graphics_windows_manager.refresh_windows(
-            windows_id=[self.window_id], session_id=session_id, overlay=overlay
-        )
+        if self.window_id:
+            graphics_windows_manager.refresh_windows(
+                windows_id=[self.window_id], session_id=session_id, overlay=overlay
+            )
 
     def animate_windows(
         self,
@@ -88,9 +105,10 @@ class GraphicsWrapper:
         NotImplementedError
             If not implemented.
         """
-        graphics_windows_manager.animate_windows(
-            windows_id=[self.window_id], session_id=session_id
-        )
+        if self.window_id:
+            graphics_windows_manager.animate_windows(
+                windows_id=[self.window_id], session_id=session_id
+            )
 
     def close_windows(
         self,
@@ -105,6 +123,7 @@ class GraphicsWrapper:
            The default is ``""``, in which case the windows in all sessions
            are closed.
         """
-        graphics_windows_manager.close_windows(
-            windows_id=[self.window_id], session_id=session_id
-        )
+        if self.window_id:
+            graphics_windows_manager.close_windows(
+                windows_id=[self.window_id], session_id=session_id
+            )
