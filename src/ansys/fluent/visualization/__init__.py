@@ -27,9 +27,11 @@ from ansys.fluent.visualization._config import get_config, set_config  # noqa: F
 from ansys.fluent.visualization.containers import (  # noqa: F401
     Contour,
     Mesh,
+    Monitor,
     Pathline,
     Surface,
     Vector,
+    XYPlot,
 )
 from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
 from ansys.fluent.visualization.graphics.graphics_windows import (  # noqa: F401

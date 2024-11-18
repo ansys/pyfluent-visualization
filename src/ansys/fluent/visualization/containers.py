@@ -1,6 +1,7 @@
 """Containers for graphics."""
 
-from ansys.fluent.visualization import Graphics
+from ansys.fluent.visualization.graphics import Graphics
+from ansys.fluent.visualization.plotter import Plots
 
 
 class GraphicsContainer:
@@ -46,3 +47,17 @@ class Pathline(GraphicsContainer):
 
     def __init__(self, solver, **kwargs):
         self.__dict__["obj"] = Graphics(session=solver).Pathlines.create(**kwargs)
+
+
+class XYPlot(GraphicsContainer):
+    """XYPlot."""
+
+    def __init__(self, solver, **kwargs):
+        self.__dict__["obj"] = Plots(session=solver).XYPlots.create(**kwargs)
+
+
+class Monitor(GraphicsContainer):
+    """Monitor."""
+
+    def __init__(self, solver, **kwargs):
+        self.__dict__["obj"] = Plots(session=solver).Monitors.create(**kwargs)

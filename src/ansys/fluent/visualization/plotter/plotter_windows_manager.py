@@ -95,7 +95,7 @@ class PlotterWindow(PostWindow):
         self.close: bool = False
         self.refresh: bool = False
 
-    def plot(self):
+    def plot(self, grid=(1, 1), position=0, show=True):
         """Draw a plot."""
         if self.post_object is not None:
             plot = (
@@ -103,7 +103,10 @@ class PlotterWindow(PostWindow):
                 if self.post_object.__class__.__name__ == "XYPlot"
                 else _MonitorPlot(self.post_object, self.plotter)
             )
-            plot()
+            plot(grid=grid, position=position, show=show)
+
+    def _show_plot(self):
+        self.plotter.show()
 
     # private methods
     def _get_plotter(self):
@@ -132,7 +135,7 @@ class _XYPlot:
         self.post_object: XYPlotDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
 
-    def __call__(self):
+    def __call__(self, grid=(1, 1), position=0, show=True):
         """Draw an XY plot."""
         if not self.post_object:
             return
@@ -153,7 +156,7 @@ class _XYPlot:
                     self._get_plotter()
                 )
                 self.plotter.set_properties(properties)
-        self.plotter.plot(xy_data)
+        self.plotter.plot(xy_data, grid=grid, position=position, show=show)
 
 
 class _MonitorPlot:
@@ -174,7 +177,7 @@ class _MonitorPlot:
         self.post_object: MonitorDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
 
-    def __call__(self):
+    def __call__(self, grid=(1, 1), position=(0, 0), show=True):
         """Draw a monitor plot."""
         if not self.post_object:
             return
@@ -205,7 +208,7 @@ class _MonitorPlot:
                 )
                 self.plotter.set_properties(properties)
         if xy_data:
-            self.plotter.plot(xy_data)
+            self.plotter.plot(xy_data, grid=grid, position=position, show=show)
 
 
 class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
@@ -259,6 +262,9 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self,
         object: PlotDefn,
         window_id: Optional[str] = None,
+        grid=(1, 1),
+        position=0,
+        show=True,
     ) -> None:
         """Draw a plot.
 
@@ -281,7 +287,11 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             window_id = self._get_unique_window_id()
         window = self._open_window(window_id)
         window.post_object = object
-        window.plot()
+        window.plot(grid=grid, position=position, show=show)
+
+    def show_plots(self, window_id: str):
+        window = self._open_window(window_id)
+        window._show_plot()
 
     def save_graphic(
         self,

@@ -57,7 +57,7 @@ class Plotter(AbstractPlotter):
         self._remote_process = remote_process
         self.fig = None
 
-    def plot(self, data: dict) -> None:
+    def plot(self, data: dict, grid=(1, 1), position=0, show=True) -> None:
         """Draw plot in window.
 
         Parameters
@@ -82,7 +82,7 @@ class Plotter(AbstractPlotter):
 
         if not self._remote_process:
             self.fig = plt.figure(num=self._window_id)
-            self.ax = self.fig.add_subplot(111)
+            self.ax = self.fig.add_subplot(grid[0], grid[1], position + 1)
         if self._yscale:
             self.ax.set_yscale(self._yscale)
         self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
@@ -99,7 +99,12 @@ class Plotter(AbstractPlotter):
         if self._yscale == "log":
             y_range = 0
         self.ax.set_ylim(self._min_y - y_range * 0.2, self._max_y + y_range * 0.2)
+        if show:
+            if not self._visible:
+                self._visible = True
+                plt.show()
 
+    def show(self):
         if not self._visible:
             self._visible = True
             plt.show()
