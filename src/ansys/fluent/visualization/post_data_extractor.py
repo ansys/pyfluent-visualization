@@ -56,7 +56,7 @@ class FieldDataExtractor:
             return self._fetch_pathlines_data(self._post_object, *args, **kwargs)
 
     def _fetch_mesh_data(self, obj, *args, **kwargs):
-        if not obj.surfaces_list():
+        if not obj.surfaces():
             raise RuntimeError("Mesh definition is incomplete.")
         obj._pre_display()
         field_info = obj._api_helper.field_info()
@@ -65,7 +65,7 @@ class FieldDataExtractor:
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
 
