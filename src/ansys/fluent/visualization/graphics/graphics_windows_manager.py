@@ -140,7 +140,7 @@ class GraphicsWindow(PostWindow):
         ):
             contour = post_session.Contours[dummy_object]
             contour.field = obj.definition.iso_surface.field()
-            contour.surfaces_list = [obj._name]
+            contour.surfaces = [obj._name]
             contour.show_edges = obj.show_edges()
             contour.range.auto_range_on.global_range = True
             contour.boundary_values = True
@@ -151,7 +151,7 @@ class GraphicsWindow(PostWindow):
             del post_session.Contours[dummy_object]
         else:
             mesh = post_session.Meshes[dummy_object]
-            mesh.surfaces_list = [obj._name]
+            mesh.surfaces = [obj._name]
             mesh.show_edges = obj.show_edges()
             if fetch:
                 self._fetch_data(mesh, FieldDataType.Meshes)

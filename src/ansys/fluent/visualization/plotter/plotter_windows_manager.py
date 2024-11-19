@@ -48,8 +48,10 @@ class _ProcessPlotterHandle:
         self.plot_process.start()
         FluentConnection._monitor_thread.cbs.append(self.close)
 
-    def plot(self, data):
-        self.plot_pipe.send(data)
+    def plot(self, data, grid=(1, 1), position=0, show=True):
+        self.plot_pipe.send(
+            {"data": data, "grid": grid, "position": position, "show": show}
+        )
 
     def set_properties(self, properties):
         self.plot_pipe.send({"properties": properties})
