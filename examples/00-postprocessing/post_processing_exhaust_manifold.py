@@ -71,7 +71,7 @@ mesh1.show_edges = True
 # ~~~~~~~~~~~~~~~~~
 # Get the surfaces list.
 
-mesh1.surfaces_list = [
+mesh1.surfaces = [
     "in1",
     "in2",
     "in3",
@@ -170,7 +170,7 @@ surf_vel_contour.display("window-5.1")
 
 temperature_contour = graphics.Contours["contour-temperature"]
 temperature_contour.field = "temperature"
-temperature_contour.surfaces_list = ["mid-plane-x", "outlet-plane"]
+temperature_contour.surfaces = ["mid-plane-x", "outlet-plane"]
 temperature_contour.display("window-6")
 
 ###############################################################################
@@ -180,7 +180,7 @@ temperature_contour.display("window-6")
 
 temperature_contour_manifold = graphics.Contours["contour-temperature-manifold"]
 temperature_contour_manifold.field = "temperature"
-temperature_contour_manifold.surfaces_list = [
+temperature_contour_manifold.surfaces = [
     "in1",
     "in2",
     "in3",
@@ -197,7 +197,7 @@ temperature_contour_manifold.display("window-7")
 
 velocity_vector = graphics.Vectors["velocity-vector"]
 velocity_vector.field = "pressure"
-velocity_vector.surfaces_list = ["solid_up:1:830"]
+velocity_vector.surfaces = ["solid_up:1:830"]
 velocity_vector.scale = 2
 velocity_vector.display("window-8")
 
@@ -208,7 +208,7 @@ velocity_vector.display("window-8")
 
 pathlines = graphics.Pathlines["pathlines"]
 pathlines.field = "velocity-magnitude"
-pathlines.surfaces_list = ["inlet", "inlet1", "inlet2"]
+pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
 pathlines.display("window-9")
 
 ###############################################################################
@@ -230,7 +230,7 @@ xy_plot = plots_session_1.XYPlots["xy-plot"]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Set the surface on which to generate the plot and the Y-axis function.
 
-xy_plot.surfaces_list = ["outlet"]
+xy_plot.surfaces = ["outlet"]
 xy_plot.y_axis_function = "temperature"
 
 ###############################################################################
