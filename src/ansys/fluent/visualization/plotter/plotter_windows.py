@@ -1,7 +1,7 @@
 from ansys.fluent.visualization.plotter import plotter_windows_manager
 
 
-class PlotterWrapper:
+class PlotterWindow:
     def __init__(self, grid: tuple = (1, 1)):
         self._grid = grid
         self._plot_objs = []

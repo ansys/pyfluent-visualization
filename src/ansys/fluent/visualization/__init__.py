@@ -38,3 +38,4 @@ from ansys.fluent.visualization.graphics.graphics_windows import (  # noqa: F401
     GraphicsWindow,
 )
 from ansys.fluent.visualization.plotter import Plots  # noqa: F401
+from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
