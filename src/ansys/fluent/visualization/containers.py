@@ -52,12 +52,16 @@ class Pathline(GraphicsContainer):
 class XYPlot(GraphicsContainer):
     """XYPlot."""
 
-    def __init__(self, solver, **kwargs):
-        self.__dict__["obj"] = Plots(session=solver).XYPlots.create(**kwargs)
+    def __init__(self, solver, local_surfaces_provider=None, **kwargs):
+        self.__dict__["obj"] = Plots(
+            session=solver, local_surfaces_provider=Graphics(solver).Surfaces
+        ).XYPlots.create(**kwargs)
 
 
 class Monitor(GraphicsContainer):
     """Monitor."""
 
-    def __init__(self, solver, **kwargs):
-        self.__dict__["obj"] = Plots(session=solver).Monitors.create(**kwargs)
+    def __init__(self, solver, local_surfaces_provider=None, **kwargs):
+        self.__dict__["obj"] = Plots(
+            session=solver, local_surfaces_provider=Graphics(solver).Surfaces
+        ).Monitors.create(**kwargs)

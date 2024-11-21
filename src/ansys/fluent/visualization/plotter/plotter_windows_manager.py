@@ -53,6 +53,9 @@ class _ProcessPlotterHandle:
             {"data": data, "grid": grid, "position": position, "show": show}
         )
 
+    def show(self):
+        self.plotter.show()
+
     def set_properties(self, properties):
         self.plot_pipe.send({"properties": properties})
 

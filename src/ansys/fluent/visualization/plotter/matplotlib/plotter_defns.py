@@ -82,7 +82,7 @@ class Plotter(AbstractPlotter):
 
         if not self._remote_process:
             self.fig = plt.figure(num=self._window_id)
-            self.ax = self.fig.add_subplot(grid[0], grid[1], position + 1)
+        self.ax = self.fig.add_subplot(grid[0], grid[1], position + 1)
         if self._yscale:
             self.ax.set_yscale(self._yscale)
         self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
@@ -165,7 +165,6 @@ class Plotter(AbstractPlotter):
         if not self.fig:
             return
         plt.figure(self.fig.number)
-        self.ax.cla()
         for curve_name in self._curves:
             self.ax.plot([], [], label=curve_name)
 
@@ -215,6 +214,12 @@ class ProcessPlotter(Plotter):
                     elif "save_graphic" in data:
                         name = data["save_graphic"]
                         self.save_graphic(name)
+                    elif "data" in data:
+                        self.plot(
+                            data=data["data"],
+                            grid=data["grid"],
+                            position=data["position"],
+                        )
                     else:
                         self.plot(data)
             self.fig.canvas.draw()
