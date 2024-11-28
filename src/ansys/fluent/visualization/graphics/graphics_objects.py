@@ -54,7 +54,7 @@ class Mesh(MeshDefn):
         graphics_session = Graphics(session)
         mesh1 = graphics_session.Meshes["mesh-1"]
         mesh1.show_edges = True
-        mesh1.surfaces_list = ['wall']
+        mesh1.surfaces = ['wall']
         mesh1.display("window-0")
     """
 
@@ -86,7 +86,7 @@ class Pathlines(PathlinesDefn):
         graphics_session = Graphics(session)
         pathlines1 = graphics_session.Pathlines["pathlines-1"]
         pathlines1.field = "velocity-magnitude"
-        pathlines1.surfaces_list = ['inlet']
+        pathlines1.surfaces = ['inlet']
         pathlines1.display("window-0")
     """
 
@@ -170,7 +170,7 @@ class Contour(ContourDefn):
         graphics_session = Graphics(session)
         contour1 = graphics_session.Contours["contour-1"]
         contour1.field = "velocity-magnitude"
-        contour1.surfaces_list = ['wall']
+        contour1.surfaces = ['wall']
         contour1.display("window-0")
     """
 
@@ -210,7 +210,7 @@ class Vector(VectorDefn):
 
         graphics_session = Graphics(session)
         vector1 = graphics_session.Vectors["vector-1"]
-        vector1.surfaces_list  = ['symmetry']
+        vector1.surfaces = ['symmetry']
         vector1.scale = 4.0
         vector1.skip = 4
         vector1.display("window-0")

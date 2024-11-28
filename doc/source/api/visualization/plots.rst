@@ -15,7 +15,7 @@ a monitor plot.
     
         plots_session = Plots(session)
         plot1 = plots_session.XYPlots["plot-1"]        
-        plot1.surfaces_list = ['symmetry', 'wall']
+        plot1.surfaces = ['symmetry', 'wall']
         plot1.y_axis_function = "temperature"
         plot1.plot("window-0")        
         
@@ -26,7 +26,7 @@ a monitor plot.
         pyvista_surface_provider = Graphics(session).Surfaces       
         plots_session = Plots(session, pyvista_surface_provider)
         plot2 = plots_session.XYPlots["plot-2"]         
-        plot2.surfaces_list = ['iso-surface-1']
+        plot2.surfaces = ['iso-surface-1']
         plot2.y_axis_function = "temperature"
         plot2.plot("window-0")        
         

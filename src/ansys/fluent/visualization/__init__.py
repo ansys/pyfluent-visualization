@@ -24,5 +24,18 @@ def version_info() -> str:
 
 
 from ansys.fluent.visualization._config import get_config, set_config  # noqa: F401
+from ansys.fluent.visualization.containers import (  # noqa: F401
+    Contour,
+    Mesh,
+    Monitor,
+    Pathline,
+    Surface,
+    Vector,
+    XYPlot,
+)
 from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
+from ansys.fluent.visualization.graphics.graphics_windows import (  # noqa: F401
+    GraphicsWindow,
+)
 from ansys.fluent.visualization.plotter import Plots  # noqa: F401
+from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
