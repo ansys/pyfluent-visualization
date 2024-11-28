@@ -1,12 +1,28 @@
 """.. _ref_updated_exhaust_manifold_example:
 
-Postprocessing using PyVista and Matplotlib
--------------------------------------------
-This example uses PyVista and Matplotlib to demonstrate PyFluent
-postprocessing capabilities. The 3D model in this example
-is an exhaust manifold that has high temperature flows passing
-through it. The flow through the manifold is turbulent and
-involves conjugate heat transfer.
+Enhanced Postprocessing with PyVista and Matplotlib
+---------------------------------------------------
+This updated example demonstrates postprocessing capabilities in PyFluent
+using an object-oriented approach, providing a more user-friendly interface
+and improved flexibility.
+The 3D model used in this example is an exhaust manifold, where high-temperature
+turbulent flows are analyzed in a conjugate heat transfer scenario.
+
+Key Improvements:
+
+Object-Oriented Design: The code has been modularized into classes and methods,
+enhancing maintainability and reusability.
+
+Interactive User Interface: The user interface now allows seamless interaction,
+enabling users to control and customize postprocessing parameters.
+
+Enhanced Plot Interaction: Users have greater freedom to interact with the plots,
+such as adding and super-imposing multiple plots, and toggling data views,
+enhancing the visualization experience.
+
+This example utilizes PyVista for 3D visualization and Matplotlib for 2D data plotting.
+The new design provides a streamlined workflow for exploring and analyzing
+the temperature and flow characteristics in the exhaust manifold.
 
 """
 

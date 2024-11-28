@@ -14,7 +14,7 @@ standard Fluent commands to write graphics to a file.
 
 .. code:: python
 
-  solver_session.tui.display.objects.contour['contour-1'] = {'boundary_values': True, 'color_map': {'color': 'field-velocity', 'font_automatic': True, 'font_name': 'Helvetica', 'font_size': 0.032, 'format': '%0.2e', 'length': 0.54, 'log_scale': False, 'position': 1, 'show_all': True, 'size': 100, 'user_skip': 9, 'visible': True, 'width': 6.0}, 'coloring': {'smooth': False}, 'contour_lines': False, 'display_state_name': 'None', 'draw_mesh': False, 'field': 'pressure', 'filled': True, 'mesh_object': '', 'node_values': True, 'range_option': {'auto_range_on': {'global_range': True}}, 'surfaces_list': [2, 5]}
+  solver_session.tui.display.objects.contour['contour-1'] = {'boundary_values': True, 'color_map': {'color': 'field-velocity', 'font_automatic': True, 'font_name': 'Helvetica', 'font_size': 0.032, 'format': '%0.2e', 'length': 0.54, 'log_scale': False, 'position': 1, 'show_all': True, 'size': 100, 'user_skip': 9, 'visible': True, 'width': 6.0}, 'coloring': {'smooth': False}, 'contour_lines': False, 'display_state_name': 'None', 'draw_mesh': False, 'field': 'pressure', 'filled': True, 'mesh_object': '', 'node_values': True, 'range_option': {'auto_range_on': {'global_range': True}}, 'surfaces': [2, 5]}
   solver_session.tui.display.objects.contour['contour-1']()
   solver_session.tui.display.objects.contour['contour-1'].field.set_state('velocity-magnitude')
   solver_session.tui.display.objects.contour['contour-1'].field()
@@ -46,14 +46,14 @@ environment. PyVista is then used to visualize the extracted data.
 
   # mesh
   mesh1.show_edges = True
-  mesh1.surfaces_list = ['symmetry']
+  mesh1.surfaces = ['symmetry']
 
   # contour
   contour1.field = "velocity-magnitude"
-  contour1.surfaces_list = ['symmetry']
+  contour1.surfaces = ['symmetry']
 
   contour2.field = "temperature"
-  contour2.surfaces_list = ['symmetry', 'wall']
+  contour2.surfaces = ['symmetry', 'wall']
 
   # copy
   graphics_session1.Contours["contour-3"] = contour2()
@@ -99,7 +99,7 @@ environment. Matplotlib is then used to plot data.
   plot1=plots_session1.XYPlots["plot-1"]
   
   #set properties
-  plot1.surfaces_list = ["symmetry"]
+  plot1.surfaces = ["symmetry"]
   plot1.y_axis_function = "temperature"
   
   #Draw plot
