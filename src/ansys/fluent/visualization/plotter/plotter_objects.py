@@ -50,7 +50,7 @@ class XYPlot(XYPlotDefn):
 
         plots =  Plots(session)
         plot1 = matplotlib_plots.XYPlots["plot-1"]
-        plot1.surfaces_list = ['symmetry', 'wall']
+        plot1.surfaces = ['symmetry', 'wall']
         plot1.y_axis_function = "temperature"
         plot1.plot("window-0")
     """

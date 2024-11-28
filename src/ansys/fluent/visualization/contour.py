@@ -85,13 +85,13 @@ class Contour:
             if graphics_mode.__class__.__name__ == "Graphics":
                 contour = graphics_mode.Contours[contour_name]
                 contour.field = self.field
-                contour.surfaces_list = self.surfaces
+                contour.surfaces = self.surfaces
                 contour.display()
                 return contour
             elif graphics_mode.__class__.__name__ == "Solver":
                 solver.results.graphics.contour[contour_name] = {
                     "field": self.field,
-                    "surfaces_list": self.surfaces,
+                    "surfaces": self.surfaces,
                 }
                 solver.results.graphics.contour.display(object_name=contour_name)
                 return solver.results.graphics.contour[contour_name]

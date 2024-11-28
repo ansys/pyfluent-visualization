@@ -20,7 +20,7 @@ of every time step.
     
     #Create xy plot.
     plot1 = plots_session.XYPlots["plot-1"]
-    plot1.surfaces_list = ['symmetry']
+    plot1.surfaces = ['symmetry']
     plot1.y_axis_function = "temperature"
     
     
