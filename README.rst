@@ -105,7 +105,7 @@ the PyFluent-Visualization documentation.
    graphics = Graphics(session=session)
    temperature_contour = graphics.Contours["contour-temperature"]
    temperature_contour.field = "temperature"
-   temperature_contour.surfaces_list = ["in1", "in2", "out1"]
+   temperature_contour.surfaces = ["in1", "in2", "out1"]
    temperature_contour.display("window-1")
 
 Usage in a JupyterLab environment

@@ -7,11 +7,17 @@ from ansys.fluent.visualization.graphics.abstract_graphics_defns import Abstract
 
 
 class Renderer(AbstractRenderer):
-    def __init__(self, win_id: str, in_notebook: bool, non_interactive: bool):
+    def __init__(
+        self,
+        win_id: str,
+        in_notebook: bool,
+        non_interactive: bool,
+        grid: tuple | None = (1, 1),
+    ):
         self.plotter: Union[BackgroundPlotter, pv.Plotter] = (
-            pv.Plotter(title=f"PyFluent ({win_id})")
+            pv.Plotter(title=f"PyFluent ({win_id})", shape=grid)
             if in_notebook or non_interactive
-            else BackgroundPlotter(title=f"PyFluent ({win_id})")
+            else BackgroundPlotter(title=f"PyFluent ({win_id})", shape=grid)
         )
         self._init_properties()
         self._colors = {
@@ -80,6 +86,9 @@ class Renderer(AbstractRenderer):
         mesh : pyvista.DataSet
             Any PyVista or VTK mesh is supported.
         """
+        if "position" in kwargs:
+            self.plotter.subplot(kwargs["position"][0], kwargs["position"][1])
+            del kwargs["position"]
         self.plotter.add_mesh(mesh, **kwargs)
 
     def save_graphic(self, file_name: str):

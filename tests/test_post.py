@@ -233,10 +233,10 @@ def test_graphics_operations():
     assert list(pyvista_graphics1.Contours) == ["contour-1", "contour-2"]
 
     contour2.field = "temperature"
-    contour2.surfaces_list = contour2.surfaces_list.allowed_values
+    contour2.surfaces = contour2.surfaces.allowed_values
 
     contour1.field = "pressure"
-    contour1.surfaces_list = contour2.surfaces_list.allowed_values[0]
+    contour1.surfaces = contour2.surfaces.allowed_values[0]
 
     # copy
     pyvista_graphics2.Contours["contour-3"] = contour1()
@@ -263,20 +263,20 @@ def test_contour_object():
     field_info = contour1._api_helper.field_info()
 
     # Surfaces allowed values should be all surfaces.
-    assert contour1.surfaces_list.allowed_values == list(
+    assert contour1.surfaces.allowed_values == list(
         field_info.get_surfaces_info().keys()
     )
 
     # Invalid surface should raise exception.
     with pytest.raises(ValueError) as value_error:
-        contour1.surfaces_list = "surface_does_not_exist"
+        contour1.surfaces = "surface_does_not_exist"
 
     # Invalid surface should raise exception.
     with pytest.raises(ValueError) as value_error:
-        contour1.surfaces_list = ["surface_does_not_exist"]
+        contour1.surfaces = ["surface_does_not_exist"]
 
     # Should accept all valid surface.
-    contour1.surfaces_list = contour1.surfaces_list.allowed_values
+    contour1.surfaces = contour1.surfaces.allowed_values
 
     # Field allowed values should be all fields.
     assert contour1.field.allowed_values == list(field_info.get_scalar_fields_info())
@@ -323,7 +323,7 @@ def test_contour_object():
     surfaces_id = [
         v["surface_id"][0]
         for k, v in field_info.get_surfaces_info().items()
-        if k in contour1.surfaces_list()
+        if k in contour1.surfaces()
     ]
 
     range = field_info.get_scalar_field_range(
@@ -354,17 +354,17 @@ def test_vector_object():
     vector1 = pyvista_graphics.Vectors["contour-1"]
     field_info = vector1._api_helper.field_info()
 
-    assert vector1.surfaces_list.allowed_values == list(
+    assert vector1.surfaces.allowed_values == list(
         field_info.get_surfaces_info().keys()
     )
 
     with pytest.raises(ValueError) as value_error:
-        vector1.surfaces_list = "surface_does_not_exist"
+        vector1.surfaces = "surface_does_not_exist"
 
     with pytest.raises(ValueError) as value_error:
-        vector1.surfaces_list = ["surface_does_not_exist"]
+        vector1.surfaces = ["surface_does_not_exist"]
 
-    vector1.surfaces_list = vector1.surfaces_list.allowed_values
+    vector1.surfaces = vector1.surfaces.allowed_values
 
     vector1.range.option = "auto-range-on"
     assert vector1.range.auto_range_off() is None
@@ -375,7 +375,7 @@ def test_vector_object():
     surfaces_id = [
         v["surface_id"][0]
         for k, v in field_info.get_surfaces_info().items()
-        if k in vector1.surfaces_list()
+        if k in vector1.surfaces()
     ]
 
     range = field_info.get_scalar_field_range("velocity-magnitude", False)
@@ -432,12 +432,12 @@ def test_surface_object():
 
     # New surface should be in allowed values for graphics.
     cont1 = pyvista_graphics.Contours["surf-1"]
-    assert "surf-1" in cont1.surfaces_list.allowed_values
+    assert "surf-1" in cont1.surfaces.allowed_values
 
     # New surface is not available in allowed values for plots.
     matplotlib_plots = Plots(session=None, post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
-    assert "surf-1" not in p1.surfaces_list.allowed_values
+    assert "surf-1" not in p1.surfaces.allowed_values
 
     # With local surface provider it becomes available.
     local_surfaces_provider = Graphics(session=None).Surfaces
@@ -446,7 +446,7 @@ def test_surface_object():
         post_api_helper=MockAPIHelper,
         local_surfaces_provider=local_surfaces_provider,
     )
-    assert "surf-1" in p1.surfaces_list.allowed_values
+    assert "surf-1" in p1.surfaces.allowed_values
 
 
 def test_create_plot_objects():
@@ -465,17 +465,15 @@ def test_xyplot_object():
     p1 = matplotlib_plots.XYPlots["p-1"]
     field_info = p1._api_helper.field_info()
 
-    assert p1.surfaces_list.allowed_values == list(
-        field_info.get_surfaces_info().keys()
-    )
+    assert p1.surfaces.allowed_values == list(field_info.get_surfaces_info().keys())
 
     with pytest.raises(ValueError) as value_error:
-        p1.surfaces_list = "surface_does_not_exist"
+        p1.surfaces = "surface_does_not_exist"
 
     with pytest.raises(ValueError) as value_error:
-        p1.surfaces_list = ["surface_does_not_exist"]
+        p1.surfaces = ["surface_does_not_exist"]
 
-    p1.surfaces_list = p1.surfaces_list.allowed_values
+    p1.surfaces = p1.surfaces.allowed_values
 
     assert p1.y_axis_function.allowed_values == list(
         field_info.get_scalar_fields_info()

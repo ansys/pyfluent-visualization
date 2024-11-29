@@ -12,8 +12,23 @@ is an exhaust manifold.
 # exec(open("script_manifold.py").read())
 
 import ansys.fluent.core as pyfluent
+from ansys.fluent.core import examples
 
-session = pyfluent.connect_to_fluent(ip="10.18.44.105", port=62599, password="hzk1dhbc")
+import_case = examples.download_file(
+    file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
+)
+
+import_data = examples.download_file(
+    file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
+)
+
+session = pyfluent.launch_fluent(
+    precision="double",
+    processor_count=2,
+    start_transcript=False,
+    mode="solver",
+    ui_mode="gui",
+)
 
 from ansys.fluent.visualization import set_config
 
@@ -31,17 +46,17 @@ graphics_session1_1 = Graphics(session)
 # mesh
 mesh1 = graphics_session1.Meshes["mesh-1"]
 mesh1.show_edges = True
-mesh1.surfaces_list = ["solid_up:1:830"]
+mesh1.surfaces = ["solid_up:1:830"]
 
 # pathlines
 pathlines1 = graphics_session1.Pathlines["pathlines-1"]
 pathlines1.field = "velocity-magnitude"
-pathlines1.surfaces_list = ["inlet"]
+pathlines1.surfaces = ["inlet"]
 
 # contour
 contour1 = graphics_session1.Contours["contour-1"]
 contour1.field = "velocity-magnitude"
-contour1.surfaces_list = ["solid_up:1:830"]
+contour1.surfaces = ["solid_up:1:830"]
 
 
 graphics_session1.Contours["contour-2"]
@@ -49,7 +64,7 @@ graphics_session1_1.Contours["contour-3"]
 
 # vector
 vector1 = graphics_session1_1.Vectors["vector-1"]
-vector1.surfaces_list = ["solid_up:1:830"]
+vector1.surfaces = ["solid_up:1:830"]
 vector1.scale = 4.0
 vector1.skip = 0
 vector1.field = "temperature"
@@ -68,8 +83,8 @@ matplotlib_plots1 = Plots(session, local_surfaces_provider=local_surfaces_provid
 
 
 p1 = matplotlib_plots1.XYPlots["p1"]
-p1.surfaces_list = ["solid_up:1:830", "surface-1"]
-p1.surfaces_list = ["solid_up:1:830"]
+p1.surfaces = ["solid_up:1:830", "surface-1"]
+p1.surfaces = ["solid_up:1:830"]
 p1.y_axis_function = "temperature"
 p1.plot("p1")
 

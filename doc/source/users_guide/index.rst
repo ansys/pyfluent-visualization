@@ -42,7 +42,7 @@ This example shows how you can display a mesh:
     graphics = Graphics(session=solver_session)
     mesh1 = graphics.Meshes["mesh-1"]
     mesh1.show_edges = True
-    mesh1.surfaces_list = [
+    mesh1.surfaces = [
         "in1",
         "in2",
         "in3",
@@ -74,7 +74,7 @@ This example shows how you can display a contour:
 
     temperature_contour_manifold = graphics.Contours["contour-temperature-manifold"]
     temperature_contour_manifold.field = "temperature"
-    temperature_contour_manifold.surfaces_list = [
+    temperature_contour_manifold.surfaces = [
         "in1",
         "in2",
         "in3",
@@ -111,7 +111,7 @@ This example shows how you can display a vector:
 .. code:: python
 
     velocity_vector = graphics.Vectors["velocity-vector"]
-    velocity_vector.surfaces_list = ["outlet-plane"]
+    velocity_vector.surfaces = ["outlet-plane"]
     velocity_vector.scale = 1
     velocity_vector.display("window-4")
 
@@ -128,7 +128,7 @@ This example shows how you can display the XY plot:
 
     plots_session_1 = Plots(solver_session)
     xy_plot = plots_session_1.XYPlots["xy-plot"]
-    xy_plot.surfaces_list = ["outlet"]
+    xy_plot.surfaces = ["outlet"]
     xy_plot.y_axis_function = "temperature"
     xy_plot.plot("window-5")
 

@@ -23,7 +23,7 @@ the end of every time step and creates an animation.
     #Create contour.
     contour1 = graphics_session.Contours["contour-1"]
     contour1.field = "velocity-magnitude"
-    contour1.surfaces_list = ['symmetry']
+    contour1.surfaces = ['symmetry']
     
     #Display contour on window-1.
     contour1.display("window-1")
