@@ -2,19 +2,26 @@
 
 from enum import Enum
 import itertools
+import os
 import threading
 from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import FluentConnection
 from ansys.fluent.core.post_objects.check_in_notebook import in_notebook
-from ansys.fluent.core.post_objects.post_object_definitions import GraphicsDefn
+from ansys.fluent.core.post_objects.post_object_definitions import (
+    GraphicsDefn,
+    PlotDefn,
+)
 from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
 import numpy as np
 import pyvista as pv
 from pyvistaqt import BackgroundPlotter
 
 from ansys.fluent.visualization import get_config
-from ansys.fluent.visualization.post_data_extractor import FieldDataExtractor
+from ansys.fluent.visualization.post_data_extractor import (
+    FieldDataExtractor,
+    XYPlotDataExtractor,
+)
 from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
     PostWindowsManager,
@@ -74,6 +81,10 @@ class GraphicsWindow(PostWindow):
         obj = self.post_object
         if obj.__class__.__name__ == "Surface":
             self._fetch_surface(obj)
+        elif obj.__class__.__name__ == "XYPlot":
+            self._fetch_xy_data(obj)
+        elif obj.__class__.__name__ == "MonitorPlot":
+            self._fetch_monitor_data(obj)
         else:
             self._fetch_data(obj, FieldDataType(obj.__class__.__name__))
 
@@ -106,6 +117,10 @@ class GraphicsWindow(PostWindow):
             self._display_vector(obj, position, opacity)
         elif obj.__class__.__name__ == "Pathlines":
             self._display_pathlines(obj, position, opacity)
+        elif obj.__class__.__name__ == "XYPlot":
+            self._display_xy_plot(position, opacity)
+        elif obj.__class__.__name__ == "MonitorPlot":
+            self._display_monitor_plot(position, opacity)
         if self.animate:
             self.renderer.write_frame()
         self.renderer._set_camera(get_config()["set_view_on_display"])
@@ -161,6 +176,31 @@ class GraphicsWindow(PostWindow):
 
     def _fetch_surface(self, obj):
         self._fetch_or_display_surface(obj, fetch=True)
+
+    def _fetch_xy_data(self, obj):
+        self._data["XYPlot"] = XYPlotDataExtractor(obj).fetch_data()
+        self._data["XYPlot"]["properties"] = {
+            "curves": list(self._data["XYPlot"]),
+            "title": "XY Plot",
+            "xlabel": "position",
+            "ylabel": obj.y_axis_function(),
+        }
+
+    def _fetch_monitor_data(self, obj):
+        monitors = obj._api_helper.monitors
+        indices, columns_data = monitors.get_monitor_set_data(obj.monitor_set_name())
+        xy_data = {}
+        for column_name, column_data in columns_data.items():
+            xy_data[column_name] = {"xvalues": indices, "yvalues": column_data}
+        monitor_set_name = obj.monitor_set_name()
+        self._data["MonitorPlot"] = xy_data
+        self._data["MonitorPlot"]["properties"] = {
+            "curves": list(xy_data.keys()),
+            "title": monitor_set_name,
+            "xlabel": monitors.get_monitor_set_prop(monitor_set_name, "xlabel"),
+            "ylabel": monitors.get_monitor_set_prop(monitor_set_name, "ylabel"),
+            "yscale": "log" if monitor_set_name == "residual" else "linear",
+        }
 
     def _resolve_mesh_data(self, mesh_data):
         topology = "line" if mesh_data["faces"][0] == 2 else "face"
@@ -412,6 +452,18 @@ class GraphicsWindow(PostWindow):
                 opacity=opacity,
             )
 
+    def _display_xy_plot(self, position=(0, 0), opacity=1):
+        self.renderer.render(
+            self._data["XYPlot"],
+            position=position,
+        )
+
+    def _display_monitor_plot(self, position=(0, 0), opacity=1):
+        self.renderer.render(
+            self._data["MonitorPlot"],
+            position=position,
+        )
+
     def _get_refresh_for_plotter(self, window: "GraphicsWindow"):
         def refresh():
             with GraphicsWindowsManager._condition:
@@ -498,7 +550,11 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if in_notebook() or get_config()["blocking"]:
+            if (
+                in_notebook()
+                or get_config()["blocking"]
+                or os.getenv("FLUENT_PROD_DIR")
+            ):
                 self._open_window_notebook(window_id, grid)
             else:
                 self._open_and_plot_console(None, window_id, grid=grid)
@@ -593,10 +649,14 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         RuntimeError
             If the window does not support the object.
         """
-        if not isinstance(object, GraphicsDefn):
+        if not isinstance(object, (GraphicsDefn, PlotDefn)):
             raise RuntimeError("Object type currently not supported.")
         with self._condition:
-            if in_notebook() or get_config()["blocking"]:
+            if (
+                in_notebook()
+                or get_config()["blocking"]
+                or os.getenv("FLUENT_PROD_DIR")
+            ):
                 self._add_graphics_in_notebook(
                     object, window_id, fetch_data, overlay, position, opacity
                 )
@@ -608,7 +668,11 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
         with self._condition:
-            if in_notebook() or get_config()["blocking"]:
+            if (
+                in_notebook()
+                or get_config()["blocking"]
+                or os.getenv("FLUENT_PROD_DIR")
+            ):
                 self._show_graphics_in_notebook(window_id)
 
     def save_graphic(
