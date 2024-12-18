@@ -15,7 +15,11 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
 from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
 import numpy as np
 import pyvista as pv
-from pyvistaqt import BackgroundPlotter
+
+try:
+    from pyvistaqt import BackgroundPlotter
+except ModuleNotFoundError:
+    BackgroundPlotter = None
 
 from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.post_data_extractor import (

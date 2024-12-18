@@ -2,7 +2,11 @@
 
 import numpy as np
 import pyvista as pv
-from pyvistaqt import BackgroundPlotter
+
+try:
+    from pyvistaqt import BackgroundPlotter
+except ModuleNotFoundError:
+    BackgroundPlotter = None
 
 from ansys.fluent.visualization.graphics.abstract_graphics_defns import AbstractRenderer
 
