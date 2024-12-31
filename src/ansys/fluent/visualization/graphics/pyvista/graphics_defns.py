@@ -140,10 +140,15 @@ class Renderer(AbstractRenderer):
                     if max_x_value
                     else np.amax(mesh[curve]["xvalues"])
                 )
-            chart.x_range = [min_x_value, max_x_value]
-            if y_range is None:
-                y_range = max_y_value - min_y_value
-            chart.y_range = [min_y_value - y_range * 0.2, max_y_value + y_range * 0.2]
+            if min_x_value and max_x_value:
+                chart.x_range = [min_x_value, max_x_value]
+            if min_y_value and max_y_value:
+                if y_range is None:
+                    y_range = max_y_value - min_y_value
+                chart.y_range = [
+                    min_y_value - y_range * 0.2,
+                    max_y_value + y_range * 0.2,
+                ]
             self.plotter.add_chart(chart, **kwargs)
 
     def save_graphic(self, file_name: str):
