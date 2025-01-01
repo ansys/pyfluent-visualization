@@ -17,6 +17,8 @@ from ansys.fluent.visualization import PLOTTER, get_config
 
 if PLOTTER == "matplotlib":
     from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import Plotter
+elif PLOTTER == "plotly":
+    from ansys.fluent.visualization.plotter.plotly.plotter_defns import Plotter
 else:
     from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
 
@@ -48,7 +50,7 @@ class _ProcessPlotterHandle:
         self.plot_process.start()
         FluentConnection._monitor_thread.cbs.append(self.close)
 
-    def plot(self, data, grid=(1, 1), position=0, show=True):
+    def plot(self, data, grid=(1, 1), position=0, show=True, subplot_titles=[]):
         self.plot_pipe.send(
             {"data": data, "grid": grid, "position": position, "show": show}
         )
@@ -100,7 +102,7 @@ class PlotterWindow(PostWindow):
         self.close: bool = False
         self.refresh: bool = False
 
-    def plot(self, grid=(1, 1), position=0, show=True):
+    def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=[]):
         """Draw a plot."""
         if self.post_object is not None:
             plot = (
@@ -108,7 +110,7 @@ class PlotterWindow(PostWindow):
                 if self.post_object.__class__.__name__ == "XYPlot"
                 else _MonitorPlot(self.post_object, self.plotter)
             )
-            plot(grid=grid, position=position, show=show)
+            plot(grid=grid, position=position, show=show, subplot_titles=subplot_titles)
 
     def _show_plot(self):
         self.plotter.show()
@@ -140,7 +142,7 @@ class _XYPlot:
         self.post_object: XYPlotDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
 
-    def __call__(self, grid=(1, 1), position=0, show=True):
+    def __call__(self, grid=(1, 1), position=0, show=True, subplot_titles=[]):
         """Draw an XY plot."""
         if not self.post_object:
             return
@@ -161,7 +163,13 @@ class _XYPlot:
                     self._get_plotter()
                 )
                 self.plotter.set_properties(properties)
-        self.plotter.plot(xy_data, grid=grid, position=position, show=show)
+        self.plotter.plot(
+            xy_data,
+            grid=grid,
+            position=position,
+            show=show,
+            subplot_titles=subplot_titles,
+        )
 
 
 class _MonitorPlot:
@@ -182,7 +190,7 @@ class _MonitorPlot:
         self.post_object: MonitorDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
 
-    def __call__(self, grid=(1, 1), position=(0, 0), show=True):
+    def __call__(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=[]):
         """Draw a monitor plot."""
         if not self.post_object:
             return
@@ -213,7 +221,13 @@ class _MonitorPlot:
                 )
                 self.plotter.set_properties(properties)
         if xy_data:
-            self.plotter.plot(xy_data, grid=grid, position=position, show=show)
+            self.plotter.plot(
+                xy_data,
+                grid=grid,
+                position=position,
+                show=show,
+                subplot_titles=subplot_titles,
+            )
 
 
 class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
@@ -268,7 +282,8 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         object: PlotDefn,
         window_id: Optional[str] = None,
         grid=(1, 1),
-        position=0,
+        position=(0, 0),
+        subplot_titles=[],
         show=True,
     ) -> None:
         """Draw a plot.
@@ -292,7 +307,9 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             window_id = self._get_unique_window_id()
         window = self._open_window(window_id)
         window.post_object = object
-        window.plot(grid=grid, position=position, show=show)
+        window.plot(
+            grid=grid, position=position, show=show, subplot_titles=subplot_titles
+        )
 
     def show_plots(self, window_id: str):
         window = self._open_window(window_id)
@@ -397,12 +414,9 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
     def _open_window(self, window_id: str) -> Union[Plotter, _ProcessPlotterHandle]:
         window = self._post_windows.get(window_id)
-        if (
-            window
-            and not window.plotter.is_closed()
-            and (not (in_notebook() or get_config()["blocking"]) or window.refresh)
-        ):
-            window.refresh = False
+        if window and not window.plotter.is_closed():
+            if not (in_notebook() or get_config()["blocking"]) or window.refresh:
+                window.refresh = False
         else:
             window = PlotterWindow(window_id, None)
             self._post_windows[window_id] = window
