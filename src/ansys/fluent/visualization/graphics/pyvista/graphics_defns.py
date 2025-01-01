@@ -1,5 +1,6 @@
 """Module for pyVista windows management."""
 
+import numpy as np
 import pyvista as pv
 
 try:
@@ -18,7 +19,7 @@ class Renderer(AbstractRenderer):
         non_interactive: bool,
         grid: tuple | None = (1, 1),
     ):
-        self.plotter: Union[BackgroundPlotter, pv.Plotter] = (
+        self.plotter: BackgroundPlotter | pv.Plotter = (
             pv.Plotter(title=f"PyFluent ({win_id})", shape=grid)
             if in_notebook or non_interactive
             else BackgroundPlotter(title=f"PyFluent ({win_id})", shape=grid)
@@ -63,7 +64,7 @@ class Renderer(AbstractRenderer):
 
     def _clear_plotter(self, in_notebook):
         if in_notebook and self.plotter.theme._jupyter_backend == "pythreejs":
-            self.plotter.remove_actor(plotter.renderer.actors.copy())
+            self.plotter.remove_actor(self.plotter.renderer.actors.copy())
         else:
             self.plotter.clear()
 
@@ -87,13 +88,68 @@ class Renderer(AbstractRenderer):
 
         Parameters
         ----------
-        mesh : pyvista.DataSet
+        mesh : pyvista.DataSet | dict
             Any PyVista or VTK mesh is supported.
         """
         if "position" in kwargs:
             self.plotter.subplot(kwargs["position"][0], kwargs["position"][1])
             del kwargs["position"]
-        self.plotter.add_mesh(mesh, **kwargs)
+        if isinstance(mesh, pv.DataSet):
+            self.plotter.add_mesh(mesh, **kwargs)
+        else:
+            y_range = None
+            chart = pv.Chart2D()
+            chart.title = mesh["properties"].get("title") or ""
+            chart.x_label = mesh["properties"].get("xlabel") or ""
+            chart.y_label = mesh["properties"].get("ylabel") or ""
+            if mesh["properties"].get("yscale") == "log":
+                chart.y_axis.log_scale = True
+                y_range = 0
+            del mesh["properties"]
+
+            color_list = ["b", "r", "g", "c", "m", "y", "k"]
+            style_list = ["-", "--", "-.", "-.."]
+
+            min_y_value = max_y_value = min_x_value = max_x_value = None
+            for count, curve in enumerate(mesh):
+                chart.line(
+                    mesh[curve]["xvalues"].tolist(),
+                    mesh[curve]["yvalues"].tolist(),
+                    width=2.5,
+                    color=color_list[count % len(color_list)],
+                    style=style_list[count % len(style_list)],
+                    label=curve,
+                )
+                min_y_value = (
+                    min(np.amin(mesh[curve]["yvalues"]), min_y_value)
+                    if min_y_value
+                    else np.amin(mesh[curve]["yvalues"])
+                )
+                max_y_value = (
+                    max(np.amax(mesh[curve]["yvalues"]), max_y_value)
+                    if max_y_value
+                    else np.amax(mesh[curve]["yvalues"])
+                )
+                min_x_value = (
+                    min(np.amin(mesh[curve]["xvalues"]), min_x_value)
+                    if min_x_value
+                    else np.amin(mesh[curve]["xvalues"])
+                )
+                max_x_value = (
+                    max(np.amax(mesh[curve]["xvalues"]), max_x_value)
+                    if max_x_value
+                    else np.amax(mesh[curve]["xvalues"])
+                )
+            if min_x_value and max_x_value:
+                chart.x_range = [min_x_value, max_x_value]
+            if min_y_value and max_y_value:
+                if y_range is None:
+                    y_range = max_y_value - min_y_value
+                chart.y_range = [
+                    min_y_value - y_range * 0.2,
+                    max_y_value + y_range * 0.2,
+                ]
+            self.plotter.add_chart(chart, **kwargs)
 
     def save_graphic(self, file_name: str):
         """Save graphics to the specified file.
