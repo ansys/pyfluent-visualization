@@ -11,10 +11,13 @@ def get_config() -> dict:
     config : dict
         Keys are parameter names that can be passed to :func:`set_config`.
     """
+    import ansys.fluent.visualization as pyviz
+
+    _global_config["blocking"] = not pyviz.INTERACTIVE
     return _global_config.copy()
 
 
-def set_config(blocking: bool = True, set_view_on_display: str = "isometric"):
+def set_config(blocking: bool = False, set_view_on_display: str = "isometric"):
     """Set visualization configuration.
 
     Parameters

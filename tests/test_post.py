@@ -489,7 +489,8 @@ def test_xyplot_object():
 
 
 def test_get_set_config():
-    assert not get_config()["blocking"]
+    # The module level variable 'INTERACTIVE' is given preference
+    assert get_config()["blocking"]
     assert not get_config()["set_view_on_display"]
 
     set_config(blocking=True, set_view_on_display="isometric")

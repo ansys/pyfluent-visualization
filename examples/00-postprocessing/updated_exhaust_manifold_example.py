@@ -40,7 +40,6 @@ from ansys.fluent.visualization import (
     Mesh,
     Monitor,
     Pathline,
-    PlotterWindow,
     Surface,
     Vector,
     XYPlot,
@@ -252,8 +251,8 @@ xy_plot = XYPlot(
     surfaces=["outlet"],
     y_axis_function="temperature",
 )
-p7 = PlotterWindow(grid=(2, 2))
-p7.add_plots(xy_plot, position=(0, 0))
+p7 = GraphicsWindow(grid=(2, 2))
+p7.add_graphics(xy_plot, position=(0, 0))
 
 ###############################################################################
 # Create residual plot
@@ -262,7 +261,7 @@ p7.add_plots(xy_plot, position=(0, 0))
 
 residual = Monitor(solver=solver_session)
 residual.monitor_set_name = "residual"
-p7.add_plots(residual, position=(0, 1))
+p7.add_graphics(residual, position=(0, 1))
 
 ###############################################################################
 # Solve and plot solution monitors
@@ -274,10 +273,10 @@ solver_session.solution.run_calculation.iterate(iter_count=50)
 
 mass_bal_rplot = Monitor(solver=solver_session)
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-p7.add_plots(mass_bal_rplot, position=(1, 0))
+p7.add_graphics(mass_bal_rplot, position=(1, 0))
 
 point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
-p7.add_plots(point_vel_rplot, position=(1, 1))
+p7.add_graphics(point_vel_rplot, position=(1, 1))
 p7.show()
 
 ###############################################################################

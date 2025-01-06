@@ -1,6 +1,8 @@
 """A wrapper to improve the user interface of graphics."""
 
+from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.graphics import graphics_windows_manager
+from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
 
 
 class GraphicsWindow:
@@ -14,6 +16,7 @@ class GraphicsWindow:
         object,
         position: tuple = (0, 0),
         opacity: float = 1,
+        title: str = "",
     ) -> None:
         """Add data to a plot.
 
@@ -25,27 +28,43 @@ class GraphicsWindow:
             Position of the sub-plot.
         opacity: float, optional
             Transparency of the sub-plot.
+        title: str, optional
+            Title of the sub-plot (only for plots).
         """
         self._graphics_objs.append({**locals()})
+
+    def _all_plt_objs(self):
+        from ansys.fluent.core.post_objects.post_object_definitions import PlotDefn
+
+        for obj in self._graphics_objs:
+            if not isinstance(obj["object"].obj, PlotDefn):
+                return False
+        return True
 
     def show(self) -> None:
         """Render the objects in window and display the same."""
         self.window_id = graphics_windows_manager.open_window(grid=self._grid)
-        self.graphics_window = graphics_windows_manager._post_windows.get(
-            self.window_id
-        )
-        self._renderer = self.graphics_window.renderer
-        self.plotter = self.graphics_window.renderer.plotter
-        for i in range(len(self._graphics_objs)):
-            graphics_windows_manager.add_graphics(
-                object=self._graphics_objs[i]["object"].obj,
-                window_id=self.window_id,
-                fetch_data=True,
-                overlay=True,
-                position=self._graphics_objs[i]["position"],
-                opacity=self._graphics_objs[i]["opacity"],
+        if self._all_plt_objs() and get_config()["blocking"]:
+            p = PlotterWindow(grid=self._grid)
+            for obj in self._graphics_objs:
+                p.add_plots(obj["object"], position=obj["position"], title=obj["title"])
+            p.show(self.window_id)
+        else:
+            self.graphics_window = graphics_windows_manager._post_windows.get(
+                self.window_id
             )
-        graphics_windows_manager.show_graphics(self.window_id)
+            self._renderer = self.graphics_window.renderer
+            self.plotter = self.graphics_window.renderer.plotter
+            for i in range(len(self._graphics_objs)):
+                graphics_windows_manager.add_graphics(
+                    object=self._graphics_objs[i]["object"].obj,
+                    window_id=self.window_id,
+                    fetch_data=True,
+                    overlay=True,
+                    position=self._graphics_objs[i]["position"],
+                    opacity=self._graphics_objs[i]["opacity"],
+                )
+            graphics_windows_manager.show_graphics(self.window_id)
 
     def save_graphic(
         self,
