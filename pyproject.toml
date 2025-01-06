@@ -30,7 +30,7 @@ pyvista = { version = ">=0.44.0", extras = ["jupyter"]}
 matplotlib = ">=3.6.0"
 vtk = "<9.4.0"
 pyvistaqt = "~=0.11.1"
-pyside6 = "~=6.7.2"
+pyside6 = "~=6.8.1"
 plotly = ">=5.24.0"
 imageio= ">=2.36.1"
 
