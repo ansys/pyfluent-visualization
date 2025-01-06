@@ -57,7 +57,21 @@ class Plotter(AbstractPlotter):
         self._remote_process = remote_process
         self.fig = None
 
-    def plot(self, data: dict, grid=(1, 1), position=0, show=True) -> None:
+    @staticmethod
+    def _compute_position(position: tuple) -> int:
+        x = position[0]
+        y = position[1]
+        if x == y == 0:
+            ret = 0
+        elif x < y:
+            ret = x + y
+        else:
+            ret = x + y + 1
+        return ret
+
+    def plot(
+        self, data: dict, grid=(1, 1), position=0, show=True, subplot_titles=[]
+    ) -> None:
         """Draw plot in window.
 
         Parameters
@@ -82,7 +96,10 @@ class Plotter(AbstractPlotter):
 
         if not self._remote_process:
             self.fig = plt.figure(num=self._window_id)
-        self.ax = self.fig.add_subplot(grid[0], grid[1], position + 1)
+
+        self.ax = self.fig.add_subplot(
+            grid[0], grid[1], self._compute_position(position) + 1
+        )
         if self._yscale:
             self.ax.set_yscale(self._yscale)
         self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")

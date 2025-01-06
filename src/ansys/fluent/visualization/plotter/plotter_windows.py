@@ -5,9 +5,10 @@ class PlotterWindow:
     def __init__(self, grid: tuple = (1, 1)):
         self._grid = grid
         self._plot_objs = []
+        self._subplot_titles = []
         self.window_id = None
 
-    def add_plots(self, object, position: tuple = (0, 0)) -> None:
+    def add_plots(self, object, position: tuple = (0, 0), title: str = "") -> None:
         """Add data to a plot.
 
         Parameters
@@ -16,24 +17,20 @@ class PlotterWindow:
             Object to plot as a sub-plot.
         position: tuple, optional
             Position of the sub-plot.
+        title: str, optional
+            Title of the sub-plot.
         """
         self._plot_objs.append({**locals()})
-
-    def _compute_position(self, position: tuple):
-        x = position[0]
-        y = position[1]
-        ret = 0
-        if x == y == 0:
-            ret = 0
-        elif x < y:
-            ret = x + y
+        if title:
+            self._subplot_titles.append(title)
+        elif hasattr(object.obj, "monitor_set_name"):
+            self._subplot_titles.append(object.obj.monitor_set_name())
         else:
-            ret = x + y + 1
-        return ret
+            self._subplot_titles.append("XYPlot")
 
-    def show(self) -> None:
+    def show(self, win_id=None) -> None:
         """Render the objects in window and display the same."""
-        self.window_id = plotter_windows_manager.open_window()
+        self.window_id = plotter_windows_manager.open_window(window_id=win_id)
         self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
         self.plotter = self.plotter_window.plotter
         for i in range(len(self._plot_objs)):
@@ -41,7 +38,8 @@ class PlotterWindow:
                 object=self._plot_objs[i]["object"].obj,
                 window_id=self.window_id,
                 grid=self._grid,
-                position=self._compute_position(self._plot_objs[i]["position"]),
+                position=self._plot_objs[i]["position"],
+                subplot_titles=self._subplot_titles,
                 show=False,
             )
         plotter_windows_manager.show_plots(window_id=self.window_id)
