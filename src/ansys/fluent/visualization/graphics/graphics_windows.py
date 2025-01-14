@@ -174,7 +174,12 @@ class GraphicsWindow:
                 self._display_graphics(post_obj.session, "xy-plot", post_obj._name)
                 del post_obj.session.results.plot.xy_plot[post_obj._name]
             elif post_obj.__class__.__name__ == "MonitorPlot":
-                post_obj.session.solution.monitor.residual.plot()
+                if post_obj.monitor_set_name() == "residual":
+                    post_obj.session.solution.monitor.residual.plot()
+                else:
+                    post_obj.session.solution.monitor.report_plots[
+                        post_obj.monitor_set_name()
+                    ].plot()
             else:
                 raise RuntimeError("Wrong choice.")
 
