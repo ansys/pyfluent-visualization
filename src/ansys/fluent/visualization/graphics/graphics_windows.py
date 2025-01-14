@@ -171,7 +171,7 @@ class GraphicsWindow:
                     },
                 }
                 post_obj.session.settings.results.graphics.windows.open_window()
-                self._display_graphics(post_obj.session, "plot", post_obj._name)
+                self._display_graphics(post_obj.session, "xy-plot", post_obj._name)
                 del post_obj.session.results.plot.xy_plot[post_obj._name]
             elif post_obj.__class__.__name__ == "MonitorPlot":
                 post_obj.session.solution.monitor.residual.plot()
