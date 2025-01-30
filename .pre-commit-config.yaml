@@ -32,4 +32,4 @@ repos:
   hooks:
     - id: add-license-headers
       args:
-      - --start_year=2021
+      - --start_year=2022
