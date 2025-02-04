@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 # Check https://python-poetry.org/docs/pyproject/ for all available sections
 name = "ansys-fluent-visualization"
-version = "0.16.dev0"
+version = "0.17.dev0"
 description = "A python wrapper for ansys Fluent visualization"
 license = "MIT"
 authors = ["ANSYS, Inc. <ansys.support@ansys.com>"]
@@ -25,11 +25,14 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 importlib-metadata = {version = "^4.0", python = "<3.9"}
-ansys-fluent-core = "~=0.28.dev0"
-pyvista = "~=0.44.1"
+ansys-fluent-core = "~=0.29.dev0"
+pyvista = { version = ">=0.44.0", extras = ["jupyter"]}
+matplotlib = ">=3.6.0"
+vtk = {version = "<9.4.0", python = "<3.13"}
 pyvistaqt = "~=0.11.1"
-pyside6 = "~=6.7.2"
-matplotlib = ">=3.9.0"
+pyside6 = "~=6.8.1"
+plotly = ">=5.24.0"
+imageio= ">=2.36.1"
 
 [tool.poetry.urls]
 "Documentation" = "https://visualization.fluent.docs.pyansys.com/"

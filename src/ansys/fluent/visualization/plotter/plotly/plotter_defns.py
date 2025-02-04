@@ -20,12 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module providing matplotlib plotter functionality."""
-
-from typing import List, Optional
-
-import matplotlib.pyplot as plt
 import numpy as np
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from ansys.fluent.visualization.plotter.abstract_plotter_defns import AbstractPlotter
 
@@ -36,11 +33,11 @@ class Plotter(AbstractPlotter):
     def __init__(
         self,
         window_id: str,
-        curves: Optional[List[str]] = None,
-        title: Optional[str] = "XY Plot",
-        xlabel: Optional[str] = "position",
-        ylabel: Optional[str] = "",
-        remote_process: Optional[bool] = False,
+        curves: list[str] | None = None,
+        title: str | None = "XY Plot",
+        xlabel: str | None = "position",
+        ylabel: str | None = "",
+        remote_process: bool | None = False,
     ):
         """Instantiate a matplotlib plotter.
 
@@ -79,20 +76,8 @@ class Plotter(AbstractPlotter):
         self._remote_process = remote_process
         self.fig = None
 
-    @staticmethod
-    def _compute_position(position: tuple) -> int:
-        x = position[0]
-        y = position[1]
-        if x == y == 0:
-            ret = 0
-        elif x < y:
-            ret = x + y
-        else:
-            ret = x + y + 1
-        return ret
-
     def plot(
-        self, data: dict, grid=(1, 1), position=0, show=True, subplot_titles=[]
+        self, data: dict, grid=(1, 1), position=(0, 0), show=True, subplot_titles=[]
     ) -> None:
         """Draw plot in window.
 
@@ -105,6 +90,8 @@ class Plotter(AbstractPlotter):
         if not data:
             return
         for curve in data:
+            if curve not in self._data:
+                self._data[curve] = {}
             min_y_value = np.amin(data[curve]["yvalues"])
             max_y_value = np.amax(data[curve]["yvalues"])
             min_x_value = np.amin(data[curve]["xvalues"])
@@ -117,40 +104,44 @@ class Plotter(AbstractPlotter):
             self._max_x = max(self._max_x, max_x_value) if self._max_x else max_x_value
 
         if not self._remote_process:
-            self.fig = plt.figure(num=self._window_id)
-
-        self.ax = self.fig.add_subplot(
-            grid[0], grid[1], self._compute_position(position) + 1
-        )
-        if self._yscale:
-            self.ax.set_yscale(self._yscale)
-        self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
-        plt.title(self._title)
-        plt.xlabel(self._xlabel)
-        plt.ylabel(self._ylabel)
+            if not self.fig:
+                self.fig = make_subplots(
+                    rows=grid[0], cols=grid[1], subplot_titles=subplot_titles
+                )
         for curve in self._curves:
-            self.ax.plot(self._data[curve]["xvalues"], self._data[curve]["yvalues"])
-        plt.legend(labels=self._curves, loc="upper right")
+            self.fig.add_trace(
+                go.Scatter(
+                    x=self._data[curve]["xvalues"],
+                    y=self._data[curve]["yvalues"],
+                    mode="lines",
+                    name=curve,
+                ),
+                row=position[0] + 1,
+                col=position[1] + 1,
+            )
+        self.fig.update_yaxes(
+            title_text=self._ylabel,
+            type=self._yscale if self._yscale else "linear",
+            row=position[0] + 1,
+            col=position[1] + 1,
+        )
+        self.fig.update_xaxes(
+            title_text=self._xlabel, row=position[0] + 1, col=position[1] + 1
+        )
 
-        if self._max_x > self._min_x:
-            self.ax.set_xlim(self._min_x, self._max_x)
-        y_range = self._max_y - self._min_y
-        if self._yscale == "log":
-            y_range = 0
-        self.ax.set_ylim(self._min_y - y_range * 0.2, self._max_y + y_range * 0.2)
         if show:
             if not self._visible:
                 self._visible = True
-                plt.show()
+                self.fig.show()
 
     def show(self):
         if not self._visible:
             self._visible = True
-            plt.show()
+            self.fig.show()
 
     def close(self):
         """Close window."""
-        plt.close(self.fig)
+        del self.fig
         self._closed = True
 
     def is_closed(self):
@@ -158,17 +149,19 @@ class Plotter(AbstractPlotter):
         return self._closed
 
     def save_graphic(self, file_name: str):
-        """Save graphics.
+        """Save graphics (static image (e.g., PNG, JPEG, PDF, SVG)).
+
+        Please note:
+            This requires the kaleido package.
+
+            >>> pip install kaleido
 
         Parameters
         ----------
         file_name : str
             File name to save graphic.
         """
-        if self.fig:
-            self.fig.savefig(file_name)
-        else:
-            plt.savefig(file_name)
+        self.fig.write_image(file_name)
 
     def set_properties(self, properties: dict):
         """Set plot properties.
@@ -203,77 +196,3 @@ class Plotter(AbstractPlotter):
             self._data[curve_name]["yvalues"] = []
         if not self.fig:
             return
-        plt.figure(self.fig.number)
-        for curve_name in self._curves:
-            self.ax.plot([], [], label=curve_name)
-
-
-class ProcessPlotter(Plotter):
-    """Class for matplotlib process plotter.
-
-    Opens matplotlib window in a separate process.
-    """
-
-    def __init__(
-        self,
-        window_id,
-        curves_name=[],
-        title="XY Plot",
-        xlabel="position",
-        ylabel="",
-    ):
-        """Instantiate a matplotlib process plotter.
-
-        Parameters
-        ----------
-        window_id : str
-            Window id.
-        curves : List[str], optional
-            List of curves name.
-        title : str, optional
-            Plot title.
-        xlabel : str, optional
-            X axis label.
-        ylabel : str, optional
-            Y axis label.
-        """
-        super().__init__(window_id, curves_name, title, xlabel, ylabel, True)
-
-    def _call_back(self):
-        try:
-            while self.pipe.poll():
-                data = self.pipe.recv()
-                if data is None:
-                    self.close()
-                    return False
-                elif data and isinstance(data, dict):
-                    if "properties" in data:
-                        properties = data["properties"]
-                        self.set_properties(properties)
-                    elif "save_graphic" in data:
-                        name = data["save_graphic"]
-                        self.save_graphic(name)
-                    elif "data" in data:
-                        self.plot(
-                            data=data["data"],
-                            grid=data["grid"],
-                            position=data["position"],
-                        )
-                    else:
-                        self.plot(data)
-            self.fig.canvas.draw()
-        except BrokenPipeError:
-            self.close()
-        return True
-
-    def __call__(self, pipe):
-        """Reset and show plot."""
-        self.pipe = pipe
-        self.fig = plt.figure(num=self._window_id)
-        self.ax = self.fig.add_subplot(111)
-        self._reset()
-        timer = self.fig.canvas.new_timer(interval=10)
-        timer.add_callback(self._call_back)
-        timer.start()
-        self._visible = True
-        plt.show()
