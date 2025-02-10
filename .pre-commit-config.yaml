@@ -26,3 +26,10 @@ repos:
 #   - id: pydocstyle
 #     additional_dependencies: [toml]
 #     exclude: "tests/"
+
+- repo: https://github.com/ansys/pre-commit-hooks
+  rev: v0.5.1
+  hooks:
+    - id: add-license-headers
+      args:
+      - --start_year=2022
