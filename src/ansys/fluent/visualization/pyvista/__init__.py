@@ -24,7 +24,7 @@
 
 import warnings
 
-from ansys.fluent.core.warnings import PyFluentDeprecationWarning
+from ansys.fluent.core.pyfluent_warnings import PyFluentDeprecationWarning
 
 warnings.warn(
     "'pyvista' is deprecated. Use 'graphics' instead.",
