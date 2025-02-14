@@ -21,10 +21,10 @@
 # SOFTWARE.
 
 """Module for pyVista windows management."""
-import os
-
 import numpy as np
 import pyvista as pv
+
+import ansys.fluent.visualization as pyviz
 
 try:
     from pyvistaqt import BackgroundPlotter
@@ -48,7 +48,7 @@ class Renderer(AbstractRenderer):
             else BackgroundPlotter(
                 title=f"PyFluent ({win_id})",
                 shape=grid,
-                show=False if os.getenv("FLUENT_PROD_DIR") else True,
+                show=False if pyviz.IN_PYC else True,
             )
         )
         self._init_properties()

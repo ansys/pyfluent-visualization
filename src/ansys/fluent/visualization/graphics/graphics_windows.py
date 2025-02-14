@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
-import os
 import sys
 
 from PySide6.QtWidgets import (
@@ -32,7 +31,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ansys.fluent.visualization import INTERACTIVE, get_config
+import ansys.fluent.visualization as pyviz
+from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
 
@@ -98,7 +98,7 @@ class GraphicsWindow:
                     position=self._graphics_objs[i]["position"],
                     opacity=self._graphics_objs[i]["opacity"],
                 )
-            if os.getenv("FLUENT_PROD_DIR"):
+            if pyviz.IN_PYC:
                 global _qt_window
                 if not _qt_window:
                     QApplication.instance() or QApplication(sys.argv)
@@ -111,10 +111,7 @@ class GraphicsWindow:
                     ),
                 )
             else:
-                if INTERACTIVE:
-                    self.plotter.show()
-                else:
-                    graphics_windows_manager.show_graphics(self.window_id)
+                graphics_windows_manager.show_graphics(self.window_id)
 
     def save_graphic(
         self,

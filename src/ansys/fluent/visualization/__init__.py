@@ -31,6 +31,7 @@ _VERSION_INFO = None
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
 PLOTTER = "matplotlib"
 INTERACTIVE = False
+IN_PYC = False
 
 
 def version_info() -> str:
