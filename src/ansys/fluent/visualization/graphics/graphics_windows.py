@@ -21,10 +21,20 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
+
+_qt_window = None
 
 
 class GraphicsWindow:
@@ -86,7 +96,20 @@ class GraphicsWindow:
                     position=self._graphics_objs[i]["position"],
                     opacity=self._graphics_objs[i]["opacity"],
                 )
-            graphics_windows_manager.show_graphics(self.window_id)
+            if pyviz.SINGLE_WINDOW:
+                global _qt_window
+                if not _qt_window:
+                    QApplication.instance() or QApplication()
+                    _qt_window = MainWindow()
+                    _qt_window.show()
+                _qt_window._add_tab(
+                    self.plotter,
+                    title=self.window_id.replace(
+                        self.window_id[-1], str(int(self.window_id[-1]) + 1)
+                    ),
+                )
+            else:
+                graphics_windows_manager.show_graphics(self.window_id)
 
     def save_graphic(
         self,
@@ -168,3 +191,42 @@ class GraphicsWindow:
             graphics_windows_manager.close_windows(
                 windows_id=[self.window_id], session_id=session_id
             )
+
+
+# Define the main window
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("PyFluent Visualization Plots")
+        screen = QApplication.primaryScreen().availableGeometry()
+        width = int(screen.width() * 0.75)
+        height = int(screen.height() * 0.75)
+        self.setGeometry(
+            (screen.width() - width) // 2,  # Center X
+            (screen.height() - height) // 2,  # Center Y
+            width,
+            height,
+        )
+        self.tabs = QTabWidget()
+        self.setCentralWidget(self.tabs)
+        self.tabs.setMovable(True)
+        self.plotters = []
+
+    def _add_tab(self, plotter, title="-"):
+        tab = QWidget()
+        layout = QVBoxLayout()
+
+        self.plotters.append(plotter)
+        layout.addWidget(plotter.interactor)
+        tab.setLayout(layout)
+
+        # Add tabs with PyVista BackgroundPlotters
+        self.tabs.addTab(tab, f"PyViz ({title})")
+
+    def closeEvent(self, event):
+        """Ensure proper cleanup of plotter instances on window close."""
+        for plotter in self.plotters:
+            plotter.close()  # Properly close each PyVista plotter
+        event.accept()
+        global _qt_window
+        _qt_window = None
