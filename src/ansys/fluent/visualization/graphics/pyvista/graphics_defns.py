@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Module for pyVista windows management."""
+import os
 
 import numpy as np
 import pyvista as pv
@@ -44,7 +45,11 @@ class Renderer(AbstractRenderer):
         self.plotter: BackgroundPlotter | pv.Plotter = (
             pv.Plotter(title=f"PyFluent ({win_id})", shape=grid)
             if in_notebook or non_interactive
-            else BackgroundPlotter(title=f"PyFluent ({win_id})", shape=grid)
+            else BackgroundPlotter(
+                title=f"PyFluent ({win_id})",
+                shape=grid,
+                show=False if os.getenv("FLUENT_PROD_DIR") else True,
+            )
         )
         self._init_properties()
         self._colors = {
