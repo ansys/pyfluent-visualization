@@ -576,7 +576,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if in_notebook() or get_config()["blocking"] or pyviz.IN_PYC:
+            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
                 self._open_window_notebook(window_id, grid)
             else:
                 self._open_and_plot_console(None, window_id, grid=grid)
@@ -635,7 +635,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if in_notebook() or get_config()["blocking"] or pyviz.IN_PYC:
+            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
                 self._plot_notebook(object, window_id, fetch_data, overlay)
             else:
                 self._open_and_plot_console(object, window_id, fetch_data, overlay)
@@ -674,7 +674,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         if not isinstance(object, (GraphicsDefn, PlotDefn)):
             raise RuntimeError("Object type currently not supported.")
         with self._condition:
-            if in_notebook() or get_config()["blocking"] or pyviz.IN_PYC:
+            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
                 self._add_graphics_in_notebook(
                     object, window_id, fetch_data, overlay, position, opacity
                 )
@@ -686,7 +686,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
         with self._condition:
-            if in_notebook() or get_config()["blocking"] or pyviz.IN_PYC:
+            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
                 self._show_graphics_in_notebook(window_id)
 
     def save_graphic(

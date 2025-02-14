@@ -96,7 +96,7 @@ class GraphicsWindow:
                     position=self._graphics_objs[i]["position"],
                     opacity=self._graphics_objs[i]["opacity"],
                 )
-            if pyviz.IN_PYC:
+            if pyviz.SINGLE_WINDOW:
                 global _qt_window
                 if not _qt_window:
                     QApplication.instance() or QApplication()
@@ -197,7 +197,7 @@ class GraphicsWindow:
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Multiple PyVista Plots in Tabs")
+        self.setWindowTitle("PyFluent Visualization Plots")
         screen = QApplication.primaryScreen().availableGeometry()
         width = int(screen.width() * 0.75)
         height = int(screen.height() * 0.75)

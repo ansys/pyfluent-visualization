@@ -36,7 +36,7 @@ def get_config() -> dict:
     """
     import ansys.fluent.visualization as pyviz
 
-    if pyviz.IN_PYC:
+    if pyviz.SINGLE_WINDOW:
         _global_config["blocking"] = False
     return _global_config.copy()
 
@@ -60,7 +60,7 @@ def set_config(blocking: bool = False, set_view_on_display: str = "isometric"):
             f"Allowed views are: {set_config.allowed_views}"
         )
 
-    if pyviz.IN_PYC:
+    if pyviz.SINGLE_WINDOW:
         warnings.warn("'blocking' cannot be set from PyConsole.")
     else:
         _global_config["blocking"] = blocking
