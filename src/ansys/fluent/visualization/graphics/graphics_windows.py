@@ -21,8 +21,6 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
-import sys
-
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -101,7 +99,7 @@ class GraphicsWindow:
             if pyviz.IN_PYC:
                 global _qt_window
                 if not _qt_window:
-                    QApplication.instance() or QApplication(sys.argv)
+                    QApplication.instance() or QApplication()
                     _qt_window = MainWindow()
                     _qt_window.show()
                 _qt_window._add_tab(

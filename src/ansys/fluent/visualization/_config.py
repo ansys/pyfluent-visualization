@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Global configuration state for visualization."""
+import warnings
 
 _global_config = {"blocking": False, "set_view_on_display": None}
 
@@ -35,7 +36,8 @@ def get_config() -> dict:
     """
     import ansys.fluent.visualization as pyviz
 
-    _global_config["blocking"] = not pyviz.INTERACTIVE
+    if pyviz.IN_PYC:
+        _global_config["blocking"] = False
     return _global_config.copy()
 
 
@@ -50,13 +52,18 @@ def set_config(blocking: bool = False, set_view_on_display: str = "isometric"):
         If specified, then graphics will always be displayed in the specified view.
         Valid values are xy, xz, yx, yz, zx, zy and isometric.
     """
+    import ansys.fluent.visualization as pyviz
+
     if set_view_on_display not in set_config.allowed_views:
         raise ValueError(
             f"'{set_view_on_display}' is not an allowed view.\n"
             f"Allowed views are: {set_config.allowed_views}"
         )
 
-    _global_config["blocking"] = blocking
+    if pyviz.IN_PYC:
+        warnings.warn("'blocking' cannot be set from PyConsole.")
+    else:
+        _global_config["blocking"] = blocking
     _global_config["set_view_on_display"] = set_view_on_display
 
 
