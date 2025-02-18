@@ -30,7 +30,7 @@ except ModuleNotFoundError:
 _VERSION_INFO = None
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
 PLOTTER = "matplotlib"
-INTERACTIVE = False
+SINGLE_WINDOW = False
 
 
 def version_info() -> str:
