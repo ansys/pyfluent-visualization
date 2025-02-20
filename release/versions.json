@@ -1,0 +1,18 @@
+[
+    {
+        "version": "dev",
+        "url": "https://visualization.fluent.docs.pyansys.com/dev/"
+    },
+    {
+        "version": "0.7 (stable)",
+        "url": "https://visualization.fluent.docs.pyansys.com/release/0.7/"
+    },
+    {
+        "version": "0.6",
+        "url": "https://visualization.fluent.docs.pyansys.com/release/0.6/"
+    },
+    {
+        "version": "0.5",
+        "url": "https://visualization.fluent.docs.pyansys.com/release/0.5/"
+    }
+]
