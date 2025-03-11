@@ -176,7 +176,7 @@ sphinx_gallery_conf = {
     "image_scrapers": ("pyvista", "matplotlib"),
     "thumbnail_size": (350, 350),
     "reset_modules_order": "after",
-    "reset_modules": ["_stop_fluent_container"],
+    "reset_modules": (_stop_fluent_container,),
 }
 
 
