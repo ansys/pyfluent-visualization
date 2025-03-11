@@ -113,22 +113,47 @@ class GraphicsWindow:
 
     def save_graphic(
         self,
-        format: str,
+        filename: str,
     ) -> None:
-        """Save a graphics.
+        """Save a screenshot of the rendering window as a graphic file.
 
         Parameters
         ----------
-        format : str
-            Graphic file format. Supported formats are SVG, EPS, PS, PDF, and TEX.
+        filename : str
+            Path to save the graphic file to.
+            Supported formats are SVG, EPS, PS, PDF, and TEX.
 
         Raises
         ------
         ValueError
             If the window does not support the specified format.
+
+        Examples
+        --------
+        >>> import ansys.fluent.core as pyfluent
+        >>> from ansys.fluent.core import examples
+        >>> from ansys.fluent.visualization import GraphicsWindow, Vector
+        >>>
+        >>> import_case = examples.download_file(
+        >>> file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
+        >>> )
+        >>> import_data = examples.download_file(
+        >>> file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
+        >>> )
+        >>>
+        >>> solver_session = pyfluent.launch_fluent()
+        >>> solver_session.settings.file.read_case(file_name=import_case)
+        >>> solver_session.settings.file.read_data(file_name=import_data)
+        >>>
+        >>> velocity_vector = Vector(
+        >>> solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
+        >>> )
+        >>> graphics_window = GraphicsWindow()
+        >>> graphics_window.add_graphics(velocity_vector)
+        >>> graphics_window.save_graphic("saved_vector.svg")
         """
         if self.window_id:
-            self._renderer.save_graphic(f"{self.window_id}.{format}")
+            self._renderer.save_graphic(filename)
 
     def refresh_windows(
         self,
