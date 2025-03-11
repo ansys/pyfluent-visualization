@@ -10,7 +10,7 @@ import ansys.fluent.core as pyfluent
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
 import numpy as np
 import pyvista
-from sphinx_gallery.sorting import FileNameSortKey
+# from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.fluent.visualization import __version__
 
@@ -168,7 +168,7 @@ sphinx_gallery_conf = {
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
-    "within_subsection_order": FileNameSortKey,
+    "within_subsection_order": "FileNameSortKey",
     # directory where function granular galleries are stored
     "backreferences_dir": None,
     # Modules for which function level galleries are created.  In
@@ -176,7 +176,7 @@ sphinx_gallery_conf = {
     "image_scrapers": ("pyvista", "matplotlib"),
     "thumbnail_size": (350, 350),
     "reset_modules_order": "after",
-    "reset_modules": (_stop_fluent_container),
+    "reset_modules": ["_stop_fluent_container"],
 }
 
 
@@ -274,6 +274,3 @@ sys.path.append(os.path.abspath("./_ext"))
 
 # Generate section labels up to four levels deep
 autosectionlabel_maxdepth = 4
-
-def setup(app):
-    app.add_config_value('sphinx_gallery_conf', {}, rebuild='env', types=[dict])
