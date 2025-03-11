@@ -20,7 +20,6 @@ repos:
   hooks:
   - id: codespell
     exclude: "pyproject.toml"
-    additional_dependencies: ["tomli"]
 
 # - repo: https://github.com/pycqa/pydocstyle
 #   rev: 6.1.1
