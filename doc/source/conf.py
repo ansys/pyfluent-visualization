@@ -180,6 +180,10 @@ sphinx_gallery_conf = {
 }
 
 
+# https://github.com/sphinx-doc/sphinx/issues/12300
+suppress_warnings = ["config.cache"]
+
+
 # -- Options for HTML output -------------------------------------------------
 html_short_title = html_title = "PyFluent-Visualization"
 html_theme = "ansys_sphinx_theme"
