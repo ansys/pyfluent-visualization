@@ -20,20 +20,47 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""A DEPRECATED package that provides interfacing Fluent with plotters."""
+"""Abstract module providing graphics functionality."""
 
-import warnings
+from abc import ABC, abstractmethod
 
-from ansys.fluent.core.pyfluent_warnings import PyFluentDeprecationWarning
 
-warnings.warn(
-    "'matplotlib' is deprecated. Use 'plotter' instead.",
-    PyFluentDeprecationWarning,
-)
+class AbstractRenderer(ABC):
+    """Abstract class for renderer."""
 
-from ansys.fluent.visualization.plotter.plotter_objects import Plots  # noqa: F401
-from ansys.fluent.visualization.plotter.plotter_windows_manager import (  # noqa: F401
-    plotter_windows_manager,
-)
+    @abstractmethod
+    def show(self):
+        """Show graphics."""
+        pass
 
-matplotlib_windows_manager = plotter_windows_manager
+    @abstractmethod
+    def render(self, mesh, **kwargs):
+        """Render graphics in window."""
+        pass
+
+    @abstractmethod
+    def save_graphic(self, file_name: str):
+        """Save graphics to the specified file.
+
+        Parameters
+        ----------
+        file_name : str
+            File name to save graphic.
+        """
+        pass
+
+    @abstractmethod
+    def get_animation(self, win_id: str):
+        """Animate windows.
+
+        Parameters
+        ----------
+        win_id : str
+            ID for the window to animate.
+        """
+        pass
+
+    @abstractmethod
+    def close(self):
+        """Close graphics window."""
+        pass

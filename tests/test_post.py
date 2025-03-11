@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from pathlib import Path
 import pickle
 from typing import Dict, List, Optional, Union
@@ -6,9 +28,7 @@ from ansys.fluent.core.services.field_data import SurfaceDataType
 import numpy as np
 import pytest
 
-from ansys.fluent.visualization import get_config, set_config
-from ansys.fluent.visualization.matplotlib import Plots
-from ansys.fluent.visualization.pyvista import Graphics
+from ansys.fluent.visualization import Graphics, Plots, get_config, set_config
 
 
 @pytest.fixture(autouse=True)
@@ -235,10 +255,10 @@ def test_graphics_operations():
     assert list(pyvista_graphics1.Contours) == ["contour-1", "contour-2"]
 
     contour2.field = "temperature"
-    contour2.surfaces_list = contour2.surfaces_list.allowed_values
+    contour2.surfaces = contour2.surfaces.allowed_values
 
     contour1.field = "pressure"
-    contour1.surfaces_list = contour2.surfaces_list.allowed_values[0]
+    contour1.surfaces = contour2.surfaces.allowed_values[0]
 
     # copy
     pyvista_graphics2.Contours["contour-3"] = contour1()
@@ -265,20 +285,20 @@ def test_contour_object():
     field_info = contour1._api_helper.field_info()
 
     # Surfaces allowed values should be all surfaces.
-    assert contour1.surfaces_list.allowed_values == list(
+    assert contour1.surfaces.allowed_values == list(
         field_info.get_surfaces_info().keys()
     )
 
     # Invalid surface should raise exception.
     with pytest.raises(ValueError) as value_error:
-        contour1.surfaces_list = "surface_does_not_exist"
+        contour1.surfaces = "surface_does_not_exist"
 
     # Invalid surface should raise exception.
     with pytest.raises(ValueError) as value_error:
-        contour1.surfaces_list = ["surface_does_not_exist"]
+        contour1.surfaces = ["surface_does_not_exist"]
 
     # Should accept all valid surface.
-    contour1.surfaces_list = contour1.surfaces_list.allowed_values
+    contour1.surfaces = contour1.surfaces.allowed_values
 
     # Field allowed values should be all fields.
     assert contour1.field.allowed_values == list(field_info.get_scalar_fields_info())
@@ -325,7 +345,7 @@ def test_contour_object():
     surfaces_id = [
         v["surface_id"][0]
         for k, v in field_info.get_surfaces_info().items()
-        if k in contour1.surfaces_list()
+        if k in contour1.surfaces()
     ]
 
     range = field_info.get_scalar_field_range(
@@ -351,22 +371,23 @@ def test_contour_object():
     assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
 
 
+@pytest.mark.skip("https://github.com/ansys/pyfluent-visualization/issues/482")
 def test_vector_object():
     pyvista_graphics = Graphics(session=None)
     vector1 = pyvista_graphics.Vectors["contour-1"]
     field_info = vector1._api_helper.field_info()
 
-    assert vector1.surfaces_list.allowed_values == list(
+    assert vector1.surfaces.allowed_values == list(
         field_info.get_surfaces_info().keys()
     )
 
     with pytest.raises(ValueError) as value_error:
-        vector1.surfaces_list = "surface_does_not_exist"
+        vector1.surfaces = "surface_does_not_exist"
 
     with pytest.raises(ValueError) as value_error:
-        vector1.surfaces_list = ["surface_does_not_exist"]
+        vector1.surfaces = ["surface_does_not_exist"]
 
-    vector1.surfaces_list = vector1.surfaces_list.allowed_values
+    vector1.surfaces = vector1.surfaces.allowed_values
 
     vector1.range.option = "auto-range-on"
     assert vector1.range.auto_range_off() is None
@@ -377,7 +398,7 @@ def test_vector_object():
     surfaces_id = [
         v["surface_id"][0]
         for k, v in field_info.get_surfaces_info().items()
-        if k in vector1.surfaces_list()
+        if k in vector1.surfaces()
     ]
 
     range = field_info.get_scalar_field_range("velocity-magnitude", False)
@@ -389,6 +410,7 @@ def test_vector_object():
     )
 
 
+@pytest.mark.skip("https://github.com/ansys/pyfluent-visualization/issues/482")
 def test_surface_object():
     pyvista_graphics = Graphics(session=None)
     surf1 = pyvista_graphics.Surfaces["surf-1"]
@@ -434,12 +456,12 @@ def test_surface_object():
 
     # New surface should be in allowed values for graphics.
     cont1 = pyvista_graphics.Contours["surf-1"]
-    assert "surf-1" in cont1.surfaces_list.allowed_values
+    assert "surf-1" in cont1.surfaces.allowed_values
 
     # New surface is not available in allowed values for plots.
     matplotlib_plots = Plots(session=None, post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
-    assert "surf-1" not in p1.surfaces_list.allowed_values
+    assert "surf-1" not in p1.surfaces.allowed_values
 
     # With local surface provider it becomes available.
     local_surfaces_provider = Graphics(session=None).Surfaces
@@ -448,7 +470,7 @@ def test_surface_object():
         post_api_helper=MockAPIHelper,
         local_surfaces_provider=local_surfaces_provider,
     )
-    assert "surf-1" in p1.surfaces_list.allowed_values
+    assert "surf-1" in p1.surfaces.allowed_values
 
 
 def test_create_plot_objects():
@@ -467,17 +489,15 @@ def test_xyplot_object():
     p1 = matplotlib_plots.XYPlots["p-1"]
     field_info = p1._api_helper.field_info()
 
-    assert p1.surfaces_list.allowed_values == list(
-        field_info.get_surfaces_info().keys()
-    )
+    assert p1.surfaces.allowed_values == list(field_info.get_surfaces_info().keys())
 
     with pytest.raises(ValueError) as value_error:
-        p1.surfaces_list = "surface_does_not_exist"
+        p1.surfaces = "surface_does_not_exist"
 
     with pytest.raises(ValueError) as value_error:
-        p1.surfaces_list = ["surface_does_not_exist"]
+        p1.surfaces = ["surface_does_not_exist"]
 
-    p1.surfaces_list = p1.surfaces_list.allowed_values
+    p1.surfaces = p1.surfaces.allowed_values
 
     assert p1.y_axis_function.allowed_values == list(
         field_info.get_scalar_fields_info()

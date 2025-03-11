@@ -1,4 +1,26 @@
-"""Module for matplotlib windows management."""
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Module for plotter windows management."""
 
 import itertools
 import multiprocessing as mp
@@ -14,7 +36,7 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
 from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
 
 from ansys.fluent.visualization import get_config
-from ansys.fluent.visualization.matplotlib.plotter_defns import Plotter, ProcessPlotter
+from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
 from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
@@ -42,8 +64,13 @@ class _ProcessPlotterHandle:
         self.plot_process.start()
         FluentConnection._monitor_thread.cbs.append(self.close)
 
-    def plot(self, data):
-        self.plot_pipe.send(data)
+    def plot(self, data, grid=(1, 1), position=0, show=True, subplot_titles=[]):
+        self.plot_pipe.send(
+            {"data": data, "grid": grid, "position": position, "show": show}
+        )
+
+    def show(self):
+        self.plotter.show()
 
     def set_properties(self, properties):
         self.plot_pipe.send({"properties": properties})
@@ -70,11 +97,11 @@ class _ProcessPlotterHandle:
             pass
 
 
-class MatplotWindow(PostWindow):
-    """Provides for managing Matplotlib windows."""
+class PlotterWindow(PostWindow):
+    """Provides for managing Plotter windows."""
 
     def __init__(self, id: str, post_object: PlotDefn):
-        """Instantiate a Matplotlib window.
+        """Instantiate a plotter window.
 
         Parameters
         ----------
@@ -85,11 +112,11 @@ class MatplotWindow(PostWindow):
         """
         self.id: str = id
         self.post_object = None
-        self.plotter: Union[_ProcessPlotterHandle, Plotter] = self._get_plotter()
+        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter()
         self.close: bool = False
         self.refresh: bool = False
 
-    def plot(self):
+    def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=[]):
         """Draw a plot."""
         if self.post_object is not None:
             plot = (
@@ -97,10 +124,23 @@ class MatplotWindow(PostWindow):
                 if self.post_object.__class__.__name__ == "XYPlot"
                 else _MonitorPlot(self.post_object, self.plotter)
             )
-            plot()
+            plot(grid=grid, position=position, show=show, subplot_titles=subplot_titles)
+
+    def _show_plot(self):
+        self.plotter.show()
 
     # private methods
     def _get_plotter(self):
+        import ansys.fluent.visualization as pyviz
+
+        if pyviz.PLOTTER == "matplotlib":
+            from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
+                Plotter,
+            )
+        elif pyviz.PLOTTER == "plotly":
+            from ansys.fluent.visualization.plotter.plotly.plotter_defns import Plotter
+        else:
+            from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
         return (
             Plotter(self.id)
             if in_notebook() or get_config()["blocking"]
@@ -112,7 +152,7 @@ class _XYPlot:
     """Provides for drawing an XY plot."""
 
     def __init__(
-        self, post_object: XYPlotDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
+        self, post_object: XYPlotDefn, plotter: Union[_ProcessPlotterHandle, "Plotter"]
     ):
         """Instantiate an XY plot.
 
@@ -124,9 +164,9 @@ class _XYPlot:
             Plotter to plot the data.
         """
         self.post_object: XYPlotDefn = post_object
-        self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
+        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
 
-    def __call__(self):
+    def __call__(self, grid=(1, 1), position=0, show=True, subplot_titles=[]):
         """Draw an XY plot."""
         if not self.post_object:
             return
@@ -143,18 +183,24 @@ class _XYPlot:
             try:
                 self.plotter.set_properties(properties)
             except BrokenPipeError:
-                self.plotter: Union[_ProcessPlotterHandle, Plotter] = (
+                self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
                     self._get_plotter()
                 )
                 self.plotter.set_properties(properties)
-        self.plotter.plot(xy_data)
+        self.plotter.plot(
+            xy_data,
+            grid=grid,
+            position=position,
+            show=show,
+            subplot_titles=subplot_titles,
+        )
 
 
 class _MonitorPlot:
     """Provides for drawing monitor plots."""
 
     def __init__(
-        self, post_object: MonitorDefn, plotter: Union[_ProcessPlotterHandle, Plotter]
+        self, post_object: MonitorDefn, plotter: Union[_ProcessPlotterHandle, "Plotter"]
     ):
         """Instantiate a monitor plot.
 
@@ -166,14 +212,14 @@ class _MonitorPlot:
             Plotter to plot the data.
         """
         self.post_object: MonitorDefn = post_object
-        self.plotter: Union[_ProcessPlotterHandle, Plotter] = plotter
+        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
 
-    def __call__(self):
+    def __call__(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=[]):
         """Draw a monitor plot."""
         if not self.post_object:
             return
-        monitors_manager = self.post_object._api_helper.monitors_manager()
-        indices, columns_data = monitors_manager.get_monitor_set_data(
+        monitors = self.post_object._api_helper.monitors
+        indices, columns_data = monitors.get_monitor_set_data(
             self.post_object.monitor_set_name()
         )
         xy_data = {}
@@ -183,8 +229,8 @@ class _MonitorPlot:
         properties = {
             "curves": list(xy_data.keys()),
             "title": monitor_set_name,
-            "xlabel": monitors_manager.get_monitor_set_prop(monitor_set_name, "xlabel"),
-            "ylabel": monitors_manager.get_monitor_set_prop(monitor_set_name, "ylabel"),
+            "xlabel": monitors.get_monitor_set_prop(monitor_set_name, "xlabel"),
+            "ylabel": monitors.get_monitor_set_prop(monitor_set_name, "ylabel"),
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
@@ -194,20 +240,26 @@ class _MonitorPlot:
             try:
                 self.plotter.set_properties(properties)
             except BrokenPipeError:
-                self.plotter: Union[_ProcessPlotterHandle, Plotter] = (
+                self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
                     self._get_plotter()
                 )
                 self.plotter.set_properties(properties)
         if xy_data:
-            self.plotter.plot(xy_data)
+            self.plotter.plot(
+                xy_data,
+                grid=grid,
+                position=position,
+                show=show,
+                subplot_titles=subplot_titles,
+            )
 
 
-class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
-    """Provides for managing Matplotlib windows."""
+class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+    """Provides for managing Plotter windows."""
 
     def __init__(self):
-        """Instantiate a windows manager for matplotlib."""
-        self._post_windows: Dict[str, MatplotWindow] = {}
+        """Instantiate a windows manager for the plotter."""
+        self._post_windows: Dict[str, PlotterWindow] = {}
 
     def open_window(self, window_id: Optional[str] = None) -> str:
         """Open a new window.
@@ -253,6 +305,10 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self,
         object: PlotDefn,
         window_id: Optional[str] = None,
+        grid=(1, 1),
+        position=(0, 0),
+        subplot_titles=[],
+        show=True,
     ) -> None:
         """Draw a plot.
 
@@ -275,7 +331,13 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
             window_id = self._get_unique_window_id()
         window = self._open_window(window_id)
         window.post_object = object
-        window.plot()
+        window.plot(
+            grid=grid, position=position, show=show, subplot_titles=subplot_titles
+        )
+
+    def show_plots(self, window_id: str):
+        window = self._open_window(window_id)
+        window._show_plot()
 
     def save_graphic(
         self,
@@ -374,16 +436,13 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
     # private methods
 
-    def _open_window(self, window_id: str) -> Union[Plotter, _ProcessPlotterHandle]:
+    def _open_window(self, window_id: str) -> Union["Plotter", _ProcessPlotterHandle]:
         window = self._post_windows.get(window_id)
-        if (
-            window
-            and not window.plotter.is_closed()
-            and (not (in_notebook() or get_config()["blocking"]) or window.refresh)
-        ):
-            window.refresh = False
+        if window and not window.plotter.is_closed():
+            if not (in_notebook() or get_config()["blocking"]) or window.refresh:
+                window.refresh = False
         else:
-            window = MatplotWindow(window_id, None)
+            window = PlotterWindow(window_id, None)
             self._post_windows[window_id] = window
             if in_notebook():
                 window.plotter()
@@ -415,4 +474,4 @@ class MatplotWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 return window_id
 
 
-matplot_windows_manager = MatplotWindowsManager()
+plotter_windows_manager = PlotterWindowsManager()

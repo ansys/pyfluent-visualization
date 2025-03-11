@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Module providing matplotlib plotter functionality."""
 
 from typing import List, Optional
@@ -5,8 +27,10 @@ from typing import List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 
+from ansys.fluent.visualization.plotter.abstract_plotter_defns import AbstractPlotter
 
-class Plotter:
+
+class Plotter(AbstractPlotter):
     """Class for matplotlib plotter."""
 
     def __init__(
@@ -55,7 +79,21 @@ class Plotter:
         self._remote_process = remote_process
         self.fig = None
 
-    def plot(self, data: dict) -> None:
+    @staticmethod
+    def _compute_position(position: tuple) -> int:
+        x = position[0]
+        y = position[1]
+        if x == y == 0:
+            ret = 0
+        elif x < y:
+            ret = x + y
+        else:
+            ret = x + y + 1
+        return ret
+
+    def plot(
+        self, data: dict, grid=(1, 1), position=0, show=True, subplot_titles=[]
+    ) -> None:
         """Draw plot in window.
 
         Parameters
@@ -80,7 +118,10 @@ class Plotter:
 
         if not self._remote_process:
             self.fig = plt.figure(num=self._window_id)
-            self.ax = self.fig.add_subplot(111)
+
+        self.ax = self.fig.add_subplot(
+            grid[0], grid[1], self._compute_position(position) + 1
+        )
         if self._yscale:
             self.ax.set_yscale(self._yscale)
         self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
@@ -97,7 +138,12 @@ class Plotter:
         if self._yscale == "log":
             y_range = 0
         self.ax.set_ylim(self._min_y - y_range * 0.2, self._max_y + y_range * 0.2)
+        if show:
+            if not self._visible:
+                self._visible = True
+                plt.show()
 
+    def show(self):
         if not self._visible:
             self._visible = True
             plt.show()
@@ -119,7 +165,10 @@ class Plotter:
         file_name : str
             File name to save graphic.
         """
-        plt.savefig(file_name)
+        if self.fig:
+            self.fig.savefig(file_name)
+        else:
+            plt.savefig(file_name)
 
     def set_properties(self, properties: dict):
         """Set plot properties.
@@ -144,8 +193,7 @@ class Plotter:
     def __call__(self):
         """Reset and show plot."""
         self._reset()
-        self._visible = True
-        plt.show()
+        self._visible = False
 
     # private methods
     def _reset(self):
@@ -156,7 +204,6 @@ class Plotter:
         if not self.fig:
             return
         plt.figure(self.fig.number)
-        self.ax.cla()
         for curve_name in self._curves:
             self.ax.plot([], [], label=curve_name)
 
@@ -206,6 +253,12 @@ class ProcessPlotter(Plotter):
                     elif "save_graphic" in data:
                         name = data["save_graphic"]
                         self.save_graphic(name)
+                    elif "data" in data:
+                        self.plot(
+                            data=data["data"],
+                            grid=data["grid"],
+                            position=data["position"],
+                        )
                     else:
                         self.plot(data)
             self.fig.canvas.draw()
