@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Module providing visualization objects for PyVista."""
 
 import sys
@@ -16,8 +38,8 @@ from ansys.fluent.core.post_objects.post_objects_container import (
     Graphics as GraphicsContainer,
 )
 
-from ansys.fluent.visualization.pyvista.pyvista_windows_manager import (
-    pyvista_windows_manager,
+from ansys.fluent.visualization.graphics.graphics_windows_manager import (
+    graphics_windows_manager,
 )
 
 
@@ -49,12 +71,12 @@ class Mesh(MeshDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         mesh1 = graphics_session.Meshes["mesh-1"]
         mesh1.show_edges = True
-        mesh1.surfaces_list = ['wall']
+        mesh1.surfaces = ['wall']
         mesh1.display("window-0")
     """
 
@@ -71,7 +93,7 @@ class Mesh(MeshDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -81,12 +103,12 @@ class Pathlines(PathlinesDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         pathlines1 = graphics_session.Pathlines["pathlines-1"]
         pathlines1.field = "velocity-magnitude"
-        pathlines1.surfaces_list = ['inlet']
+        pathlines1.surfaces = ['inlet']
         pathlines1.display("window-0")
     """
 
@@ -103,7 +125,7 @@ class Pathlines(PathlinesDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -122,7 +144,7 @@ class Surface(SurfaceDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import Graphics
+        from ansys.fluent.visualization import Graphics
 
         graphics_session = Graphics(session)
         surface1 = graphics_session.Surfaces["surface-1"]
@@ -146,7 +168,7 @@ class Surface(SurfaceDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -165,12 +187,12 @@ class Contour(ContourDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         contour1 = graphics_session.Contours["contour-1"]
         contour1.field = "velocity-magnitude"
-        contour1.surfaces_list = ['wall']
+        contour1.surfaces = ['wall']
         contour1.display("window-0")
     """
 
@@ -187,7 +209,7 @@ class Contour(ContourDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )
 
@@ -206,11 +228,11 @@ class Vector(VectorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.pyvista import  Graphics
+        from ansys.fluent.visualization import  Graphics
 
         graphics_session = Graphics(session)
         vector1 = graphics_session.Vectors["vector-1"]
-        vector1.surfaces_list  = ['symmetry']
+        vector1.surfaces = ['symmetry']
         vector1.scale = 4.0
         vector1.skip = 4
         vector1.display("window-0")
@@ -229,6 +251,6 @@ class Vector(VectorDefn):
             Whether to overlay graphics over existing graphics.
             The default is ``False``.
         """
-        pyvista_windows_manager.plot(
+        graphics_windows_manager.plot(
             self, window_id=window_id, overlay=overlay, fetch_data=True
         )

@@ -162,6 +162,9 @@ sphinx_gallery_conf = {
     "gallery_dirs": ["examples"],
     # Pattern to search for example files
     "filename_pattern": r"\.py",
+    # Disabled example scripts
+    "ignore_pattern": r"script_manifold\.py|updated_exhaust_manifold_example\.py|"
+    r"updated_script_manifold_example\.py|flycheck*",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
@@ -171,7 +174,6 @@ sphinx_gallery_conf = {
     # Modules for which function level galleries are created.  In
     "doc_module": "ansys-fluent-core",
     "image_scrapers": ("pyvista", "matplotlib"),
-    "ignore_pattern": "flycheck*",
     "thumbnail_size": (350, 350),
     "reset_modules_order": "after",
     "reset_modules": (_stop_fluent_container),

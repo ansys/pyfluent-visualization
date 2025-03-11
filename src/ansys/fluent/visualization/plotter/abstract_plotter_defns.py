@@ -20,20 +20,54 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""A DEPRECATED package that provides interfacing Fluent with plotters."""
+"""Abstract module providing plotter functionality."""
 
-import warnings
+from abc import ABC, abstractmethod
 
-from ansys.fluent.core.pyfluent_warnings import PyFluentDeprecationWarning
 
-warnings.warn(
-    "'matplotlib' is deprecated. Use 'plotter' instead.",
-    PyFluentDeprecationWarning,
-)
+class AbstractPlotter(ABC):
+    """Abstract class for plotter."""
 
-from ansys.fluent.visualization.plotter.plotter_objects import Plots  # noqa: F401
-from ansys.fluent.visualization.plotter.plotter_windows_manager import (  # noqa: F401
-    plotter_windows_manager,
-)
+    @abstractmethod
+    def plot(self, data: dict) -> None:
+        """Draw plot in window.
 
-matplotlib_windows_manager = plotter_windows_manager
+        Parameters
+        ----------
+        data : dict
+            Data to plot. Data consists the list of x and y
+            values for each curve.
+        """
+        pass
+
+    @abstractmethod
+    def close(self):
+        """Close plotter window."""
+        pass
+
+    @abstractmethod
+    def is_closed(self):
+        """Check if the plotter window is closed."""
+        pass
+
+    @abstractmethod
+    def save_graphic(self, file_name: str):
+        """Save graphics to the specified file.
+
+        Parameters
+        ----------
+        file_name : str
+            File name to save graphic.
+        """
+        pass
+
+    @abstractmethod
+    def set_properties(self, properties: dict):
+        """Set plot properties.
+
+        Parameters
+        ----------
+        properties : dict
+            Plot properties i.e. curves, title, xlabel and ylabel.
+        """
+        pass

@@ -51,7 +51,7 @@ the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>
 Installation
 ------------
 The ``ansys-fluent-visualization`` package supports Python 3.10 through Python
-3.12 on Windows and Linux.
+3.13 on Windows and Linux.
 
 If you are using Python 3.10, download and install the wheel file for the ``vtk`` package from
 `here for Windows <https://github.com/pyvista/pyvista-wheels/raw/main/vtk-9.1.0.dev0-cp310-cp310-win_amd64.whl>`_
@@ -101,11 +101,11 @@ the PyFluent-Visualization documentation.
 
 .. code:: python
 
-   from ansys.fluent.visualization.pyvista import Graphics
+   from ansys.fluent.visualization import Graphics
    graphics = Graphics(session=session)
    temperature_contour = graphics.Contours["contour-temperature"]
    temperature_contour.field = "temperature"
-   temperature_contour.surfaces_list = ["in1", "in2", "out1"]
+   temperature_contour.surfaces = ["in1", "in2", "out1"]
    temperature_contour.display("window-1")
 
 Usage in a JupyterLab environment

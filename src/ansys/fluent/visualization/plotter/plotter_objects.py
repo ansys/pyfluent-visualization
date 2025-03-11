@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Module providing visualization objects for Matplotlib."""
 
 import sys
@@ -13,8 +35,8 @@ from ansys.fluent.core.post_objects.post_objects_container import (
     Plots as PlotsContainer,
 )
 
-from ansys.fluent.visualization.matplotlib.matplot_windows_manager import (
-    matplot_windows_manager,
+from ansys.fluent.visualization.plotter.plotter_windows_manager import (
+    plotter_windows_manager,
 )
 
 
@@ -46,11 +68,11 @@ class XYPlot(XYPlotDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.matplotlib import Plots
+        from ansys.fluent.visualization import Plots
 
-        matplotlib_plots =  Plots(session)
+        plots =  Plots(session)
         plot1 = matplotlib_plots.XYPlots["plot-1"]
-        plot1.surfaces_list = ['symmetry', 'wall']
+        plot1.surfaces = ['symmetry', 'wall']
         plot1.y_axis_function = "temperature"
         plot1.plot("window-0")
     """
@@ -65,7 +87,7 @@ class XYPlot(XYPlotDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        matplot_windows_manager.plot(self, window_id)
+        plotter_windows_manager.plot(self, window_id)
 
 
 class MonitorPlot(MonitorDefn):
@@ -82,9 +104,9 @@ class MonitorPlot(MonitorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization.matplotlib import Plots
+        from ansys.fluent.visualization import Plots
 
-        matplotlib_plots =  Plots(session)
+        plots =  Plots(session)
         plot1 = matplotlib_plots.Monitors["plot-1"]
         plot1.monitor_set_name = 'residuals'
         plot1.plot("window-0")
@@ -100,4 +122,4 @@ class MonitorPlot(MonitorDefn):
             Window ID. If an ID is not specified, a unique ID is used.
             The default is ``None``.
         """
-        matplot_windows_manager.plot(self, window_id)
+        plotter_windows_manager.plot(self, window_id)

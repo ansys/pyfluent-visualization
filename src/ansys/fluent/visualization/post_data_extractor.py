@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Module providing data extractor APIs."""
 
 import itertools
@@ -56,7 +78,7 @@ class FieldDataExtractor:
             return self._fetch_pathlines_data(self._post_object, *args, **kwargs)
 
     def _fetch_mesh_data(self, obj, *args, **kwargs):
-        if not obj.surfaces_list():
+        if not obj.surfaces():
             raise RuntimeError("Mesh definition is incomplete.")
         obj._pre_display()
         field_info = obj._api_helper.field_info()
@@ -65,7 +87,7 @@ class FieldDataExtractor:
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
 
@@ -96,21 +118,21 @@ class FieldDataExtractor:
         ):
             contour = post_session.Contours[dummy_object]
             contour.field = obj.definition.iso_surface.field()
-            contour.surfaces_list = [obj._name]
+            contour.surfaces = [obj._name]
             contour.show_edges = True
             contour.range.auto_range_on.global_range = True
             surface_data = self._fetch_contour_data(contour)
             del post_session.Contours[dummy_object]
         else:
             mesh = post_session.Meshes[dummy_object]
-            mesh.surfaces_list = [obj._name]
+            mesh.surfaces = [obj._name]
             mesh.show_edges = True
             surface_data = self._fetch_mesh_data(mesh)
         surface_api.delete_surface_on_server()
         return surface_data
 
     def _fetch_contour_data(self, obj, *args, **kwargs):
-        if not obj.surfaces_list() or not obj.field():
+        if not obj.surfaces() or not obj.field():
             raise RuntimeError("Contour definition is incomplete.")
 
         # contour properties
@@ -125,7 +147,7 @@ class FieldDataExtractor:
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
         # get scalar field data
@@ -181,7 +203,7 @@ class FieldDataExtractor:
         return self._merge(surface_data, scalar_field_data)
 
     def _fetch_pathlines_data(self, obj, *args, **kwargs):
-        if not obj.surfaces_list() or not obj.field():
+        if not obj.surfaces() or not obj.field():
             raise RuntimeError("Ptahline definition is incomplete.")
         obj._pre_display()
         field = obj.field()
@@ -192,7 +214,7 @@ class FieldDataExtractor:
         transaction = field_data.new_transaction()
         surface_ids = [
             id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
         transaction.add_pathlines_fields_request(surfaces=surface_ids, field_name=field)
@@ -207,7 +229,7 @@ class FieldDataExtractor:
         return pathlines_data
 
     def _fetch_vector_data(self, obj, *args, **kwargs):
-        if not obj.surfaces_list():
+        if not obj.surfaces():
             raise RuntimeError("Vector definition is incomplete.")
 
         obj._pre_display()
@@ -223,7 +245,7 @@ class FieldDataExtractor:
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
 
@@ -313,14 +335,14 @@ class XYPlotDataExtractor:
         node_values = obj.node_values()
         boundary_values = obj.boundary_values()
         direction_vector = obj.direction_vector()
-        surfaces_list = obj.surfaces_list()
+        surfaces = obj.surfaces()
         field_info = obj._api_helper.field_info()
         field_data = obj._api_helper.field_data()
         transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
             id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces_list())
+            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
         # For group surfaces, expanded surf name is used.
@@ -340,8 +362,8 @@ class XYPlotDataExtractor:
                         surfaces_info[remote_surface_name]["surface_id"],
                     )
                     for remote_surface_name, local_surface_name in zip(
-                        map(obj._api_helper.remote_surface_name, surfaces_list),
-                        surfaces_list,
+                        map(obj._api_helper.remote_surface_name, surfaces),
+                        surfaces,
                     )
                 ],
             )
