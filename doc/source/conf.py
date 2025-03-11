@@ -274,3 +274,6 @@ sys.path.append(os.path.abspath("./_ext"))
 
 # Generate section labels up to four levels deep
 autosectionlabel_maxdepth = 4
+
+def setup(app):
+    app.add_config_value('sphinx_gallery_conf', {}, rebuild='env', types=[dict])
