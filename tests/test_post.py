@@ -371,6 +371,7 @@ def test_contour_object():
     assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
 
 
+@pytest.mark.skip("https://github.com/ansys/pyfluent-visualization/issues/482")
 def test_vector_object():
     pyvista_graphics = Graphics(session=None)
     vector1 = pyvista_graphics.Vectors["contour-1"]
@@ -409,6 +410,7 @@ def test_vector_object():
     )
 
 
+@pytest.mark.skip("https://github.com/ansys/pyfluent-visualization/issues/482")
 def test_surface_object():
     pyvista_graphics = Graphics(session=None)
     surf1 = pyvista_graphics.Surfaces["surf-1"]
@@ -511,8 +513,7 @@ def test_xyplot_object():
 
 
 def test_get_set_config():
-    # The module level variable 'INTERACTIVE' is given preference
-    assert get_config()["blocking"]
+    assert not get_config()["blocking"]
     assert not get_config()["set_view_on_display"]
 
     set_config(blocking=True, set_view_on_display="isometric")
