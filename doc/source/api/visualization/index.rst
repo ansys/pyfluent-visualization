@@ -117,3 +117,4 @@ environment. Matplotlib is then used to plot data.
    :hidden:
    
    post_objects
+   solution_variables
