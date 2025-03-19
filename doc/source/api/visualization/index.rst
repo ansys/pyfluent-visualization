@@ -23,73 +23,48 @@ standard Fluent commands to write graphics to a file.
   solver_session.settings.results.graphics.contour['contour-1'].rename('my-contour')
   del solver_session.settings.results.graphics.contour['contour-1']['my-contour']
 
-Visualization example (graphics)
---------------------------------
+Visualization example
+---------------------
 
 Here field data is extracted from the Fluent session into the Python
 environment. Visualization is then used to visualize the extracted data.
 
-.. code:: python
+.. code-block:: python
 
-  # import module
-  from ansys.fluent.visualization import GraphicsWindow, Mesh, Contour, Surface
+      from ansys.fluent.visualization import GraphicsWindow, Mesh, Contour, Surface, XYPlot
 
-  # get the graphics objects for the session
-  mesh1 = Mesh(solver=solver_session)
-  contour1 = Contour(solver=solver_session)
-  contour2 = Contour(solver=solver_session)
-  surface1 = Surface(solver=solver_session)
+      # get the graphics objects for the session
+      mesh_object = Mesh(solver=solver_session)
+      contour_object_1 = Contour(solver=solver_session)
+      contour_object_2 = Contour(solver=solver_session)
+      surface_object = Surface(solver=solver_session)
+      plots_object = XYPlot(solver=solver_session)
 
-  # set graphics objects properties
+      # set graphics objects properties
+      mesh_object.show_edges = True
+      mesh_object.surfaces = ['symmetry']
 
-  # mesh
-  mesh1.show_edges = True
-  mesh1.surfaces = ['symmetry']
+      contour_object_1.field = "velocity-magnitude"
+      contour_object_1.surfaces = ['symmetry']
 
-  # contour
-  contour1.field = "velocity-magnitude"
-  contour1.surfaces = ['symmetry']
+      contour_object_2.field = "temperature"
+      contour_object_2.surfaces = ['symmetry', 'wall']
 
-  contour2.field = "temperature"
-  contour2.surfaces = ['symmetry', 'wall']
+      surface_object.definition.type = "iso-surface"
+      surface_object.definition.iso_surface.field= "velocity-magnitude"
+      surface_object.definition.iso_surface.rendering= "contour"
 
-  # iso surface
-  surface1.definition.type = "iso-surface"
-  surface1.definition.iso_surface.field= "velocity-magnitude"
-  surface1.definition.iso_surface.rendering= "contour"
+      plots_object.surfaces = ["symmetry"]
+      plots_object.y_axis_function = "temperature"
 
-  # display
-  plotter = GraphicsWindow(grid=(2, 2))
-  plotter.add_graphics(mesh1, position=(0, 0))
-  plotter.add_graphics(contour1, position=(0, 1))
-  plotter.add_graphics(contour2, position=(1, 0))
-  plotter.add_graphics(surface1, position=(1, 1))
-  plotter.show()
-  
-Visualization example (XY plots)
---------------------------------
+      graphics_window = GraphicsWindow(grid=(2, 2))
+      graphics_window.add_graphics(mesh_object, position=(0, 0))
+      graphics_window.add_graphics(contour_object_2, position=(0, 1))
+      graphics_window.add_graphics(surface_object, position=(1, 0))
+      graphics_window.add_graphics(plots_object, position=(1, 1))
+      graphics_window.show()
 
-Here plot data is extracted from the Fluent session into the Python
-environment. Visualization is then used to plot data.
-
-.. code:: python
-
-  # import module
-  from ansys.fluent.visualization import XYPlot
-
-  # get the plots object for the session
-  plots_session1 = XYPlot(solver=solver_session)
-  
-  #set properties
-  plots_session1.surfaces = ["symmetry"]
-  plots_session1.y_axis_function = "temperature"
-  
-  #Draw plot
-  plotter = GraphicsWindow()
-  plotter.add_graphics(plots_session1)
-  plotter.show()
-
-  solver_session.exit()
+      solver_session.exit()
 
 .. currentmodule:: ansys.fluent.visualization
 
@@ -99,5 +74,12 @@ environment. Visualization is then used to plot data.
 .. toctree::
    :maxdepth: 2
    :hidden:
-   
-   post_objects
+
+   mesh
+   surface
+   contour
+   vector
+   pathline
+   xyplot
+   monitorplot
+   graphics_window
