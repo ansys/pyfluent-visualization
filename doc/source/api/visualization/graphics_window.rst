@@ -17,7 +17,7 @@ mesh, surface or plots to this window and then display it.
     graphics_window.display()
 
 
-You can even add multiple graphics objects and display it in the same window
+You can even add multiple graphics objects and display them in the same window
 as a structured layout.
 
 .. code-block:: python
