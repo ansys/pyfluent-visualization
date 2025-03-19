@@ -28,3 +28,4 @@ Util
 XY
 pathlines
 Pathlines
+Plotly
