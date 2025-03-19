@@ -373,14 +373,7 @@ def test_contour_object():
 
 def test_vector_object():
     pyvista_graphics = Graphics(session=None)
-
-    while True:
-        try:
-            vector1 = pyvista_graphics.Vectors["contour-1"]
-            break
-        except AttributeError:
-            pass
-
+    vector1 = pyvista_graphics.Vectors["contour-1"]
     field_info = vector1._api_helper.field_info()
 
     assert vector1.surfaces.allowed_values == list(
@@ -418,14 +411,7 @@ def test_vector_object():
 
 def test_surface_object():
     pyvista_graphics = Graphics(session=None)
-
-    while True:
-        try:
-            surf1 = pyvista_graphics.Surfaces["surf-1"]
-            break
-        except AttributeError:
-            pass
-
+    surf1 = pyvista_graphics.Surfaces["surf-1"]
     field_info = surf1._api_helper.field_info()
 
     surf1.definition.type = "iso-surface"
