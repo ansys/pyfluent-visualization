@@ -373,8 +373,7 @@ def test_contour_object():
 
 def test_vector_object():
     pyvista_graphics = Graphics(session=None)
-    vector_provider = pyvista_graphics.Vectors
-    vector1 = vector_provider["contour-1"]
+    vector1 = pyvista_graphics.Vectors["contour-1"]
     field_info = vector1._api_helper.field_info()
 
     assert vector1.surfaces.allowed_values == list(
@@ -412,8 +411,7 @@ def test_vector_object():
 
 def test_surface_object():
     pyvista_graphics = Graphics(session=None)
-    surface_provider = pyvista_graphics.Surfaces
-    surf1 = surface_provider["surf-1"]
+    surf1 = pyvista_graphics.Surfaces["surf-1"]
     field_info = surf1._api_helper.field_info()
 
     surf1.definition.type = "iso-surface"
