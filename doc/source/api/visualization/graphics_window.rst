@@ -5,7 +5,7 @@ GraphicsWindow
  
 .. autopostdoc:: ansys.fluent.visualization.graphics.graphics_window.GraphicsWindow
 
-Creates a window to displays graphics. You can add graphics objects like
+Creates a window to display graphics. You can add graphics objects like a
 mesh, surface or plots to this window and then display it.
 
 .. code-block:: python
