@@ -140,7 +140,7 @@ This example shows how you can display a vector:
 
 Display pathlines
 ~~~~~~~~~~~~~~~~~
-This example shows how you can display a pathlines:
+This example shows how you can display pathlines:
 
 .. code:: python
 
