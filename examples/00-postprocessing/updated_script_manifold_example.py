@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """.. _ref_script_manifold:
 
 Triggering callbacks and Animation
@@ -43,7 +65,6 @@ from ansys.fluent.visualization import (
     Mesh,
     Monitor,
     Pathline,
-    PlotterWindow,
     Surface,
     Vector,
     XYPlot,
@@ -78,27 +99,27 @@ surface1.definition.iso_surface.iso_value = 0.0
 
 p1 = XYPlot(solver=session, surfaces=["solid_up:1:830"])
 p1.y_axis_function = "temperature"
-p_xy = PlotterWindow()
-p_xy.add_plots(p1)
+p_xy = GraphicsWindow()
+p_xy.add_graphics(p1)
 p_xy.show()
 
 session.monitors.get_monitor_set_names()
 residual = Monitor(solver=session)
 residual.monitor_set_name = "residual"
-p_res = PlotterWindow()
-p_res.add_plots(residual)
+p_res = GraphicsWindow()
+p_res.add_graphics(residual)
 p_res.show()
 
 mtr = Monitor(solver=session)
 mtr.monitor_set_name = "mass-tot-rplot"
-p_mtr = PlotterWindow()
-p_mtr.add_plots(mtr)
+p_mtr = GraphicsWindow()
+p_mtr.add_graphics(mtr)
 p_mtr.show()
 
 mbr = Monitor(solver=session)
 mbr.monitor_set_name = "mass-bal-rplot"
-p_mbr = PlotterWindow()
-p_mbr.add_plots(mbr)
+p_mbr = GraphicsWindow()
+p_mbr.add_graphics(mbr)
 p_mbr.show()
 
 p_mesh = GraphicsWindow()
@@ -121,21 +142,20 @@ p_surf.add_graphics(surface1)
 p_surf.show()
 
 
-def auto_refersh_call_back_iteration(session_id, event_info):
-    if event_info.index % 1 == 0:
-        p_cont.refresh_windows(session_id)
-        p_res.refresh_windows(session_id)
-        p_mtr.refresh_windows(session_id)
-        p_mbr.refresh_windows(session_id)
+def auto_refersh_call_back_iteration(session, event_info):
+    p_cont.refresh_windows(session.id)
+    p_res.refresh_windows(session.id)
+    p_mtr.refresh_windows(session.id)
+    p_mbr.refresh_windows(session.id)
 
 
-def auto_refersh_call_back_time_step(session_id, event_info):
-    p_res.refresh_windows(session_id)
+def auto_refersh_call_back_time_step(session, event_info):
+    p_res.refresh_windows(session.id)
 
 
-def initialize_call_back(session_id, event_info):
-    p_res.refresh_windows(session_id)
-    p_mtr.refresh_windows(session_id)
+def initialize_call_back(session, event_info):
+    p_res.refresh_windows(session.id)
+    p_mtr.refresh_windows(session.id)
 
 
 cb_init_id = session.events.register_callback("InitializedEvent", initialize_call_back)
