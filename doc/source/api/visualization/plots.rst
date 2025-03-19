@@ -11,32 +11,26 @@ a monitor plot.
 
 .. code-block:: python
 
-        from ansys.fluent.visualization import Plots
+        from ansys.fluent.visualization import GraphicsWindow, XYPlot, Monitor
     
-        plots_session = Plots(session)
-        plot1 = plots_session.XYPlots["plot-1"]        
+        plot1 = XYPlot(solver=session)
         plot1.surfaces = ['symmetry', 'wall']
         plot1.y_axis_function = "temperature"
-        plot1.plot("window-0")        
-        
-        
-        #To plot data on local surface created in PyVista
-        
-        from ansys.fluent.visualization import  Graphics
-        pyvista_surface_provider = Graphics(session).Surfaces       
-        plots_session = Plots(session, pyvista_surface_provider)
-        plot2 = plots_session.XYPlots["plot-2"]         
-        plot2.surfaces = ['iso-surface-1']
-        plot2.y_axis_function = "temperature"
-        plot2.plot("window-0")        
-        
+        plot1.plot("window-0")
+
+        plotter = GraphicsWindow()
+        plotter.add_graphics(plot1)
+        plotter.show()
         
         #To plot monitors
         
-        monitor1=plots_session.Monitors["monitor-1"]                       
+        monitor1 = Monitor(solver=session)
         monitor1.monitor_set_name = "residual"
-        monitor1.plot("window-0")        
-        
+
+        plotter = GraphicsWindow()
+        plotter.add_graphics(monitor1)
+        plotter.show()
+
 .. toctree::
    :maxdepth: 2
    :hidden:

@@ -8,21 +8,17 @@ to display graphics objects and plot data.
 
 Graphics operations
 -------------------
-Examples follow for graphics operations that PyFluent-Visualization
-supports.
+Examples of graphics operations that PyFluent-Visualization supports:
 
-Display mesh
-~~~~~~~~~~~~
-This example shows how you can display a mesh:
+Launching Fluent and setting up data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You launch Fluent, read a case and hybrid initialize to get the data:
 
 .. code:: python
 
     import ansys.fluent.core as pyfluent
     from ansys.fluent.core import examples
     from ansys.fluent.visualization import set_config
-    from ansys.fluent.visualization import Plots
-    from ansys.fluent.visualization import Graphics
-    from ansys.fluent.visualization.contour import Contour
 
     set_config(blocking=True, set_view_on_display="isometric")
 
@@ -39,10 +35,15 @@ This example shows how you can display a mesh:
     solver_session.tui.file.read_case(import_case)
     solver_session.tui.file.read_data(import_data)
 
-    graphics = Graphics(session=solver_session)
-    mesh1 = graphics.Meshes["mesh-1"]
-    mesh1.show_edges = True
-    mesh1.surfaces = [
+Display mesh
+~~~~~~~~~~~~
+This example shows how you can display a mesh:
+
+.. code:: python
+
+    from ansys.fluent.visualization import GraphicsWindow, Mesh
+
+    mesh_surfaces_list = [
         "in1",
         "in2",
         "in3",
@@ -51,7 +52,33 @@ This example shows how you can display a mesh:
         "solid_up:1:830",
         "solid_up:1:830-shadow",
     ]
-    mesh1.display("window-1")
+
+    mesh1 = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
+    p1 = GraphicsWindow(grid=(1, 2))
+    p1.add_graphics(mesh1, position=(0, 0))
+
+    mesh2 = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
+    mesh2.show_edges = False
+
+    p1.add_graphics(mesh2, position=(0, 1))
+    p1.show()
+
+Display plane-surface
+~~~~~~~~~~~~~~~~~~~~~
+This example shows how you can display an plane-surface:
+
+.. code:: python
+
+    from ansys.fluent.visualization import Surface
+
+    surf_xy_plane = Surface(solver=solver_session)
+    surf_xy_plane.definition.type = "plane-surface"
+    surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
+    plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
+    plane_surface_xy.z = -0.0441921
+    p2 = GraphicsWindow()
+    p2.add_graphics(surf_xy_plane)
+    p2.show()
 
 Display iso-surface
 ~~~~~~~~~~~~~~~~~~~
@@ -59,12 +86,14 @@ This example shows how you can display an iso-surface:
 
 .. code:: python
 
-    surf_outlet_plane = graphics.Surfaces["outlet-plane"]
-    surf_outlet_plane.surface.type = "iso-surface"
-    iso_surf1 = surf_outlet_plane.surface.iso_surface
+    surf_outlet_plane = Surface(solver=solver_session)
+    surf_outlet_plane.definition.type = "iso-surface"
+    iso_surf1 = surf_outlet_plane.definition.iso_surface
     iso_surf1.field = "y-coordinate"
     iso_surf1.iso_value = -0.125017
-    surf_outlet_plane.display("window-2")
+    p3 = GraphicsWindow()
+    p3.add_graphics(surf_outlet_plane)
+    p3.show()
 
 Display contour
 ~~~~~~~~~~~~~~~
@@ -72,9 +101,9 @@ This example shows how you can display a contour:
 
 .. code:: python
 
-    temperature_contour_manifold = graphics.Contours["contour-temperature-manifold"]
-    temperature_contour_manifold.field = "temperature"
-    temperature_contour_manifold.surfaces = [
+    from ansys.fluent.visualization import Contour
+
+    cont_surfaces_list = [
         "in1",
         "in2",
         "in3",
@@ -82,27 +111,14 @@ This example shows how you can display a contour:
         "solid_up:1",
         "solid_up:1:830",
     ]
-    temperature_contour_manifold.display("window-3")
-
-Instantiate a contour object with or without a solver session, using a field name and a list of surfaces, as follows.
-Target is either a Graphics object or a solver session.
-
-.. code:: python
-
-    temperature_contour_manifold = Contour(field="temperature",
-                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",])
-
-    temperature_contour_manifold = Contour(field="temperature",
-                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",],
-                                           solver=solver_session)
-
-.. code:: python
-
-    # Create and render contour object on client side.
-    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
-
-    # Create and render contour object on server side.
-    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
+    temperature_contour_manifold = Contour(
+        solver=solver_session,
+        field="temperature",
+        surfaces=cont_surfaces_list,
+    )
+    p4 = GraphicsWindow()
+    p4.add_graphics(temperature_contour_manifold)
+    p4.show()
 
 Display vector
 ~~~~~~~~~~~~~~
@@ -110,10 +126,33 @@ This example shows how you can display a vector:
 
 .. code:: python
 
-    velocity_vector = graphics.Vectors["velocity-vector"]
-    velocity_vector.surfaces = ["outlet-plane"]
-    velocity_vector.scale = 1
-    velocity_vector.display("window-4")
+    from ansys.fluent.visualization import Vector
+
+    velocity_vector = Vector(
+        solver=solver_session,
+        field="pressure",
+        surfaces=["solid_up:1:830"],
+        scale=2,
+    )
+    p5 = GraphicsWindow()
+    p5.add_graphics(velocity_vector)
+    p5.show()
+
+Display pathlines
+~~~~~~~~~~~~~~~~~
+This example shows how you can display a pathlines:
+
+.. code:: python
+
+    from ansys.fluent.visualization import Pathline
+
+    pathlines = Pathline(solver=solver_session)
+    pathlines.field = "velocity-magnitude"
+    pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+
+    p6 = GraphicsWindow()
+    p6.add_graphics(pathlines)
+    p6.show()
 
 Plot operations
 ---------------
@@ -126,11 +165,16 @@ This example shows how you can display the XY plot:
 
 .. code:: python
 
-    plots_session_1 = Plots(solver_session)
-    xy_plot = plots_session_1.XYPlots["xy-plot"]
-    xy_plot.surfaces = ["outlet"]
-    xy_plot.y_axis_function = "temperature"
-    xy_plot.plot("window-5")
+    from ansys.fluent.visualization import XYPlot
+
+    xy_plot = XYPlot(
+        solver=solver_session,
+        surfaces=["outlet"],
+        y_axis_function="temperature",
+    )
+    p7 = GraphicsWindow()
+    p7.add_graphics(xy_plot)
+    p7.show()
 
 Display solution residual plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -138,11 +182,13 @@ This example shows how you can display the solution residual plot:
 
 .. code:: python
 
+    from ansys.fluent.visualization import Monitor
 
-    matplotlib_plots1 = Plots(solver_session)
-    residual = matplotlib_plots1.Monitors["residual"]
+    residual = Monitor(solver=solver_session)
     residual.monitor_set_name = "residual"
-    residual.plot("window-6")
+    p8 = GraphicsWindow()
+    p8.add_graphics(residual)
+    p8.show()
 
 Display solution monitors plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,11 +196,14 @@ This example shows how you can display the solution monitors plot:
 
 .. code:: python
 
-    solver_session.tui.solve.initialize.hyb_initialization()
-    solver_session.tui.solve.set.number_of_iterations(50)
-    solver_session.tui.solve.iterate()
-    solver_session.monitors_manager.get_monitor_set_names()
-    matplotlib_plots1 = Plots(solver_session)
-    mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
+    solver_session.settings.solution.initialization.hybrid_initialize()
+    solver_session.settings.solution.run_calculation.iterate(iter_count=50)
+
+    mass_bal_rplot = Monitor(solver=solver_session)
     mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-    mass_bal_rplot.plot("window-7")
+    p9 = GraphicsWindow(grid=(1, 2))
+    p9.add_graphics(mass_bal_rplot, position=(0, 0))
+
+    point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
+    p9.add_graphics(point_vel_rplot, position=(0, 1))
+    p9.show()
