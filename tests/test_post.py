@@ -411,11 +411,6 @@ def test_vector_object():
 
 def test_surface_object():
     pyvista_graphics = Graphics(session=None)
-    print(pyvista_graphics.Surfaces)
-    print(dir(pyvista_graphics.Surfaces))
-    from inspect import getsource
-
-    print(getsource(pyvista_graphics.Surfaces.__class__))
     surf1 = pyvista_graphics.Surfaces["surf-1"]
     field_info = surf1._api_helper.field_info()
 
