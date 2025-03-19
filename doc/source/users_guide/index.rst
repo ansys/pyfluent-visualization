@@ -11,7 +11,7 @@ Graphics operations
 Examples of graphics operations that PyFluent-Visualization supports:
 
 Launch Fluent and read data
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Example launching Fluent, and reading case and data files:
 
 .. code:: python
