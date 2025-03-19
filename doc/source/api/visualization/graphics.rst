@@ -7,7 +7,7 @@ Graphics
 
 In the following example, a ``Graphics`` object is instantiated with a Fluent
 session as its context. The ``Graphics`` object can be used to create a mesh,
-contour, vector, and surface.
+contour, vector or surface.
            
 .. toctree::
    :maxdepth: 2
