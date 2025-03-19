@@ -37,7 +37,6 @@ Example launching Fluent, and reading case and data files:
 
 Display mesh
 ~~~~~~~~~~~~
-This example shows how you can display a mesh:
 
 .. code:: python
 
@@ -65,7 +64,6 @@ This example shows how you can display a mesh:
 
 Display plane-surface
 ~~~~~~~~~~~~~~~~~~~~~
-This example shows how you can display a plane-surface:
 
 .. code:: python
 
@@ -82,7 +80,6 @@ This example shows how you can display a plane-surface:
 
 Display iso-surface
 ~~~~~~~~~~~~~~~~~~~
-This example shows how you can display an iso-surface:
 
 .. code:: python
 
@@ -97,7 +94,6 @@ This example shows how you can display an iso-surface:
 
 Display contour
 ~~~~~~~~~~~~~~~
-This example shows how you can display a contour:
 
 .. code:: python
 
@@ -122,7 +118,6 @@ This example shows how you can display a contour:
 
 Display vector
 ~~~~~~~~~~~~~~
-This example shows how you can display a vector:
 
 .. code:: python
 
@@ -140,7 +135,6 @@ This example shows how you can display a vector:
 
 Display pathlines
 ~~~~~~~~~~~~~~~~~
-This example shows how you can display pathlines:
 
 .. code:: python
 
@@ -161,7 +155,6 @@ supports.
 
 Display plot
 ~~~~~~~~~~~~
-This example shows how you can display the XY plot:
 
 .. code:: python
 
@@ -178,7 +171,6 @@ This example shows how you can display the XY plot:
 
 Display solution residual plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This example shows how you can display the solution residual plot:
 
 .. code:: python
 
@@ -192,7 +184,6 @@ This example shows how you can display the solution residual plot:
 
 Display solution monitors plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This example shows how you can display the solution monitors plot:
 
 .. code:: python
 
