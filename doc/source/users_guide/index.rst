@@ -65,7 +65,7 @@ This example shows how you can display a mesh:
 
 Display plane-surface
 ~~~~~~~~~~~~~~~~~~~~~
-This example shows how you can display an plane-surface:
+This example shows how you can display a plane-surface:
 
 .. code:: python
 
