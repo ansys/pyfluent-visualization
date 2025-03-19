@@ -373,7 +373,7 @@ def test_contour_object():
 
 def test_vector_object():
     pyvista_graphics = Graphics(session=None)
-    vector1 = pyvista_graphics.Vectors["vector-1"]
+    vector1 = pyvista_graphics.Vectors["contour-1"]
     field_info = vector1._api_helper.field_info()
 
     assert vector1.surfaces.allowed_values == list(
