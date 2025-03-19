@@ -375,7 +375,7 @@ def test_contour_object():
 def test_vector_object():
     if sys.version_info > (3, 13):
         pytest.skip(
-            "Random AttributeError in Python 3.13: "
+            "Random AttributeError in Python 3.13.2: "
             "'PyLocalContainer' object has no attribute '_local_collection'"
         )
     pyvista_graphics = Graphics(session=None)
@@ -418,7 +418,7 @@ def test_vector_object():
 def test_surface_object():
     if sys.version_info > (3, 13):
         pytest.skip(
-            "Random AttributeError in Python 3.13: "
+            "Random AttributeError in Python 3.13.2: "
             "'PyLocalContainer' object has no attribute '_local_collection'"
         )
     pyvista_graphics = Graphics(session=None)
