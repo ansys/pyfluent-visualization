@@ -6,15 +6,10 @@ User guide
 You can use PyFluent-Visualization for postprocessing of Fluent results
 to display graphics objects and plot data.
 
-Graphics operations
--------------------
-Examples of graphics operations that PyFluent-Visualization supports:
-
 Launch Fluent and read data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Example launching Fluent, and reading case and data files:
 
-.. code:: python
+.. code-block:: python
 
     import ansys.fluent.core as pyfluent
     from ansys.fluent.core import examples
@@ -35,10 +30,14 @@ Example launching Fluent, and reading case and data files:
     solver_session.tui.file.read_case(import_case)
     solver_session.tui.file.read_data(import_data)
 
+Graphics operations
+-------------------
+Graphics operations that PyFluent-Visualization supports:
+
 Display mesh
 ~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     from ansys.fluent.visualization import GraphicsWindow, Mesh
 
@@ -52,20 +51,20 @@ Display mesh
         "solid_up:1:830-shadow",
     ]
 
-    mesh1 = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
-    p1 = GraphicsWindow(grid=(1, 2))
-    p1.add_graphics(mesh1, position=(0, 0))
+    mesh_object_1 = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
+    mesh_window = GraphicsWindow(grid=(1, 2))
+    mesh_window.add_graphics(mesh1, position=(0, 0))
 
-    mesh2 = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
-    mesh2.show_edges = False
+    mesh_object_2 = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
+    mesh_object_2.show_edges = False
 
-    p1.add_graphics(mesh2, position=(0, 1))
-    p1.show()
+    mesh_window.add_graphics(mesh2, position=(0, 1))
+    mesh_window.show()
 
 Display plane-surface
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     from ansys.fluent.visualization import Surface
 
@@ -74,28 +73,28 @@ Display plane-surface
     surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
     plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
     plane_surface_xy.z = -0.0441921
-    p2 = GraphicsWindow()
-    p2.add_graphics(surf_xy_plane)
-    p2.show()
+    surface_window = GraphicsWindow()
+    surface_window.add_graphics(surf_xy_plane)
+    surface_window.show()
 
 Display iso-surface
 ~~~~~~~~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     surf_outlet_plane = Surface(solver=solver_session)
     surf_outlet_plane.definition.type = "iso-surface"
     iso_surf1 = surf_outlet_plane.definition.iso_surface
     iso_surf1.field = "y-coordinate"
     iso_surf1.iso_value = -0.125017
-    p3 = GraphicsWindow()
-    p3.add_graphics(surf_outlet_plane)
-    p3.show()
+    surface_window = GraphicsWindow()
+    surface_window.add_graphics(surf_outlet_plane)
+    surface_window.show()
 
 Display contour
 ~~~~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     from ansys.fluent.visualization import Contour
 
@@ -112,14 +111,14 @@ Display contour
         field="temperature",
         surfaces=cont_surfaces_list,
     )
-    p4 = GraphicsWindow()
-    p4.add_graphics(temperature_contour_manifold)
-    p4.show()
+    contour_window = GraphicsWindow()
+    contour_window.add_graphics(temperature_contour_manifold)
+    contour_window.show()
 
 Display vector
 ~~~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     from ansys.fluent.visualization import Vector
 
@@ -129,14 +128,14 @@ Display vector
         surfaces=["solid_up:1:830"],
         scale=2,
     )
-    p5 = GraphicsWindow()
-    p5.add_graphics(velocity_vector)
-    p5.show()
+    vector_window = GraphicsWindow()
+    vector_window.add_graphics(velocity_vector)
+    vector_window.show()
 
 Display pathlines
 ~~~~~~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     from ansys.fluent.visualization import Pathline
 
@@ -144,19 +143,18 @@ Display pathlines
     pathlines.field = "velocity-magnitude"
     pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
 
-    p6 = GraphicsWindow()
-    p6.add_graphics(pathlines)
-    p6.show()
+    pathlines_window = GraphicsWindow()
+    pathlines_window.add_graphics(pathlines)
+    pathlines_window.show()
 
 Plot operations
 ---------------
-Examples follow for plot operations that PyFluent-Visualization
-supports.
+Plot operations that PyFluent-Visualization supports:
 
 Display plot
 ~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     from ansys.fluent.visualization import XYPlot
 
@@ -165,36 +163,91 @@ Display plot
         surfaces=["outlet"],
         y_axis_function="temperature",
     )
-    p7 = GraphicsWindow()
-    p7.add_graphics(xy_plot)
-    p7.show()
+    xy_plot_window = GraphicsWindow()
+    xy_plot_window.add_graphics(xy_plot)
+    xy_plot_window.show()
 
 Display solution residual plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     from ansys.fluent.visualization import Monitor
 
     residual = Monitor(solver=solver_session)
     residual.monitor_set_name = "residual"
-    p8 = GraphicsWindow()
-    p8.add_graphics(residual)
-    p8.show()
+    monitor_window = GraphicsWindow()
+    monitor_window.add_graphics(residual)
+    monitor_window.show()
 
 Display solution monitors plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: python
+.. code-block:: python
 
     solver_session.settings.solution.initialization.hybrid_initialize()
     solver_session.settings.solution.run_calculation.iterate(iter_count=50)
 
     mass_bal_rplot = Monitor(solver=solver_session)
     mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-    p9 = GraphicsWindow(grid=(1, 2))
-    p9.add_graphics(mass_bal_rplot, position=(0, 0))
+    monitor_window = GraphicsWindow(grid=(1, 2))
+    monitor_window.add_graphics(mass_bal_rplot, position=(0, 0))
 
     point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
-    p9.add_graphics(point_vel_rplot, position=(0, 1))
-    p9.show()
+    monitor_window.add_graphics(point_vel_rplot, position=(0, 1))
+    monitor_window.show()
+
+Interactive Graphics
+--------------------
+The ``GraphicsWindow`` class provides for managing and directly interacting
+with the graphics window. By registering the window with ``EventsManager``, you
+can update graphics during run time and create animations.
+
+The following example updates the graphics window (contour_window, xy_plot_window and
+monitor_window) during solution initialization and whenever data is read.
+During the calculation, it also updates the graphics window at
+the end of every time step. These are done via. explicit callback registrations.
+You can create an animation as well from a graphics window.
+
+.. code-block:: python
+
+    from ansys.fluent.visualization import Contour, XYPlot, Monitor, GraphicsWindow
+
+    contour_object = Contour(
+        solver=solver_session, field="velocity-magnitude", surfaces=["symmetry"]
+    )
+
+    xy_plot_object = XYPlot(solver=solver_session)
+    xy_plot_object.surfaces = ['symmetry']
+    xy_plot_object.y_axis_function = "temperature"
+
+    monitor_object = Monitor(solver=solver_session)
+    monitor_object.monitor_set_name = "residual"
+
+    contour_window = GraphicsWindow()
+    contour_window.add_graphics(contour_object)
+    contour_window.show()
+
+    xy_plot_window = GraphicsWindow()
+    xy_plot_window.add_graphics(xy_plot_object)
+    xy_plot_window.show()
+
+    monitor_window = GraphicsWindow()
+    monitor_window.add_graphics(monitor1)
+    monitor_window.show()
+
+    def auto_refresh_graphics(session, event_info):
+        contour_window.refresh_windows(session.id)
+        xy_plot_window.refresh_windows(session.id)
+        monitor_window.refresh_windows(session.id)
+
+    #Register this callback with server events.
+    solver_session.events.register_callback('InitializedEvent', auto_refresh_graphics)
+    solver_session.events.register_callback('DataReadEvent', auto_refresh_graphics)
+    solver_session.events.register_callback('TimestepEndedEvent', auto_refresh_graphics)
+
+    #Create animation for contour.
+    contour_window.animate_windows(solver_session.id)
+
+    solver_session.settings.solution.initialization.hybrid_initialize()
+    solver_session.settings.solution.run_calculation.iterate(iter_count=50)
