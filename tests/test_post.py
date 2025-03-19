@@ -371,7 +371,6 @@ def test_contour_object():
     assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
 
 
-@pytest.mark.skip("https://github.com/ansys/pyfluent-visualization/issues/482")
 def test_vector_object():
     pyvista_graphics = Graphics(session=None)
     vector1 = pyvista_graphics.Vectors["contour-1"]
@@ -410,7 +409,6 @@ def test_vector_object():
     )
 
 
-@pytest.mark.skip("https://github.com/ansys/pyfluent-visualization/issues/482")
 def test_surface_object():
     pyvista_graphics = Graphics(session=None)
     surf1 = pyvista_graphics.Surfaces["surf-1"]
