@@ -12,7 +12,7 @@ Examples of graphics operations that PyFluent-Visualization supports:
 
 Launching Fluent and setting up data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-You launch Fluent, read a case and hybrid initialize to get the data:
+Example launching Fluent, and reading case and data files:
 
 .. code:: python
 
