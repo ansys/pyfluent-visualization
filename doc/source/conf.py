@@ -169,9 +169,9 @@ sphinx_gallery_conf = {
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
     "within_subsection_order": FileNameSortKey,
-    # directory where function granular galleries are stored
+    # Directory where function granular galleries are stored
     "backreferences_dir": None,
-    # Modules for which function level galleries are created.  In
+    # Modules for which function level galleries are created.
     "doc_module": "ansys-fluent-core",
     "image_scrapers": ("pyvista", "matplotlib"),
     "thumbnail_size": (350, 350),
