@@ -39,7 +39,7 @@ def _get_file_path(folder_name: str, file_name: str):
 
 
 hierarchy = {
-    "Visualization": [
+    "visualization": [
         "Mesh",
         "Surface",
         "Contour",
