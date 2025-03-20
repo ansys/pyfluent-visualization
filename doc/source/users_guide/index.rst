@@ -237,9 +237,9 @@ You can create an animation as well from a graphics window.
     monitor_window.show()
 
     def auto_refresh_graphics(session, event_info):
-        contour_window.refresh_windows(session.id)
-        xy_plot_window.refresh_windows(session.id)
-        monitor_window.refresh_windows(session.id)
+        contour_window.refresh(session.id)
+        xy_plot_window.refresh(session.id)
+        monitor_window.refresh(session.id)
 
     #Register this callback with server events.
     solver_session.events.register_callback('InitializedEvent', auto_refresh_graphics)
@@ -247,7 +247,7 @@ You can create an animation as well from a graphics window.
     solver_session.events.register_callback('TimestepEndedEvent', auto_refresh_graphics)
 
     #Create animation for contour.
-    contour_window.animate_windows(solver_session.id)
+    contour_window.animate(solver_session.id)
 
     solver_session.settings.solution.initialization.hybrid_initialize()
     solver_session.settings.solution.run_calculation.iterate(iter_count=50)
