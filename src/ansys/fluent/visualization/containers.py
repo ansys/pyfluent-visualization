@@ -80,10 +80,19 @@ class Surface(_GraphicsContainer):
                 field=kwargs.pop("field", None),
                 iso_value=kwargs.pop("iso_value", None),
                 rendering=kwargs.pop("rendering", None),
-                obj=Graphics(session=solver).Surfaces.create(**kwargs)
+                obj=Graphics(session=solver).Surfaces.create(**kwargs),
             )
         )
-        for attr in ["type", "creation_method", "x", "y", "z", "field", "iso_value", "rendering"]:
+        for attr in [
+            "type",
+            "creation_method",
+            "x",
+            "y",
+            "z",
+            "field",
+            "iso_value",
+            "rendering",
+        ]:
             val = getattr(self, attr)
             if val is not None:
                 setattr(self, attr, val)
