@@ -59,7 +59,7 @@ You can launch Fluent from PyFluent using the ``launch_fluent`` function:
 PyFluent-Visualization seamlessly integrates with both
 `PyVista <https://www.pyvista.org/>`_ and `Matplotlib <https://matplotlib.org/>`_.
 Additionally, it offers flexibility to incorporate other open-source data visualization tools,
-such as `Plotly <https://plotly.com/python/>`_.
+such as `Plotly <https://plotly.com/python/>`_, see :ref:`ref_configure`
 
 If you want to print the debug information for development, set the following
 environment variable:
