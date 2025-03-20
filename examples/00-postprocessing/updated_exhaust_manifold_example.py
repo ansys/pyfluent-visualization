@@ -111,7 +111,9 @@ mesh_surfaces_list = [
     "solid_up:1:830",
     "solid_up:1:830-shadow",
 ]
-mesh_object_1 = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
+mesh_object_1 = Mesh(
+    solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list
+)
 
 mesh_display_window = GraphicsWindow(grid=(1, 2))
 mesh_display_window.add_graphics(mesh_object_1, position=(0, 0))
