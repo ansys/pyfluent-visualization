@@ -16,6 +16,8 @@ set SPHINXOPTS=-j auto -W --keep-going -w build_errors.txt -N -q
 if "%1" == "" goto help
 if "%1" == "clean" goto clean
 
+python api_rstgen.py
+
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
 	echo.
