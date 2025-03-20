@@ -3,11 +3,12 @@
 ==========
 User guide
 ==========
-You can use PyFluent-Visualization for postprocessing of Fluent results
-to display graphics objects and plot data.
+PyFluent-Visualization enables postprocessing of Fluent results,
+allowing you to display graphical objects and plot data efficiently.
 
 Launch Fluent and read data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Use the following script to launch Fluent and load your case and data files:
 
 .. code-block:: python
 
@@ -32,10 +33,11 @@ Launch Fluent and read data
 
 Graphics operations
 -------------------
-Graphics operations that PyFluent-Visualization supports:
+PyFluent-Visualization supports various graphical operations.
 
 Display mesh
 ~~~~~~~~~~~~
+The following example demonstrates how to display a mesh with and without edges:
 
 .. code-block:: python
 
@@ -63,6 +65,7 @@ Display mesh
 
 Display plane-surface
 ~~~~~~~~~~~~~~~~~~~~~
+Create and visualize a plane surface at a specified z-coordinate:
 
 .. code-block:: python
 
@@ -78,6 +81,7 @@ Display plane-surface
 
 Display iso-surface
 ~~~~~~~~~~~~~~~~~~~
+Generate an iso-surface based on the y-coordinate:
 
 .. code-block:: python
 
@@ -88,6 +92,7 @@ Display iso-surface
 
 Display contour
 ~~~~~~~~~~~~~~~
+Plot a temperature contour over selected surfaces:
 
 .. code-block:: python
 
@@ -112,6 +117,7 @@ Display contour
 
 Display vector
 ~~~~~~~~~~~~~~
+Visualize velocity vectors over a selected surface:
 
 .. code-block:: python
 
@@ -129,6 +135,7 @@ Display vector
 
 Display pathlines
 ~~~~~~~~~~~~~~~~~
+Visualize pathlines to analyze flow patterns:
 
 .. code-block:: python
 
@@ -144,10 +151,11 @@ Display pathlines
 
 Plot operations
 ---------------
-Plot operations that PyFluent-Visualization supports:
+PyFluent-Visualization supports various plot operations.
 
 Display plot
 ~~~~~~~~~~~~
+Generate an XY plot of temperature variations at an outlet:
 
 .. code-block:: python
 
@@ -164,6 +172,7 @@ Display plot
 
 Display solution residual plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Plot solution residuals:
 
 .. code-block:: python
 
@@ -177,6 +186,7 @@ Display solution residual plot
 
 Display solution monitors plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Monitor solution convergence using mass balance and velocity plots:
 
 .. code-block:: python
 
@@ -194,15 +204,19 @@ Display solution monitors plot
 
 Interactive Graphics
 --------------------
-The ``GraphicsWindow`` class provides for managing and directly interacting
-with the graphics window. By registering the window with ``EventsManager``, you
-can update graphics during run time and create animations.
+The ``GraphicsWindow`` class provides functionality for managing and directly
+interacting with the graphics window. By registering the window with ``EventsManager``,
+you can dynamically update graphics during runtime and create animations.
 
-The following example updates the graphics window (contour_window, xy_plot_window and
-monitor_window) during solution initialization and whenever data is read.
-During the calculation, it also updates the graphics window at
-the end of every time step. These are done via. explicit callback registrations.
-You can create an animation as well from a graphics window.
+The following example demonstrates how to update multiple graphics windows
+(contour_window, xy_plot_window, and monitor_window) during different solution
+stages. Graphics updates occur:
+
+- During solution initialization
+
+- Whenever data is read
+
+- At the end of every time step during the calculation
 
 .. code-block:: python
 
@@ -246,3 +260,10 @@ You can create an animation as well from a graphics window.
 
     solver_session.settings.solution.initialization.hybrid_initialize()
     solver_session.settings.solution.run_calculation.iterate(iter_count=50)
+
+These updates are implemented using explicit callback registrations.
+Additionally, animations can be created from a graphics window.
+
+This guide provides a structured approach to using PyFluent-Visualization.
+For detailed usage of individual modules,
+refer to the respective module documentation, see :ref:`ref_visualization`.
