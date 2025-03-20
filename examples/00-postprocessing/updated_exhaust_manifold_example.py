@@ -92,7 +92,6 @@ solver_session = pyfluent.launch_fluent(
     processor_count=2,
     start_transcript=False,
     mode="solver",
-    ui_mode="gui",
 )
 
 solver_session.settings.file.read_case(file_name=import_case)
@@ -112,66 +111,66 @@ mesh_surfaces_list = [
     "solid_up:1:830",
     "solid_up:1:830-shadow",
 ]
-mesh1 = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
+mesh_object_1 = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
 
-p1 = GraphicsWindow(grid=(1, 2))
-p1.add_graphics(mesh1, position=(0, 0))
+mesh_display_window = GraphicsWindow(grid=(1, 2))
+mesh_display_window.add_graphics(mesh_object_1, position=(0, 0))
 
-mesh2 = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
-mesh2.show_edges = False
+mesh_object_2 = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
+mesh_object_2.show_edges = False
 
-p1.add_graphics(mesh2, position=(0, 1))
-p1.show()
+mesh_display_window.add_graphics(mesh_object_2, position=(0, 1))
+mesh_display_window.show()
 
 ###############################################################################
 # Create plane-surface XY plane
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface XY plane.
 
-surf_xy_plane = Surface(
+surf_xy_plane_object = Surface(
     solver=solver_session,
     type="plane-surface",
     creation_method="xy-plane",
     z=-0.0441921,
 )
-p2 = GraphicsWindow(grid=(1, 3))
-p2.add_graphics(surf_xy_plane, position=(0, 0))
+surface_display_window = GraphicsWindow(grid=(1, 3))
+surface_display_window.add_graphics(surf_xy_plane_object, position=(0, 0))
 
 ###############################################################################
 # Create plane-surface YZ plane
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface YZ plane.
 
-surf_yz_plane = Surface(solver=solver_session)
-surf_yz_plane.type = "plane-surface"
-surf_yz_plane.creation_method = "yz-plane"
-surf_yz_plane.x = -0.174628
-p2.add_graphics(surf_yz_plane, position=(0, 1))
+surf_yz_plane_object = Surface(solver=solver_session)
+surf_yz_plane_object.type = "plane-surface"
+surf_yz_plane_object.creation_method = "yz-plane"
+surf_yz_plane_object.x = -0.174628
+surface_display_window.add_graphics(surf_yz_plane_object, position=(0, 1))
 
 ###############################################################################
 # Create plane-surface ZX plane
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface ZX plane.
 
-surf_zx_plane = Surface(
+surf_zx_plane_object = Surface(
     solver=solver_session,
     type="plane-surface",
     creation_method="zx-plane",
     y=-0.0627297,
 )
-p2.add_graphics(surf_zx_plane, position=(0, 2))
-p2.show()
+surface_display_window.add_graphics(surf_zx_plane_object, position=(0, 2))
+surface_display_window.show()
 
 ###############################################################################
 # Create iso-surface on outlet plane
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an iso-surface on the outlet plane.
 
-surf_outlet_plane = Surface(
+iso_surface_object = Surface(
     solver=solver_session, type="iso-surface", field="y-coordinate", iso_value=-0.125017
 )
-p3 = GraphicsWindow(grid=(2, 1))
-p3.add_graphics(surf_outlet_plane, position=(0, 0))
+iso_surface_display_window = GraphicsWindow(grid=(2, 1))
+iso_surface_display_window.add_graphics(iso_surface_object, position=(0, 0))
 
 ###############################################################################
 # Create iso-surface on mid-plane
@@ -182,8 +181,8 @@ surf_mid_plane_x = Surface(solver=solver_session)
 surf_mid_plane_x.type = "iso-surface"
 surf_mid_plane_x.field = "x-coordinate"
 surf_mid_plane_x.iso_value = -0.174
-p3.add_graphics(surf_mid_plane_x, position=(1, 0))
-p3.show()
+iso_surface_display_window.add_graphics(surf_mid_plane_x, position=(1, 0))
+iso_surface_display_window.show()
 
 ###############################################################################
 # Create iso-surface using velocity magnitude
@@ -197,8 +196,8 @@ surf_vel_contour = Surface(
     iso_value=0.0,
     rendering="contour",
 )
-p4 = GraphicsWindow(grid=(2, 2))
-p4.add_graphics(surf_vel_contour, position=(0, 0))
+graphics_window = GraphicsWindow(grid=(2, 2))
+graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 
 ###############################################################################
 # Create temperature contour on mid-plane and outlet
@@ -207,8 +206,8 @@ p4.add_graphics(surf_vel_contour, position=(0, 0))
 
 temperature_contour = Contour(solver=solver_session)
 temperature_contour.field = "temperature"
-temperature_contour.surfaces = [surf_mid_plane_x.name, surf_outlet_plane.name]
-p4.add_graphics(temperature_contour, position=(0, 1))
+temperature_contour.surfaces = [surf_mid_plane_x.name, iso_surface_object.name]
+graphics_window.add_graphics(temperature_contour, position=(0, 1))
 
 ###############################################################################
 # Create contour plot of temperature on manifold
@@ -228,7 +227,7 @@ temperature_contour_manifold = Contour(
     field="temperature",
     surfaces=cont_surfaces_list,
 )
-p4.add_graphics(temperature_contour_manifold, position=(1, 0))
+graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
 ###############################################################################
 # Create vector
@@ -241,8 +240,8 @@ velocity_vector = Vector(
     surfaces=["solid_up:1:830"],
     scale=2,
 )
-p4.add_graphics(velocity_vector, position=(1, 1))
-p4.show()
+graphics_window.add_graphics(velocity_vector, position=(1, 1))
+graphics_window.show()
 
 ###############################################################################
 # Create Pathlines
@@ -253,27 +252,27 @@ pathlines = Pathline(solver=solver_session)
 pathlines.field = "velocity-magnitude"
 pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
 
-p5 = GraphicsWindow()
-p5.add_graphics(pathlines)
-p5.show()
+pathline_display_window = GraphicsWindow()
+pathline_display_window.add_graphics(pathlines)
+pathline_display_window.show()
 
-p6 = GraphicsWindow()
-p6.add_graphics(mesh2, opacity=0.05)
-p6.add_graphics(velocity_vector)
-p6.show()
+mesh_velocity_display_window = GraphicsWindow()
+mesh_velocity_display_window.add_graphics(mesh_object_2, opacity=0.05)
+mesh_velocity_display_window.add_graphics(velocity_vector)
+mesh_velocity_display_window.show()
 
 ###############################################################################
 # Create XY plot
 # ~~~~~~~~~~~~~~
 # Create the default XY plot.
 
-xy_plot = XYPlot(
+xy_plot_object = XYPlot(
     solver=solver_session,
     surfaces=["outlet"],
     y_axis_function="temperature",
 )
-p7 = GraphicsWindow(grid=(2, 2))
-p7.add_graphics(xy_plot, position=(0, 0))
+plot_window = GraphicsWindow(grid=(2, 2))
+plot_window.add_graphics(xy_plot_object, position=(0, 0))
 
 ###############################################################################
 # Create residual plot
@@ -282,7 +281,7 @@ p7.add_graphics(xy_plot, position=(0, 0))
 
 residual = Monitor(solver=solver_session)
 residual.monitor_set_name = "residual"
-p7.add_graphics(residual, position=(0, 1))
+plot_window.add_graphics(residual, position=(0, 1))
 
 ###############################################################################
 # Solve and plot solution monitors
@@ -294,11 +293,11 @@ solver_session.solution.run_calculation.iterate(iter_count=50)
 
 mass_bal_rplot = Monitor(solver=solver_session)
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-p7.add_graphics(mass_bal_rplot, position=(1, 0))
+plot_window.add_graphics(mass_bal_rplot, position=(1, 0))
 
 point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
-p7.add_graphics(point_vel_rplot, position=(1, 1))
-p7.show()
+plot_window.add_graphics(point_vel_rplot, position=(1, 1))
+plot_window.show()
 
 ###############################################################################
 # Close Fluent
