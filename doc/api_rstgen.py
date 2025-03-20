@@ -40,7 +40,7 @@ def _get_file_path(folder_name: str, file_name: str):
 
 
 hierarchy = {
-    "api": [
+    "visualization": [
         "Mesh",
         "Surface",
         "Contour",
@@ -49,7 +49,7 @@ hierarchy = {
         "XYPlot",
         "Monitor",
         "GraphicsWindow",
-    ],
+    ]
 }
 
 
@@ -64,50 +64,32 @@ def _write_common_rst_members(rst_file):
 
 def _generate_api_source_rst_files(folder: str, files: list):
     for file in files:
-        if file.endswith("_contents"):
-            pass
-        else:
-            if folder:
-                rst_file = _get_file_path(folder, file)
-            else:
-                rst_file = _get_file_path("", file)
+        if not file.endswith("_contents"):
+            rst_file = _get_file_path(folder, file)
             with open(rst_file, "w", encoding="utf8") as rst:
                 rst.write(f".. _ref_{file}:\n\n")
-                if folder:
-                    rst.write(f"{file}\n")
-                    rst.write(f'{"="*(len(f"{file}"))}\n\n')
-                    rst.write(
-                        f".. automodule:: ansys.fluent.visualization.{folder}.{file}\n"
-                    )
-                else:
-                    rst.write(f"{file}\n")
-                    rst.write(f'{"="*(len(f"{file}"))}\n\n')
-                    rst.write(f".. automodule:: ansys.fluent.visualization.{file}\n")
+                rst.write(f"{file}\n")
+                rst.write(f'{"="*(len(f"{file}"))}\n\n')
+                rst.write(f".. automodule:: ansys.fluent.visualization.{file}\n")
                 _write_common_rst_members(rst_file=rst)
-
 
 def _generate_api_index_rst_files():
     for folder, files in hierarchy.items():
-        if Path(_get_folder_path(folder)).is_dir():
-            shutil.rmtree(_get_folder_path(folder))
-        if folder == "other":
-            _generate_api_source_rst_files(None, files)
-        else:
-            Path(_get_folder_path(folder)).mkdir(parents=True, exist_ok=True)
-            folder_index = _get_file_path(folder, f"{folder}_contents")
-            with open(folder_index, "w", encoding="utf8") as index:
-                index.write(f".. _ref_{folder}:\n\n")
-                index.write(f"{folder}\n")
-                index.write(f'{"="*(len(f"{folder}"))}\n\n')
-                index.write(f".. automodule:: ansys.fluent.visualization.{folder}\n")
-                _write_common_rst_members(rst_file=index)
-                index.write(".. toctree::\n")
-                index.write("    :maxdepth: 2\n")
-                index.write("    :hidden:\n\n")
-                for file in files:
-                    index.write(f"    {file}\n")
-                index.write("\n")
-            _generate_api_source_rst_files(folder, files)
+        Path(_get_folder_path(folder)).mkdir(parents=True, exist_ok=True)
+        _generate_api_source_rst_files(folder, files)
+        folder_index = _get_file_path(folder, f"{folder}_contents")
+        with open(folder_index, "w", encoding="utf8") as index:
+            index.write(f".. _ref_{folder}:\n\n")
+            index.write(f"{folder}\n")
+            index.write(f'{"=" * (len(f"{folder}"))}\n\n')
+            index.write(f".. automodule:: ansys.fluent.{folder}\n")
+            _write_common_rst_members(rst_file=index)
+            index.write(".. toctree::\n")
+            index.write("    :maxdepth: 2\n")
+            index.write("    :hidden:\n\n")
+            for file in files:
+                index.write(f"    {file}\n")
+            index.write("\n")
 
 
 if __name__ == "__main__":

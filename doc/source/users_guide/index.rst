@@ -69,10 +69,9 @@ Display plane-surface
     from ansys.fluent.visualization import Surface
 
     surf_xy_plane = Surface(solver=solver_session)
-    surf_xy_plane.definition.type = "plane-surface"
-    surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
-    plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
-    plane_surface_xy.z = -0.0441921
+    surf_xy_plane.type = "plane-surface"
+    surf_xy_plane.creation_method = "xy-plane"
+    surf_xy_plane.z = -0.0441921
     surface_window = GraphicsWindow()
     surface_window.add_graphics(surf_xy_plane)
     surface_window.show()
@@ -82,11 +81,7 @@ Display iso-surface
 
 .. code-block:: python
 
-    surf_outlet_plane = Surface(solver=solver_session)
-    surf_outlet_plane.definition.type = "iso-surface"
-    iso_surf1 = surf_outlet_plane.definition.iso_surface
-    iso_surf1.field = "y-coordinate"
-    iso_surf1.iso_value = -0.125017
+    surf_outlet_plane = Surface(solver=solver_session, type="iso-surface", field="y-coordinate", iso_value=-0.125017)
     surface_window = GraphicsWindow()
     surface_window.add_graphics(surf_outlet_plane)
     surface_window.show()
