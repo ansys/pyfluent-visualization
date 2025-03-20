@@ -60,22 +60,56 @@ class Surface(_GraphicsContainer):
     >>> from ansys.fluent.visualization import Surface
 
     >>> # For plane-surface
-    >>> surf_xy_plane = Surface(solver=solver_session)
-    >>> surf_xy_plane.definition.type = "plane-surface"
-    >>> surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
-    >>> plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
-    >>> plane_surface_xy.z = -0.0441921
+    >>> surf_xy_plane = Surface(solver=solver_session, type="plane-surface", creation_method="xy-plane", z=-0.0441921)
 
     >>> # For iso-surface
     >>> surf_outlet_plane = Surface(solver=solver_session)
-    >>> surf_outlet_plane.definition.type = "iso-surface"
-    >>> iso_surf = surf_outlet_plane.definition.iso_surface
-    >>> iso_surf.field = "y-coordinate"
-    >>> iso_surf.iso_value = -0.125017
+    >>> surf_outlet_plane.type = "iso-surface"
+    >>> surf_outlet_plane.field = "y-coordinate"
+    >>> surf_outlet_plane.iso_value = -0.125017
     """
 
     def __init__(self, solver, **kwargs):
-        self.__dict__["obj"] = Graphics(session=solver).Surfaces.create(**kwargs)
+        self.__dict__.update(
+            dict(
+                type=kwargs.pop("type", None),
+                creation_method=kwargs.pop("creation_method", None),
+                x=kwargs.pop("x", None),
+                y=kwargs.pop("y", None),
+                z=kwargs.pop("z", None),
+                field=kwargs.pop("field", None),
+                iso_value=kwargs.pop("iso_value", None),
+                rendering=kwargs.pop("rendering", None),
+                obj=Graphics(session=solver).Surfaces.create(**kwargs)
+            )
+        )
+        for attr in ["type", "creation_method", "x", "y", "z", "field", "iso_value", "rendering"]:
+            val = getattr(self, attr)
+            if val is not None:
+                setattr(self, attr, val)
+
+    def __setattr__(self, attr, value):
+        if attr == "type":
+            self.obj.definition.type = value
+        elif attr == "creation_method":
+            self.obj.definition.plane_surface.creation_method = value
+        elif attr == "z":
+            assert self.obj.definition.plane_surface.creation_method() == "xy-plane"
+            self.obj.definition.plane_surface.xy_plane.z = value
+        elif attr == "y":
+            assert self.obj.definition.plane_surface.creation_method() == "zx-plane"
+            self.obj.definition.plane_surface.zx_plane.y = value
+        elif attr == "x":
+            assert self.obj.definition.plane_surface.creation_method() == "yz-plane"
+            self.obj.definition.plane_surface.yz_plane.x = value
+        elif attr == "field":
+            self.obj.definition.iso_surface.field = value
+        elif attr == "iso_value":
+            self.obj.definition.iso_surface.iso_value = value
+        elif attr == "rendering":
+            self.obj.definition.iso_surface.rendering = value
+        else:
+            setattr(self.obj, attr, value)
 
 
 class Contour(_GraphicsContainer):
