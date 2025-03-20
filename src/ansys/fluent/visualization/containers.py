@@ -61,7 +61,12 @@ class Surface(_GraphicsContainer):
     >>> from ansys.fluent.visualization import Surface
 
     >>> # For plane-surface
-    >>> surf_xy_plane = Surface(solver=solver_session, type="plane-surface", creation_method="xy-plane", z=-0.0441921)
+    >>> surf_xy_plane = Surface(
+    >>>     solver=solver_session,
+    >>>     type="plane-surface",
+    >>>     creation_method="xy-plane",
+    >>>     z=-0.0441921
+    >>>     )
 
     >>> # For iso-surface
     >>> surf_outlet_plane = Surface(solver=solver_session)

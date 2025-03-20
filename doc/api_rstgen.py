@@ -1,7 +1,6 @@
 """Provides a module for generating PyFluent API RST files."""
 
 from pathlib import Path
-import shutil
 
 
 def _get_folder_path(folder_name: str):
