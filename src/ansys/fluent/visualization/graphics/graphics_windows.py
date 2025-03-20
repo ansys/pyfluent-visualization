@@ -60,6 +60,7 @@ class GraphicsWindow:
     >>> graphics_window.add_graphics(xy_plot, position=(1, 1))
     >>> graphics_window.show()
     """
+
     def __init__(self, grid: tuple = (1, 1)):
         self._grid = grid
         self._graphics_objs = []

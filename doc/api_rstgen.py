@@ -40,8 +40,18 @@ def _get_file_path(folder_name: str, file_name: str):
 
 
 hierarchy = {
-    "visualization": ["mesh", "surface", "contour", "vector", "pathline", "xyplot", "monitorplot", "graphics_window"],
+    "visualization": [
+        "mesh",
+        "surface",
+        "contour",
+        "vector",
+        "pathline",
+        "xyplot",
+        "monitorplot",
+        "graphics_window",
+    ],
 }
+
 
 def _write_common_rst_members(rst_file):
     rst_file.write("    :members:\n")
@@ -66,9 +76,7 @@ def _generate_api_source_rst_files(folder: str, files: list):
                 if folder:
                     rst.write(f"{file}\n")
                     rst.write(f'{"="*(len(f"{file}"))}\n\n')
-                    rst.write(
-                        f".. automodule:: ansys.fluent.core.{folder}.{file}\n"
-                    )
+                    rst.write(f".. automodule:: ansys.fluent.core.{folder}.{file}\n")
                 else:
                     rst.write(f"{file}\n")
                     rst.write(f'{"="*(len(f"{file}"))}\n\n')
