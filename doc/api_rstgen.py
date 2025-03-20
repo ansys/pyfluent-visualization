@@ -70,9 +70,7 @@ def _generate_api_source_rst_files(folder: str, files: list):
                 rst.write(f".. _ref_{file}:\n\n")
                 rst.write(f"{file}\n")
                 rst.write(f'{"="*(len(f"{file}"))}\n\n')
-                rst.write(
-                    f".. autoclass:: ansys.fluent.visualization.{file}\n"
-                )
+                rst.write(f".. autoclass:: ansys.fluent.visualization.{file}\n")
                 _write_common_rst_members(rst_file=rst)
 
 
