@@ -39,8 +39,8 @@ class _GraphicsContainer:
 class Mesh(_GraphicsContainer):
     """Mesh.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from ansys.fluent.visualization import Mesh
 
     >>> mesh_object = Mesh(
@@ -49,14 +49,15 @@ class Mesh(_GraphicsContainer):
     """
 
     def __init__(self, solver, **kwargs):
+        """__init__ method of Mesh class."""
         self.__dict__["obj"] = Graphics(session=solver).Meshes.create(**kwargs)
 
 
 class Surface(_GraphicsContainer):
     """Surface.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from ansys.fluent.visualization import Surface
 
     >>> # For plane-surface
@@ -70,6 +71,7 @@ class Surface(_GraphicsContainer):
     """
 
     def __init__(self, solver, **kwargs):
+        """__init__ method of Surface class."""
         self.__dict__.update(
             dict(
                 type=kwargs.pop("type", None),
@@ -124,8 +126,8 @@ class Surface(_GraphicsContainer):
 class Contour(_GraphicsContainer):
     """Contour.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from ansys.fluent.visualization import Contour
 
     >>> temperature_contour_object = Contour(
@@ -134,14 +136,15 @@ class Contour(_GraphicsContainer):
     """
 
     def __init__(self, solver, **kwargs):
+        """__init__ method of Contour class."""
         self.__dict__["obj"] = Graphics(session=solver).Contours.create(**kwargs)
 
 
 class Vector(_GraphicsContainer):
     """Vector.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from ansys.fluent.visualization import Vector
 
     >>> velocity_vector_object = Vector(
@@ -153,14 +156,15 @@ class Vector(_GraphicsContainer):
     """
 
     def __init__(self, solver, **kwargs):
+        """__init__ method of Vector class."""
         self.__dict__["obj"] = Graphics(session=solver).Vectors.create(**kwargs)
 
 
 class Pathline(_GraphicsContainer):
     """Pathline.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from ansys.fluent.visualization import Pathline
 
     >>> pathlines = Pathline(solver=solver_session)
@@ -169,14 +173,15 @@ class Pathline(_GraphicsContainer):
     """
 
     def __init__(self, solver, **kwargs):
+        """__init__ method of Pathline class."""
         self.__dict__["obj"] = Graphics(session=solver).Pathlines.create(**kwargs)
 
 
 class XYPlot(_GraphicsContainer):
     """XYPlot.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from ansys.fluent.visualization import XYPlot
 
     >>> xy_plot = XYPlot(
@@ -187,6 +192,7 @@ class XYPlot(_GraphicsContainer):
     """
 
     def __init__(self, solver, local_surfaces_provider=None, **kwargs):
+        """__init__ method of XYPlot class."""
         self.__dict__["obj"] = Plots(
             session=solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).XYPlots.create(**kwargs)
@@ -195,8 +201,8 @@ class XYPlot(_GraphicsContainer):
 class Monitor(_GraphicsContainer):
     """Monitor.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from ansys.fluent.visualization import Monitor
 
     >>> residual = Monitor(solver=solver_session)
@@ -204,6 +210,7 @@ class Monitor(_GraphicsContainer):
     """
 
     def __init__(self, solver, local_surfaces_provider=None, **kwargs):
+        """__init__ method of Monitor class."""
         self.__dict__["obj"] = Plots(
             session=solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).Monitors.create(**kwargs)

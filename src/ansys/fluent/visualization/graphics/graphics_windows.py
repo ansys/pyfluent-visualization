@@ -41,8 +41,8 @@ class GraphicsWindow:
     """Create a graphics window to perform operations like display,
     save, animate, etc. on graphics objects.
 
-    Example
-    -------
+    Examples
+    --------
     You can add graphics objects like mesh, surface or plots and then display it.
 
     >>> from ansys.fluent.visualization import GraphicsWindow
@@ -62,6 +62,7 @@ class GraphicsWindow:
     """
 
     def __init__(self, grid: tuple = (1, 1)):
+        """__init__ method of GraphicsWindow class."""
         self._grid = grid
         self._graphics_objs = []
         self.window_id = None
