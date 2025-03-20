@@ -59,7 +59,7 @@ def _write_common_rst_members(rst_file):
     rst_file.write("    :undoc-members:\n")
     rst_file.write("    :exclude-members: __weakref__, __dict__\n")
     rst_file.write("    :special-members: __init__\n")
-    rst_file.write("    :autosummary:\n")
+    # rst_file.write("    :autosummary:\n")
 
 
 def _generate_api_source_rst_files(folder: str, files: list):
@@ -70,7 +70,7 @@ def _generate_api_source_rst_files(folder: str, files: list):
                 rst.write(f".. _ref_{file}:\n\n")
                 rst.write(f"{file}\n")
                 rst.write(f'{"="*(len(f"{file}"))}\n\n')
-                rst.write(f".. automodule:: ansys.fluent.visualization.{file}\n")
+                rst.write(f".. autoclass:: ansys.fluent.visualization.containers.{file}\n")
                 _write_common_rst_members(rst_file=rst)
 
 
