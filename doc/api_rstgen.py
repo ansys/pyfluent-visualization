@@ -76,11 +76,11 @@ def _generate_api_source_rst_files(folder: str, files: list):
                 if folder:
                     rst.write(f"{file}\n")
                     rst.write(f'{"="*(len(f"{file}"))}\n\n')
-                    rst.write(f".. automodule:: ansys.fluent.core.{folder}.{file}\n")
+                    rst.write(f".. automodule:: ansys.fluent.visualization.{folder}.{file}\n")
                 else:
                     rst.write(f"{file}\n")
                     rst.write(f'{"="*(len(f"{file}"))}\n\n')
-                    rst.write(f".. automodule:: ansys.fluent.core.{file}\n")
+                    rst.write(f".. automodule:: ansys.fluent.visualization.{file}\n")
                 _write_common_rst_members(rst_file=rst)
 
 
