@@ -42,10 +42,10 @@ def _get_file_path(folder_name: str, file_name: str):
 hierarchy = {
     "visualization": [
         "Mesh",
-        "Murface",
-        "Montour",
-        "Mector",
-        "Mathline",
+        "Surface",
+        "Contour",
+        "Vector",
+        "Pathline",
         "XYPlot",
         "Monitor",
         "GraphicsWindow",
