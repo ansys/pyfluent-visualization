@@ -73,6 +73,7 @@ def _generate_api_source_rst_files(folder: str, files: list):
                 rst.write(f".. automodule:: ansys.fluent.visualization.{file}\n")
                 _write_common_rst_members(rst_file=rst)
 
+
 def _generate_api_index_rst_files():
     for folder, files in hierarchy.items():
         Path(_get_folder_path(folder)).mkdir(parents=True, exist_ok=True)
