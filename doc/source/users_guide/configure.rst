@@ -4,7 +4,7 @@
 Configure
 =========
 PyFluent-Visualization uses PyVista as the default graphics rendering tool
-and Matplotlib for plotting 2D data. However, it also allows users to configure
+and Matplotlib for plotting 2D data. It also allows users to configure
 other Python-supported tools for rendering data.
 
 Configuration Steps
