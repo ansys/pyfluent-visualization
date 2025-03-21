@@ -56,16 +56,10 @@ You can launch Fluent from PyFluent using the ``launch_fluent`` function:
   session.check_health()
   session.start_transcript() # Streaming the transcript locally
 
-PyFluent-Visualization provides integrations with both
+PyFluent-Visualization seamlessly integrates with both
 `PyVista <https://www.pyvista.org/>`_ and `Matplotlib <https://matplotlib.org/>`_.
-
-If you want to interact with the Fluent graphical user interface, set the
-following environment variable:
-
-.. code::
-
-  set PYFLUENT_SHOW_SERVER_GUI=1    # Windows
-  export PYFLUENT_SHOW_SERVER_GUI=1 # Linux (bash)
+Additionally, it offers flexibility to incorporate other open-source data visualization tools,
+such as `Plotly <https://plotly.com/python/>`_, see :ref:`ref_configure`
 
 If you want to print the debug information for development, set the following
 environment variable:
