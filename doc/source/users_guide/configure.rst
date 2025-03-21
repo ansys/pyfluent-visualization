@@ -9,7 +9,7 @@ other Python-supported tools for rendering data.
 
 Configuration Steps
 ~~~~~~~~~~~~~~~~~~~
-Follow these steps to integrate additional Python libraries into PyFluent-Visualization:
+Follow the steps below to integrate additional Python libraries with PyFluent-Visualization.
 
 Navigate to either:
 
