@@ -3,26 +3,18 @@
 ==========
 User guide
 ==========
-You can use PyFluent-Visualization for postprocessing of Fluent results
-to display graphics objects and plot data.
+PyFluent-Visualization enables post-processing of Fluent results,
+allowing you to display graphical objects and plot data efficiently.
 
-Graphics operations
--------------------
-Examples follow for graphics operations that PyFluent-Visualization
-supports.
+Launch Fluent and read data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Use the following script to launch Fluent and load your case and data files:
 
-Display mesh
-~~~~~~~~~~~~
-This example shows how you can display a mesh:
-
-.. code:: python
+.. code-block:: python
 
     import ansys.fluent.core as pyfluent
     from ansys.fluent.core import examples
     from ansys.fluent.visualization import set_config
-    from ansys.fluent.visualization import Plots
-    from ansys.fluent.visualization import Graphics
-    from ansys.fluent.visualization.contour import Contour
 
     set_config(blocking=True, set_view_on_display="isometric")
 
@@ -39,10 +31,19 @@ This example shows how you can display a mesh:
     solver_session.tui.file.read_case(import_case)
     solver_session.tui.file.read_data(import_data)
 
-    graphics = Graphics(session=solver_session)
-    mesh1 = graphics.Meshes["mesh-1"]
-    mesh1.show_edges = True
-    mesh1.surfaces = [
+Graphics operations
+-------------------
+PyFluent-Visualization supports various graphical operations.
+
+Display mesh
+~~~~~~~~~~~~
+The following example demonstrates how to display a mesh with and without edges:
+
+.. code-block:: python
+
+    from ansys.fluent.visualization import GraphicsWindow, Mesh
+
+    mesh_surfaces_list = [
         "in1",
         "in2",
         "in3",
@@ -51,30 +52,53 @@ This example shows how you can display a mesh:
         "solid_up:1:830",
         "solid_up:1:830-shadow",
     ]
-    mesh1.display("window-1")
+
+    mesh_object_1 = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
+    mesh_window = GraphicsWindow(grid=(1, 2))
+    mesh_window.add_graphics(mesh1, position=(0, 0))
+
+    mesh_object_2 = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
+    mesh_object_2.show_edges = False
+
+    mesh_window.add_graphics(mesh2, position=(0, 1))
+    mesh_window.show()
+
+Display plane-surface
+~~~~~~~~~~~~~~~~~~~~~
+Create and visualize a plane surface at a specified z-coordinate:
+
+.. code-block:: python
+
+    from ansys.fluent.visualization import Surface
+
+    surf_xy_plane = Surface(solver=solver_session)
+    surf_xy_plane.type = "plane-surface"
+    surf_xy_plane.creation_method = "xy-plane"
+    surf_xy_plane.z = -0.0441921
+    surface_window = GraphicsWindow()
+    surface_window.add_graphics(surf_xy_plane)
+    surface_window.show()
 
 Display iso-surface
 ~~~~~~~~~~~~~~~~~~~
-This example shows how you can display an iso-surface:
+Generate an iso-surface based on the y-coordinate:
 
-.. code:: python
+.. code-block:: python
 
-    surf_outlet_plane = graphics.Surfaces["outlet-plane"]
-    surf_outlet_plane.surface.type = "iso-surface"
-    iso_surf1 = surf_outlet_plane.surface.iso_surface
-    iso_surf1.field = "y-coordinate"
-    iso_surf1.iso_value = -0.125017
-    surf_outlet_plane.display("window-2")
+    surf_outlet_plane = Surface(solver=solver_session, type="iso-surface", field="y-coordinate", iso_value=-0.125017)
+    surface_window = GraphicsWindow()
+    surface_window.add_graphics(surf_outlet_plane)
+    surface_window.show()
 
 Display contour
 ~~~~~~~~~~~~~~~
-This example shows how you can display a contour:
+Plot a temperature contour over selected surfaces:
 
-.. code:: python
+.. code-block:: python
 
-    temperature_contour_manifold = graphics.Contours["contour-temperature-manifold"]
-    temperature_contour_manifold.field = "temperature"
-    temperature_contour_manifold.surfaces = [
+    from ansys.fluent.visualization import Contour
+
+    cont_surfaces_list = [
         "in1",
         "in2",
         "in3",
@@ -82,79 +106,164 @@ This example shows how you can display a contour:
         "solid_up:1",
         "solid_up:1:830",
     ]
-    temperature_contour_manifold.display("window-3")
-
-Instantiate a contour object with or without a solver session, using a field name and a list of surfaces, as follows.
-Target is either a Graphics object or a solver session.
-
-.. code:: python
-
-    temperature_contour_manifold = Contour(field="temperature",
-                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",])
-
-    temperature_contour_manifold = Contour(field="temperature",
-                                           surfaces=["in1", "in2", "in3", "out1", "solid_up:1", "solid_up:1:830",],
-                                           solver=solver_session)
-
-.. code:: python
-
-    # Create and render contour object on client side.
-    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=Graphics(solver_session))
-
-    # Create and render contour object on server side.
-    temperature_contour = temperature_contour_manifold.draw(solver=solver_session, target=solver_session)
+    temperature_contour_manifold = Contour(
+        solver=solver_session,
+        field="temperature",
+        surfaces=cont_surfaces_list,
+    )
+    contour_window = GraphicsWindow()
+    contour_window.add_graphics(temperature_contour_manifold)
+    contour_window.show()
 
 Display vector
 ~~~~~~~~~~~~~~
-This example shows how you can display a vector:
+Visualize velocity vectors over a selected surface:
 
-.. code:: python
+.. code-block:: python
 
-    velocity_vector = graphics.Vectors["velocity-vector"]
-    velocity_vector.surfaces = ["outlet-plane"]
-    velocity_vector.scale = 1
-    velocity_vector.display("window-4")
+    from ansys.fluent.visualization import Vector
+
+    velocity_vector = Vector(
+        solver=solver_session,
+        field="pressure",
+        surfaces=["solid_up:1:830"],
+        scale=2,
+    )
+    vector_window = GraphicsWindow()
+    vector_window.add_graphics(velocity_vector)
+    vector_window.show()
+
+Display pathlines
+~~~~~~~~~~~~~~~~~
+Visualize pathlines to analyze flow patterns:
+
+.. code-block:: python
+
+    from ansys.fluent.visualization import Pathline
+
+    pathlines = Pathline(solver=solver_session)
+    pathlines.field = "velocity-magnitude"
+    pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+
+    pathlines_window = GraphicsWindow()
+    pathlines_window.add_graphics(pathlines)
+    pathlines_window.show()
 
 Plot operations
 ---------------
-Examples follow for plot operations that PyFluent-Visualization
-supports.
+PyFluent-Visualization supports various plot operations.
 
 Display plot
 ~~~~~~~~~~~~
-This example shows how you can display the XY plot:
+Generate an XY plot of temperature variations at an outlet:
 
-.. code:: python
+.. code-block:: python
 
-    plots_session_1 = Plots(solver_session)
-    xy_plot = plots_session_1.XYPlots["xy-plot"]
-    xy_plot.surfaces = ["outlet"]
-    xy_plot.y_axis_function = "temperature"
-    xy_plot.plot("window-5")
+    from ansys.fluent.visualization import XYPlot
+
+    xy_plot = XYPlot(
+        solver=solver_session,
+        surfaces=["outlet"],
+        y_axis_function="temperature",
+    )
+    xy_plot_window = GraphicsWindow()
+    xy_plot_window.add_graphics(xy_plot)
+    xy_plot_window.show()
 
 Display solution residual plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This example shows how you can display the solution residual plot:
+Plot solution residuals:
 
-.. code:: python
+.. code-block:: python
 
+    from ansys.fluent.visualization import Monitor
 
-    matplotlib_plots1 = Plots(solver_session)
-    residual = matplotlib_plots1.Monitors["residual"]
+    residual = Monitor(solver=solver_session)
     residual.monitor_set_name = "residual"
-    residual.plot("window-6")
+    monitor_window = GraphicsWindow()
+    monitor_window.add_graphics(residual)
+    monitor_window.show()
 
 Display solution monitors plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This example shows how you can display the solution monitors plot:
+Monitor solution convergence using mass balance and velocity plots:
 
-.. code:: python
+.. code-block:: python
 
-    solver_session.tui.solve.initialize.hyb_initialization()
-    solver_session.tui.solve.set.number_of_iterations(50)
-    solver_session.tui.solve.iterate()
-    solver_session.monitors_manager.get_monitor_set_names()
-    matplotlib_plots1 = Plots(solver_session)
-    mass_bal_rplot = matplotlib_plots1.Monitors["mass-bal-rplot"]
+    solver_session.settings.solution.initialization.hybrid_initialize()
+    solver_session.settings.solution.run_calculation.iterate(iter_count=50)
+
+    mass_bal_rplot = Monitor(solver=solver_session)
     mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-    mass_bal_rplot.plot("window-7")
+    monitor_window = GraphicsWindow(grid=(1, 2))
+    monitor_window.add_graphics(mass_bal_rplot, position=(0, 0))
+
+    point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
+    monitor_window.add_graphics(point_vel_rplot, position=(0, 1))
+    monitor_window.show()
+
+Interactive Graphics
+--------------------
+The ``GraphicsWindow`` class provides functionality for managing and directly
+interacting with the graphics window. By registering the window with ``EventsManager``,
+you can dynamically update graphics during runtime and create animations.
+
+The following example demonstrates how to update multiple graphics windows
+(contour_window, xy_plot_window, and monitor_window) during different solution
+stages. Graphics updates occur:
+
+- During solution initialization
+
+- Whenever data is read
+
+- At the end of every time step during the calculation
+
+.. code-block:: python
+
+    from ansys.fluent.visualization import Contour, XYPlot, Monitor, GraphicsWindow
+
+    contour_object = Contour(
+        solver=solver_session, field="velocity-magnitude", surfaces=["symmetry"]
+    )
+
+    xy_plot_object = XYPlot(solver=solver_session)
+    xy_plot_object.surfaces = ['symmetry']
+    xy_plot_object.y_axis_function = "temperature"
+
+    monitor_object = Monitor(solver=solver_session)
+    monitor_object.monitor_set_name = "residual"
+
+    contour_window = GraphicsWindow()
+    contour_window.add_graphics(contour_object)
+    contour_window.show()
+
+    xy_plot_window = GraphicsWindow()
+    xy_plot_window.add_graphics(xy_plot_object)
+    xy_plot_window.show()
+
+    monitor_window = GraphicsWindow()
+    monitor_window.add_graphics(monitor1)
+    monitor_window.show()
+
+    def auto_refresh_graphics(session, event_info):
+        contour_window.refresh(session.id)
+        xy_plot_window.refresh(session.id)
+        monitor_window.refresh(session.id)
+
+    #Register this callback with server events.
+    solver_session.events.register_callback('InitializedEvent', auto_refresh_graphics)
+    solver_session.events.register_callback('DataReadEvent', auto_refresh_graphics)
+    solver_session.events.register_callback('TimestepEndedEvent', auto_refresh_graphics)
+
+    #Create animation for contour.
+    contour_window.animate(solver_session.id)
+
+    solver_session.settings.solution.initialization.hybrid_initialize()
+    solver_session.settings.solution.run_calculation.iterate(iter_count=50)
+
+These updates are implemented using explicit callback registrations.
+Additionally, animations can be created from a graphics window.
+
+This guide provides a structured approach to using PyFluent-Visualization.
+For detailed usage of individual modules,
+refer to the respective module documentation, see :ref:`ref_visualization`.
