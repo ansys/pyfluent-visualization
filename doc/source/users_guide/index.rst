@@ -3,7 +3,7 @@
 ==========
 User guide
 ==========
-PyFluent-Visualization enables postprocessing of Fluent results,
+PyFluent-Visualization enables post-processing of Fluent results,
 allowing you to display graphical objects and plot data efficiently.
 
 Launch Fluent and read data
