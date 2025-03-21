@@ -11,9 +11,11 @@ Configuration Steps
 ~~~~~~~~~~~~~~~~~~~
 Follow these steps to integrate additional Python libraries into PyFluent-Visualization:
 
-1. Navigate to either:
-   - `src/ansys/fluent/visualization/graphics` or
-   - `src/ansys/fluent/visualization/plotter`
+Navigate to either:
+
+- ``src/ansys/fluent/visualization/graphics`` or
+
+- ``src/ansys/fluent/visualization/plotter``
 
 2. Locate the files:
    - `abstract_graphics_defns.py` (for graphics rendering)
