@@ -34,9 +34,7 @@ from ansys.fluent.interface.post_object_definitions import (
     SurfaceDefn,
     VectorDefn,
 )
-from ansys.fluent.interface.post_objects_container import (
-    Graphics as GraphicsContainer,
-)
+from ansys.fluent.interface.post_objects_container import Graphics as GraphicsContainer
 
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     graphics_windows_manager,
