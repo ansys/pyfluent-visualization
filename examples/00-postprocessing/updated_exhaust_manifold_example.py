@@ -111,18 +111,15 @@ mesh_surfaces_list = [
     "solid_up:1:830",
     "solid_up:1:830-shadow",
 ]
-mesh_object_1 = Mesh(
+mesh = Mesh(
     solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list
 )
+graphics_window = GraphicsWindow(grid=(1, 2))
+graphics_window.add_graphics(mesh, position=(0, 0))
 
-mesh_display_window = GraphicsWindow(grid=(1, 2))
-mesh_display_window.add_graphics(mesh_object_1, position=(0, 0))
-
-mesh_object_2 = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
-mesh_object_2.show_edges = False
-
-mesh_display_window.add_graphics(mesh_object_2, position=(0, 1))
-mesh_display_window.show()
+mesh = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
+graphics_window.add_graphics(mesh, position=(0, 1))
+graphics_window.show()
 
 ###############################################################################
 # Create plane-surface XY plane
@@ -134,8 +131,8 @@ surf_xy_plane.definition.type = "plane-surface"
 surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
 plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
 plane_surface_xy.z = -0.0441921
-surface_display_window = GraphicsWindow(grid=(1, 3))
-surface_display_window.add_graphics(surf_xy_plane, position=(0, 0))
+graphics_window = GraphicsWindow(grid=(1, 3))
+graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 
 ###############################################################################
 # Create plane-surface YZ plane
@@ -147,7 +144,7 @@ surf_yz_plane.definition.type = "plane-surface"
 surf_yz_plane.definition.plane_surface.creation_method = "yz-plane"
 plane_surface_yz = surf_yz_plane.definition.plane_surface.yz_plane
 plane_surface_yz.x = -0.174628
-surface_display_window.add_graphics(surf_yz_plane, position=(0, 1))
+graphics_window.add_graphics(surf_yz_plane, position=(0, 1))
 
 ###############################################################################
 # Create plane-surface ZX plane
@@ -159,8 +156,8 @@ surf_zx_plane.definition.type = "plane-surface"
 surf_zx_plane.definition.plane_surface.creation_method = "zx-plane"
 plane_surface_zx = surf_zx_plane.definition.plane_surface.zx_plane
 plane_surface_zx.y = -0.0627297
-surface_display_window.add_graphics(surf_zx_plane, position=(0, 2))
-surface_display_window.show()
+graphics_window.add_graphics(surf_zx_plane, position=(0, 2))
+graphics_window.show()
 
 ###############################################################################
 # Create iso-surface on outlet plane
@@ -172,8 +169,8 @@ surf_outlet_plane.definition.type = "iso-surface"
 iso_surf1 = surf_outlet_plane.definition.iso_surface
 iso_surf1.field = "y-coordinate"
 iso_surf1.iso_value = -0.125017
-iso_surface_display_window = GraphicsWindow(grid=(2, 1))
-iso_surface_display_window.add_graphics(surf_outlet_plane, position=(0, 0))
+graphics_window = GraphicsWindow(grid=(2, 1))
+graphics_window.add_graphics(surf_outlet_plane, position=(0, 0))
 
 ###############################################################################
 # Create iso-surface on mid-plane
@@ -185,8 +182,8 @@ surf_mid_plane_x.definition.type = "iso-surface"
 iso_surf2 = surf_mid_plane_x.definition.iso_surface
 iso_surf2.field = "x-coordinate"
 iso_surf2.iso_value = -0.174
-iso_surface_display_window.add_graphics(surf_mid_plane_x, position=(1, 0))
-iso_surface_display_window.show()
+graphics_window.add_graphics(surf_mid_plane_x, position=(1, 0))
+graphics_window.show()
 
 ###############################################################################
 # Create iso-surface using velocity magnitude
@@ -239,7 +236,7 @@ graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
 velocity_vector = Vector(
     solver=solver_session,
-    field="pressure",
+    field="x-velocity",
     surfaces=["solid_up:1:830"],
     scale=2,
 )
@@ -255,14 +252,14 @@ pathlines = Pathline(solver=solver_session)
 pathlines.field = "velocity-magnitude"
 pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
 
-pathline_display_window = GraphicsWindow()
-pathline_display_window.add_graphics(pathlines)
-pathline_display_window.show()
+graphics_window = GraphicsWindow()
+graphics_window.add_graphics(pathlines)
+graphics_window.show()
 
-mesh_velocity_display_window = GraphicsWindow()
-mesh_velocity_display_window.add_graphics(mesh_object_2, opacity=0.05)
-mesh_velocity_display_window.add_graphics(velocity_vector)
-mesh_velocity_display_window.show()
+graphics_window = GraphicsWindow()
+graphics_window.add_graphics(mesh, opacity=0.05)
+graphics_window.add_graphics(velocity_vector)
+graphics_window.show()
 
 ###############################################################################
 # Create XY plot
