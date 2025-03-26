@@ -129,38 +129,37 @@ mesh_display_window.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface XY plane.
 
-surf_xy_plane_object = Surface(
-    solver=solver_session,
-    type="plane-surface",
-    creation_method="xy-plane",
-    z=-0.0441921,
-)
+surf_xy_plane = Surface(solver=solver_session)
+surf_xy_plane.definition.type = "plane-surface"
+surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
+plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
+plane_surface_xy.z = -0.0441921
 surface_display_window = GraphicsWindow(grid=(1, 3))
-surface_display_window.add_graphics(surf_xy_plane_object, position=(0, 0))
+surface_display_window.add_graphics(surf_xy_plane, position=(0, 0))
 
 ###############################################################################
 # Create plane-surface YZ plane
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface YZ plane.
 
-surf_yz_plane_object = Surface(solver=solver_session)
-surf_yz_plane_object.type = "plane-surface"
-surf_yz_plane_object.creation_method = "yz-plane"
-surf_yz_plane_object.x = -0.174628
-surface_display_window.add_graphics(surf_yz_plane_object, position=(0, 1))
+surf_yz_plane = Surface(solver=solver_session)
+surf_yz_plane.definition.type = "plane-surface"
+surf_yz_plane.definition.plane_surface.creation_method = "yz-plane"
+plane_surface_yz = surf_yz_plane.definition.plane_surface.yz_plane
+plane_surface_yz.x = -0.174628
+surface_display_window.add_graphics(surf_yz_plane, position=(0, 1))
 
 ###############################################################################
 # Create plane-surface ZX plane
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface ZX plane.
 
-surf_zx_plane_object = Surface(
-    solver=solver_session,
-    type="plane-surface",
-    creation_method="zx-plane",
-    y=-0.0627297,
-)
-surface_display_window.add_graphics(surf_zx_plane_object, position=(0, 2))
+surf_zx_plane = Surface(solver=solver_session)
+surf_zx_plane.definition.type = "plane-surface"
+surf_zx_plane.definition.plane_surface.creation_method = "zx-plane"
+plane_surface_zx = surf_zx_plane.definition.plane_surface.zx_plane
+plane_surface_zx.y = -0.0627297
+surface_display_window.add_graphics(surf_zx_plane, position=(0, 2))
 surface_display_window.show()
 
 ###############################################################################
@@ -168,11 +167,13 @@ surface_display_window.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an iso-surface on the outlet plane.
 
-iso_surface_object = Surface(
-    solver=solver_session, type="iso-surface", field="y-coordinate", iso_value=-0.125017
-)
+surf_outlet_plane = Surface(solver=solver_session)
+surf_outlet_plane.definition.type = "iso-surface"
+iso_surf1 = surf_outlet_plane.definition.iso_surface
+iso_surf1.field = "y-coordinate"
+iso_surf1.iso_value = -0.125017
 iso_surface_display_window = GraphicsWindow(grid=(2, 1))
-iso_surface_display_window.add_graphics(iso_surface_object, position=(0, 0))
+iso_surface_display_window.add_graphics(surf_outlet_plane, position=(0, 0))
 
 ###############################################################################
 # Create iso-surface on mid-plane
@@ -180,9 +181,10 @@ iso_surface_display_window.add_graphics(iso_surface_object, position=(0, 0))
 # Create an iso-surface on the mid-plane.
 
 surf_mid_plane_x = Surface(solver=solver_session)
-surf_mid_plane_x.type = "iso-surface"
-surf_mid_plane_x.field = "x-coordinate"
-surf_mid_plane_x.iso_value = -0.174
+surf_mid_plane_x.definition.type = "iso-surface"
+iso_surf2 = surf_mid_plane_x.definition.iso_surface
+iso_surf2.field = "x-coordinate"
+iso_surf2.iso_value = -0.174
 iso_surface_display_window.add_graphics(surf_mid_plane_x, position=(1, 0))
 iso_surface_display_window.show()
 
@@ -191,13 +193,12 @@ iso_surface_display_window.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an iso-surface using the velocity magnitude.
 
-surf_vel_contour = Surface(
-    solver=solver_session,
-    type="iso-surface",
-    field="velocity-magnitude",
-    iso_value=0.0,
-    rendering="contour",
-)
+surf_vel_contour = Surface(solver=solver_session)
+surf_vel_contour.definition.type = "iso-surface"
+iso_surf3 = surf_vel_contour.definition.iso_surface
+iso_surf3.field = "velocity-magnitude"
+iso_surf3.rendering = "contour"
+iso_surf3.iso_value = 0.0
 graphics_window = GraphicsWindow(grid=(2, 2))
 graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 
@@ -208,7 +209,7 @@ graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 
 temperature_contour = Contour(solver=solver_session)
 temperature_contour.field = "temperature"
-temperature_contour.surfaces = [surf_mid_plane_x.name, iso_surface_object.name]
+temperature_contour.surfaces = [surf_mid_plane_x.name, surf_outlet_plane.name]
 graphics_window.add_graphics(temperature_contour, position=(0, 1))
 
 ###############################################################################
