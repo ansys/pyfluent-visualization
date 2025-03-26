@@ -14,14 +14,14 @@ Follow the steps below to integrate a custom graphics rendering library
 into PyFluent-Visualization:
 
 1. Navigate to the Source Directory:
-    - Locate the directory: (e.g., src/ansys/fluent/visualization/graphics)
+    - Locate the directory: (for example, src/ansys/fluent/visualization/graphics)
 
 2. Use the Abstract Class as a Base:
     - Open the abstract_graphics_defns.py file.
     - The ``AbstractRenderer`` class defines the required interface for a custom renderer.
 
 3. Create Your Own Renderer Implementation:
-    - Create a new Python file (e.g., custom_graphics_defns.py) inside a python package in the same directory.
+    - Create a new Python file (for example, custom_graphics_defns.py) inside a python package in the same directory.
     - Extend the ``AbstractRenderer`` class and implement its methods:
 
 .. code:: python
