@@ -43,7 +43,8 @@ class Mesh(_GraphicsContainer):
     --------
     >>> from ansys.fluent.visualization import Mesh
 
-    >>> # `solver_session` is a live Fluent session with a case and data which contains the following surfaces
+    >>> # `solver_session` is a live Fluent session with a case
+    >>> # and data which contains the following surfaces
 
     >>> mesh_object = Mesh(
     >>>     solver=solver_session, show_edges=True, surfaces=["in1", "in2", "in3"]
@@ -139,7 +140,8 @@ class Contour(_GraphicsContainer):
     --------
     >>> from ansys.fluent.visualization import Contour
 
-    >>> # `solver_session` is a live Fluent session with a case and data which contains the following surfaces
+    >>> # `solver_session` is a live Fluent session with a case
+    >>> # and data which contains the following surfaces
 
     >>> temperature_contour_object = Contour(
     >>>     solver=solver_session, field="temperature", surfaces=["in1", "in2", "in3",]
@@ -158,7 +160,8 @@ class Vector(_GraphicsContainer):
     --------
     >>> from ansys.fluent.visualization import Vector
 
-    >>> # `solver_session` is a live Fluent session with a case and data which contains the following surfaces
+    >>> # `solver_session` is a live Fluent session with a case
+    >>> # and data which contains the following surfaces
 
     >>> velocity_vector_object = Vector(
     >>>     solver=solver_session,
@@ -180,7 +183,8 @@ class Pathline(_GraphicsContainer):
     --------
     >>> from ansys.fluent.visualization import Pathline
 
-    >>> # `solver_session` is a live Fluent session with a case and data which contains the following surfaces
+    >>> # `solver_session` is a live Fluent session with a case
+    >>> # and data which contains the following surfaces
 
     >>> pathlines = Pathline(solver=solver_session)
     >>> pathlines.field = "velocity-magnitude"
