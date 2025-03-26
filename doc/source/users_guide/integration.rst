@@ -1,8 +1,8 @@
-.. _ref_configure:
+.. _ref_integration:
 
-=========
-Configure
-=========
+======================================
+Integration of visualization libraries
+======================================
 PyFluent-Visualization uses PyVista as the default graphics rendering tool
 and Matplotlib for plotting 2D data. It also allows users to configure
 other Python-supported tools for rendering data.
@@ -11,7 +11,7 @@ Configuration Steps
 ~~~~~~~~~~~~~~~~~~~
 Follow the steps below to integrate additional Python libraries with PyFluent-Visualization.
 
-Navigate to either:
+1. Navigate to either:
 
 - ``src/ansys/fluent/visualization/graphics`` or
 

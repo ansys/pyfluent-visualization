@@ -7,7 +7,7 @@ PyFluent-Visualization documentation |version|
 
    getting_started/index
    users_guide/index
-   users_guide/configure
+   users_guide/integration
    visualization/visualization_contents.rst
    examples/index
    contributing

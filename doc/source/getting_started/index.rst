@@ -43,27 +43,9 @@ install with:
 Any changes that you make locally are reflected in your setup after you restart
 the Python kernel.
 
-*************
-Launch Fluent
-*************
-
-You can launch Fluent from PyFluent using the ``launch_fluent`` function:
-
-.. code:: python
-
-  import ansys.fluent.core as pyfluent
-  session = pyfluent.launch_fluent(precision="double", processor_count=2, mode="solver")
-  session.check_health()
-  session.start_transcript() # Streaming the transcript locally
-
-PyFluent-Visualization seamlessly integrates with both
-`PyVista <https://www.pyvista.org/>`_ and `Matplotlib <https://matplotlib.org/>`_.
-Additionally, it offers flexibility to incorporate other open-source data visualization tools,
-such as `Plotly <https://plotly.com/python/>`_, see :ref:`ref_configure`
-
-If you want to print the debug information for development, set the following
-environment variable:
-
-.. code:: python
-
-  pyfluent.set_log_level('DEBUG')  # for development, by default only errors are shown
+.. note::
+    PyFluent-Visualization seamlessly integrates with both
+    `PyVista <https://www.pyvista.org/>`_, `Matplotlib <https://matplotlib.org/>`_
+    and `Plotly <https://plotly.com/python/>`_.
+    Additionally, it offers flexibility to `integrate other data visualization
+    tools <ref_integration>`_.
