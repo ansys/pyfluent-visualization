@@ -26,10 +26,14 @@ Use the following script to launch Fluent and load your case and data files:
         file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
     )
 
-    solver_session = pyfluent.launch_fluent(precision="double", processor_count=2, mode="solver")
+    solver_session = pyfluent.launch_fluent(
+        precision=pyfluent.Precision.DOUBLE,
+        processor_count=2,
+        mode=pyfluent.FluentMode.SOLVER,
+    )
 
-    solver_session.tui.file.read_case(import_case)
-    solver_session.tui.file.read_data(import_data)
+    solver_session.settings.file.read_case(file_name=import_case)
+    solver_session.settings.file.read_data(file_name=import_data)
 
 Graphics operations
 -------------------

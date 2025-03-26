@@ -88,10 +88,10 @@ import_data = examples.download_file(
 )
 
 solver_session = pyfluent.launch_fluent(
-    precision="double",
+    precision=pyfluent.Precision.DOUBLE,
     processor_count=2,
     start_transcript=False,
-    mode="solver",
+    mode=pyfluent.FluentMode.SOLVER,
 )
 
 solver_session.settings.file.read_case(file_name=import_case)
