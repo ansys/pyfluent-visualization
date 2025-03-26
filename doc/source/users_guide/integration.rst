@@ -51,6 +51,7 @@ into PyFluent-Visualization:
 4. Register and Use Your Renderer
     - Ensure your custom renderer is placed in a directory accessible
     by PyFluent-Visualization.
+
     - Use the custom renderer in your visualization workflow:
 
 .. code:: python
