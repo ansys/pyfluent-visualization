@@ -25,16 +25,16 @@
 import sys
 from typing import Optional
 
-from ansys.fluent.core.post_objects.meta import Command
-from ansys.fluent.core.post_objects.post_helper import PostAPIHelper
-from ansys.fluent.core.post_objects.post_object_definitions import (
+from ansys.fluent.interface.meta import Command
+from ansys.fluent.interface.post_helper import PostAPIHelper
+from ansys.fluent.interface.post_object_definitions import (
     ContourDefn,
     MeshDefn,
     PathlinesDefn,
     SurfaceDefn,
     VectorDefn,
 )
-from ansys.fluent.core.post_objects.post_objects_container import (
+from ansys.fluent.interface.post_objects_container import (
     Graphics as GraphicsContainer,
 )
 
