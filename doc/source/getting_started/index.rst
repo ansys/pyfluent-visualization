@@ -44,7 +44,7 @@ Any changes that you make locally are reflected in your setup after you restart
 the Python kernel.
 
 .. note::
-    PyFluent-Visualization seamlessly integrates with both
+    PyFluent-Visualization seamlessly integrates with
     `PyVista <https://www.pyvista.org/>`_, `Matplotlib <https://matplotlib.org/>`_
     and `Plotly <https://plotly.com/python/>`_.
     Additionally, it offers flexibility to `integrate other data visualization

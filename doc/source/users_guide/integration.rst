@@ -13,6 +13,10 @@ Steps to Integrate a Custom Rendering Library
 Follow the steps below to integrate a custom graphics rendering library
 into PyFluent-Visualization:
 
+.. note::
+    This example shows integration of 3D graphics library. You could do the same
+    for Plotter as well.
+
 1. Navigate to the Source Directory:
     - Locate the directory: (for example, src/ansys/fluent/visualization/graphics)
 
@@ -45,7 +49,7 @@ into PyFluent-Visualization:
     >>>
     >>>     def close(self):
     >>>         """Close the graphics window."""
-    >>>     pass
+    >>>         pass
 
 
 4. Register and Use Your Renderer
