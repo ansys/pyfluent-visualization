@@ -38,7 +38,31 @@ _qt_window = None
 
 
 class GraphicsWindow:
+    """Create a graphics window to perform operations like display,
+    save, animate, etc. on graphics objects.
+
+    Examples
+    --------
+    You can add graphics objects like mesh, surface or plots and then display it.
+
+    >>> from ansys.fluent.visualization import GraphicsWindow
+
+    >>> graphics_window = GraphicsWindow()
+    >>> graphics_window.add_graphics(mesh_object)
+    >>> graphics_window.show()
+
+    You can add multiple graphics objects and display as a structured layout.
+
+    >>> graphics_window = GraphicsWindow(grid=(2, 2))
+    >>> graphics_window.add_graphics(mesh_object, position=(0, 0))
+    >>> graphics_window.add_graphics(temperature_contour_object, position=(0, 1))
+    >>> graphics_window.add_graphics(velocity_vector_object, position=(1, 0))
+    >>> graphics_window.add_graphics(xy_plot, position=(1, 1))
+    >>> graphics_window.show()
+    """
+
     def __init__(self, grid: tuple = (1, 1)):
+        """__init__ method of GraphicsWindow class."""
         self._grid = grid
         self._graphics_objs = []
         self.window_id = None
@@ -155,7 +179,7 @@ class GraphicsWindow:
         if self.window_id:
             self._renderer.save_graphic(filename)
 
-    def refresh_windows(
+    def refresh(
         self,
         session_id: str | None = "",
         overlay: bool | None = False,
@@ -176,7 +200,7 @@ class GraphicsWindow:
                 windows_id=[self.window_id], session_id=session_id, overlay=overlay
             )
 
-    def animate_windows(
+    def animate(
         self,
         session_id: str | None = "",
     ) -> None:
@@ -199,7 +223,7 @@ class GraphicsWindow:
                 windows_id=[self.window_id], session_id=session_id
             )
 
-    def close_windows(
+    def close(
         self,
         session_id: str | None = "",
     ) -> None:

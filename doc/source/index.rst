@@ -7,7 +7,8 @@ PyFluent-Visualization documentation |version|
 
    getting_started/index
    users_guide/index
-   api/index
+   users_guide/integration
+   visualization/visualization_contents.rst
    examples/index
    contributing
 
@@ -28,7 +29,7 @@ you can:
 Documentation and issues
 ------------------------
 In addition to installation and usage information, the PyFluent-Visualization
-documentation provides :ref:`ref_index_api`, :ref:`ref_example_gallery`, and :ref:`ref_contributing`
+documentation provides :ref:`ref_example_gallery`, and :ref:`ref_contributing`
 sections.
 
 In the upper right corner of the documentation's title bar, there is an option
