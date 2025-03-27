@@ -163,21 +163,25 @@ sphinx_gallery_conf = {
     # Pattern to search for example files
     "filename_pattern": r"\.py",
     # Disabled example scripts
-    "ignore_pattern": r"script_manifold\.py|updated_exhaust_manifold_example\.py|"
+    "ignore_pattern": r"script_manifold\.py|post_processing_exhaust_manifold\.py|"
     r"updated_script_manifold_example\.py|flycheck*",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
     "within_subsection_order": FileNameSortKey,
-    # directory where function granular galleries are stored
+    # Directory where function granular galleries are stored
     "backreferences_dir": None,
-    # Modules for which function level galleries are created.  In
+    # Modules for which function level galleries are created.
     "doc_module": "ansys-fluent-core",
     "image_scrapers": ("pyvista", "matplotlib"),
     "thumbnail_size": (350, 350),
     "reset_modules_order": "after",
-    "reset_modules": (_stop_fluent_container),
+    "reset_modules": (_stop_fluent_container,),
 }
+
+
+# https://github.com/sphinx-doc/sphinx/issues/12300
+suppress_warnings = ["config.cache"]
 
 
 # -- Options for HTML output -------------------------------------------------
