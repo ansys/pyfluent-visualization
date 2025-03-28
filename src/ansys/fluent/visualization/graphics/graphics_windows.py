@@ -43,19 +43,19 @@ class GraphicsWindow:
     --------
     You can add graphics objects like mesh, surface or plots and then display it.
 
-    >>> from ansys.fluent.visualization import GraphicsWindow
+    >>> from ansys.fluent.visualization import VisualizerWindow
 
-    >>> graphics_window = GraphicsWindow()
+    >>> graphics_window = VisualizerWindow()
     >>> graphics_window.add_graphics(mesh_object)
     >>> graphics_window.show()
 
     You can add multiple graphics objects and display as a structured layout.
 
-    >>> graphics_window = GraphicsWindow(grid=(2, 2))
+    >>> graphics_window = VisualizerWindow()
     >>> graphics_window.add_graphics(mesh_object, position=(0, 0))
     >>> graphics_window.add_graphics(temperature_contour_object, position=(0, 1))
     >>> graphics_window.add_graphics(velocity_vector_object, position=(1, 0))
-    >>> graphics_window.add_graphics(xy_plot, position=(1, 1))
+    >>> graphics_window.add_plot(xy_plot, position=(1, 1))
     >>> graphics_window.show()
     """
 
@@ -119,7 +119,7 @@ class GraphicsWindow:
         --------
         >>> import ansys.fluent.core as pyfluent
         >>> from ansys.fluent.core import examples
-        >>> from ansys.fluent.visualization import GraphicsWindow, Vector
+        >>> from ansys.fluent.visualization import VisualizerWindow, Vector
         >>>
         >>> import_case = examples.download_file(
         >>> file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
@@ -135,7 +135,7 @@ class GraphicsWindow:
         >>> velocity_vector = Vector(
         >>> solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
         >>> )
-        >>> graphics_window = GraphicsWindow()
+        >>> graphics_window = VisualizerWindow()
         >>> graphics_window.add_graphics(velocity_vector)
         >>> graphics_window.save_graphic("saved_vector.svg")
         """

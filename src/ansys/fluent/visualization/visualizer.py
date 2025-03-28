@@ -31,11 +31,11 @@ from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
 
 class VisualizerWindow:
     """Create a graphics window to perform operations like display,
-    save, animate, etc. on graphics objects.
+    save, animate, etc. on graphics and plot objects.
     """
 
     def __init__(self):
-        """__init__ method of GraphicsWindow class."""
+        """__init__ method of VisualizerWindow class."""
         self._graphics_objs = []
         self.window_id = None
         self._visualizer = None
@@ -149,7 +149,7 @@ class VisualizerWindow:
         --------
         >>> import ansys.fluent.core as pyfluent
         >>> from ansys.fluent.core import examples
-        >>> from ansys.fluent.visualization import GraphicsWindow, Vector
+        >>> from ansys.fluent.visualization import VisualizerWindow, Vector
         >>>
         >>> import_case = examples.download_file(
         >>> file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
@@ -165,7 +165,7 @@ class VisualizerWindow:
         >>> velocity_vector = Vector(
         >>> solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
         >>> )
-        >>> graphics_window = GraphicsWindow()
+        >>> graphics_window = VisualizerWindow()
         >>> graphics_window.add_graphics(velocity_vector)
         >>> graphics_window.save_graphic("saved_vector.svg")
         """
