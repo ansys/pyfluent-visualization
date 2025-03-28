@@ -47,7 +47,7 @@ hierarchy = {
         "Pathline",
         "XYPlot",
         "Monitor",
-        "GraphicsWindow",
+        "VisualizerWindow",
     ]
 }
 

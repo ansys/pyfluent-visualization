@@ -32,6 +32,25 @@ from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
 class VisualizerWindow:
     """Create a graphics window to perform operations like display,
     save, animate, etc. on graphics and plot objects.
+
+    Examples
+    --------
+    You can add graphics objects like mesh, surface or plots and then display it.
+
+    >>> from ansys.fluent.visualization import VisualizerWindow
+
+    >>> graphics_window = VisualizerWindow()
+    >>> graphics_window.add_graphics(mesh_object)
+    >>> graphics_window.show()
+
+    You can add multiple graphics objects and display as a structured layout.
+
+    >>> graphics_window = VisualizerWindow()
+    >>> graphics_window.add_graphics(mesh_object, position=(0, 0))
+    >>> graphics_window.add_graphics(temperature_contour_object, position=(0, 1))
+    >>> graphics_window.add_graphics(velocity_vector_object, position=(1, 0))
+    >>> graphics_window.add_plot(xy_plot, position=(1, 1))
+    >>> graphics_window.show()
     """
 
     def __init__(self):
