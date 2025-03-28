@@ -43,15 +43,21 @@ class PlotterWindow:
             Title of the sub-plot.
         """
         self._plot_objs.append({**locals()})
-        if title:
-            self._subplot_titles.append(title)
-        elif hasattr(object.obj, "monitor_set_name"):
-            self._subplot_titles.append(object.obj.monitor_set_name())
-        else:
-            self._subplot_titles.append("XYPlot")
+
+    def _populate_subplot_titles(self):
+        for obj_dict in self._plot_objs:
+            if obj_dict.get("title"):
+                self._subplot_titles.append(obj_dict.get("title"))
+            elif hasattr(obj_dict.get("object").obj, "monitor_set_name"):
+                self._subplot_titles.append(
+                    obj_dict.get("object").obj.monitor_set_name()
+                )
+            else:
+                self._subplot_titles.append("XYPlot")
 
     def show(self, win_id=None) -> None:
         """Render the objects in window and display the same."""
+        self._populate_subplot_titles()
         self.window_id = plotter_windows_manager.open_window(window_id=win_id)
         self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
         self.plotter = self.plotter_window.plotter
@@ -68,14 +74,15 @@ class PlotterWindow:
 
     def save_graphic(
         self,
-        format: str,
+        filename: str,
     ) -> None:
         """Save a graphics.
 
         Parameters
         ----------
-        format : str
-            Graphic file format. Supported formats are SVG, EPS, PS, PDF, and TEX.
+        filename : str
+            Path to save the graphic file to.
+            Supported formats are SVG, EPS, PS, PDF, and TEX.
 
         Raises
         ------
@@ -83,9 +90,9 @@ class PlotterWindow:
             If the window does not support the specified format.
         """
         if self.window_id:
-            self.plotter_window.plotter.save_graphic(f"{self.window_id}.{format}")
+            self.plotter_window.plotter.save_graphic(filename)
 
-    def refresh_windows(
+    def refresh(
         self,
         session_id: str | None = "",
     ) -> None:
@@ -103,7 +110,7 @@ class PlotterWindow:
                 windows_id=[self.window_id], session_id=session_id
             )
 
-    def animate_windows(
+    def animate(
         self,
         session_id: str | None = "",
     ) -> None:
@@ -126,7 +133,7 @@ class PlotterWindow:
                 windows_id=[self.window_id], session_id=session_id
             )
 
-    def close_windows(
+    def close(
         self,
         session_id: str | None = "",
     ) -> None:

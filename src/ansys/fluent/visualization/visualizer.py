@@ -21,84 +21,112 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
-)
+import warnings
 
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.graphics import graphics_windows_manager
+from ansys.fluent.visualization.graphics.graphics_windows import GraphicsWindow
+from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
 
-_qt_window = None
 
-
-class GraphicsWindow:
+class VisualizerWindow:
     """Create a graphics window to perform operations like display,
     save, animate, etc. on graphics objects.
-
-    Examples
-    --------
-    You can add graphics objects like mesh, surface or plots and then display it.
-
-    >>> from ansys.fluent.visualization import GraphicsWindow
-
-    >>> graphics_window = GraphicsWindow()
-    >>> graphics_window.add_graphics(mesh_object)
-    >>> graphics_window.show()
-
-    You can add multiple graphics objects and display as a structured layout.
-
-    >>> graphics_window = GraphicsWindow(grid=(2, 2))
-    >>> graphics_window.add_graphics(mesh_object, position=(0, 0))
-    >>> graphics_window.add_graphics(temperature_contour_object, position=(0, 1))
-    >>> graphics_window.add_graphics(velocity_vector_object, position=(1, 0))
-    >>> graphics_window.add_graphics(xy_plot, position=(1, 1))
-    >>> graphics_window.show()
     """
 
-    def __init__(self, grid: tuple = (1, 1)):
+    def __init__(self):
         """__init__ method of GraphicsWindow class."""
-        self._grid = grid
         self._graphics_objs = []
         self.window_id = None
+        self._visualizer = None
+        self._list_of_positions = []
 
-    def show(self, wind_id) -> None:
-        """Render the objects in window and display the same."""
-        self.window_id = wind_id
-        self.window_id = graphics_windows_manager.open_window(
-            window_id=self.window_id, grid=self._grid
-        )
-        self.graphics_window = graphics_windows_manager._post_windows.get(
-            self.window_id
-        )
-        self._renderer = self.graphics_window.renderer
-        self.plotter = self.graphics_window.renderer.plotter
-        for i in range(len(self._graphics_objs)):
-            graphics_windows_manager.add_graphics(
-                object=self._graphics_objs[i]["object"].obj,
-                window_id=self.window_id,
-                fetch_data=True,
-                overlay=True,
-                position=self._graphics_objs[i]["position"],
-                opacity=self._graphics_objs[i]["opacity"],
-            )
-        if pyviz.SINGLE_WINDOW:
-            global _qt_window
-            if not _qt_window:
-                QApplication.instance() or QApplication()
-                _qt_window = MainWindow()
-                _qt_window.show()
-            _qt_window._add_tab(
-                self.plotter,
-                title=self.window_id.replace(
-                    self.window_id[-1], str(int(self.window_id[-1]) + 1)
-                ),
-            )
+    def add_graphics(
+        self,
+        graphics_obj,
+        position: tuple = (0, 0),
+        opacity: float = 1,
+    ) -> None:
+        """Add graphics-data to a window.
+
+        Parameters
+        ----------
+        graphics_obj: GraphicsDefn
+            Object to render in the window.
+        position: tuple, optional
+            Position of the sub-plot.
+        opacity: float, optional
+            Transparency of the sub-plot.
+        """
+        self._list_of_positions.append(position)
+        from ansys.fluent.core.post_objects.post_object_definitions import GraphicsDefn
+
+        if isinstance(graphics_obj.obj, GraphicsDefn):
+            locals()["object"] = locals().pop("graphics_obj")
+            self._graphics_objs.append({**locals()})
         else:
-            graphics_windows_manager.show_graphics(self.window_id)
+            warnings.warn("Only graphics objects are supported.")
+
+    def add_plot(
+        self,
+        plot_obj,
+        position: tuple = (0, 0),
+        title: str = "",
+    ) -> None:
+        """Add 2D plot-data to a window.
+
+        Parameters
+        ----------
+        plot_obj: PlotDefn
+            Object to render in the window.
+        position: tuple, optional
+            Position of the sub-plot.
+        title: str, optional
+            Title of the sub-plot.
+        """
+        self._list_of_positions.append(position)
+        from ansys.fluent.core.post_objects.post_object_definitions import PlotDefn
+
+        if isinstance(plot_obj.obj, PlotDefn):
+            locals()["object"] = locals().pop("plot_obj")
+            self._graphics_objs.append({**locals()})
+        else:
+            warnings.warn("Only 2D plot objects are supported.")
+
+    def _all_plt_objs(self):
+        from ansys.fluent.core.post_objects.post_object_definitions import PlotDefn
+
+        for obj in self._graphics_objs:
+            if not isinstance(obj["object"].obj, PlotDefn):
+                return False
+        return True
+
+    @staticmethod
+    def _show_find_grid_size(points):
+        # Extract x and y coordinates separately
+        x_coords = {p[0] for p in points}
+        y_coords = {p[1] for p in points}
+
+        # Compute grid size
+        x_size = len(x_coords)  # Unique x-values count
+        y_size = len(y_coords)  # Unique y-values count
+
+        return x_size, y_size
+
+    def show(self) -> None:
+        """Render the objects in window and display the same."""
+        self.window_id = graphics_windows_manager._get_unique_window_id()
+        if self._all_plt_objs() and not pyviz.SINGLE_WINDOW:
+            self._visualizer = PlotterWindow(
+                grid=self._show_find_grid_size(self._list_of_positions)
+            )
+            self._visualizer._plot_objs = self._graphics_objs
+        else:
+            self._visualizer = GraphicsWindow(
+                grid=self._show_find_grid_size(self._list_of_positions)
+            )
+            self._visualizer._graphics_objs = self._graphics_objs
+        self._visualizer.show(self.window_id)
 
     def save_graphic(
         self,
@@ -142,7 +170,7 @@ class GraphicsWindow:
         >>> graphics_window.save_graphic("saved_vector.svg")
         """
         if self.window_id:
-            self._renderer.save_graphic(filename)
+            self._visualizer.save_graphic(filename)
 
     def refresh(
         self,
@@ -161,7 +189,7 @@ class GraphicsWindow:
             Overlay graphics over existing graphics.
         """
         if self.window_id:
-            graphics_windows_manager.refresh_windows(
+            self._visualizer.refresh(
                 windows_id=[self.window_id], session_id=session_id, overlay=overlay
             )
 
@@ -184,9 +212,7 @@ class GraphicsWindow:
             If not implemented.
         """
         if self.window_id:
-            graphics_windows_manager.animate_windows(
-                windows_id=[self.window_id], session_id=session_id
-            )
+            self._visualizer.animate(windows_id=[self.window_id], session_id=session_id)
 
     def close(
         self,
@@ -202,45 +228,4 @@ class GraphicsWindow:
            are closed.
         """
         if self.window_id:
-            graphics_windows_manager.close_windows(
-                windows_id=[self.window_id], session_id=session_id
-            )
-
-
-# Define the main window
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("PyFluent Visualization Plots")
-        screen = QApplication.primaryScreen().availableGeometry()
-        width = int(screen.width() * 0.75)
-        height = int(screen.height() * 0.75)
-        self.setGeometry(
-            (screen.width() - width) // 2,  # Center X
-            (screen.height() - height) // 2,  # Center Y
-            width,
-            height,
-        )
-        self.tabs = QTabWidget()
-        self.setCentralWidget(self.tabs)
-        self.tabs.setMovable(True)
-        self.plotters = []
-
-    def _add_tab(self, plotter, title="-"):
-        tab = QWidget()
-        layout = QVBoxLayout()
-
-        self.plotters.append(plotter)
-        layout.addWidget(plotter.interactor)
-        tab.setLayout(layout)
-
-        # Add tabs with PyVista BackgroundPlotters
-        self.tabs.addTab(tab, f"PyViz ({title})")
-
-    def closeEvent(self, event):
-        """Ensure proper cleanup of plotter instances on window close."""
-        for plotter in self.plotters:
-            plotter.close()  # Properly close each PyVista plotter
-        event.accept()
-        global _qt_window
-        _qt_window = None
+            self._visualizer.close(windows_id=[self.window_id], session_id=session_id)
