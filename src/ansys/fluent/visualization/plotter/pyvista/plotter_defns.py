@@ -78,7 +78,7 @@ class Plotter(AbstractPlotter):
         self.chart = None
         self.plotter = None
 
-    def plot(self, data: dict) -> None:
+    def plot(self, data: dict, grid=(1, 1), position=(0, 0), **kwargs) -> None:
         """Draw plot in window.
 
         Parameters
@@ -102,8 +102,12 @@ class Plotter(AbstractPlotter):
             self._max_x = max(self._max_x, max_x_value) if self._max_x else max_x_value
 
         if not self._remote_process:
-            self.plotter = pv.Plotter(title=f"PyFluent [{self._window_id}]")
+            if self.plotter is None:
+                self.plotter = pv.Plotter(
+                    title=f"PyFluent [{self._window_id}]", shape=grid
+                )
             self.chart = pv.Chart2D()
+            self.plotter.subplot(position[0], position[1])
             self.plotter.add_chart(self.chart)
         self.chart.title = self._title
         self.chart.x_label = self._xlabel or ""
@@ -128,6 +132,7 @@ class Plotter(AbstractPlotter):
             y_range = 0
         self.chart.y_range = [self._min_y - y_range * 0.2, self._max_y + y_range * 0.2]
 
+    def show(self):
         if not self._visible:
             self._visible = True
             self.plotter.show()
