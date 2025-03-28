@@ -93,9 +93,7 @@ class GraphicsWindow:
                 _qt_window.show()
             _qt_window._add_tab(
                 self.plotter,
-                title=self.window_id.replace(
-                    self.window_id[-1], str(int(self.window_id[-1]) + 1)
-                ),
+                title=self.window_id,
             )
         else:
             graphics_windows_manager.show_graphics(self.window_id)
