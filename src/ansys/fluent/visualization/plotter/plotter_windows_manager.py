@@ -100,19 +100,19 @@ class _ProcessPlotterHandle:
 class PlotterWindow(PostWindow):
     """Provides for managing Plotter windows."""
 
-    def __init__(self, id: str, post_object: PlotDefn):
+    def __init__(self, id: str, plotter=None):
         """Instantiate a plotter window.
 
         Parameters
         ----------
         id : str
             Window ID.
-        post_object : PlotDefn
-            Object to plot.
         """
         self.id: str = id
         self.post_object = None
-        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter()
+        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter(
+            plotter
+        )
         self.close: bool = False
         self.refresh: bool = False
 
@@ -130,14 +130,17 @@ class PlotterWindow(PostWindow):
         self.plotter.show()
 
     # private methods
-    def _get_plotter(self):
-        import ansys.fluent.visualization as pyviz
+    def _get_plotter(self, plotter=None):
+        if plotter is None:
+            import ansys.fluent.visualization as pyviz
 
-        if pyviz.PLOTTER == "matplotlib":
+            plotter = pyviz.PLOTTER
+
+        if plotter == "matplotlib":
             from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
                 Plotter,
             )
-        elif pyviz.PLOTTER == "plotly":
+        elif plotter == "plotly":
             from ansys.fluent.visualization.plotter.plotly.plotter_defns import Plotter
         else:
             from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
@@ -261,7 +264,7 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         """Instantiate a windows manager for the plotter."""
         self._post_windows: Dict[str, PlotterWindow] = {}
 
-    def open_window(self, window_id: Optional[str] = None) -> str:
+    def open_window(self, window_id: Optional[str] = None, plotter=None) -> str:
         """Open a new window.
 
         Parameters
@@ -277,7 +280,7 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         """
         if not window_id:
             window_id = self._get_unique_window_id()
-        self._open_window(window_id)
+        self._open_window(window_id, plotter)
         return window_id
 
     def set_object_for_window(self, object: PlotDefn, window_id: str) -> None:
@@ -436,13 +439,15 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
     # private methods
 
-    def _open_window(self, window_id: str) -> Union["Plotter", _ProcessPlotterHandle]:
+    def _open_window(
+        self, window_id: str, plotter=None
+    ) -> Union["Plotter", _ProcessPlotterHandle]:
         window = self._post_windows.get(window_id)
         if window and not window.plotter.is_closed():
             if not (in_notebook() or get_config()["blocking"]) or window.refresh:
                 window.refresh = False
         else:
-            window = PlotterWindow(window_id, None)
+            window = PlotterWindow(window_id, plotter=plotter)
             self._post_windows[window_id] = window
             if in_notebook():
                 window.plotter()

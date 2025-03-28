@@ -937,7 +937,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         itr_count = itertools.count()
         with self._condition:
             while True:
-                window_id = f"window-{next(itr_count)}"
+                window_id = f"window-{next(itr_count) + 1}"
                 if window_id not in self._post_windows:
                     return window_id
 
