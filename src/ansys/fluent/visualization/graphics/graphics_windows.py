@@ -65,7 +65,7 @@ class GraphicsWindow:
         self._graphics_objs = []
         self.window_id = None
 
-    def show(self, wind_id) -> None:
+    def show(self, wind_id, visualizer=None) -> None:
         """Render the objects in window and display the same."""
         self.window_id = wind_id
         self.window_id = graphics_windows_manager.open_window(

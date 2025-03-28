@@ -113,9 +113,11 @@ class VisualizerWindow:
 
         return x_size, y_size
 
-    def show(self) -> None:
+    def show(self, visualizer=None) -> None:
         """Render the objects in window and display the same."""
         self.window_id = graphics_windows_manager._get_unique_window_id()
+        if self.window_id not in graphics_windows_manager._post_windows:
+            graphics_windows_manager._post_windows[self.window_id] = None
         if self._all_plt_objs() and not pyviz.SINGLE_WINDOW:
             self._visualizer = PlotterWindow(
                 grid=self._show_find_grid_size(self._list_of_positions)
@@ -126,7 +128,7 @@ class VisualizerWindow:
                 grid=self._show_find_grid_size(self._list_of_positions)
             )
             self._visualizer._graphics_objs = self._graphics_objs
-        self._visualizer.show(self.window_id)
+        self._visualizer.show(self.window_id, visualizer=visualizer)
 
     def save_graphic(
         self,
