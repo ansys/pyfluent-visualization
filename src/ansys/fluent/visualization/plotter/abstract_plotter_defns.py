@@ -41,6 +41,10 @@ class AbstractPlotter(ABC):
         pass
 
     @abstractmethod
+    def show(self):
+        pass
+
+    @abstractmethod
     def close(self):
         """Close plotter window."""
         pass
