@@ -140,10 +140,10 @@ class PlotterWindow(PostWindow):
             from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
                 Plotter,
             )
-        elif plotter == "plotly":
-            from ansys.fluent.visualization.plotter.plotly.plotter_defns import Plotter
-        else:
+        elif plotter == "pyvista":
             from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
+        else:
+            Plotter = plotter
         return (
             Plotter(self.id)
             if in_notebook() or get_config()["blocking"]

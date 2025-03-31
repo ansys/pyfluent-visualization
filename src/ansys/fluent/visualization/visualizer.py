@@ -193,6 +193,11 @@ class VisualizerWindow:
         if self.window_id:
             self._visualizer.save_graphic(filename)
 
+    @property
+    def renderer(self):
+        """Returns the plotter object."""
+        return self._visualizer.plotter
+
     def refresh(
         self,
         session_id: str | None = "",
