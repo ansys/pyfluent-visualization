@@ -61,12 +61,12 @@ session.settings.file.read_data(file_name=import_data)
 
 from ansys.fluent.visualization import (
     Contour,
+    GraphicsWindow,
     Mesh,
     Monitor,
     Pathline,
     Surface,
     Vector,
-    VisualizerWindow,
     XYPlot,
 )
 
@@ -85,7 +85,7 @@ contour1 = Contour(
 vector1 = Vector(
     solver=session, surfaces=["solid_up:1:830"], scale=4.0, skip=0, field="temperature"
 )
-p_vect = VisualizerWindow()
+p_vect = GraphicsWindow()
 p_vect.add_graphics(vector1)
 p_vect.show()
 
@@ -99,45 +99,45 @@ surface1.definition.iso_surface.iso_value = 0.0
 
 p1 = XYPlot(solver=session, surfaces=["solid_up:1:830"])
 p1.y_axis_function = "temperature"
-p_xy = VisualizerWindow()
+p_xy = GraphicsWindow()
 p_xy.add_plot(p1)
 p_xy.show()
 
 session.monitors.get_monitor_set_names()
 residual = Monitor(solver=session)
 residual.monitor_set_name = "residual"
-p_res = VisualizerWindow()
+p_res = GraphicsWindow()
 p_res.add_plot(residual)
 p_res.show()
 
 mtr = Monitor(solver=session)
 mtr.monitor_set_name = "mass-tot-rplot"
-p_mtr = VisualizerWindow()
+p_mtr = GraphicsWindow()
 p_mtr.add_plot(mtr)
 p_mtr.show()
 
 mbr = Monitor(solver=session)
 mbr.monitor_set_name = "mass-bal-rplot"
-p_mbr = VisualizerWindow()
+p_mbr = GraphicsWindow()
 p_mbr.add_plot(mbr)
 p_mbr.show()
 
-p_mesh = VisualizerWindow()
+p_mesh = GraphicsWindow()
 p_mesh.add_graphics(mesh1)
 p_mesh.show()
-p_vect = VisualizerWindow()
+p_vect = GraphicsWindow()
 p_vect.add_graphics(vector1)
 p_vect.show()
-p_cont = VisualizerWindow()
+p_cont = GraphicsWindow()
 p_cont.add_graphics(contour1)
 p_cont.show()
-p_pathline = VisualizerWindow()
+p_pathline = GraphicsWindow()
 p_pathline.add_graphics(pathlines1)
 p_pathline.show()
 
 p_cont._visualizer.plotter.view_isometric()
 
-p_surf = VisualizerWindow()
+p_surf = GraphicsWindow()
 p_surf.add_graphics(surface1)
 p_surf.show()
 

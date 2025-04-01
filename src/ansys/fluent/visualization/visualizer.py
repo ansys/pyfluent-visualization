@@ -25,11 +25,11 @@ import warnings
 
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.graphics import graphics_windows_manager
-from ansys.fluent.visualization.graphics.graphics_windows import GraphicsWindow
-from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
+from ansys.fluent.visualization.graphics.graphics_windows import _GraphicsWindow
+from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
 
 
-class VisualizerWindow:
+class GraphicsWindow:
     """Create a graphics window to perform operations like display,
     save, animate, etc. on graphics and plot objects.
 
@@ -37,15 +37,15 @@ class VisualizerWindow:
     --------
     You can add graphics objects like mesh, surface or plots and then display it.
 
-    >>> from ansys.fluent.visualization import VisualizerWindow
+    >>> from ansys.fluent.visualization import GraphicsWindow
 
-    >>> graphics_window = VisualizerWindow()
+    >>> graphics_window = GraphicsWindow()
     >>> graphics_window.add_graphics(mesh_object)
     >>> graphics_window.show()
 
     You can add multiple graphics objects and display as a structured layout.
 
-    >>> graphics_window = VisualizerWindow()
+    >>> graphics_window = GraphicsWindow()
     >>> graphics_window.add_graphics(mesh_object, position=(0, 0))
     >>> graphics_window.add_graphics(temperature_contour_object, position=(0, 1))
     >>> graphics_window.add_graphics(velocity_vector_object, position=(1, 0))
@@ -54,7 +54,7 @@ class VisualizerWindow:
     """
 
     def __init__(self):
-        """__init__ method of VisualizerWindow class."""
+        """__init__ method of GraphicsWindow class."""
         self._graphics_objs = []
         self.window_id = None
         self._visualizer = None
@@ -138,12 +138,12 @@ class VisualizerWindow:
         if self.window_id not in graphics_windows_manager._post_windows:
             graphics_windows_manager._post_windows[self.window_id] = None
         if self._all_plt_objs() and not pyviz.SINGLE_WINDOW:
-            self._visualizer = PlotterWindow(
+            self._visualizer = _PlotterWindow(
                 grid=self._show_find_grid_size(self._list_of_positions)
             )
             self._visualizer._plot_objs = self._graphics_objs
         else:
-            self._visualizer = GraphicsWindow(
+            self._visualizer = _GraphicsWindow(
                 grid=self._show_find_grid_size(self._list_of_positions)
             )
             self._visualizer._graphics_objs = self._graphics_objs
@@ -170,7 +170,7 @@ class VisualizerWindow:
         --------
         >>> import ansys.fluent.core as pyfluent
         >>> from ansys.fluent.core import examples
-        >>> from ansys.fluent.visualization import VisualizerWindow, Vector
+        >>> from ansys.fluent.visualization import GraphicsWindow, Vector
         >>>
         >>> import_case = examples.download_file(
         >>> file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
@@ -186,7 +186,7 @@ class VisualizerWindow:
         >>> velocity_vector = Vector(
         >>> solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
         >>> )
-        >>> graphics_window = VisualizerWindow()
+        >>> graphics_window = GraphicsWindow()
         >>> graphics_window.add_graphics(velocity_vector)
         >>> graphics_window.save_graphic("saved_vector.svg")
         """

@@ -35,7 +35,7 @@ from ansys.fluent.visualization.graphics import graphics_windows_manager
 _qt_window = None
 
 
-class GraphicsWindow:
+class _GraphicsWindow:
     """Create a graphics window to perform operations like display,
     save, animate, etc. on graphics objects.
     """
@@ -100,7 +100,7 @@ class GraphicsWindow:
         --------
         >>> import ansys.fluent.core as pyfluent
         >>> from ansys.fluent.core import examples
-        >>> from ansys.fluent.visualization import VisualizerWindow, Vector
+        >>> from ansys.fluent.visualization import GraphicsWindow, Vector
         >>>
         >>> import_case = examples.download_file(
         >>> file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
@@ -116,7 +116,7 @@ class GraphicsWindow:
         >>> velocity_vector = Vector(
         >>> solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
         >>> )
-        >>> graphics_window = VisualizerWindow()
+        >>> graphics_window = GraphicsWindow()
         >>> graphics_window.add_graphics(velocity_vector)
         >>> graphics_window.save_graphic("saved_vector.svg")
         """

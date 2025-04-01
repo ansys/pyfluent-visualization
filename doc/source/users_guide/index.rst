@@ -45,10 +45,10 @@ The following example demonstrates how to display a mesh with and without edges:
 
 .. code-block:: python
 
-    from ansys.fluent.visualization import VisualizerWindow, Mesh
+    from ansys.fluent.visualization import GraphicsWindow, Mesh
 
     mesh = Mesh(solver=solver_session, show_edges=True, surfaces=["in1", "in2", "in3"])
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_graphics(mesh, position=(0, 0))
 
     mesh = Mesh(solver=solver_session, surfaces=["in1", "in2", "in3"])
@@ -67,7 +67,7 @@ Create and visualize a plane surface at a specified z-coordinate:
     surf_xy_plane.type = "plane-surface"
     surf_xy_plane.creation_method = "xy-plane"
     surf_xy_plane.z = -0.0441921
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_graphics(surf_xy_plane)
     window.show()
 
@@ -83,7 +83,7 @@ Generate an iso-surface based on the y-coordinate:
         field="y-coordinate",
         iso_value=-0.125017
         )
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_graphics(surf_outlet_plane)
     window.show()
 
@@ -100,7 +100,7 @@ Plot a temperature contour over selected surfaces:
         field="temperature",
         surfaces=["in1", "in2", "in3"],
     )
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_graphics(temperature_contour_manifold)
     window.show()
 
@@ -118,7 +118,7 @@ Visualize velocity vectors over a selected surface:
         surfaces=["solid_up:1:830"],
         scale=2,
     )
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_graphics(velocity_vector)
     window.show()
 
@@ -134,7 +134,7 @@ Visualize pathlines to analyze flow patterns:
     pathlines.field = "velocity-magnitude"
     pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
 
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_graphics(pathlines)
     window.show()
 
@@ -155,7 +155,7 @@ Generate an XY plot of temperature variations at an outlet:
         surfaces=["outlet"],
         y_axis_function="temperature",
     )
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_plot(xy_plot)
     window.show()
 
@@ -169,7 +169,7 @@ Plot solution residuals:
 
     residual = Monitor(solver=solver_session)
     residual.monitor_set_name = "residual"
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_plot(residual)
     window.show()
 
@@ -184,7 +184,7 @@ Monitor solution convergence using mass balance and velocity plots:
 
     mass_bal_rplot = Monitor(solver=solver_session)
     mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-    window = VisualizerWindow()
+    window = GraphicsWindow()
     window.add_plot(mass_bal_rplot, position=(0, 0))
 
     point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
@@ -209,7 +209,7 @@ stages. Graphics updates occur:
 
 .. code-block:: python
 
-    from ansys.fluent.visualization import Contour, XYPlot, Monitor, VisualizerWindow
+    from ansys.fluent.visualization import Contour, XYPlot, Monitor, GraphicsWindow
 
     contour_object = Contour(
         solver=solver_session, field="velocity-magnitude", surfaces=["symmetry"]
@@ -222,15 +222,15 @@ stages. Graphics updates occur:
     monitor_object = Monitor(solver=solver_session)
     monitor_object.monitor_set_name = "residual"
 
-    contour_window = VisualizerWindow()
+    contour_window = GraphicsWindow()
     contour_window.add_graphics(contour_object)
     contour_window.show()
 
-    xy_plot_window = VisualizerWindow()
+    xy_plot_window = GraphicsWindow()
     xy_plot_window.add_plot(xy_plot_object)
     xy_plot_window.show()
 
-    monitor_window = VisualizerWindow()
+    monitor_window = GraphicsWindow()
     monitor_window.add_plot(monitor1)
     monitor_window.show()
 

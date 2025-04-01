@@ -58,12 +58,12 @@ from ansys.fluent.core import examples
 
 from ansys.fluent.visualization import (
     Contour,
+    GraphicsWindow,
     Mesh,
     Monitor,
     Pathline,
     Surface,
     Vector,
-    VisualizerWindow,
     XYPlot,
     set_config,
 )
@@ -112,7 +112,7 @@ mesh_surfaces_list = [
     "solid_up:1:830-shadow",
 ]
 mesh = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
-graphics_window = VisualizerWindow()
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(mesh, position=(0, 0))
 
 mesh = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
@@ -129,7 +129,7 @@ surf_xy_plane.definition.type = "plane-surface"
 surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
 plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
 plane_surface_xy.z = -0.0441921
-graphics_window = VisualizerWindow()
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 
 ###############################################################################
@@ -167,7 +167,7 @@ surf_outlet_plane.definition.type = "iso-surface"
 iso_surf1 = surf_outlet_plane.definition.iso_surface
 iso_surf1.field = "y-coordinate"
 iso_surf1.iso_value = -0.125017
-graphics_window = VisualizerWindow()
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_outlet_plane, position=(0, 0))
 
 ###############################################################################
@@ -194,7 +194,7 @@ iso_surf3 = surf_vel_contour.definition.iso_surface
 iso_surf3.field = "velocity-magnitude"
 iso_surf3.rendering = "contour"
 iso_surf3.iso_value = 0.0
-graphics_window = VisualizerWindow()
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 
 ###############################################################################
@@ -250,11 +250,11 @@ pathlines = Pathline(solver=solver_session)
 pathlines.field = "velocity-magnitude"
 pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
 
-graphics_window = VisualizerWindow()
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(pathlines)
 graphics_window.show()
 
-graphics_window = VisualizerWindow()
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(mesh, opacity=0.05)
 graphics_window.add_graphics(velocity_vector)
 graphics_window.show()
@@ -269,7 +269,7 @@ xy_plot_object = XYPlot(
     surfaces=["outlet"],
     y_axis_function="temperature",
 )
-plot_window = VisualizerWindow()
+plot_window = GraphicsWindow()
 plot_window.add_plot(xy_plot_object, position=(0, 0))
 
 ###############################################################################
