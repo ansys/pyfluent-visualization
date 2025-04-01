@@ -61,4 +61,5 @@ from ansys.fluent.visualization.containers import (  # noqa: F401
 )
 from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
 from ansys.fluent.visualization.plotter import Plots  # noqa: F401
+from ansys.fluent.visualization.registrar import get_visualizer, register_visualizer
 from ansys.fluent.visualization.visualizer import VisualizerWindow

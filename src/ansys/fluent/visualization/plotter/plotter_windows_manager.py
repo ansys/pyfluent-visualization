@@ -42,6 +42,7 @@ from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
     PostWindowsManager,
 )
+from ansys.fluent.visualization.registrar import get_visualizer
 
 
 class _ProcessPlotterHandle:
@@ -135,17 +136,12 @@ class PlotterWindow(PostWindow):
             import ansys.fluent.visualization as pyviz
 
             plotter = pyviz.PLOTTER
-
-        if plotter == "matplotlib":
-            from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
-                Plotter,
-            )
-        elif plotter == "pyvista":
-            from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
-        else:
-            Plotter = plotter
+        try:
+            plotter = get_visualizer(plotter)
+        except KeyError as ex:
+            raise KeyError("Please register custom plotter before using it.") from ex
         return (
-            Plotter(self.id)
+            plotter(self.id)
             if in_notebook() or get_config()["blocking"]
             else _ProcessPlotterHandle(self.id)
         )
