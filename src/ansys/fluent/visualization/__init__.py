@@ -29,7 +29,8 @@ except ModuleNotFoundError:
 
 _VERSION_INFO = None
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
-PLOTTER = "matplotlib"
+RENDERER = "pyvista"
+PLOTTER = "pyvista"
 SINGLE_WINDOW = False
 
 
@@ -59,8 +60,6 @@ from ansys.fluent.visualization.containers import (  # noqa: F401
     XYPlot,
 )
 from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
-from ansys.fluent.visualization.graphics.graphics_windows import (  # noqa: F401
-    GraphicsWindow,
-)
 from ansys.fluent.visualization.plotter import Plots  # noqa: F401
-from ansys.fluent.visualization.plotter.plotter_windows import PlotterWindow
+from ansys.fluent.visualization.registrar import get_visualizer, register_visualizer
+from ansys.fluent.visualization.visualizer import GraphicsWindow
