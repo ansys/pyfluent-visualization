@@ -28,12 +28,12 @@ import threading
 from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import FluentConnection
-from ansys.fluent.core.post_objects.check_in_notebook import in_notebook
-from ansys.fluent.core.post_objects.post_object_definitions import (
+from ansys.fluent.interface.check_in_notebook import in_notebook
+from ansys.fluent.interface.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
-from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
+from ansys.fluent.interface.singleton_meta import AbstractSingletonMeta
 import numpy as np
 import pyvista as pv
 
