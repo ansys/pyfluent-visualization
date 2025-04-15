@@ -48,7 +48,7 @@ The following example demonstrates how to display a mesh with and without edges:
     from ansys.fluent.visualization import GraphicsWindow, Mesh
 
     mesh = Mesh(solver=solver_session, show_edges=True, surfaces=["in1", "in2", "in3"])
-    window = GraphicsWindow(grid=(1, 2))
+    window = GraphicsWindow()
     window.add_graphics(mesh, position=(0, 0))
 
     mesh = Mesh(solver=solver_session, surfaces=["in1", "in2", "in3"])
@@ -156,7 +156,7 @@ Generate an XY plot of temperature variations at an outlet:
         y_axis_function="temperature",
     )
     window = GraphicsWindow()
-    window.add_graphics(xy_plot)
+    window.add_plot(xy_plot)
     window.show()
 
 Display solution residual plot
@@ -170,7 +170,7 @@ Plot solution residuals:
     residual = Monitor(solver=solver_session)
     residual.monitor_set_name = "residual"
     window = GraphicsWindow()
-    window.add_graphics(residual)
+    window.add_plot(residual)
     window.show()
 
 Display solution monitors plot
@@ -184,11 +184,11 @@ Monitor solution convergence using mass balance and velocity plots:
 
     mass_bal_rplot = Monitor(solver=solver_session)
     mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-    window = GraphicsWindow(grid=(1, 2))
-    window.add_graphics(mass_bal_rplot, position=(0, 0))
+    window = GraphicsWindow()
+    window.add_plot(mass_bal_rplot, position=(0, 0))
 
     point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
-    window.add_graphics(point_vel_rplot, position=(0, 1))
+    window.add_plot(point_vel_rplot, position=(0, 1))
     window.show()
 
 Interactive Graphics
@@ -227,11 +227,11 @@ stages. Graphics updates occur:
     contour_window.show()
 
     xy_plot_window = GraphicsWindow()
-    xy_plot_window.add_graphics(xy_plot_object)
+    xy_plot_window.add_plot(xy_plot_object)
     xy_plot_window.show()
 
     monitor_window = GraphicsWindow()
-    monitor_window.add_graphics(monitor1)
+    monitor_window.add_plot(monitor1)
     monitor_window.show()
 
     def auto_refresh_graphics(session, event_info):
