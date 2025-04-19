@@ -1,0 +1,785 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Postprocessing using PyVista and Matplotlib &#8212; PyFluent-Visualization</title>
+    
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/ansys_sphinx_theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    
+        <link href="../../_static/css/breadcrumbs.css" rel="stylesheet">
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/thebelab-helper.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
+    <link rel="shortcut icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contributing" href="../../contributing.html" />
+    <link rel="prev" title="Postprocessing examples" href="index.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started/index.html">
+  Getting started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../users_guide/index.html">
+  User guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api/index.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../contributing.html">
+  Contributing
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        0.5  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables examples/00-postprocessing/post_processing_exhaust_manifold and {'json_url': 'https://visualization.fluent.docs.pyansys.com/release/versions.json', 'version_match': '0.5'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "examples/00-postprocessing/post_processing_exhaust_manifold.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://visualization.fluent.docs.pyansys.com/release/versions.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "examples/00-postprocessing/post_processing_exhaust_manifold.html";
+        let btn = document.getElementById("version_switcher_button");
+        // Set empty strings by default so that these attributes exist and can be used in CSS selectors
+        btn.dataset["activeVersionName"] = "";
+        btn.dataset["activeVersion"] = "";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.5.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "0.5") {
+                node.classList.add("active");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/pyansys/pyfluent-visualization" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+     
+<div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(text => document.getElementById("announcement_msg").innerHTML = text)
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+
+    
+        <div class="container-xl">
+    <div class="row">
+        <div class="col-12 col-md-3" id="breadcrumbs-spacer"></div>
+        <div class="col-12 col-md-11 col-xl-9" id="breadcrumbs">
+          
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
+    
+    
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyFluent-Visualization</a> » </li>
+    
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Examples</a> » </li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">Postprocessing examples</a> » </li>
+        <li class="nav-item nav-item-this"><a href="">Postprocessing using PyVista and Matplotlib</a></li> 
+      </ul>
+    </div>
+        </div>
+  </div>
+</div>
+    
+
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   Postprocessing examples
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Postprocessing using PyVista and Matplotlib
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#perform-required-imports">
+   Perform required imports
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#download-files-and-launch-fluent">
+   Download files and launch Fluent
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#get-graphics-object">
+   Get graphics object
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-graphics-object-for-mesh-display">
+   Create graphics object for mesh display
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#show-edges">
+   Show edges
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#get-surfaces-list">
+   Get surfaces list
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#hide-edges-and-display-again">
+   Hide edges and display again
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-plane-surface-xy-plane">
+   Create plane-surface XY plane
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-plane-surface-yz-plane">
+   Create plane-surface YZ plane
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-plane-surface-zx-plane">
+   Create plane-surface ZX plane
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-iso-surface-on-outlet-plane">
+   Create iso-surface on outlet plane
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-iso-surface-on-mid-plane">
+   Create iso-surface on mid-plane
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-iso-surface-using-velocity-magnitude">
+   Create iso-surface using velocity magnitude
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-temperature-contour-on-mid-plane-and-outlet">
+   Create temperature contour on mid-plane and outlet
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-contour-plot-of-temperature-on-manifold">
+   Create contour plot of temperature on manifold
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-vector">
+   Create vector
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-plot-object">
+   Create plot object
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-xy-plot">
+   Create XY plot
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#set-plot-surface-and-y-axis-function">
+   Set plot surface and Y-axis function
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#display-xy-plot">
+   Display XY plot
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-residual-plot">
+   Create residual plot
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#solve-and-plot-solution-monitors">
+   Solve and plot solution monitors
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#close-fluent">
+   Close Fluent
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-examples-00-postprocessing-post-processing-exhaust-manifold-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="postprocessing-using-pyvista-and-matplotlib">
+<span id="ref-post-processing-exhaust-manifold"></span><span id="sphx-glr-examples-00-postprocessing-post-processing-exhaust-manifold-py"></span><h1>Postprocessing using PyVista and Matplotlib<a class="headerlink" href="#postprocessing-using-pyvista-and-matplotlib" title="Permalink to this heading">#</a></h1>
+<p>This example uses PyVista and Matplotlib to demonstrate PyFluent
+postprocessing capabilities. The 3D model in this example
+is an exhaust manifold that has high temperature flows passing
+through it. The flow through the manifold is turbulent and
+involves conjugate heat transfer.</p>
+<section id="perform-required-imports">
+<h2>Perform required imports<a class="headerlink" href="#perform-required-imports" title="Permalink to this heading">#</a></h2>
+<p>Perform required imports and set the configuration.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ansys.fluent.core</span> <span class="k">as</span> <span class="nn">pyfluent</span>
+<span class="kn">from</span> <span class="nn">ansys.fluent.core</span> <span class="kn">import</span> <span class="n">examples</span>
+
+<span class="kn">from</span> <span class="nn">ansys.fluent.visualization</span> <span class="kn">import</span> <span class="n">set_config</span>
+<span class="kn">from</span> <span class="nn">ansys.fluent.visualization.matplotlib</span> <span class="kn">import</span> <span class="n">Plots</span>
+<span class="kn">from</span> <span class="nn">ansys.fluent.visualization.pyvista</span> <span class="kn">import</span> <span class="n">Graphics</span>
+
+<span class="n">set_config</span><span class="p">(</span><span class="n">blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">set_view_on_display</span><span class="o">=</span><span class="s2">&quot;isometric&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="download-files-and-launch-fluent">
+<h2>Download files and launch Fluent<a class="headerlink" href="#download-files-and-launch-fluent" title="Permalink to this heading">#</a></h2>
+<p>Download the case and data files and launch Fluent as a service in solver
+mode with double precision and two processors. Read in the case and data
+files.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">import_case</span></a> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;exhaust_system.cas.h5&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;pyfluent/exhaust_system&quot;</span>
+<span class="p">)</span>
+
+<a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">import_data</span></a> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;exhaust_system.dat.h5&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;pyfluent/exhaust_system&quot;</span>
+<span class="p">)</span>
+
+<span class="n">solver_session</span> <span class="o">=</span> <span class="n">pyfluent</span><span class="o">.</span><span class="n">launch_fluent</span><span class="p">(</span>
+    <span class="n">precision</span><span class="o">=</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="n">processor_count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">start_transcript</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;solver&quot;</span>
+<span class="p">)</span>
+
+<span class="n">solver_session</span><span class="o">.</span><span class="n">tui</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read_case</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">import_case</span></a><span class="p">)</span>
+<span class="n">solver_session</span><span class="o">.</span><span class="n">tui</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><a href="https://docs.python.org/dev/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">import_data</span></a><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="get-graphics-object">
+<h2>Get graphics object<a class="headerlink" href="#get-graphics-object" title="Permalink to this heading">#</a></h2>
+<p>Get the graphics object.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">graphics</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">solver_session</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-graphics-object-for-mesh-display">
+<h2>Create graphics object for mesh display<a class="headerlink" href="#create-graphics-object-for-mesh-display" title="Permalink to this heading">#</a></h2>
+<p>Create a graphics object for the mesh display.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh1</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Meshes</span><span class="p">[</span><span class="s2">&quot;mesh-1&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="show-edges">
+<h2>Show edges<a class="headerlink" href="#show-edges" title="Permalink to this heading">#</a></h2>
+<p>Show edges on the mesh.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh1</span><span class="o">.</span><span class="n">show_edges</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
+<section id="get-surfaces-list">
+<h2>Get surfaces list<a class="headerlink" href="#get-surfaces-list" title="Permalink to this heading">#</a></h2>
+<p>Get the surfaccase list.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh1</span><span class="o">.</span><span class="n">surfaces_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;in1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;in2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;in3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;out1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;solid_up:1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;solid_up:1:830&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;solid_up:1:830-shadow&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">mesh1</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_001.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_001.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="hide-edges-and-display-again">
+<h2>Hide edges and display again<a class="headerlink" href="#hide-edges-and-display-again" title="Permalink to this heading">#</a></h2>
+<p>Hide the edges and display again.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh1</span><span class="o">.</span><span class="n">show_edges</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">mesh1</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_002.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_002.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-plane-surface-xy-plane">
+<h2>Create plane-surface XY plane<a class="headerlink" href="#create-plane-surface-xy-plane" title="Permalink to this heading">#</a></h2>
+<p>Create a plane-surface XY plane.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">surf_xy_plane</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Surfaces</span><span class="p">[</span><span class="s2">&quot;xy-plane&quot;</span><span class="p">]</span>
+<span class="n">surf_xy_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;plane-surface&quot;</span>
+<span class="n">plane_surface_xy</span> <span class="o">=</span> <span class="n">surf_xy_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">plane_surface</span>
+<a href="https://docs.python.org/dev/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">plane_surface_xy</span><span class="o">.</span><span class="n">z</span></a> <span class="o">=</span> <span class="o">-</span><span class="mf">0.0441921</span>
+<span class="n">surf_xy_plane</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-3&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_003.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_003.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-plane-surface-yz-plane">
+<h2>Create plane-surface YZ plane<a class="headerlink" href="#create-plane-surface-yz-plane" title="Permalink to this heading">#</a></h2>
+<p>Create a plane-surface YZ plane.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">surf_yz_plane</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Surfaces</span><span class="p">[</span><span class="s2">&quot;yz-plane&quot;</span><span class="p">]</span>
+<span class="n">surf_yz_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;plane-surface&quot;</span>
+<span class="n">plane_surface_yz</span> <span class="o">=</span> <span class="n">surf_yz_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">plane_surface</span>
+<a href="https://docs.python.org/dev/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">plane_surface_yz</span><span class="o">.</span><span class="n">x</span></a> <span class="o">=</span> <span class="o">-</span><span class="mf">0.174628</span>
+<span class="n">surf_yz_plane</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-4&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_004.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_004.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-plane-surface-zx-plane">
+<h2>Create plane-surface ZX plane<a class="headerlink" href="#create-plane-surface-zx-plane" title="Permalink to this heading">#</a></h2>
+<p>Create a plane-surface ZX plane.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">surf_zx_plane</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Surfaces</span><span class="p">[</span><span class="s2">&quot;zx-plane&quot;</span><span class="p">]</span>
+<span class="n">surf_zx_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;plane-surface&quot;</span>
+<span class="n">plane_surface_zx</span> <span class="o">=</span> <span class="n">surf_zx_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">plane_surface</span>
+<a href="https://docs.python.org/dev/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">plane_surface_zx</span><span class="o">.</span><span class="n">y</span></a> <span class="o">=</span> <span class="o">-</span><span class="mf">0.0627297</span>
+<span class="n">surf_zx_plane</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_005.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_005.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-iso-surface-on-outlet-plane">
+<h2>Create iso-surface on outlet plane<a class="headerlink" href="#create-iso-surface-on-outlet-plane" title="Permalink to this heading">#</a></h2>
+<p>Create an iso-surface on the outlet plane.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">surf_outlet_plane</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Surfaces</span><span class="p">[</span><span class="s2">&quot;outlet-plane&quot;</span><span class="p">]</span>
+<span class="n">surf_outlet_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;iso-surface&quot;</span>
+<span class="n">iso_surf1</span> <span class="o">=</span> <span class="n">surf_outlet_plane</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">iso_surface</span>
+<span class="n">iso_surf1</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="s2">&quot;y-coordinate&quot;</span>
+<span class="n">iso_surf1</span><span class="o">.</span><span class="n">iso_value</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.125017</span>
+<span class="n">surf_outlet_plane</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-3&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_006.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_006.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-iso-surface-on-mid-plane">
+<h2>Create iso-surface on mid-plane<a class="headerlink" href="#create-iso-surface-on-mid-plane" title="Permalink to this heading">#</a></h2>
+<p>Create an iso-surface on the mid-plane.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">surf_mid_plane_x</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Surfaces</span><span class="p">[</span><span class="s2">&quot;mid-plane-x&quot;</span><span class="p">]</span>
+<span class="n">surf_mid_plane_x</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;iso-surface&quot;</span>
+<span class="n">iso_surf2</span> <span class="o">=</span> <span class="n">surf_mid_plane_x</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">iso_surface</span>
+<span class="n">iso_surf2</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="s2">&quot;x-coordinate&quot;</span>
+<span class="n">iso_surf2</span><span class="o">.</span><span class="n">iso_value</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.174</span>
+<span class="n">surf_mid_plane_x</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-4&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_007.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_007.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-iso-surface-using-velocity-magnitude">
+<h2>Create iso-surface using velocity magnitude<a class="headerlink" href="#create-iso-surface-using-velocity-magnitude" title="Permalink to this heading">#</a></h2>
+<p>Create an iso-surface using the velocity magnitude.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">surf_vel_contour</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Surfaces</span><span class="p">[</span><span class="s2">&quot;surf-vel-contour&quot;</span><span class="p">]</span>
+<span class="n">surf_vel_contour</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;iso-surface&quot;</span>
+<span class="n">iso_surf3</span> <span class="o">=</span> <span class="n">surf_vel_contour</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">iso_surface</span>
+<span class="n">iso_surf3</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="s2">&quot;velocity-magnitude&quot;</span>
+<span class="n">iso_surf3</span><span class="o">.</span><span class="n">rendering</span> <span class="o">=</span> <span class="s2">&quot;contour&quot;</span>
+<span class="n">iso_surf3</span><span class="o">.</span><span class="n">iso_value</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">surf_vel_contour</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_008.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_008.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-temperature-contour-on-mid-plane-and-outlet">
+<h2>Create temperature contour on mid-plane and outlet<a class="headerlink" href="#create-temperature-contour-on-mid-plane-and-outlet" title="Permalink to this heading">#</a></h2>
+<p>Create a temperature contour on the mid-plane and the outlet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">temperature_contour</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Contours</span><span class="p">[</span><span class="s2">&quot;contour-temperature&quot;</span><span class="p">]</span>
+<span class="n">temperature_contour</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="s2">&quot;temperature&quot;</span>
+<span class="n">temperature_contour</span><span class="o">.</span><span class="n">surfaces_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mid-plane-x&quot;</span><span class="p">,</span> <span class="s2">&quot;outlet-plane&quot;</span><span class="p">]</span>
+<span class="n">temperature_contour</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-6&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_009.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_009.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-contour-plot-of-temperature-on-manifold">
+<h2>Create contour plot of temperature on manifold<a class="headerlink" href="#create-contour-plot-of-temperature-on-manifold" title="Permalink to this heading">#</a></h2>
+<p>Create a contour plot of the temperature on the manifold.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">temperature_contour_manifold</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Contours</span><span class="p">[</span><span class="s2">&quot;contour-temperature-manifold&quot;</span><span class="p">]</span>
+<span class="n">temperature_contour_manifold</span><span class="o">.</span><span class="n">field</span> <span class="o">=</span> <span class="s2">&quot;temperature&quot;</span>
+<span class="n">temperature_contour_manifold</span><span class="o">.</span><span class="n">surfaces_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;in1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;in2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;in3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;out1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;solid_up:1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;solid_up:1:830&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">temperature_contour_manifold</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-7&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_010.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_010.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-vector">
+<h2>Create vector<a class="headerlink" href="#create-vector" title="Permalink to this heading">#</a></h2>
+<p>Create a vector on a predefined surface.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">velocity_vector</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">Vectors</span><span class="p">[</span><span class="s2">&quot;velocity-vector&quot;</span><span class="p">]</span>
+<span class="n">velocity_vector</span><span class="o">.</span><span class="n">surfaces_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;solid_up:1:830&quot;</span><span class="p">]</span>
+<span class="n">velocity_vector</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">velocity_vector</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;window-8&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_011.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_011.png" alt="post processing exhaust manifold" class = "sphx-glr-single-img"/></section>
+<section id="create-plot-object">
+<h2>Create plot object<a class="headerlink" href="#create-plot-object" title="Permalink to this heading">#</a></h2>
+<p>Create the plot object for the session.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plots_session_1</span> <span class="o">=</span> <span class="n">Plots</span><span class="p">(</span><span class="n">solver_session</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-xy-plot">
+<h2>Create XY plot<a class="headerlink" href="#create-xy-plot" title="Permalink to this heading">#</a></h2>
+<p>Create the default XY plot.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xy_plot</span> <span class="o">=</span> <span class="n">plots_session_1</span><span class="o">.</span><span class="n">XYPlots</span><span class="p">[</span><span class="s2">&quot;xy-plot&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="set-plot-surface-and-y-axis-function">
+<h2>Set plot surface and Y-axis function<a class="headerlink" href="#set-plot-surface-and-y-axis-function" title="Permalink to this heading">#</a></h2>
+<p>Set the surface on which to generate the plot and the Y-axis function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xy_plot</span><span class="o">.</span><span class="n">surfaces_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;outlet&quot;</span><span class="p">]</span>
+<span class="n">xy_plot</span><span class="o">.</span><span class="n">y_axis_function</span> <span class="o">=</span> <span class="s2">&quot;temperature&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="display-xy-plot">
+<h2>Display XY plot<a class="headerlink" href="#display-xy-plot" title="Permalink to this heading">#</a></h2>
+<p>Display the generated XY plot.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xy_plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;window-9&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_012.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_012.png" alt="XY Plot" class = "sphx-glr-single-img"/></section>
+<section id="create-residual-plot">
+<h2>Create residual plot<a class="headerlink" href="#create-residual-plot" title="Permalink to this heading">#</a></h2>
+<p>Create and display the residual plot.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">matplotlib_plots1</span> <span class="o">=</span> <span class="n">Plots</span><span class="p">(</span><span class="n">solver_session</span><span class="p">)</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="n">matplotlib_plots1</span><span class="o">.</span><span class="n">Monitors</span><span class="p">[</span><span class="s2">&quot;residual&quot;</span><span class="p">]</span>
+<span class="n">residual</span><span class="o">.</span><span class="n">monitor_set_name</span> <span class="o">=</span> <span class="s2">&quot;residual&quot;</span>
+<span class="n">residual</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;window-10&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_post_processing_exhaust_manifold_013.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_013.png" alt="residual" class = "sphx-glr-single-img"/></section>
+<section id="solve-and-plot-solution-monitors">
+<h2>Solve and plot solution monitors<a class="headerlink" href="#solve-and-plot-solution-monitors" title="Permalink to this heading">#</a></h2>
+<p>Solve and plot solution monitors.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_session</span><span class="o">.</span><span class="n">tui</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">hyb_initialization</span><span class="p">()</span>
+<span class="n">solver_session</span><span class="o">.</span><span class="n">tui</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">number_of_iterations</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">solver_session</span><span class="o">.</span><span class="n">tui</span><span class="o">.</span><span class="n">solve</span><span class="o">.</span><span class="n">iterate</span><span class="p">()</span>
+<span class="n">matplotlib_plots1</span> <span class="o">=</span> <span class="n">Plots</span><span class="p">(</span><span class="n">solver_session</span><span class="p">)</span>
+<span class="n">mass_bal_rplot</span> <span class="o">=</span> <span class="n">matplotlib_plots1</span><span class="o">.</span><span class="n">Monitors</span><span class="p">[</span><span class="s2">&quot;mass-bal-rplot&quot;</span><span class="p">]</span>
+<span class="n">mass_bal_rplot</span><span class="o">.</span><span class="n">monitor_set_name</span> <span class="o">=</span> <span class="s2">&quot;mass-bal-rplot&quot;</span>
+<span class="n">mass_bal_rplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;window-11&quot;</span><span class="p">)</span>
+
+<span class="n">matplotlib_plots1</span> <span class="o">=</span> <span class="n">Plots</span><span class="p">(</span><span class="n">solver_session</span><span class="p">)</span>
+<span class="n">point_vel_rplot</span> <span class="o">=</span> <span class="n">matplotlib_plots1</span><span class="o">.</span><span class="n">Monitors</span><span class="p">[</span><span class="s2">&quot;point-vel-rplot&quot;</span><span class="p">]</span>
+<span class="n">point_vel_rplot</span><span class="o">.</span><span class="n">monitor_set_name</span> <span class="o">=</span> <span class="s2">&quot;point-vel-rplot&quot;</span>
+<span class="n">point_vel_rplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s2">&quot;window-12&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_post_processing_exhaust_manifold_014.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_014.png" alt="mass-bal-rplot" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_post_processing_exhaust_manifold_015.png" srcset="../../_images/sphx_glr_post_processing_exhaust_manifold_015.png" alt="point-vel-rplot" class = "sphx-glr-multi-img"/></li>
+</ul>
+</section>
+<section id="close-fluent">
+<h2>Close Fluent<a class="headerlink" href="#close-fluent" title="Permalink to this heading">#</a></h2>
+<p>Close Fluent.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solver_session</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  32.247 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-00-postprocessing-post-processing-exhaust-manifold-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/9a025ab8fd5ec8428ac9b49a6901877e/post_processing_exhaust_manifold.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">post_processing_exhaust_manifold.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/10a55dff0da39607455336d06c1ae12c/post_processing_exhaust_manifold.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">post_processing_exhaust_manifold.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright (c) 2023 ANSYS, Inc. All rights reserved.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
