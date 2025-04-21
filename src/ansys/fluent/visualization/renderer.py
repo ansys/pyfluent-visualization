@@ -132,7 +132,7 @@ class GraphicsWindow:
 
         return x_size, y_size
 
-    def show(self, visualizer=None) -> None:
+    def show(self, renderer=None) -> None:
         """Render the objects in window and display the same."""
         self.window_id = graphics_windows_manager._get_unique_window_id()
         if self.window_id not in graphics_windows_manager._post_windows:
@@ -147,7 +147,7 @@ class GraphicsWindow:
                 grid=self._show_find_grid_size(self._list_of_positions)
             )
             self._visualizer._graphics_objs = self._graphics_objs
-        self._visualizer.show(self.window_id, visualizer=visualizer)
+        self._visualizer.show(self.window_id, visualizer=renderer)
 
     def save_graphic(
         self,

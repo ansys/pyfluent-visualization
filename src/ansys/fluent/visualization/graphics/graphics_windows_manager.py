@@ -114,7 +114,9 @@ class GraphicsWindow(PostWindow):
 
                 renderer = Renderer
             else:
-                renderer = get_visualizer(renderer)
+                from ansys.fluent.visualization.registrar import get_renderer
+
+                renderer = get_renderer(renderer)
         except KeyError as ex:
             raise KeyError("Please register custom plotter before using it.") from ex
         return Renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)

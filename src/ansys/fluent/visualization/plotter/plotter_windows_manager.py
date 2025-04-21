@@ -42,7 +42,6 @@ from ansys.fluent.visualization.post_windows_manager import (
     PostWindow,
     PostWindowsManager,
 )
-from ansys.fluent.visualization.registrar import get_visualizer
 
 
 class _ProcessPlotterHandle:
@@ -137,7 +136,9 @@ class PlotterWindow(PostWindow):
 
             plotter = pyviz.Renderer_2D
         try:
-            plotter = get_visualizer(plotter)
+            from ansys.fluent.visualization import get_renderer
+
+            plotter = get_renderer(plotter)
         except KeyError as ex:
             raise KeyError("Please register custom plotter before using it.") from ex
         return (
