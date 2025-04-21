@@ -31,7 +31,7 @@ from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
 
 class GraphicsWindow:
     """Create a graphics window to perform operations like display,
-    save, animate, etc. on graphics and plot objects.
+    save, animate on graphics and plot objects.
 
     Examples
     --------
