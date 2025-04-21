@@ -111,7 +111,7 @@ class PlotterWindow(PostWindow):
         self.id: str = id
         self.post_object = None
         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter(
-            plotter
+            plotter_string=plotter
         )
         self.close: bool = False
         self.refresh: bool = False
@@ -130,15 +130,15 @@ class PlotterWindow(PostWindow):
         self.plotter.show()
 
     # private methods
-    def _get_plotter(self, plotter=None):
-        if plotter is None:
+    def _get_plotter(self, plotter_string=None):
+        if plotter_string is None:
             import ansys.fluent.visualization as pyviz
 
-            plotter = pyviz.Renderer_2D
+            plotter_string = pyviz.Renderer_2D
         try:
             from ansys.fluent.visualization import get_renderer
 
-            plotter = get_renderer(plotter)
+            plotter = get_renderer(plotter_string)
         except KeyError as ex:
             raise KeyError("Please register custom plotter before using it.") from ex
         return (

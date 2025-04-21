@@ -87,7 +87,7 @@ class GraphicsWindow(PostWindow):
         self.post_object: GraphicsDefn = post_object
         self.id: str = id
         self._grid = grid
-        self.renderer = self._get_renderer(renderer)
+        self.renderer = self._get_renderer(renderer_string=renderer)
         self.overlay: bool = False
         self.fetch_data: bool = False
         self.show_window: bool = True
@@ -101,13 +101,13 @@ class GraphicsWindow(PostWindow):
         self._opacity = None
 
     # private methods
-    def _get_renderer(self, renderer=None):
-        if renderer is None:
+    def _get_renderer(self, renderer_string=None):
+        if renderer_string is None:
             import ansys.fluent.visualization as pyviz
 
-            renderer = pyviz.Renderer_3D
+            renderer_string = pyviz.Renderer_3D
         try:
-            if renderer == "pyvista":
+            if renderer_string == "pyvista":
                 from ansys.fluent.visualization.graphics.pyvista.graphics_defns import (
                     Renderer,
                 )
@@ -116,7 +116,7 @@ class GraphicsWindow(PostWindow):
             else:
                 from ansys.fluent.visualization.registrar import get_renderer
 
-                renderer = get_renderer(renderer)
+                renderer = get_renderer(renderer_string)
         except KeyError as ex:
             raise KeyError("Please register custom plotter before using it.") from ex
         return renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)
