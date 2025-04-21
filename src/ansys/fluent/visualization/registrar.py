@@ -20,12 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module for registering and accessing graphics renderer and plotters."""
+"""Module for registering and accessing graphics renderers and plotters."""
 
-from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import Plotter as MPlt
-from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter as PPlt
+from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
+    Plotter as MatplotlibPlotter,
+)
+from ansys.fluent.visualization.plotter.pyvista.plotter_defns import (
+    Plotter as PyVistaPlotter,
+)
 
-_visualizer = {"matplotlib": MPlt, "pyvista": PPlt}
+_visualizer = {"matplotlib": MatplotlibPlotter, "pyvista": PyVistaPlotter}
 
 
 def register_renderer(name, renderer):
@@ -34,5 +38,5 @@ def register_renderer(name, renderer):
 
 
 def get_renderer(key: str):
-    """Gett a registered plotter or graphics renderer by name."""
+    """Get a registered plotter or graphics renderer by name."""
     return _visualizer[key]

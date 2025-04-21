@@ -100,7 +100,7 @@ class _ProcessPlotterHandle:
 class PlotterWindow(PostWindow):
     """Provides for managing Plotter windows."""
 
-    def __init__(self, id: str, plotter=None):
+    def __init__(self, id: str, plotter: str = None):
         """Instantiate a plotter window.
 
         Parameters

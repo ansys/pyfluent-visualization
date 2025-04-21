@@ -71,7 +71,7 @@ class GraphicsWindow(PostWindow):
         id: str,
         post_object: GraphicsDefn,
         grid: tuple | None = (1, 1),
-        renderer=None,
+        renderer: str = None,
     ):
         """Instantiate a Graphics window.
 
