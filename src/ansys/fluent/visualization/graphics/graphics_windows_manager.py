@@ -48,9 +48,9 @@ from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
     XYPlotDataExtractor,
 )
-from ansys.fluent.visualization.post_windows_manager import (
-    PostWindow,
-    PostWindowsManager,
+from ansys.fluent.visualization.visualization_windows_manager import (
+    VisualizationWindow,
+    VisualizationWindowsManager,
 )
 
 
@@ -63,7 +63,7 @@ class FieldDataType(Enum):
     Pathlines = "Pathlines"
 
 
-class GraphicsWindow(PostWindow):
+class GraphicsWindow(VisualizationWindow):
     """Provides for managing Graphics windows."""
 
     def __init__(
@@ -534,7 +534,9 @@ class GraphicsWindow(PostWindow):
         return refresh
 
 
-class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+class GraphicsWindowsManager(
+    VisualizationWindowsManager, metaclass=AbstractSingletonMeta
+):
     """Provides for managing Graphics windows."""
 
     _condition = threading.Condition()

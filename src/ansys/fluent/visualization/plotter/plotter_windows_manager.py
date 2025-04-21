@@ -38,9 +38,9 @@ from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
 from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
-from ansys.fluent.visualization.post_windows_manager import (
-    PostWindow,
-    PostWindowsManager,
+from ansys.fluent.visualization.visualization_windows_manager import (
+    VisualizationWindow,
+    VisualizationWindowsManager,
 )
 
 
@@ -97,7 +97,7 @@ class _ProcessPlotterHandle:
             pass
 
 
-class PlotterWindow(PostWindow):
+class PlotterWindow(VisualizationWindow):
     """Provides for managing Plotter windows."""
 
     def __init__(self, id: str, plotter: str = None):
@@ -254,7 +254,9 @@ class _MonitorPlot:
             )
 
 
-class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+class PlotterWindowsManager(
+    VisualizationWindowsManager, metaclass=AbstractSingletonMeta
+):
     """Provides for managing Plotter windows."""
 
     def __init__(self):
