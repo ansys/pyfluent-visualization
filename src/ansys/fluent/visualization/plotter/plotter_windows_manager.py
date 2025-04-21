@@ -135,7 +135,7 @@ class PlotterWindow(PostWindow):
         if plotter is None:
             import ansys.fluent.visualization as pyviz
 
-            plotter = pyviz.PLOTTER
+            plotter = pyviz.Renderer_2D
         try:
             plotter = get_visualizer(plotter)
         except KeyError as ex:

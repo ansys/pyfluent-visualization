@@ -29,7 +29,7 @@ class AbstractPlotter(ABC):
     """Abstract class for plotter."""
 
     @abstractmethod
-    def plot(self, data: dict) -> None:
+    def plot(self, data: dict, position, subplot_title) -> None:
         """Draw plot in window.
 
         Parameters
@@ -47,11 +47,6 @@ class AbstractPlotter(ABC):
     @abstractmethod
     def close(self):
         """Close plotter window."""
-        pass
-
-    @abstractmethod
-    def is_closed(self):
-        """Check if the plotter window is closed."""
         pass
 
     @abstractmethod

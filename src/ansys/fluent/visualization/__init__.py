@@ -29,8 +29,8 @@ except ModuleNotFoundError:
 
 _VERSION_INFO = None
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
-RENDERER = "pyvista"
-PLOTTER = "pyvista"
+Renderer_3D = "pyvista"
+Renderer_2D = "pyvista"
 SINGLE_WINDOW = False
 
 
