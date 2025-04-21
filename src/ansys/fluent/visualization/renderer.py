@@ -147,7 +147,7 @@ class GraphicsWindow:
                 grid=self._show_find_grid_size(self._list_of_positions)
             )
             self._visualizer._graphics_objs = self._graphics_objs
-        self._visualizer.show(self.window_id, visualizer=renderer)
+        self._visualizer.show(self.window_id, renderer=renderer)
 
     def save_graphic(
         self,

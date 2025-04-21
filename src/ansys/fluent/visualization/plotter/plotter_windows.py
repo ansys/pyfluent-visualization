@@ -55,11 +55,11 @@ class _PlotterWindow:
             else:
                 self._subplot_titles.append("XYPlot")
 
-    def show(self, win_id=None, visualizer=None) -> None:
+    def show(self, win_id=None, renderer=None) -> None:
         """Render the objects in window and display the same."""
         self._populate_subplot_titles()
         self.window_id = plotter_windows_manager.open_window(
-            window_id=win_id, plotter=visualizer
+            window_id=win_id, plotter=renderer
         )
         self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
         self.plotter = self.plotter_window.plotter

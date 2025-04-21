@@ -119,7 +119,7 @@ class GraphicsWindow(PostWindow):
                 renderer = get_renderer(renderer)
         except KeyError as ex:
             raise KeyError("Please register custom plotter before using it.") from ex
-        return Renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)
+        return renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""
@@ -581,7 +581,10 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             return self._post_windows[window_id].renderer.plotter
 
     def open_window(
-        self, window_id: str | None = None, grid: tuple | None = (1, 1)
+        self,
+        window_id: str | None = None,
+        grid: tuple | None = (1, 1),
+        renderer=None,
     ) -> str:
         """Open a new window.
 
@@ -602,7 +605,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             if not window_id:
                 window_id = self._get_unique_window_id()
             if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
-                self._open_window_notebook(window_id, grid)
+                self._open_window_notebook(window_id, grid, renderer=renderer)
             else:
                 self._open_and_plot_console(None, window_id, grid=grid)
             return window_id
@@ -893,13 +896,16 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             self._condition.wait()
 
     def _open_window_notebook(
-        self, window_id: str, grid: tuple | None = (1, 1)
+        self,
+        window_id: str,
+        grid: tuple | None = (1, 1),
+        renderer=None,
     ) -> pv.Plotter:
         window = self._post_windows.get(window_id)
         if window and not window.close and window.refresh:
             window.refresh = False
         else:
-            window = GraphicsWindow(window_id, None, grid)
+            window = GraphicsWindow(window_id, None, grid, renderer=renderer)
             self._post_windows[window_id] = window
         return window
 
