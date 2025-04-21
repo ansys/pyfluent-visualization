@@ -63,13 +63,16 @@ class FieldDataType(Enum):
     Pathlines = "Pathlines"
 
 
-from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
-
-
 class GraphicsWindow(PostWindow):
     """Provides for managing Graphics windows."""
 
-    def __init__(self, id: str, post_object: GraphicsDefn, grid: tuple | None = (1, 1)):
+    def __init__(
+        self,
+        id: str,
+        post_object: GraphicsDefn,
+        grid: tuple | None = (1, 1),
+        renderer=None,
+    ):
         """Instantiate a Graphics window.
 
         Parameters
@@ -83,7 +86,8 @@ class GraphicsWindow(PostWindow):
         """
         self.post_object: GraphicsDefn = post_object
         self.id: str = id
-        self.renderer = Renderer(id, in_notebook(), get_config()["blocking"], grid)
+        self._grid = grid
+        self.renderer = self._get_renderer(renderer)
         self.overlay: bool = False
         self.fetch_data: bool = False
         self.show_window: bool = True
@@ -95,6 +99,25 @@ class GraphicsWindow(PostWindow):
         self._data = {}
         self._subplot = None
         self._opacity = None
+
+    # private methods
+    def _get_renderer(self, renderer=None):
+        if renderer is None:
+            import ansys.fluent.visualization as pyviz
+
+            renderer = pyviz.Renderer_3D
+        try:
+            if renderer == "pyvista":
+                from ansys.fluent.visualization.graphics.pyvista.graphics_defns import (
+                    Renderer,
+                )
+
+                renderer = Renderer
+            else:
+                renderer = get_visualizer(renderer)
+        except KeyError as ex:
+            raise KeyError("Please register custom plotter before using it.") from ex
+        return Renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""

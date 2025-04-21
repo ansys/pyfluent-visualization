@@ -186,7 +186,7 @@ class _XYPlot:
                     self._get_plotter()
                 )
                 self.plotter.set_properties(properties)
-        self.plotter.plot(
+        self.plotter.render(
             xy_data,
             grid=grid,
             position=position,
@@ -244,7 +244,7 @@ class _MonitorPlot:
                 )
                 self.plotter.set_properties(properties)
         if xy_data:
-            self.plotter.plot(
+            self.plotter.render(
                 xy_data,
                 grid=grid,
                 position=position,
