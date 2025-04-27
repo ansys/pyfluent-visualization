@@ -6,6 +6,7 @@
 
 ## Individual Contributors
 
+* [alikasim72](https://github.com/alikasim72)
 * [Anurag Kulshrestha](https://github.com/akulshre-qa)
 * [Aseem Jain](https://github.com/ajain-work)
 * [Dan Williams](https://github.com/dnwillia-work)
@@ -19,4 +20,3 @@
 * [Raphael Luciano](https://github.com/raph-luc)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [Yogesh Patel](https://github.com/ypatel-qa)
-* [alikasim72](https://github.com/alikasim72)
