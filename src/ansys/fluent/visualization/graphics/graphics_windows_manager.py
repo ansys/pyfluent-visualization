@@ -102,6 +102,8 @@ class GraphicsWindow(VisualizationWindow):
 
     # private methods
     def _get_renderer(self, renderer_string=None):
+        from ansys.fluent.visualization.registrar import _visualizer, get_renderer
+
         if renderer_string is None:
             import ansys.fluent.visualization as pyviz
 
@@ -114,11 +116,23 @@ class GraphicsWindow(VisualizationWindow):
 
                 renderer = Renderer
             else:
-                from ansys.fluent.visualization.registrar import get_renderer
-
                 renderer = get_renderer(renderer_string)
         except KeyError as ex:
-            raise KeyError("Please register custom plotter before using it.") from ex
+            error_message = (
+                f"Error: Renderer '{renderer_string}' not found or registered. "
+                "We tried to load the renderer but encountered an issue.\n"
+                "Possible reasons could include:\n"
+                "  - The renderer name might be misspelled.\n"
+                "  - The renderer might not be installed or available.\n"
+                "  - There might be an issue with the system configuration.\n\n"
+                "Currently available renderers are: "
+                f"{', '.join(_visualizer.keys())}.\n"
+                "Please ensure that the renderer name is correct or register the"
+                " renderer if it is custom. If the issue persists, check your"
+                " system configuration."
+            )
+
+            raise KeyError(error_message) from ex
         return renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):

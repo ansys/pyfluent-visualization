@@ -38,7 +38,7 @@ from ansys.fluent.visualization import set_config
 set_config(blocking=False)
 
 import ansys.fluent.core as pyfluent
-from ansys.fluent.core import examples
+from ansys.fluent.core import SolverEvent, examples
 
 import_case = examples.download_file(
     file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
@@ -48,16 +48,18 @@ import_data = examples.download_file(
     file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
 )
 
-session = pyfluent.launch_fluent(
-    precision="double",
-    processor_count=2,
-    start_transcript=False,
-    mode="solver",
-    ui_mode="gui",
-)
+# session = pyfluent.launch_fluent(
+#     precision="double",
+#     processor_count=2,
+#     start_transcript=False,
+#     mode="solver",
+#     ui_mode="gui",
+# )
 
-session.settings.file.read_case(file_name=import_case)
-session.settings.file.read_data(file_name=import_data)
+session = pyfluent.connect_to_fluent(ip="10.18.44.105", port=53232, password="iqj32acz")
+
+# session.settings.file.read_case(file_name=import_case)
+# session.settings.file.read_data(file_name=import_data)
 
 from ansys.fluent.visualization import (
     Contour,
@@ -158,10 +160,10 @@ def initialize_call_back(session, event_info):
     p_mtr.refresh(session.id)
 
 
-session.events.register_callback("InitializedEvent", initialize_call_back)
-session.events.register_callback("DataReadEvent", initialize_call_back)
+session.events.register_callback(SolverEvent.SOLUTION_INITIALIZED, initialize_call_back)
+session.events.register_callback(SolverEvent.DATA_LOADED, initialize_call_back)
 session.events.register_callback(
-    "IterationEndedEvent", auto_refersh_call_back_iteration
+    SolverEvent.ITERATION_ENDED, auto_refersh_call_back_iteration
 )
 
 p_cont.animate(session.id)

@@ -63,12 +63,12 @@ class _PlotterWindow:
         )
         self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
         self.plotter = self.plotter_window.plotter
-        for i in range(len(self._plot_objs)):
+        for i, plots_dict in enumerate(self._plot_objs):
             plotter_windows_manager.plot(
-                object=self._plot_objs[i]["object"].obj,
+                object=plots_dict["object"].obj,
                 window_id=self.window_id,
                 grid=self._grid,
-                position=self._plot_objs[i]["position"],
+                position=plots_dict["position"],
                 subplot_titles=self._subplot_titles,
                 show=False,
             )

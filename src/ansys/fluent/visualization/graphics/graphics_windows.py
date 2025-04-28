@@ -59,14 +59,14 @@ class _GraphicsWindow:
         )
         self._renderer = self.graphics_window.renderer
         self.plotter = self.graphics_window.renderer.plotter
-        for i in range(len(self._graphics_objs)):
+        for i, graphics_dict in enumerate(self._graphics_objs):
             graphics_windows_manager.add_graphics(
-                object=self._graphics_objs[i]["object"].obj,
+                object=graphics_dict["object"].obj,
                 window_id=self.window_id,
                 fetch_data=True,
                 overlay=True,
-                position=self._graphics_objs[i]["position"],
-                opacity=self._graphics_objs[i]["opacity"],
+                position=graphics_dict["position"],
+                opacity=graphics_dict["opacity"],
             )
         if pyviz.SINGLE_WINDOW:
             global _qt_window

@@ -131,16 +131,30 @@ class PlotterWindow(VisualizationWindow):
 
     # private methods
     def _get_plotter(self, plotter_string=None):
+        from ansys.fluent.visualization.registrar import _visualizer, get_renderer
+
         if plotter_string is None:
             import ansys.fluent.visualization as pyviz
 
             plotter_string = pyviz.Renderer_2D
         try:
-            from ansys.fluent.visualization import get_renderer
-
             plotter = get_renderer(plotter_string)
         except KeyError as ex:
-            raise KeyError("Please register custom plotter before using it.") from ex
+            error_message = (
+                f"Error: Renderer '{plotter_string}' not found or registered. "
+                "We tried to load the renderer but encountered an issue.\n"
+                "Possible reasons could include:\n"
+                "  - The renderer name might be misspelled.\n"
+                "  - The renderer might not be installed or available.\n"
+                "  - There might be an issue with the system configuration.\n\n"
+                "Currently available renderers are: "
+                f"{', '.join(_visualizer.keys())}.\n"
+                "Please ensure that the renderer name is correct or register the"
+                " renderer if it is custom. If the issue persists, check your"
+                " system configuration."
+            )
+
+            raise KeyError(error_message) from ex
         return (
             plotter(self.id)
             if in_notebook() or get_config()["blocking"]
