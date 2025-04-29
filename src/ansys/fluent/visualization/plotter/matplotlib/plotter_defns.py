@@ -254,7 +254,7 @@ class ProcessPlotter(Plotter):
                         name = data["save_graphic"]
                         self.save_graphic(name)
                     elif "data" in data:
-                        self.plot(
+                        self.render(
                             data=data["data"],
                             grid=data["grid"],
                             position=data["position"],

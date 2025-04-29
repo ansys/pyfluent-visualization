@@ -875,9 +875,10 @@ class GraphicsWindowsManager(
             self._app.processEvents()
         with self._condition:
             for window in self._post_windows.values():
-                plotter = window.renderer.plotter
-                plotter.close()
-                plotter.app.quit()
+                if window:
+                    plotter = window.renderer.plotter
+                    plotter.close()
+                    plotter.app.quit()
             self._post_windows.clear()
             self._condition.notify()
 
@@ -963,7 +964,8 @@ class GraphicsWindowsManager(
                 for window_id in [
                     window_id
                     for window_id, window in self._post_windows.items()
-                    if not window.renderer.plotter._closed
+                    if window
+                    and not window.renderer.plotter._closed
                     and (
                         not session_id
                         or session_id == window.post_object._api_helper.id()

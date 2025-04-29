@@ -215,9 +215,7 @@ class GraphicsWindow:
             Overlay graphics over existing graphics.
         """
         if self.window_id:
-            self._visualizer.refresh(
-                windows_id=[self.window_id], session_id=session_id, overlay=overlay
-            )
+            self._visualizer.refresh(session_id=session_id, overlay=overlay)
 
     def animate(
         self,
@@ -238,7 +236,7 @@ class GraphicsWindow:
             If not implemented.
         """
         if self.window_id:
-            self._visualizer.animate(windows_id=[self.window_id], session_id=session_id)
+            self._visualizer.animate(session_id=session_id)
 
     def close(
         self,
@@ -254,4 +252,4 @@ class GraphicsWindow:
            are closed.
         """
         if self.window_id:
-            self._visualizer.close(windows_id=[self.window_id], session_id=session_id)
+            self._visualizer.close(session_id=session_id)

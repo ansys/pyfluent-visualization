@@ -64,7 +64,7 @@ class _ProcessPlotterHandle:
         self.plot_process.start()
         FluentConnection._monitor_thread.cbs.append(self.close)
 
-    def plot(self, data, grid=(1, 1), position=0, show=True, subplot_titles=[]):
+    def render(self, data, grid=(1, 1), position=0, show=True, subplot_titles=[]):
         self.plot_pipe.send(
             {"data": data, "grid": grid, "position": position, "show": show}
         )
@@ -383,6 +383,7 @@ class PlotterWindowsManager(
         self,
         session_id: Optional[str] = "",
         windows_id: Optional[List[str]] = [],
+        overlay: Optional[bool] = None,
     ) -> None:
         """Refresh windows.
 

@@ -97,6 +97,7 @@ class _PlotterWindow:
     def refresh(
         self,
         session_id: str | None = "",
+        overlay: bool | None = None,
     ) -> None:
         """Refresh windows.
 

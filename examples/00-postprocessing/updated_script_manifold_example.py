@@ -48,18 +48,16 @@ import_data = examples.download_file(
     file_name="exhaust_system.dat.h5", directory="pyfluent/exhaust_system"
 )
 
-# session = pyfluent.launch_fluent(
-#     precision="double",
-#     processor_count=2,
-#     start_transcript=False,
-#     mode="solver",
-#     ui_mode="gui",
-# )
+session = pyfluent.launch_fluent(
+    precision="double",
+    processor_count=2,
+    start_transcript=False,
+    mode="solver",
+    ui_mode="gui",
+)
 
-session = pyfluent.connect_to_fluent(ip="10.18.44.105", port=53232, password="iqj32acz")
-
-# session.settings.file.read_case(file_name=import_case)
-# session.settings.file.read_data(file_name=import_data)
+session.settings.file.read_case(file_name=import_case)
+session.settings.file.read_data(file_name=import_data)
 
 from ansys.fluent.visualization import (
     Contour,
