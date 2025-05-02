@@ -47,6 +47,9 @@ def version_info() -> str:
 
 
 from enum import Enum
+import warnings
+
+from ansys.fluent.core.pyfluent_warnings import PyFluentDeprecationWarning
 
 from ansys.fluent.visualization.containers import (  # noqa: F401
     Contour,
@@ -68,6 +71,8 @@ from ansys.fluent.visualization.renderer import GraphicsWindow
 
 
 class View(str, Enum):
+    """Available view options."""
+
     XY = "xy"
     XZ = "xz"
     YX = "yx"
@@ -98,9 +103,11 @@ class _ViewWrapper:
         return getattr(self._value, attr)
 
     def allowed_values(self):
+        """List of allowed views."""
         return list(View)
 
     def set(self, val):
+        """Set view."""
         if isinstance(val, str):
             val = View(val)
         elif not isinstance(val, View):
@@ -109,7 +116,10 @@ class _ViewWrapper:
 
 
 class Config:
+    """Set the configuration variables for visualization."""
+
     def __init__(self):
+        """__init__ method of Config class."""
         self._interactive = True
         self._view = _ViewWrapper()
         self._single_window = False
@@ -118,34 +128,42 @@ class Config:
 
     @property
     def interactive(self):
+        """Boolean flag to access mode (interactive or non-interactive)."""
         return self._interactive
 
     @interactive.setter
     def interactive(self, val: bool):
+        """Set mode (interactive or non-interactive)."""
         self._interactive = bool(val)
 
     @property
     def single_window(self):
+        """Whether single Qt window is activated."""
         return self._single_window
 
     @single_window.setter
     def single_window(self, val: bool):
+        """Activate (or Deactivate) single Qt window."""
         self._single_window = bool(val)
 
     @property
     def view(self):
+        """Returns the camera angle set for displaying graphics."""
         return self._view
 
     @view.setter
     def view(self, val):
+        """Sets the camera angle set for displaying graphics."""
         self._view.set(val)
 
     @property
     def two_dimensional_renderer(self):
+        """Access the default renderer for displaying 2D plots."""
         return self._two_dimensional_renderer
 
     @two_dimensional_renderer.setter
     def two_dimensional_renderer(self, val):
+        """Sets the default renderer for displaying 2D plots."""
         if isinstance(val, str):
             if val in _visualizer:
                 self._two_dimensional_renderer = val
@@ -156,10 +174,12 @@ class Config:
 
     @property
     def three_dimensional_renderer(self):
+        """Access the default renderer for displaying 3D graphics."""
         return self._three_dimensional_renderer
 
     @three_dimensional_renderer.setter
     def three_dimensional_renderer(self, val):
+        """Sets the default renderer for displaying 3D graphics."""
         if isinstance(val, str):
             if val in _visualizer:
                 self._three_dimensional_renderer = val
@@ -169,7 +189,25 @@ class Config:
                 )
 
     def get_available_renderers(self):
+        """Access list of available renderers."""
         return list(_visualizer)
 
 
 config = Config()
+
+
+def set_config(blocking: bool = False, set_view_on_display: str = "isometric"):
+    """Set visualization configuration."""
+    warnings.warn(
+        "Please use the module level 'config' instead.", PyFluentDeprecationWarning
+    )
+    config.interactive = not blocking
+    config.view = set_view_on_display
+
+
+def get_config():
+    """Set visualization configuration."""
+    warnings.warn(
+        "Please use the module level 'config' instead.", PyFluentDeprecationWarning
+    )
+    return {"blocking": not config.interactive, "set_view_on_display": config.view}
