@@ -137,7 +137,7 @@ class GraphicsWindow:
         self.window_id = graphics_windows_manager._get_unique_window_id()
         if self.window_id not in graphics_windows_manager._post_windows:
             graphics_windows_manager._post_windows[self.window_id] = None
-        if self._all_plt_objs() and not pyviz.SINGLE_WINDOW:
+        if self._all_plt_objs() and not pyviz.config.single_window:
             self._visualizer = _PlotterWindow(
                 grid=self._show_find_grid_size(self._list_of_positions)
             )

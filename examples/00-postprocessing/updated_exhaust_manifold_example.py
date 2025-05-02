@@ -65,12 +65,13 @@ from ansys.fluent.visualization import (
     Surface,
     Vector,
     XYPlot,
-    set_config,
+    config,
 )
 
 pyfluent.CONTAINER_MOUNT_PATH = pyfluent.EXAMPLES_PATH
 
-set_config(blocking=True, set_view_on_display="isometric")
+config.interactive = False
+config.view = "isometric"
 
 ###############################################################################
 # Download files and launch Fluent

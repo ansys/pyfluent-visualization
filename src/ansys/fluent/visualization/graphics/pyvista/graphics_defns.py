@@ -48,7 +48,7 @@ class Renderer(AbstractRenderer):
             else BackgroundPlotter(
                 title=f"PyFluent ({win_id})",
                 shape=grid,
-                show=False if pyviz.SINGLE_WINDOW else True,
+                show=False if pyviz.config.single_window else True,
             )
         )
         self._init_properties()

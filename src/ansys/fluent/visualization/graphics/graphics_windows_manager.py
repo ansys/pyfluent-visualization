@@ -43,7 +43,6 @@ except ModuleNotFoundError:
     BackgroundPlotter = None
 
 import ansys.fluent.visualization as pyviz
-from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
     XYPlotDataExtractor,
@@ -105,9 +104,7 @@ class GraphicsWindow(VisualizationWindow):
         from ansys.fluent.visualization.registrar import _visualizer, get_renderer
 
         if renderer_string is None:
-            import ansys.fluent.visualization as pyviz
-
-            renderer_string = pyviz.Renderer_3D
+            renderer_string = pyviz.config.three_dimensional_renderer
         try:
             if renderer_string == "pyvista":
                 from ansys.fluent.visualization.graphics.pyvista.graphics_defns import (
@@ -133,7 +130,9 @@ class GraphicsWindow(VisualizationWindow):
             )
 
             raise KeyError(error_message) from ex
-        return renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)
+        return renderer(
+            self.id, in_notebook(), not pyviz.config.interactive, self._grid
+        )
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""
@@ -188,7 +187,7 @@ class GraphicsWindow(VisualizationWindow):
             self._display_monitor_plot(position, opacity)
         if self.animate:
             self.renderer.write_frame()
-        self.renderer._set_camera(get_config()["set_view_on_display"])
+        self.renderer._set_camera(pyviz.config.view)
 
     def add_graphics(self, position, opacity=1):
         """Fetch and render graphics."""
@@ -620,7 +619,11 @@ class GraphicsWindowsManager(
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
+            if (
+                in_notebook()
+                or not pyviz.config.interactive
+                or pyviz.config.single_window
+            ):
                 self._open_window_notebook(window_id, grid, renderer=renderer)
             else:
                 self._open_and_plot_console(None, window_id, grid=grid)
@@ -679,7 +682,11 @@ class GraphicsWindowsManager(
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
+            if (
+                in_notebook()
+                or not pyviz.config.interactive
+                or pyviz.config.single_window
+            ):
                 self._plot_notebook(object, window_id, fetch_data, overlay)
             else:
                 self._open_and_plot_console(object, window_id, fetch_data, overlay)
@@ -718,7 +725,11 @@ class GraphicsWindowsManager(
         if not isinstance(object, (GraphicsDefn, PlotDefn)):
             raise RuntimeError("Object type currently not supported.")
         with self._condition:
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
+            if (
+                in_notebook()
+                or not pyviz.config.interactive
+                or pyviz.config.single_window
+            ):
                 self._add_graphics_in_notebook(
                     object, window_id, fetch_data, overlay, position, opacity
                 )
@@ -730,7 +741,11 @@ class GraphicsWindowsManager(
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
         with self._condition:
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
+            if (
+                in_notebook()
+                or not pyviz.config.interactive
+                or pyviz.config.single_window
+            ):
                 self._show_graphics_in_notebook(window_id)
 
     def save_graphic(
@@ -837,7 +852,7 @@ class GraphicsWindowsManager(
             for window_id in windows_id:
                 window = self._post_windows.get(window_id)
                 if window:
-                    if in_notebook() or get_config()["blocking"]:
+                    if in_notebook() or not pyviz.config.interactive:
                         window.renderer.plotter.close()
                     window.close = True
 
