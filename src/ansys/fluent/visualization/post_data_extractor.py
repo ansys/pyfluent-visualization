@@ -27,6 +27,7 @@ from typing import Dict
 
 from ansys.api.fluent.v0.field_data_pb2 import DataLocation, PayloadTag
 from ansys.fluent.core.field_data_interfaces import (
+    ScalarFieldDataRequest,
     SurfaceDataType,
     SurfaceFieldDataRequest,
 )
@@ -156,51 +157,24 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
         # get scalar field data
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
-        transaction.add_scalar_fields_request(
+        scalar_request = ScalarFieldDataRequest(
             field_name=field,
             surfaces=surface_ids,
             node_value=node_values,
             boundary_value=boundary_values,
         )
-
-        location_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.NODE_LOCATION]
-            if node_values
-            else _FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION]
-        )
-        boundary_value_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.BOUNDARY_VALUES]
-            if boundary_values
-            else 0
-        )
-
         try:
-            fields = transaction.get_fields()()
-            data_tag = location_tag | boundary_value_tag
-            scalar_field_data = (
-                fields.get(data_tag)
-                or fields[
-                    (
-                        ("type", "scalar-field"),
-                        (
-                            "dataLocation",
-                            (
-                                DataLocation.Nodes
-                                if node_values
-                                else DataLocation.Elements
-                            ),
-                        ),
-                        ("boundaryValues", boundary_values),
-                    )
-                ]
-            )
-            surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
+            fields = transaction.add_requests(
+                surf_request, scalar_request
+            ).get_response()
+            scalar_field_data = fields.get_field_data(scalar_request)
+            surface_data = fields.get_field_data(surf_request)
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:

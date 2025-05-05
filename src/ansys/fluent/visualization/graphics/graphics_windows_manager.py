@@ -398,9 +398,11 @@ class GraphicsWindow(VisualizationWindow):
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Contours].items():
-            if "vertices" not in surface_data or "faces" not in surface_data:
+            if not all(
+                hasattr(surface_data, attr) for attr in ("vertices", "connectivity")
+            ):
                 continue
-            surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
+            surface_data.vertices.shape = surface_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(surface_data)
             if node_values:
                 mesh.point_data[field] = surface_data[obj.field()]
