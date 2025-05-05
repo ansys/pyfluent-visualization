@@ -35,7 +35,7 @@ from ansys.fluent.visualization import Graphics, Plots
 @pytest.fixture(autouse=True)
 def patch_mock_api_helper(mocker) -> None:
     mocker.patch(
-        "ansys.fluent.core.post_objects.post_helper.PostAPIHelper",
+        "ansys.fluent.interface.post_objects.post_helper.PostAPIHelper",
         MockAPIHelper,
     )
 

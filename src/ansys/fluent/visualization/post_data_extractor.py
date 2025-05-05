@@ -26,12 +26,13 @@ import itertools
 from typing import Dict
 
 from ansys.api.fluent.v0.field_data_pb2 import DataLocation, PayloadTag
-from ansys.fluent.core.post_objects.post_object_definitions import (
+from ansys.fluent.core.services.field_data import SurfaceDataType, _FieldDataConstants
+import numpy as np
+
+from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
-from ansys.fluent.core.services.field_data import SurfaceDataType, _FieldDataConstants
-import numpy as np
 
 
 class ServerDataRequestError(RuntimeError):

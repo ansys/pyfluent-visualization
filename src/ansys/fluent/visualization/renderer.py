@@ -23,6 +23,10 @@
 """A wrapper to improve the user interface of graphics."""
 import warnings
 
+from ansys.fluent.interface.post_objects.post_object_definitions import (
+    GraphicsDefn,
+    PlotDefn,
+)
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.graphics.graphics_windows import _GraphicsWindow
@@ -78,8 +82,6 @@ class GraphicsWindow:
             Transparency of the sub-plot.
         """
         self._list_of_positions.append(position)
-        from ansys.fluent.core.post_objects.post_object_definitions import GraphicsDefn
-
         if isinstance(graphics_obj.obj, GraphicsDefn):
             locals()["object"] = locals().pop("graphics_obj")
             self._graphics_objs.append({**locals()})
@@ -104,8 +106,6 @@ class GraphicsWindow:
             Title of the sub-plot.
         """
         self._list_of_positions.append(position)
-        from ansys.fluent.core.post_objects.post_object_definitions import PlotDefn
-
         if isinstance(plot_obj.obj, PlotDefn):
             locals()["object"] = locals().pop("plot_obj")
             self._graphics_objs.append({**locals()})
@@ -113,8 +113,6 @@ class GraphicsWindow:
             warnings.warn("Only 2D plot objects are supported.")
 
     def _all_plt_objs(self):
-        from ansys.fluent.core.post_objects.post_object_definitions import PlotDefn
-
         for obj in self._graphics_objs:
             if not isinstance(obj["object"].obj, PlotDefn):
                 return False
@@ -134,6 +132,19 @@ class GraphicsWindow:
 
     def show(self, renderer=None) -> None:
         """Render the objects in window and display the same."""
+        if pyviz.config.interactive:
+            allowed = {"pyvista", "matplotlib"}
+            check = (
+                renderer not in allowed
+                if renderer
+                else pyviz.config.two_dimensional_renderer not in allowed
+                or pyviz.config.three_dimensional_renderer not in allowed
+            )
+            if check:
+                raise NotImplementedError(
+                    "Interactive mode is only available for pyvista and matplotlib."
+                )
+
         self.window_id = graphics_windows_manager._get_unique_window_id()
         if self.window_id not in graphics_windows_manager._post_windows:
             graphics_windows_manager._post_windows[self.window_id] = None

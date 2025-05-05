@@ -28,7 +28,7 @@ PostWindowManager is container for VisualizationWindow.
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional, Union
 
-from ansys.fluent.core.post_objects.post_object_definitions import (
+from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
