@@ -30,6 +30,7 @@ from ansys.fluent.core.field_data_interfaces import (
     ScalarFieldDataRequest,
     SurfaceDataType,
     SurfaceFieldDataRequest,
+    VectorFieldDataRequest,
 )
 from ansys.fluent.core.services.field_data import _FieldDataConstants
 import numpy as np
@@ -230,57 +231,39 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
-        transaction.add_scalar_fields_request(
+        scalar_request = ScalarFieldDataRequest(
             surfaces=surface_ids,
             field_name=field,
             node_value=False,
             boundary_value=False,
         )
-        transaction.add_vector_fields_request(
+        vector_request = VectorFieldDataRequest(
             surfaces=surface_ids, field_name=obj.vectors_of()
         )
         try:
-            fields = transaction.get_fields()()
-            vector_field = fields.get(0) or fields[(("type", "vector-field"),)]
-            scalar_field = (
-                fields.get(_FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION])
-                or fields[
-                    (
-                        ("type", "scalar-field"),
-                        (
-                            "dataLocation",
-                            DataLocation.Elements,
-                        ),
-                        ("boundaryValues", False),
-                    )
-                ]
-            )
-            surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
+            fields = transaction.add_requests(
+                surf_request, scalar_request, vector_request
+            ).get_response()
+            # The below is required only for extracting 'vector_scale'
+            _vector_field = fields().get(0) or fields()[(("type", "vector-field"),)]
+            scalar_field = fields.get_field_data(scalar_request)
+            surface_data = fields.get_field_data(surf_request)
+            vector_field = fields.get_field_data(vector_request)
+            for k, v in surface_data.items():
+                setattr(v, field, scalar_field.get(k))
+                setattr(v, obj.vectors_of(), vector_field.get(k))
+                setattr(v, "vector_scale", _vector_field.get(k)["vector-scale"])
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:
             obj._post_display()
-        data = self._merge(surface_data, vector_field)
-        return self._merge(data, scalar_field)
-
-    def _merge(self, a, b):
-        if a is b:
-            return a
-        if b is not None:
-            for k, v in a.items():
-                if hasattr(v, "_surf_data"):
-                    a[k] = v._surf_data
-                if b.get(k):
-                    a[k].update(b[k])
-                    del b[k]
-            a.update(b)
-        return a
+        return surface_data
 
 
 class XYPlotDataExtractor:

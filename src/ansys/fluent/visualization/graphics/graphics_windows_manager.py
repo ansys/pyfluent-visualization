@@ -303,15 +303,15 @@ class GraphicsWindow(VisualizationWindow):
             ):
                 continue
             mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
-            mesh_data[vectors_of].shape = (
-                mesh_data[vectors_of].size // 3,
+            getattr(mesh_data, vectors_of).shape = (
+                getattr(mesh_data, vectors_of).size // 3,
                 3,
             )
-            vector_scale = mesh_data["vector-scale"][0]
+            vector_scale = mesh_data.vector_scale[0]
             mesh = self._resolve_mesh_data(mesh_data)
-            mesh.cell_data["vectors"] = mesh_data[vectors_of]
-            scalar_field = mesh_data[obj.field()]
-            velocity_magnitude = np.linalg.norm(mesh_data[vectors_of], axis=1)
+            mesh.cell_data["vectors"] = getattr(mesh_data, vectors_of)
+            scalar_field = getattr(mesh_data, obj.field())
+            velocity_magnitude = np.linalg.norm(getattr(mesh_data, vectors_of), axis=1)
             if obj.range.option() == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
                 range_ = [auto_range_off.minimum(), auto_range_off.maximum()]
