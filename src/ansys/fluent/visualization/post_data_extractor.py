@@ -99,7 +99,7 @@ class FieldDataExtractor:
             **kwargs,
         )
         try:
-            fields = transaction.get_fields()
+            fields = transaction.get_fields()()
             # 0 is old tag
             surfaces_data = fields.get(0) or fields[(("type", "surface-data"),)]
         except Exception as e:
@@ -177,7 +177,7 @@ class FieldDataExtractor:
         )
 
         try:
-            fields = transaction.get_fields()
+            fields = transaction.get_fields()()
             data_tag = location_tag | boundary_value_tag
             scalar_field_data = (
                 fields.get(data_tag)
@@ -221,7 +221,7 @@ class FieldDataExtractor:
         transaction.add_pathlines_fields_request(surfaces=surface_ids, field_name=field)
 
         try:
-            fields = transaction.get_fields()
+            fields = transaction.get_fields()()
             pathlines_data = fields[(("type", "pathlines-field"), ("field", field))]
         except Exception as e:
             raise ServerDataRequestError() from e
@@ -266,7 +266,7 @@ class FieldDataExtractor:
             surfaces=surface_ids, field_name=obj.vectors_of()
         )
         try:
-            fields = transaction.get_fields()
+            fields = transaction.get_fields()()
             vector_field = fields.get(0) or fields[(("type", "vector-field"),)]
             scalar_field = (
                 fields.get(_FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION])
@@ -398,7 +398,7 @@ class XYPlotDataExtractor:
             else 0
         )
         surface_tag = 0
-        xyplot_payload_data = transaction.get_fields()
+        xyplot_payload_data = transaction.get_fields()()
         data_tag = location_tag | boundary_value_tag
         if data_tag not in xyplot_payload_data:
             data_tag = (
