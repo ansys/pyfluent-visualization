@@ -25,7 +25,6 @@
 import itertools
 from typing import Dict
 
-from ansys.api.fluent.v0.field_data_pb2 import DataLocation, PayloadTag
 from ansys.fluent.core.field_data_interfaces import (
     PathlinesFieldDataRequest,
     ScalarFieldDataRequest,
@@ -33,7 +32,6 @@ from ansys.fluent.core.field_data_interfaces import (
     SurfaceFieldDataRequest,
     VectorFieldDataRequest,
 )
-from ansys.fluent.core.services.field_data import _FieldDataConstants
 import numpy as np
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
@@ -340,7 +338,7 @@ class XYPlotDataExtractor:
         ]
 
         # get scalar field data
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=(
                 [SurfaceDataType.Vertices]
@@ -348,54 +346,31 @@ class XYPlotDataExtractor:
                 else [SurfaceDataType.FacesCentroid]
             ),
         )
-        transaction.add_scalar_fields_request(
+        scalar_request = ScalarFieldDataRequest(
             field_name=field,
             surfaces=surface_ids,
             node_value=node_values,
             boundary_value=boundary_values,
         )
-
-        location_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.NODE_LOCATION]
-            if node_values
-            else _FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION]
-        )
-        boundary_value_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.BOUNDARY_VALUES]
-            if boundary_values
-            else 0
-        )
-        surface_tag = 0
-        xyplot_payload_data = transaction.get_fields()()
-        data_tag = location_tag | boundary_value_tag
-        if data_tag not in xyplot_payload_data:
-            data_tag = (
-                ("type", "scalar-field"),
-                (
-                    "dataLocation",
-                    DataLocation.Nodes if node_values else DataLocation.Elements,
-                ),
-                ("boundaryValues", boundary_values),
-            )
-            surface_tag = (("type", "surface-data"),)
-            if data_tag not in xyplot_payload_data:
-                raise RuntimeError("Plot surface is not valid.")
-        xyplot_data = xyplot_payload_data[data_tag]
-        surface_data = xyplot_payload_data[surface_tag]
+        xyplot_payload_data = transaction.add_requests(
+            surf_request, scalar_request
+        ).get_response()
+        xyplot_data = xyplot_payload_data.get_field_data(scalar_request)
+        surface_data = xyplot_payload_data.get_field_data(surf_request)
 
         # loop over all surfaces
         xy_plots_data = {}
         surfaces_list_iter = iter(surfaces_list_expanded)
         for surface_id, mesh_data in surface_data.items():
-            mesh_data["vertices" if node_values else "centroid"].shape = (
-                mesh_data["vertices" if node_values else "centroid"].size // 3,
-                3,
-            )
-            y_values = xyplot_data[surface_id][field]
+            if node_values:
+                mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
+            else:
+                mesh_data.centroid.shape = mesh_data.centroid.size // 3, 3
+            y_values = xyplot_data[surface_id]
             if y_values is None:
                 continue
             x_values = np.matmul(
-                mesh_data["vertices" if node_values else "centroid"],
+                mesh_data.vertices if node_values else mesh_data.centroid,
                 direction_vector,
             )
             structured_data = np.empty(
