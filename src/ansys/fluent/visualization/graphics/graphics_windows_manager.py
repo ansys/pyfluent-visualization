@@ -367,16 +367,16 @@ class GraphicsWindow(VisualizationWindow):
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Pathlines].items():
-            if "vertices" not in surface_data or "lines" not in surface_data:
+            if not all(hasattr(surface_data, attr) for attr in ("vertices", "lines")):
                 continue
-            surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
+            surface_data.vertices.shape = surface_data.vertices.size // 3, 3
 
             mesh = pv.PolyData(
-                surface_data["vertices"],
-                lines=surface_data["lines"],
+                surface_data.vertices,
+                lines=self._pack_faces_connectivity_data(surface_data.lines),
             )
 
-            mesh.point_data[field] = surface_data[obj.field()]
+            mesh.point_data[field] = surface_data.scalar_field
             self.renderer.render(
                 mesh,
                 scalars=field,

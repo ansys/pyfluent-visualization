@@ -27,6 +27,7 @@ from typing import Dict
 
 from ansys.api.fluent.v0.field_data_pb2 import DataLocation, PayloadTag
 from ansys.fluent.core.field_data_interfaces import (
+    PathlinesFieldDataRequest,
     ScalarFieldDataRequest,
     SurfaceDataType,
     SurfaceFieldDataRequest,
@@ -199,11 +200,13 @@ class FieldDataExtractor:
             for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
-        transaction.add_pathlines_fields_request(surfaces=surface_ids, field_name=field)
+        pathlines_request = PathlinesFieldDataRequest(
+            surfaces=surface_ids, field_name=field
+        )
 
         try:
-            fields = transaction.get_fields()()
-            pathlines_data = fields[(("type", "pathlines-field"), ("field", field))]
+            fields = transaction.add_requests(pathlines_request).get_response()
+            pathlines_data = fields.get_field_data(pathlines_request)
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:
