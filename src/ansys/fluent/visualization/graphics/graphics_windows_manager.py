@@ -298,9 +298,11 @@ class GraphicsWindow(VisualizationWindow):
         field = f"{field}\n[{field_unit}]" if field_unit else field
 
         for surface_id, mesh_data in self._data[FieldDataType.Vectors].items():
-            if "vertices" not in mesh_data or "faces" not in mesh_data:
+            if not all(
+                hasattr(mesh_data, attr) for attr in ("vertices", "connectivity")
+            ):
                 continue
-            mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
+            mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
             mesh_data[vectors_of].shape = (
                 mesh_data[vectors_of].size // 3,
                 3,
@@ -405,9 +407,9 @@ class GraphicsWindow(VisualizationWindow):
             surface_data.vertices.shape = surface_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(surface_data)
             if node_values:
-                mesh.point_data[field] = surface_data[obj.field()]
+                mesh.point_data[field] = getattr(surface_data, obj.field())
             else:
-                mesh.cell_data[field] = surface_data[obj.field()]
+                mesh.cell_data[field] = getattr(surface_data, obj.field())
             if range_option == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
                 if auto_range_off.clip_to_range():
