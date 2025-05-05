@@ -179,10 +179,9 @@ class FieldDataExtractor:
             raise ServerDataRequestError() from e
         finally:
             obj._post_display()
-        scalar_dict = {}
-        for k, v in scalar_field_data.items():
-            scalar_dict[k] = {field: v}
-        return self._merge(surface_data, scalar_dict)
+        for k, v in surface_data.items():
+            setattr(v, field, scalar_field_data.get(k))
+        return surface_data
 
     def _fetch_pathlines_data(self, obj, *args, **kwargs):
         if not obj.surfaces() or not obj.field():
