@@ -267,17 +267,24 @@ class GraphicsWindow(VisualizationWindow):
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
+    @staticmethod
+    def _pack_faces_connectivity_data(faces_data):
+        flat = []
+        for face in faces_data:
+            flat.append(len(face))
+            flat.extend(face)
+        return np.array(flat)
+
     def _resolve_mesh_data(self, mesh_data):
-        topology = "line" if mesh_data["faces"][0] == 2 else "face"
-        if topology == "line":
+        if mesh_data.connectivity[0].shape[0] == 2:  # Line
             return pv.PolyData(
-                mesh_data["vertices"],
-                lines=mesh_data["faces"],
+                mesh_data.vertices,
+                lines=self._pack_faces_connectivity_data(mesh_data.connectivity),
             )
-        else:
+        else:  # Face
             return pv.PolyData(
-                mesh_data["vertices"],
-                faces=mesh_data["faces"],
+                mesh_data.vertices,
+                faces=self._pack_faces_connectivity_data(mesh_data.connectivity),
             )
 
     def _display_vector(self, obj, position=(0, 0), opacity=1):
@@ -503,9 +510,11 @@ class GraphicsWindow(VisualizationWindow):
 
     def _display_mesh(self, obj, position=(0, 0), opacity=1):
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
-            if "vertices" not in mesh_data or "faces" not in mesh_data:
+            if not all(
+                hasattr(mesh_data, attr) for attr in ("vertices", "connectivity")
+            ):
                 continue
-            mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
+            mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(mesh_data)
             color_size = len(self.renderer._colors)
             color = list(self.renderer._colors.values())[surface_id % color_size]

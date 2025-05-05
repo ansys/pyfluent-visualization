@@ -26,7 +26,11 @@ import itertools
 from typing import Dict
 
 from ansys.api.fluent.v0.field_data_pb2 import DataLocation, PayloadTag
-from ansys.fluent.core.services.field_data import SurfaceDataType, _FieldDataConstants
+from ansys.fluent.core.field_data_interfaces import (
+    SurfaceDataType,
+    SurfaceFieldDataRequest,
+)
+from ansys.fluent.core.services.field_data import _FieldDataConstants
 import numpy as np
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
@@ -92,16 +96,16 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
+        transaction.add_requests(surf_request)
         try:
-            fields = transaction.get_fields()()
-            # 0 is old tag
-            surfaces_data = fields.get(0) or fields[(("type", "surface-data"),)]
+            fields = transaction.get_response()
+            surfaces_data = fields.get_field_data(surf_request)
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:
