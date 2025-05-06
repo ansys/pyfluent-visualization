@@ -27,7 +27,6 @@ import itertools
 import threading
 from typing import Dict, List, Optional, Union
 
-from ansys.fluent.core.fluent_connection import FluentConnection
 import numpy as np
 import pyvista as pv
 
@@ -933,8 +932,10 @@ class GraphicsWindowsManager(
             self._grid = grid
 
         if not self._plotter_thread:
-            if FluentConnection._monitor_thread:
-                FluentConnection._monitor_thread.cbs.append(self._exit)
+            if obj is not None:
+                obj.get_root().session._fluent_connection._monitor_thread.cbs.append(
+                    self._exit
+                )
             self._plotter_thread = threading.Thread(target=self._display, args=())
             self._plotter_thread.start()
 

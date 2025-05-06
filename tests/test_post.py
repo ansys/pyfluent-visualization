@@ -25,7 +25,7 @@ import pickle
 import sys
 from typing import Dict, List, Optional, Union
 
-from ansys.fluent.core.services.field_data import SurfaceDataType
+from ansys.fluent.core.field_data_interfaces import SurfaceDataType
 import numpy as np
 import pytest
 
