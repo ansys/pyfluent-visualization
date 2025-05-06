@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module providing PostWindow and PostWindowManager abstract classes.
+"""Module providing VisualizationWindow and PostWindowManager abstract classes.
 
-PostWindowManager is container for PostWindow.
+PostWindowManager is container for VisualizationWindow.
 """
 
 from abc import ABCMeta, abstractmethod
@@ -34,7 +34,7 @@ from ansys.fluent.core.post_objects.post_object_definitions import (
 )
 
 
-class PostWindow:
+class VisualizationWindow:
     """Abstract class for visualization window."""
 
     @abstractmethod
@@ -43,7 +43,7 @@ class PostWindow:
         pass
 
 
-class PostWindowsManager(metaclass=ABCMeta):
+class VisualizationWindowsManager(metaclass=ABCMeta):
     """Abstract class for visualization windows management."""
 
     @abstractmethod

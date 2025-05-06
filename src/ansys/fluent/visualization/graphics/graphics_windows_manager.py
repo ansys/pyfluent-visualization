@@ -48,9 +48,9 @@ from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
     XYPlotDataExtractor,
 )
-from ansys.fluent.visualization.post_windows_manager import (
-    PostWindow,
-    PostWindowsManager,
+from ansys.fluent.visualization.visualization_windows_manager import (
+    VisualizationWindow,
+    VisualizationWindowsManager,
 )
 
 
@@ -63,13 +63,16 @@ class FieldDataType(Enum):
     Pathlines = "Pathlines"
 
 
-from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
-
-
-class GraphicsWindow(PostWindow):
+class GraphicsWindow(VisualizationWindow):
     """Provides for managing Graphics windows."""
 
-    def __init__(self, id: str, post_object: GraphicsDefn, grid: tuple | None = (1, 1)):
+    def __init__(
+        self,
+        id: str,
+        post_object: GraphicsDefn,
+        grid: tuple | None = (1, 1),
+        renderer: str = None,
+    ):
         """Instantiate a Graphics window.
 
         Parameters
@@ -83,7 +86,8 @@ class GraphicsWindow(PostWindow):
         """
         self.post_object: GraphicsDefn = post_object
         self.id: str = id
-        self.renderer = Renderer(id, in_notebook(), get_config()["blocking"], grid)
+        self._grid = grid
+        self.renderer = self._get_renderer(renderer_string=renderer)
         self.overlay: bool = False
         self.fetch_data: bool = False
         self.show_window: bool = True
@@ -95,6 +99,41 @@ class GraphicsWindow(PostWindow):
         self._data = {}
         self._subplot = None
         self._opacity = None
+
+    # private methods
+    def _get_renderer(self, renderer_string=None):
+        from ansys.fluent.visualization.registrar import _visualizer, get_renderer
+
+        if renderer_string is None:
+            import ansys.fluent.visualization as pyviz
+
+            renderer_string = pyviz.Renderer_3D
+        try:
+            if renderer_string == "pyvista":
+                from ansys.fluent.visualization.graphics.pyvista.graphics_defns import (
+                    Renderer,
+                )
+
+                renderer = Renderer
+            else:
+                renderer = get_renderer(renderer_string)
+        except KeyError as ex:
+            error_message = (
+                f"Error: Renderer '{renderer_string}' not found or registered. "
+                "We tried to load the renderer but encountered an issue.\n"
+                "Possible reasons could include:\n"
+                "  - The renderer name might be misspelled.\n"
+                "  - The renderer might not be installed or available.\n"
+                "  - There might be an issue with the system configuration.\n\n"
+                "Currently available renderers are: "
+                f"{', '.join(_visualizer.keys())}.\n"
+                "Please ensure that the renderer name is correct or register the"
+                " renderer if it is custom. If the issue persists, check your"
+                " system configuration."
+            )
+
+            raise KeyError(error_message) from ex
+        return renderer(self.id, in_notebook(), get_config()["blocking"], self._grid)
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""
@@ -509,7 +548,9 @@ class GraphicsWindow(PostWindow):
         return refresh
 
 
-class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+class GraphicsWindowsManager(
+    VisualizationWindowsManager, metaclass=AbstractSingletonMeta
+):
     """Provides for managing Graphics windows."""
 
     _condition = threading.Condition()
@@ -556,7 +597,10 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             return self._post_windows[window_id].renderer.plotter
 
     def open_window(
-        self, window_id: str | None = None, grid: tuple | None = (1, 1)
+        self,
+        window_id: str | None = None,
+        grid: tuple | None = (1, 1),
+        renderer=None,
     ) -> str:
         """Open a new window.
 
@@ -577,7 +621,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             if not window_id:
                 window_id = self._get_unique_window_id()
             if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
-                self._open_window_notebook(window_id, grid)
+                self._open_window_notebook(window_id, grid, renderer=renderer)
             else:
                 self._open_and_plot_console(None, window_id, grid=grid)
             return window_id
@@ -831,9 +875,10 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             self._app.processEvents()
         with self._condition:
             for window in self._post_windows.values():
-                plotter = window.renderer.plotter
-                plotter.close()
-                plotter.app.quit()
+                if window:
+                    plotter = window.renderer.plotter
+                    plotter.close()
+                    plotter.app.quit()
             self._post_windows.clear()
             self._condition.notify()
 
@@ -868,13 +913,16 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             self._condition.wait()
 
     def _open_window_notebook(
-        self, window_id: str, grid: tuple | None = (1, 1)
+        self,
+        window_id: str,
+        grid: tuple | None = (1, 1),
+        renderer=None,
     ) -> pv.Plotter:
         window = self._post_windows.get(window_id)
         if window and not window.close and window.refresh:
             window.refresh = False
         else:
-            window = GraphicsWindow(window_id, None, grid)
+            window = GraphicsWindow(window_id, None, grid, renderer=renderer)
             self._post_windows[window_id] = window
         return window
 
@@ -916,7 +964,8 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
                 for window_id in [
                     window_id
                     for window_id, window in self._post_windows.items()
-                    if not window.renderer.plotter._closed
+                    if window
+                    and not window.renderer.plotter._closed
                     and (
                         not session_id
                         or session_id == window.post_object._api_helper.id()
@@ -937,7 +986,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         itr_count = itertools.count()
         with self._condition:
             while True:
-                window_id = f"window-{next(itr_count)}"
+                window_id = f"window-{next(itr_count) + 1}"
                 if window_id not in self._post_windows:
                     return window_id
 
