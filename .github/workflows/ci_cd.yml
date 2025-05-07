@@ -74,15 +74,10 @@ jobs:
         env:
           FLUENT_IMAGE_TAG: v25.2.0
 
-      - name: Retrieve pyfluent-visualization version
-        run: |
-          echo "PYFLUENT_VISUALIZATION_VERSION=$(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)" >> $GITHUB_OUTPUT
-          echo "pyfluent-visualization version is: $(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)"
-        id: version
-
       - name: Test with pytest
         run: make unittest
-
+        env:
+          FLUENT_IMAGE_TAG: v25.2.0
 
   docs:
     name: Documentation
