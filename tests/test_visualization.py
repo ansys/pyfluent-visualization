@@ -28,9 +28,11 @@ import pytest
 import pyvista as pv
 
 from ansys.fluent.visualization import (
+    Contour,
     GraphicsWindow,
     Mesh,
     Surface,
+    Vector,
     config,
 )
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
@@ -179,3 +181,64 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
         assert isinstance(called_mesh, pv.PolyData)
         assert kwargs.get("color") == [128, 0, 128]
         assert kwargs.get("position") == (0, 0)
+
+
+def test_visualization_calls_render_correctly_with_contour(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    with patch.object(Renderer, "render") as mock_render:
+        config.interactive = False
+        solver = new_solver_session_with_exhaust_case_and_data
+        TGraphicsWindow.show_graphics = lambda win_id: None
+        contour = Contour(
+            solver=solver, field="temperature", surfaces=["in1", "in2", "in3"]
+        )
+        graphics_window = GraphicsWindow()
+        graphics_window.add_graphics(contour)
+        graphics_window.show()
+
+        # Check that render was called 3 times for 3 surfaces
+        assert mock_render.call_count == 3
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        called_mesh = args[0]
+
+        # Assertions on arguments
+        assert isinstance(called_mesh, pv.PolyData)
+        assert kwargs["scalar_bar_args"]
+        assert kwargs.get("show_edges") is False
+        assert kwargs.get("position") == (0, 0)
+        assert kwargs.get("opacity") == 1
+
+
+def test_visualization_calls_render_correctly_with_vector(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    with patch.object(Renderer, "render") as mock_render:
+        config.interactive = False
+        solver = new_solver_session_with_exhaust_case_and_data
+        TGraphicsWindow.show_graphics = lambda win_id: None
+        velocity_vector = Vector(
+            solver=solver,
+            field="x-velocity",
+            surfaces=["solid_up:1:830"],
+            scale=2,
+        )
+        graphics_window = GraphicsWindow()
+        graphics_window.add_graphics(velocity_vector)
+        graphics_window.show()
+
+        # Check that render was called 1 time for 1 surfaces
+        mock_render.assert_called_once()
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        called_mesh = args[0]
+
+        # Assertions on arguments
+        assert isinstance(called_mesh, pv.PolyData)
+        assert kwargs["scalar_bar_args"]
+        assert kwargs.get("scalars") == "x-velocity\n[m s^-1]"
+        assert kwargs.get("position") == (0, 0)
+        assert kwargs.get("opacity") == 1
