@@ -24,6 +24,7 @@ from unittest.mock import patch
 
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
+import numpy as np
 import pytest
 import pyvista as pv
 
@@ -31,15 +32,24 @@ from ansys.fluent.visualization import (
     Contour,
     GraphicsWindow,
     Mesh,
+    Monitor,
     Pathline,
     Surface,
     Vector,
+    XYPlot,
     config,
 )
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     GraphicsWindow as TGraphicsWindow,
 )
 from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
+from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
+    Plotter as MatPlotter,
+)
+from ansys.fluent.visualization.plotter.plotter_windows_manager import (
+    PlotterWindow as TPlotterWindow,
+)
+from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
 
 
 @pytest.fixture(scope="module")
@@ -272,3 +282,95 @@ def test_visualization_calls_render_correctly_with_pathlines(
         assert kwargs.get("scalars") == "velocity-magnitude\n[m s^-1]"
         assert kwargs.get("position") == (0, 0)
         assert kwargs.get("opacity") == 1
+
+
+def test_visualization_calls_render_correctly_with_xy_plot_pyvista(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    with patch.object(Plotter, "render") as mock_render:
+        config.interactive = False
+        solver = new_solver_session_with_exhaust_case_and_data
+        TPlotterWindow._show_plot = lambda win_id: None
+        xy_plot_object = XYPlot(
+            solver=solver,
+            surfaces=["outlet"],
+            y_axis_function="temperature",
+        )
+        plot_window = GraphicsWindow()
+        plot_window.add_plot(xy_plot_object)
+        plot_window.show()
+
+        # Check that render was called 1 time for 1 surface
+        mock_render.assert_called_once()
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        data = args[0]
+
+        # Assertions on arguments
+        assert isinstance(data["outlet"], np.ndarray)
+        assert kwargs["subplot_titles"] == ["XYPlot"]
+        assert kwargs.get("position") == (0, 0)
+
+
+def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    with patch.object(MatPlotter, "render") as mock_render:
+        config.interactive = False
+        solver = new_solver_session_with_exhaust_case_and_data
+        TPlotterWindow._show_plot = lambda win_id: None
+        xy_plot_object = XYPlot(
+            solver=solver,
+            surfaces=["outlet"],
+            y_axis_function="temperature",
+        )
+        plot_window = GraphicsWindow()
+        plot_window.add_plot(xy_plot_object)
+        plot_window.show(renderer="matplotlib")
+
+        # Check that render was called 1 time for 1 surface
+        mock_render.assert_called_once()
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        data = args[0]
+
+        # Assertions on arguments
+        assert isinstance(data["outlet"], np.ndarray)
+        assert kwargs["subplot_titles"] == ["XYPlot"]
+        assert kwargs.get("position") == (0, 0)
+
+
+def test_visualization_calls_render_correctly_with_monitor_plot(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    with patch.object(Plotter, "render") as mock_render:
+        config.interactive = False
+        solver = new_solver_session_with_exhaust_case_and_data
+        TPlotterWindow._show_plot = lambda win_id: None
+        residual = Monitor(solver=solver)
+        residual.monitor_set_name = "residual"
+        plot_window = GraphicsWindow()
+        plot_window.add_plot(residual)
+        plot_window.show()
+
+        # Check that render was called 1 time for 1 surface
+        mock_render.assert_called_once()
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        data = args[0]
+
+        # Assertions on arguments
+        assert list(data.keys()) == [
+            "continuity",
+            "x-velocity",
+            "y-velocity",
+            "z-velocity",
+            "energy",
+            "k",
+            "omega",
+        ]
+        assert kwargs["subplot_titles"] == ["residual"]
+        assert kwargs.get("position") == (0, 0)
