@@ -98,7 +98,7 @@ class GraphicsWindow:
 
         Parameters
         ----------
-        plot_obj: PlotDefn
+        plot_obj
             Object to render in the window.
         position: tuple, optional
             Position of the sub-plot.
