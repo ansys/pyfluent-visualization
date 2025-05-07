@@ -30,6 +30,7 @@ import pyvista as pv
 from ansys.fluent.visualization import (
     GraphicsWindow,
     Mesh,
+    Surface,
     config,
 )
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
@@ -60,7 +61,7 @@ def new_solver_session_with_exhaust_case_and_data(new_solver_session):
     return solver
 
 
-def test_visualize_geometry_calls_render_correctly_with_single_mesh(
+def test_visualization_calls_render_correctly_with_single_mesh(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
@@ -92,7 +93,7 @@ def test_visualize_geometry_calls_render_correctly_with_single_mesh(
         assert kwargs.get("opacity") == 1
 
 
-def test_visualize_geometry_calls_render_correctly_with_dual_mesh(
+def test_visualization_calls_render_correctly_with_dual_mesh(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
@@ -125,3 +126,56 @@ def test_visualize_geometry_calls_render_correctly_with_dual_mesh(
         assert kwargs.get("show_edges") is False
         assert kwargs.get("position") == (0, 1)
         assert kwargs.get("opacity") == 1
+
+
+def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    with patch.object(Renderer, "render") as mock_render:
+        config.interactive = False
+        solver = new_solver_session_with_exhaust_case_and_data
+        TGraphicsWindow.show_graphics = lambda win_id: None
+
+        # Plane surface
+        surf_xy_plane = Surface(solver=solver)
+        surf_xy_plane.definition.type = "plane-surface"
+        surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
+        plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
+        plane_surface_xy.z = -0.0441921
+        graphics_window = GraphicsWindow()
+        graphics_window.add_graphics(surf_xy_plane)
+        graphics_window.show()
+
+        # Check that render was called 1 time for 1 surface
+        mock_render.assert_called_once()
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        called_mesh = args[0]
+
+        # Assertions on arguments
+        assert isinstance(called_mesh, pv.PolyData)
+        assert kwargs.get("color") == [128, 0, 128]
+        assert kwargs.get("position") == (0, 0)
+
+        # Iso-surface
+        surf_outlet_plane = Surface(solver=solver)
+        surf_outlet_plane.definition.type = "iso-surface"
+        iso_surf1 = surf_outlet_plane.definition.iso_surface
+        iso_surf1.field = "y-coordinate"
+        iso_surf1.iso_value = -0.125017
+        graphics_window = GraphicsWindow()
+        graphics_window.add_graphics(surf_outlet_plane)
+        graphics_window.show()
+
+        # Check that render was called 2 times for 1 iso-surface (contains 2 surfaces)
+        assert mock_render.call_count == 2
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        called_mesh = args[0]
+
+        # Assertions on arguments
+        assert isinstance(called_mesh, pv.PolyData)
+        assert kwargs.get("color") == [128, 0, 128]
+        assert kwargs.get("position") == (0, 0)
