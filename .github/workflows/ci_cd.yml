@@ -62,6 +62,24 @@ jobs:
       - name: Install pyfluent-visualization
         run: make install
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.BOT_APPLICATION_ID }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull Fluent docker image
+        run: make docker-pull
+        env:
+          FLUENT_IMAGE_TAG: v25.2.0
+
+      - name: Retrieve pyfluent-visualization version
+        run: |
+          echo "PYFLUENT_VISUALIZATION_VERSION=$(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)" >> $GITHUB_OUTPUT
+          echo "pyfluent-visualization version is: $(python -c "from ansys.fluent.visualization import __version__; print(); print(__version__)" | tail -1)"
+        id: version
+
       - name: Test with pytest
         run: make unittest
 
