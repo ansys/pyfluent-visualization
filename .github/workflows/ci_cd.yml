@@ -38,7 +38,7 @@ jobs:
 
   tests:
     name: Tests and coverage
-    runs-on: ${{ matrix.os }}
+    runs-on: [public-ubuntu-latest-8-cores]
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
