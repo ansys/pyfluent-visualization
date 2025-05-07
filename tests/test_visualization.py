@@ -31,6 +31,7 @@ from ansys.fluent.visualization import (
     Contour,
     GraphicsWindow,
     Mesh,
+    Pathline,
     Surface,
     Vector,
     config,
@@ -77,7 +78,7 @@ def test_visualization_calls_render_correctly_with_single_mesh(
         TGraphicsWindow.show_graphics = lambda win_id: None
         mesh = Mesh(solver=solver, show_edges=True, surfaces=mesh_surfaces_list)
         graphics_window = GraphicsWindow()
-        graphics_window.add_graphics(mesh)
+        graphics_window.add_graphics(mesh, opacity=0.05)
         graphics_window.show()
 
         # Check that render was called 3 times for 3 surfaces
@@ -92,7 +93,7 @@ def test_visualization_calls_render_correctly_with_single_mesh(
         assert kwargs.get("color") == [128, 0, 0]
         assert kwargs.get("show_edges") is True
         assert kwargs.get("position") == (0, 0)
-        assert kwargs.get("opacity") == 1
+        assert kwargs.get("opacity") == 0.05
 
 
 def test_visualization_calls_render_correctly_with_dual_mesh(
@@ -240,5 +241,34 @@ def test_visualization_calls_render_correctly_with_vector(
         assert isinstance(called_mesh, pv.PolyData)
         assert kwargs["scalar_bar_args"]
         assert kwargs.get("scalars") == "x-velocity\n[m s^-1]"
+        assert kwargs.get("position") == (0, 0)
+        assert kwargs.get("opacity") == 1
+
+
+def test_visualization_calls_render_correctly_with_pathlines(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    with patch.object(Renderer, "render") as mock_render:
+        config.interactive = False
+        solver = new_solver_session_with_exhaust_case_and_data
+        TGraphicsWindow.show_graphics = lambda win_id: None
+        pathlines = Pathline(solver=solver)
+        pathlines.field = "velocity-magnitude"
+        pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+        graphics_window = GraphicsWindow()
+        graphics_window.add_graphics(pathlines)
+        graphics_window.show()
+
+        # Check that render was called 3 times for 3 surfaces
+        assert mock_render.call_count == 3
+
+        # Get the actual arguments
+        args, kwargs = mock_render.call_args
+        called_mesh = args[0]
+
+        # Assertions on arguments
+        assert isinstance(called_mesh, pv.PolyData)
+        assert kwargs["scalar_bar_args"]
+        assert kwargs.get("scalars") == "velocity-magnitude\n[m s^-1]"
         assert kwargs.get("position") == (0, 0)
         assert kwargs.get("opacity") == 1
