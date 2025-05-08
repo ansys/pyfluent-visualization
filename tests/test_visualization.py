@@ -20,6 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import sys
+
+import pytest
+
+# Windows CI runners don't have the capacity to hold fluent image.
+# Adding this makes sure that these tests only run in ubuntu CI.
+if sys.platform == "win32":
+    pytest.skip("Skipping this module on Windows", allow_module_level=True)
+
 from unittest.mock import patch
 
 import ansys.fluent.core as pyfluent

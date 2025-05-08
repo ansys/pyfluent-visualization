@@ -38,10 +38,10 @@ jobs:
 
   tests:
     name: Tests and coverage
-    runs-on: [public-ubuntu-latest-8-cores]
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, public-ubuntu-latest-8-cores]
         python-version: ['3.10', '3.11', '3.12', '3.13']
       fail-fast: false
 
@@ -54,7 +54,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install OS packages
-        if:  matrix.os == 'ubuntu-latest'
+        if:  matrix.os == 'public-ubuntu-latest-8-cores'
         run: |
           sudo apt update
           sudo apt install libegl1
