@@ -68,7 +68,7 @@ class _GraphicsWindow:
                 position=graphics_dict["position"],
                 opacity=graphics_dict["opacity"],
             )
-        if pyviz.SINGLE_WINDOW:
+        if pyviz.config.single_window:
             global _qt_window
             if not _qt_window:
                 QApplication.instance() or QApplication()

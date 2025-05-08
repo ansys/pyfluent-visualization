@@ -25,17 +25,17 @@ import pickle
 import sys
 from typing import Dict, List, Optional, Union
 
-from ansys.fluent.core.services.field_data import SurfaceDataType
+from ansys.fluent.core.field_data_interfaces import SurfaceDataType
 import numpy as np
 import pytest
 
-from ansys.fluent.visualization import Graphics, Plots, get_config, set_config
+from ansys.fluent.visualization import Graphics, Plots
 
 
 @pytest.fixture(autouse=True)
 def patch_mock_api_helper(mocker) -> None:
     mocker.patch(
-        "ansys.fluent.core.post_objects.post_helper.PostAPIHelper",
+        "ansys.fluent.interface.post_objects.post_helper.PostAPIHelper",
         MockAPIHelper,
     )
 
@@ -519,26 +519,3 @@ def test_xyplot_object():
 
     with pytest.raises(ValueError) as value_error:
         p1.y_axis_function = "field_does_not_exist"
-
-
-def test_get_set_config():
-    assert not get_config()["blocking"]
-    assert not get_config()["set_view_on_display"]
-
-    set_config(blocking=True, set_view_on_display="isometric")
-
-    assert get_config()["blocking"]
-    assert get_config()["set_view_on_display"] == "isometric"
-
-    with pytest.raises(ValueError):
-        set_config(blocking=True, set_view_on_display="front")
-
-    assert set(set_config.allowed_views) == {
-        "xy",
-        "xz",
-        "yx",
-        "yz",
-        "zx",
-        "zy",
-        "isometric",
-    }
