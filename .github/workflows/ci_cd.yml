@@ -70,6 +70,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull Fluent docker image
+        if:  matrix.os == 'public-ubuntu-latest-8-cores'
         run: make docker-pull
         env:
           FLUENT_IMAGE_TAG: v25.2.0
