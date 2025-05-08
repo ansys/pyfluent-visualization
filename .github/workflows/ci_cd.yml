@@ -63,6 +63,7 @@ jobs:
         run: make install
 
       - name: Login to GitHub Container Registry
+        if:  matrix.os == 'public-ubuntu-latest-8-cores'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
