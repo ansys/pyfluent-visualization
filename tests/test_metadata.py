@@ -25,11 +25,3 @@ from ansys.fluent.visualization import __version__
 
 def test_pkg_version():
     assert __version__ == "0.20.dev1"
-
-
-import sys
-from unittest import mock
-
-# Patch PySide6 before importing the module
-sys.modules["PySide6"] = mock.MagicMock()
-sys.modules["PySide6.QtWidgets"] = mock.MagicMock()

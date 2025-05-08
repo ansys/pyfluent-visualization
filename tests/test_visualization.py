@@ -20,13 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import sys
-from unittest import mock
-
-# Patch PySide6 before importing the module
-sys.modules["PySide6"] = mock.MagicMock()
-sys.modules["PySide6.QtWidgets"] = mock.MagicMock()
-
 from unittest.mock import patch
 
 import ansys.fluent.core as pyfluent
