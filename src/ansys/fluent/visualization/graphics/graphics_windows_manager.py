@@ -933,9 +933,7 @@ class GraphicsWindowsManager(
 
         if not self._plotter_thread:
             if obj is not None:
-                obj.get_root().session._fluent_connection._monitor_thread.cbs.append(
-                    self._exit
-                )
+                obj.session._fluent_connection.register_finalizer_cb(self._exit)
             self._plotter_thread = threading.Thread(target=self._display, args=())
             self._plotter_thread.start()
 

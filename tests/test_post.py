@@ -202,8 +202,26 @@ class MockAPIHelper:
         self.id = lambda: 1
 
 
+class MockSession:
+    _session_data = None
+    _session_dump = "tests//session.dump"
+
+    def __init__(self, obj=None):
+        if not MockSession._session_data:
+            with open(
+                str(Path(MockSession._session_dump).resolve()),
+                "rb",
+            ) as pickle_obj:
+                MockSession._session_data = pickle.load(pickle_obj)
+        self.field_info = lambda: MockFieldInfo(MockSession._session_data)
+        self.field_data = lambda: MockFieldData(
+            MockSession._session_data, self.field_info
+        )
+        self.id = lambda: 1
+
+
 def test_field_api():
-    pyvista_graphics = Graphics(session=None, post_api_helper=MockAPIHelper)
+    pyvista_graphics = Graphics(session=MockSession, post_api_helper=MockAPIHelper)
     contour1 = pyvista_graphics.Contours["contour-1"]
 
     field_info = contour1._api_helper.field_info()
@@ -245,8 +263,8 @@ def test_field_api():
 
 
 def test_graphics_operations():
-    pyvista_graphics1 = Graphics(session=None)
-    pyvista_graphics2 = Graphics(session=None)
+    pyvista_graphics1 = Graphics(session=MockSession)
+    pyvista_graphics2 = Graphics(session=MockSession)
     contour1 = pyvista_graphics1.Contours["contour-1"]
     contour2 = pyvista_graphics2.Contours["contour-2"]
 
