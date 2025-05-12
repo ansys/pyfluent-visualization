@@ -230,7 +230,7 @@ class _MonitorPlot:
         """Draw a monitor plot."""
         if not self.post_object:
             return
-        monitors = self.post_object._api_helper.monitors
+        monitors = self.post_object.session.monitors
         indices, columns_data = monitors.get_monitor_set_data(
             self.post_object.monitor_set_name()
         )

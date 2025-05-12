@@ -251,7 +251,7 @@ class GraphicsWindow(VisualizationWindow):
         }
 
     def _fetch_monitor_data(self, obj):
-        monitors = obj._api_helper.monitors
+        monitors = obj.session.monitors
         indices, columns_data = monitors.get_monitor_set_data(obj.monitor_set_name())
         xy_data = {}
         for column_name, column_data in columns_data.items():

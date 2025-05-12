@@ -132,11 +132,6 @@ class PostAPIHelper:
         if obj.__class__.__name__ == "Surface":
             self.surface_api = PostAPIHelper._SurfaceAPI(obj)
 
-    @property
-    def monitors(self):
-        """Returns the session monitors."""
-        return self.obj.get_root().session.monitors
-
     def remote_surface_name(self, local_surface_name):
         """Returns the surface name."""
 
@@ -146,11 +141,6 @@ class PostAPIHelper:
             return PostAPIHelper._SurfaceAPI.surface_name_on_server(local_surface_name)
         else:
             return local_surface_name
-
-    # Following functions will be deprecated in future.
-    def get_vector_fields(self):
-        """Returns vector field."""
-        return self.field_info().get_vector_fields_info()
 
     def get_field_unit(self, field):
         """Returns the unit of the field."""
