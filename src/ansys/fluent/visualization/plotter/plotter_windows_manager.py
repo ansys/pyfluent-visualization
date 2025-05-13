@@ -27,15 +27,15 @@ import multiprocessing as mp
 from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import FluentConnection
-from ansys.fluent.core.post_objects.check_in_notebook import in_notebook
-from ansys.fluent.core.post_objects.post_object_definitions import (
+
+from ansys.fluent.interface.post_objects.check_in_notebook import in_notebook
+from ansys.fluent.interface.post_objects.post_object_definitions import (
     MonitorDefn,
     PlotDefn,
     XYPlotDefn,
 )
-from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
-
-from ansys.fluent.visualization import get_config
+from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
 from ansys.fluent.visualization.visualization_windows_manager import (
@@ -134,9 +134,7 @@ class PlotterWindow(VisualizationWindow):
         from ansys.fluent.visualization.registrar import _visualizer, get_renderer
 
         if plotter_string is None:
-            import ansys.fluent.visualization as pyviz
-
-            plotter_string = pyviz.Renderer_2D
+            plotter_string = pyviz.config.two_dimensional_renderer
         try:
             plotter = get_renderer(plotter_string)
         except KeyError as ex:
@@ -157,7 +155,7 @@ class PlotterWindow(VisualizationWindow):
             raise KeyError(error_message) from ex
         return (
             plotter(self.id)
-            if in_notebook() or get_config()["blocking"]
+            if in_notebook() or not pyviz.config.interactive
             else _ProcessPlotterHandle(self.id)
         )
 
@@ -191,7 +189,7 @@ class _XYPlot:
             "xlabel": "position",
             "ylabel": self.post_object.y_axis_function(),
         }
-        if in_notebook() or get_config()["blocking"]:
+        if in_notebook() or not pyviz.config.interactive:
             self.plotter.set_properties(properties)
         else:
             try:
@@ -232,7 +230,7 @@ class _MonitorPlot:
         """Draw a monitor plot."""
         if not self.post_object:
             return
-        monitors = self.post_object._api_helper.monitors
+        monitors = self.post_object.session.monitors
         indices, columns_data = monitors.get_monitor_set_data(
             self.post_object.monitor_set_name()
         )
@@ -248,7 +246,7 @@ class _MonitorPlot:
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
-        if in_notebook() or get_config()["blocking"]:
+        if in_notebook() or not pyviz.config.interactive:
             self.plotter.set_properties(properties)
         else:
             try:
@@ -458,7 +456,7 @@ class PlotterWindowsManager(
     ) -> Union["Plotter", _ProcessPlotterHandle]:
         window = self._post_windows.get(window_id)
         if window and not window.plotter.is_closed():
-            if not (in_notebook() or get_config()["blocking"]) or window.refresh:
+            if not (in_notebook() or not pyviz.config.interactive) or window.refresh:
                 window.refresh = False
         else:
             window = PlotterWindow(window_id, plotter=plotter)

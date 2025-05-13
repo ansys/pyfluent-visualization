@@ -33,9 +33,9 @@ is an exhaust manifold.
 # Run the following in command prompt to execute this file:
 # exec(open("updated_script_manifold_example.py").read())
 
-from ansys.fluent.visualization import set_config
+from ansys.fluent.visualization import config
 
-set_config(blocking=False)
+config.interactive = True
 
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import SolverEvent, examples
