@@ -87,8 +87,8 @@ class FieldDataExtractor:
         if not obj.surfaces():
             raise RuntimeError("Mesh definition is incomplete.")
         obj._pre_display()
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
@@ -147,8 +147,8 @@ class FieldDataExtractor:
         node_values = obj.node_values()
         boundary_values = obj.boundary_values()
 
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
@@ -189,8 +189,8 @@ class FieldDataExtractor:
         obj._pre_display()
         field = obj.field()
 
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         surfaces_info = field_info.get_surfaces_info()
         transaction = field_data.new_transaction()
         surface_ids = [
@@ -219,8 +219,8 @@ class FieldDataExtractor:
         field = obj.field()
         if not field:
             field = obj.field = "velocity-magnitude"
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
 
         transaction = field_data.new_transaction()
 
@@ -303,8 +303,8 @@ class XYPlotDataExtractor:
         boundary_values = obj.boundary_values()
         direction_vector = obj.direction_vector()
         surfaces = obj.surfaces()
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [

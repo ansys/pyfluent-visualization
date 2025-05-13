@@ -287,7 +287,7 @@ class GraphicsWindow(VisualizationWindow):
             )
 
     def _display_vector(self, obj, position=(0, 0), opacity=1):
-        field_info = obj._api_helper.field_info()
+        field_info = obj.session.field_info
         vectors_of = obj.vectors_of()
         # scalar bar properties
         scalar_bar_args = self.renderer._scalar_bar_default_properties()
@@ -468,7 +468,7 @@ class GraphicsWindow(VisualizationWindow):
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
-                        field_info = obj._api_helper.field_info()
+                        field_info = obj.session.field_info
                         self.renderer.render(
                             mesh,
                             clim=field_info.get_scalar_field_range(obj.field(), False),
@@ -994,10 +994,7 @@ class GraphicsWindowsManager(
                     for window_id, window in self._post_windows.items()
                     if window
                     and not window.renderer.plotter._closed
-                    and (
-                        not session_id
-                        or session_id == window.post_object._api_helper.id()
-                    )
+                    and (not session_id or session_id == window.post_object.session.id)
                 ]
                 if not windows_id or window_id in windows_id
             ]

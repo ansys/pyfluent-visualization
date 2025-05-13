@@ -476,9 +476,7 @@ class PlotterWindowsManager(
                 window_id
                 for window_id, window in self._post_windows.items()
                 if not window.plotter.is_closed()
-                and (
-                    not session_id or session_id == window.post_object._api_helper.id()
-                )
+                and (not session_id or session_id == window.post_object.session.id)
             ]
             if not windows_id or window_id in windows_id
         ]
