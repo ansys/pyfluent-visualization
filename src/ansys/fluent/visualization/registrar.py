@@ -19,3 +19,24 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+"""Module for registering and accessing graphics renderers and plotters."""
+
+from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
+    Plotter as MatplotlibPlotter,
+)
+from ansys.fluent.visualization.plotter.pyvista.plotter_defns import (
+    Plotter as PyVistaPlotter,
+)
+
+_visualizer = {"matplotlib": MatplotlibPlotter, "pyvista": PyVistaPlotter}
+
+
+def register_renderer(name, renderer):
+    """Register a plotter or graphics renderer."""
+    _visualizer[name] = renderer
+
+
+def get_renderer(key: str):
+    """Get a registered plotter or graphics renderer by name."""
+    return _visualizer[key]
