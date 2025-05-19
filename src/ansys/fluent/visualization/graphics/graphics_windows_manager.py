@@ -574,6 +574,12 @@ class GraphicsWindowsManager(
         self._exit_thread: bool = False
         self._app = None
 
+    @property
+    def _in_jupyter_or_non_interactive_or_single_window(self):
+        return (
+            in_jupyter() or not pyviz.config.interactive or pyviz.config.single_window
+        )
+
     def get_window(self, window_id: str) -> GraphicsWindow:
         """Get the Graphics window.
 
@@ -630,11 +636,7 @@ class GraphicsWindowsManager(
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if (
-                in_jupyter()
-                or not pyviz.config.interactive
-                or pyviz.config.single_window
-            ):
+            if self._in_jupyter_or_non_interactive_or_single_window:
                 self._open_window_notebook(window_id, grid, renderer=renderer)
             else:
                 self._open_and_plot_console(None, window_id, grid=grid)
@@ -693,11 +695,7 @@ class GraphicsWindowsManager(
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if (
-                in_jupyter()
-                or not pyviz.config.interactive
-                or pyviz.config.single_window
-            ):
+            if self._in_jupyter_or_non_interactive_or_single_window:
                 self._plot_notebook(object, window_id, fetch_data, overlay)
             else:
                 self._open_and_plot_console(object, window_id, fetch_data, overlay)
@@ -736,11 +734,7 @@ class GraphicsWindowsManager(
         if not isinstance(object, (GraphicsDefn, PlotDefn)):
             raise RuntimeError("Object type currently not supported.")
         with self._condition:
-            if (
-                in_jupyter()
-                or not pyviz.config.interactive
-                or pyviz.config.single_window
-            ):
+            if self._in_jupyter_or_non_interactive_or_single_window:
                 self._add_graphics_in_notebook(
                     object, window_id, fetch_data, overlay, position, opacity
                 )
@@ -752,11 +746,7 @@ class GraphicsWindowsManager(
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
         with self._condition:
-            if (
-                in_jupyter()
-                or not pyviz.config.interactive
-                or pyviz.config.single_window
-            ):
+            if self._in_jupyter_or_non_interactive_or_single_window:
                 self._show_graphics_in_notebook(window_id)
 
     def save_graphic(
