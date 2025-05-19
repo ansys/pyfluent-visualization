@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module providing visualization objects to facilitate integration with libraries like
-Matplotlib and pyvista."""
+"""Module providing visualization objects."""
 
 import inspect
 
@@ -29,21 +28,22 @@ from ansys.fluent.interface.post_objects.meta import PyLocalContainer
 
 
 class Container:
-    """Base class for containers, for example, Plots, Graphics.
+    """
+    Base class for container objects such as Plots or Graphics.
 
     Parameters
-        ----------
-        session : object
-            Session object.
-        container_type: object
-            Container type (for example, Plots, Graphics)
-        module: object
-            Python module containing post definitions
-        post_api_helper: object
-            Provides helper APIs for post-processing
-        local_surfaces_provider : object, optional
-            Object providing local surfaces so that user can access surfaces
-            created in other modules, such as PyVista. The default is ``None``.
+    ----------
+    session : object
+        Session object.
+    container_type : object
+        Type of the container (e.g., Plots, Graphics).
+    module : object
+        Python module containing post definitions.
+    post_api_helper : object
+        Helper object providing post-processing APIs.
+    local_surfaces_provider : object, optional
+        Provider of local surfaces, allowing access to surfaces created in
+        external modules (e.g., PyVista). Defaults to ``None``.
     """
 
     def __init__(
@@ -151,22 +151,22 @@ class Container:
 
 
 class Plots(Container):
-    """Provides the Matplotlib ``Plots`` objects manager.
+    """Manages ``Plots`` object containers for a given session.
 
-    This class provides access to ``Plots`` object containers for a given
-    session so that plots can be created.
+    This class provides access to containers used for creating and managing
+    plot-related objects such as XY plots and monitor plots.
 
     Parameters
     ----------
-    session : obj
+    session : object
         Session object.
-    module: object
-        Python module containing post definitions
-    post_api_helper: object
-        Provides helper APIs for post-processing
+    module : object
+        Python module containing post definitions.
+    post_api_helper : object
+        Helper object providing post-processing APIs.
     local_surfaces_provider : object, optional
-        Object providing local surfaces so that you can access surfaces
-        created in other modules, such as pyvista. The default is ``None``.
+        Provider of local surfaces, allowing access to surfaces created in
+        external modules (e.g., Matplotlib). Defaults to ``None``.
 
     Attributes
     ----------
@@ -186,22 +186,22 @@ class Plots(Container):
 
 
 class Graphics(Container):
-    """Provides the pyvista ``Graphics`` objects manager.
+    """Manages ``Graphics`` object containers for a given session.
 
-    This class provides access to ``Graphics`` object containers for a given
-    session so that graphics objects can be created.
+    This class provides access to containers used for creating and managing
+    graphics-related objects such as meshes, surfaces, contours, and vectors.
 
     Parameters
     ----------
-    session : obj
+    session : object
         Session object.
-    module: object
-        Python module containing post definitions
-    post_api_helper: object
-        Provides helper APIs for post-processing
+    module : object
+        Python module containing post definitions.
+    post_api_helper : object
+        Helper object providing post-processing APIs.
     local_surfaces_provider : object, optional
-        Object providing local surfaces so that you can access surfaces
-        created in other modules, such as pyvista. The default is ``None``.
+        Provider of local surfaces, allowing access to surfaces created in
+        external modules (e.g., PyVista). Defaults to ``None``.
 
     Attributes
     ----------
