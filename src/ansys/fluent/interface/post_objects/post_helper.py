@@ -56,20 +56,20 @@ class PostAPIHelper:
 
         @staticmethod
         def surface_name_on_server(local_surface_name):
-            """Returns the surface name on server."""
+            """Return the surface name on server."""
             return "_dummy_surface_for_pyfluent:" + local_surface_name.lower()
 
         def _get_api_handle(self):
             return self.obj.get_root().session.results.surfaces
 
-        def _delete_if_exist_on_server(self):
+        def _delete_if_exists_on_server(self):
             field_info = self.obj._api_helper.field_info()
             surfaces_list = list(field_info.get_surfaces_info().keys())
             if self._surface_name_on_server in surfaces_list:
                 self.delete_surface_on_server()
 
         def create_surface_on_server(self):
-            """Creates the surface on server.
+            """Create the surface on server.
 
             Raises
             ------
@@ -84,7 +84,7 @@ class PostAPIHelper:
                 iso_value = iso_surface.iso_value()
                 if not field:
                     raise IncompleteISOSurfaceDefinition()
-                self._delete_if_exist_on_server()
+                self._delete_if_exists_on_server()
                 self._get_api_handle().iso_surface[self._surface_name_on_server] = {
                     "field": field,
                     "iso_values": [iso_value],
@@ -94,7 +94,7 @@ class PostAPIHelper:
                 xy_plane = plane_surface.xy_plane
                 yz_plane = plane_surface.yz_plane
                 zx_plane = plane_surface.zx_plane
-                self._delete_if_exist_on_server()
+                self._delete_if_exists_on_server()
                 if xy_plane():
                     method = "xy-plane"
                     position = "z"
@@ -132,7 +132,7 @@ class PostAPIHelper:
             self.surface_api = PostAPIHelper._SurfaceAPI(obj)
 
     def remote_surface_name(self, local_surface_name):
-        """Returns the surface name."""
+        """Return the surface name."""
 
         local_surfaces_provider = self.obj.get_root()._local_surfaces_provider()
 
@@ -142,7 +142,7 @@ class PostAPIHelper:
             return local_surface_name
 
     def get_field_unit(self, field):
-        """Returns the unit of the field."""
+        """Return the unit of the field."""
         session = self.obj.get_root().session
         if FluentVersion(session.scheme_eval.version) < FluentVersion.v252:
             quantity = self._field_unit_quantity(field)

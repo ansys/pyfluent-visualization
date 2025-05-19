@@ -157,16 +157,16 @@ class Plots(Container):
     session so that plots can be created.
 
     Parameters
-        ----------
-        session : obj
-            Session object.
-        module: object
-            Python module containing post definitions
-        post_api_helper: object
-            Provides helper APIs for post-processing
-        local_surfaces_provider : object, optional
-            Object providing local surfaces so that you can access surfaces
-            created in other modules, such as pyvista. The default is ``None``.
+    ----------
+    session : obj
+        Session object.
+    module: object
+        Python module containing post definitions
+    post_api_helper: object
+        Provides helper APIs for post-processing
+    local_surfaces_provider : object, optional
+        Object providing local surfaces so that you can access surfaces
+        created in other modules, such as pyvista. The default is ``None``.
 
     Attributes
     ----------
