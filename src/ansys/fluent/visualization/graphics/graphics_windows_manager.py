@@ -30,7 +30,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 import pyvista as pv
 
-from ansys.fluent.interface.post_objects.check_in_notebook import in_notebook
+from ansys.fluent.interface.post_objects.check_in_notebook import in_jupyter
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
@@ -130,9 +130,7 @@ class GraphicsWindow(VisualizationWindow):
             )
 
             raise KeyError(error_message) from ex
-        return renderer(
-            self.id, in_notebook(), not pyviz.config.interactive, self._grid
-        )
+        return renderer(self.id, in_jupyter(), not pyviz.config.interactive, self._grid)
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""
@@ -170,7 +168,7 @@ class GraphicsWindow(VisualizationWindow):
             opacity = self._opacity
 
         if not self.overlay:
-            self.renderer._clear_plotter(in_notebook())
+            self.renderer._clear_plotter(in_jupyter())
         if obj.__class__.__name__ == "Mesh":
             self._display_mesh(obj, position, opacity)
         elif obj.__class__.__name__ == "Surface":
@@ -633,7 +631,7 @@ class GraphicsWindowsManager(
             if not window_id:
                 window_id = self._get_unique_window_id()
             if (
-                in_notebook()
+                in_jupyter()
                 or not pyviz.config.interactive
                 or pyviz.config.single_window
             ):
@@ -696,7 +694,7 @@ class GraphicsWindowsManager(
             if not window_id:
                 window_id = self._get_unique_window_id()
             if (
-                in_notebook()
+                in_jupyter()
                 or not pyviz.config.interactive
                 or pyviz.config.single_window
             ):
@@ -739,7 +737,7 @@ class GraphicsWindowsManager(
             raise RuntimeError("Object type currently not supported.")
         with self._condition:
             if (
-                in_notebook()
+                in_jupyter()
                 or not pyviz.config.interactive
                 or pyviz.config.single_window
             ):
@@ -755,7 +753,7 @@ class GraphicsWindowsManager(
         """Display the graphics window."""
         with self._condition:
             if (
-                in_notebook()
+                in_jupyter()
                 or not pyviz.config.interactive
                 or pyviz.config.single_window
             ):
@@ -865,7 +863,7 @@ class GraphicsWindowsManager(
             for window_id in windows_id:
                 window = self._post_windows.get(window_id)
                 if window:
-                    if in_notebook() or not pyviz.config.interactive:
+                    if in_jupyter() or not pyviz.config.interactive:
                         window.renderer.plotter.close()
                     window.close = True
 

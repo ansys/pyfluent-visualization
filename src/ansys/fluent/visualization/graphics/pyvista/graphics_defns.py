@@ -38,13 +38,13 @@ class Renderer(AbstractRenderer):
     def __init__(
         self,
         win_id: str,
-        in_notebook: bool,
+        in_jupyter: bool,
         non_interactive: bool,
         grid: tuple | None = (1, 1),
     ):
         self.plotter: BackgroundPlotter | pv.Plotter = (
             pv.Plotter(title=f"PyFluent ({win_id})", shape=grid)
-            if in_notebook or non_interactive
+            if in_jupyter or non_interactive
             else BackgroundPlotter(
                 title=f"PyFluent ({win_id})",
                 shape=grid,
@@ -89,8 +89,8 @@ class Renderer(AbstractRenderer):
             position_y=0.3,
         )
 
-    def _clear_plotter(self, in_notebook):
-        if in_notebook and self.plotter.theme._jupyter_backend == "pythreejs":
+    def _clear_plotter(self, in_jupyter):
+        if in_jupyter and self.plotter.theme._jupyter_backend == "pythreejs":
             self.plotter.remove_actor(self.plotter.renderer.actors.copy())
         else:
             self.plotter.clear()

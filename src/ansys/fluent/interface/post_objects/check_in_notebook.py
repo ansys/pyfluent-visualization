@@ -20,11 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Provides a module to check if the application is running in notebook."""
+"""Provides a module to check if the library is being used in a Jupyter environment."""
+import warnings
+
+from ansys.fluent.core import PyFluentDeprecationWarning
 
 
-def in_notebook():
-    """Checks if the application is running in notebook."""
+def in_jupyter():
+    """Checks if the library is being used in a Jupyter environment."""
     try:
         from IPython import get_ipython
 
@@ -33,3 +36,8 @@ def in_notebook():
     except (ImportError, AttributeError):
         return False
     return True
+
+
+def in_notebook():
+    warnings.warn("Please use 'in_jupyter' instead.", PyFluentDeprecationWarning)
+    return in_jupyter()
