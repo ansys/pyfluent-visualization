@@ -206,7 +206,7 @@ def set_config(blocking: bool = False, set_view_on_display: str = "isometric"):
 
 
 def get_config():
-    """Set visualization configuration."""
+    """Get visualization configuration."""
     warnings.warn(
         "Please use the module level 'config' instead.", PyFluentDeprecationWarning
     )
