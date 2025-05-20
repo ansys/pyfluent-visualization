@@ -62,11 +62,7 @@ from ansys.fluent.visualization.containers import (  # noqa: F401
 )
 from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
 from ansys.fluent.visualization.plotter import Plots  # noqa: F401
-from ansys.fluent.visualization.registrar import (
-    _visualizer,
-    get_renderer,
-    register_renderer,
-)
+from ansys.fluent.visualization.registrar import register_renderer
 from ansys.fluent.visualization.renderer import GraphicsWindow
 
 
@@ -82,46 +78,13 @@ class View(str, Enum):
     ISOMETRIC = "isometric"
 
 
-class _ViewWrapper:
-    def __init__(self, default=View.ISOMETRIC):
-        self._value = default
-
-    def __call__(self):
-        return self._value
-
-    def __str__(self):
-        return str(self._value)
-
-    def __repr__(self):
-        return repr(self._value)
-
-    def __eq__(self, other):
-        return self._value == other
-
-    def __getattr__(self, attr):
-        # Allows access like config.view.name or config.view.value
-        return getattr(self._value, attr)
-
-    def allowed_values(self):
-        """List of allowed views."""
-        return list(View)
-
-    def set(self, val):
-        """Set view."""
-        if isinstance(val, str):
-            val = View(val)
-        elif not isinstance(val, View):
-            raise TypeError("view must be of type 'View' or str")
-        self._value = val
-
-
 class Config:
     """Set the configuration variables for visualization."""
 
     def __init__(self):
         """__init__ method of Config class."""
         self._interactive = True
-        self._view = _ViewWrapper()
+        self._view = View.ISOMETRIC
         self._single_window = False
         self._two_dimensional_renderer = "pyvista"
         self._three_dimensional_renderer = "pyvista"
@@ -154,7 +117,7 @@ class Config:
     @view.setter
     def view(self, val):
         """Sets the camera angle set for displaying graphics."""
-        self._view.set(val)
+        self._view = View(val)
 
     @property
     def two_dimensional_renderer(self):
@@ -188,7 +151,7 @@ class Config:
                     f"{val} is not a valid renderer. Valid renderers are {list(_visualizer)}."
                 )
 
-    def get_available_renderers(self):
+    def get_available_renderer_names(self):
         """Access list of available renderers."""
         return list(_visualizer)
 
