@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Configuration variables for visualization."""
 
 from enum import Enum
 import warnings
@@ -52,42 +53,42 @@ class Config:
         self._three_dimensional_renderer = "pyvista"
 
     @property
-    def interactive(self):
+    def interactive(self) -> bool:
         """Boolean flag to access mode (interactive or non-interactive)."""
         return self._interactive
 
     @interactive.setter
-    def interactive(self, val: bool):
+    def interactive(self, val: bool) -> None:
         """Set mode (interactive or non-interactive)."""
         self._interactive = bool(val)
 
     @property
-    def single_window(self):
+    def single_window(self) -> bool:
         """Whether single Qt window is activated."""
         return self._single_window
 
     @single_window.setter
-    def single_window(self, val: bool):
+    def single_window(self, val: bool) -> None:
         """Activate (or Deactivate) single Qt window."""
         self._single_window = bool(val)
 
     @property
-    def view(self):
-        """Returns the camera angle set for displaying graphics."""
+    def view(self) -> View:
+        """Returns the view set for displaying graphics."""
         return self._view
 
     @view.setter
-    def view(self, val):
-        """Sets the camera angle set for displaying graphics."""
+    def view(self, val: str | View) -> None:
+        """Sets the view for displaying graphics."""
         self._view = View(val)
 
     @property
-    def two_dimensional_renderer(self):
-        """Access the default renderer for displaying 2D plots."""
+    def two_dimensional_renderer(self) -> str:
+        """Returns the default renderer name for displaying 2D plots."""
         return self._two_dimensional_renderer
 
     @two_dimensional_renderer.setter
-    def two_dimensional_renderer(self, val):
+    def two_dimensional_renderer(self, val: str) -> None:
         """Sets the default renderer for displaying 2D plots."""
         if isinstance(val, str):
             if val in _visualizer:
@@ -99,12 +100,12 @@ class Config:
                 )
 
     @property
-    def three_dimensional_renderer(self):
-        """Access the default renderer for displaying 3D graphics."""
+    def three_dimensional_renderer(self) -> str:
+        """Returns the default renderer name for displaying 3D graphics."""
         return self._three_dimensional_renderer
 
     @three_dimensional_renderer.setter
-    def three_dimensional_renderer(self, val):
+    def three_dimensional_renderer(self, val: str) -> None:
         """Sets the default renderer for displaying 3D graphics."""
         if isinstance(val, str):
             if val in _visualizer:
