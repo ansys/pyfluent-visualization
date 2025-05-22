@@ -20,43 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Python post processing integrations for the Fluent solver."""
+"""Provides a module for metaclasses."""
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
-
-_VERSION_INFO = None
-__version__ = importlib_metadata.version(__name__.replace(".", "-"))
+from abc import ABCMeta
 
 
-def version_info() -> str:
-    """Method returning the version of PyFluent being used.
+class SingletonMeta(type):
+    """Provides the metaclass for the singleton type."""
 
-    Returns
-    -------
-    str
-        The PyFluent version being used.
+    _single_instance = None
 
-    Notes
-    -----
-        Only available in packaged versions. Otherwise it will return __version__.
-    """
-    return _VERSION_INFO if _VERSION_INFO is not None else __version__
+    def __call__(cls, *args, **kwargs):
+        if not cls._single_instance:
+            cls._single_instance = super(SingletonMeta, cls).__call__(*args, **kwargs)
+        return cls._single_instance
 
 
-from ansys.fluent.visualization.config import config, get_config, set_config
-from ansys.fluent.visualization.containers import (  # noqa: F401
-    Contour,
-    Mesh,
-    Monitor,
-    Pathline,
-    Surface,
-    Vector,
-    XYPlot,
-)
-from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
-from ansys.fluent.visualization.plotter import Plots  # noqa: F401
-from ansys.fluent.visualization.registrar import register_renderer
-from ansys.fluent.visualization.renderer import GraphicsWindow
+class AbstractSingletonMeta(ABCMeta, SingletonMeta):
+    """Provides the metaclass for the abstract singleton type."""
+
+    pass

@@ -27,10 +27,10 @@ from typing import List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ansys.fluent.visualization.plotter.abstract_plotter_defns import AbstractPlotter
+from ansys.fluent.visualization.abstract_renderer_defn import AbstractRenderer
 
 
-class Plotter(AbstractPlotter):
+class Plotter(AbstractRenderer):
     """Class for matplotlib plotter."""
 
     def __init__(
@@ -91,7 +91,7 @@ class Plotter(AbstractPlotter):
             ret = x + y + 1
         return ret
 
-    def plot(
+    def render(
         self, data: dict, grid=(1, 1), position=0, show=True, subplot_titles=[]
     ) -> None:
         """Draw plot in window.
@@ -254,7 +254,7 @@ class ProcessPlotter(Plotter):
                         name = data["save_graphic"]
                         self.save_graphic(name)
                     elif "data" in data:
-                        self.plot(
+                        self.render(
                             data=data["data"],
                             grid=data["grid"],
                             position=data["position"],
