@@ -20,43 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Python post processing integrations for the Fluent solver."""
+"""Provides a module to check if the library is being used in a Jupyter environment."""
+import warnings
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
-
-_VERSION_INFO = None
-__version__ = importlib_metadata.version(__name__.replace(".", "-"))
+from ansys.fluent.core import PyFluentDeprecationWarning
 
 
-def version_info() -> str:
-    """Method returning the version of PyFluent being used.
+def in_jupyter():
+    """Checks if the library is being used in a Jupyter environment."""
+    try:
+        from IPython import get_ipython
 
-    Returns
-    -------
-    str
-        The PyFluent version being used.
-
-    Notes
-    -----
-        Only available in packaged versions. Otherwise it will return __version__.
-    """
-    return _VERSION_INFO if _VERSION_INFO is not None else __version__
+        if "IPKernelApp" not in get_ipython().config:
+            return False
+    except (ImportError, AttributeError):
+        return False
+    return True
 
 
-from ansys.fluent.visualization.config import config, get_config, set_config
-from ansys.fluent.visualization.containers import (  # noqa: F401
-    Contour,
-    Mesh,
-    Monitor,
-    Pathline,
-    Surface,
-    Vector,
-    XYPlot,
-)
-from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
-from ansys.fluent.visualization.plotter import Plots  # noqa: F401
-from ansys.fluent.visualization.registrar import register_renderer
-from ansys.fluent.visualization.renderer import GraphicsWindow
+def in_notebook():
+    warnings.warn("Please use 'in_jupyter' instead.", PyFluentDeprecationWarning)
+    return in_jupyter()
