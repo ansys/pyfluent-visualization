@@ -265,7 +265,15 @@ class GraphicsWindow:
         if self.window_id:
             self._renderer.close(session_id=session_id)
 
-    def real_time_update(self, events):
+    def real_time_update(self, events) -> None:
+        """Update the graphics window in real time with respect to the event
+        that is passed as input.
+
+        Parameters
+        ----------
+        events : list
+            List of events.
+        """
         if self._graphics_objs:
             for event in events:
                 session = self._graphics_objs[0]["object"].obj.session
