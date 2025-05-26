@@ -131,7 +131,7 @@ class PlotterWindow(VisualizationWindow):
 
     # private methods
     def _get_plotter(self, plotter_string=None):
-        from ansys.fluent.visualization.registrar import _visualizer, get_renderer
+        from ansys.fluent.visualization.registrar import _renderer, get_renderer
 
         if plotter_string is None:
             plotter_string = pyviz.config.two_dimensional_renderer
@@ -146,7 +146,7 @@ class PlotterWindow(VisualizationWindow):
                 "  - The renderer might not be installed or available.\n"
                 "  - There might be an issue with the system configuration.\n\n"
                 "Currently available renderers are: "
-                f"{', '.join(_visualizer.keys())}.\n"
+                f"{', '.join(_renderer.keys())}.\n"
                 "Please ensure that the renderer name is correct or register the"
                 " renderer if it is custom. If the issue persists, check your"
                 " system configuration."

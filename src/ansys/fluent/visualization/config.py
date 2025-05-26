@@ -26,7 +26,7 @@ import warnings
 
 from ansys.fluent.core import PyFluentDeprecationWarning
 
-from ansys.fluent.visualization.registrar import _visualizer
+from ansys.fluent.visualization.registrar import _renderer
 
 
 class View(str, Enum):
@@ -103,12 +103,12 @@ class Config:
     def two_dimensional_renderer(self, val: str) -> None:
         """Sets the default renderer for displaying 2D plots."""
         if isinstance(val, str):
-            if val in _visualizer:
+            if val in _renderer:
                 self._two_dimensional_renderer = val
             else:
                 raise ValueError(
                     f"{val} is not a valid renderer. "
-                    f"Valid renderers are {list(_visualizer)}."
+                    f"Valid renderers are {list(_renderer)}."
                 )
 
     @property
@@ -120,12 +120,12 @@ class Config:
     def three_dimensional_renderer(self, val: str) -> None:
         """Sets the default renderer for displaying 3D graphics."""
         if isinstance(val, str):
-            if val in _visualizer:
+            if val in _renderer:
                 self._three_dimensional_renderer = val
             else:
                 raise ValueError(
                     f"{val} is not a valid renderer. "
-                    f"Valid renderers are {list(_visualizer)}."
+                    f"Valid renderers are {list(_renderer)}."
                 )
 
 

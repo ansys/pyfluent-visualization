@@ -61,7 +61,7 @@ class GraphicsWindow:
         """__init__ method of GraphicsWindow class."""
         self._graphics_objs = []
         self.window_id = None
-        self._visualizer = None
+        self._renderer = None
         self._list_of_positions = []
 
     def add_graphics(
@@ -149,16 +149,16 @@ class GraphicsWindow:
         if self.window_id not in graphics_windows_manager._post_windows:
             graphics_windows_manager._post_windows[self.window_id] = None
         if self._all_plt_objs() and not pyviz.config.single_window:
-            self._visualizer = _PlotterWindow(
+            self._renderer = _PlotterWindow(
                 grid=self._show_find_grid_size(self._list_of_positions)
             )
-            self._visualizer._plot_objs = self._graphics_objs
+            self._renderer._plot_objs = self._graphics_objs
         else:
-            self._visualizer = _GraphicsWindow(
+            self._renderer = _GraphicsWindow(
                 grid=self._show_find_grid_size(self._list_of_positions)
             )
-            self._visualizer._graphics_objs = self._graphics_objs
-        self._visualizer.show(self.window_id, renderer=renderer)
+            self._renderer._graphics_objs = self._graphics_objs
+        self._renderer.show(self.window_id, renderer=renderer)
 
     def save_graphic(
         self,
@@ -202,12 +202,12 @@ class GraphicsWindow:
         >>> graphics_window.save_graphic("saved_vector.svg")
         """
         if self.window_id:
-            self._visualizer.save_graphic(filename)
+            self._renderer.save_graphic(filename)
 
     @property
     def renderer(self):
         """Returns the plotter object."""
-        return self._visualizer.plotter
+        return self._renderer.plotter
 
     def refresh(
         self,
@@ -226,7 +226,7 @@ class GraphicsWindow:
             Overlay graphics over existing graphics.
         """
         if self.window_id:
-            self._visualizer.refresh(session_id=session_id, overlay=overlay)
+            self._renderer.refresh(session_id=session_id, overlay=overlay)
 
     def animate(
         self,
@@ -247,7 +247,7 @@ class GraphicsWindow:
             If not implemented.
         """
         if self.window_id:
-            self._visualizer.animate(session_id=session_id)
+            self._renderer.animate(session_id=session_id)
 
     def close(
         self,
@@ -263,4 +263,4 @@ class GraphicsWindow:
            are closed.
         """
         if self.window_id:
-            self._visualizer.close(session_id=session_id)
+            self._renderer.close(session_id=session_id)

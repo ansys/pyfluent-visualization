@@ -135,7 +135,7 @@ p_pathline = GraphicsWindow()
 p_pathline.add_graphics(pathlines1)
 p_pathline.show()
 
-p_cont._visualizer.plotter.view_isometric()
+p_cont._renderer.plotter.view_isometric()
 
 p_surf = GraphicsWindow()
 p_surf.add_graphics(surface1)

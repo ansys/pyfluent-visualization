@@ -29,14 +29,14 @@ from ansys.fluent.visualization.plotter.pyvista.plotter_defns import (
     Plotter as PyVistaPlotter,
 )
 
-_visualizer = {"matplotlib": MatplotlibPlotter, "pyvista": PyVistaPlotter}
+_renderer = {"matplotlib": MatplotlibPlotter, "pyvista": PyVistaPlotter}
 
 
 def register_renderer(name, renderer):
     """Register a plotter or graphics renderer."""
-    _visualizer[name] = renderer
+    _renderer[name] = renderer
 
 
 def get_renderer(key: str):
     """Get a registered plotter or graphics renderer by name."""
-    return _visualizer[key]
+    return _renderer[key]

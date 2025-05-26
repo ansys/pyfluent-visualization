@@ -101,7 +101,7 @@ class GraphicsWindow(VisualizationWindow):
 
     # private methods
     def _get_renderer(self, renderer_string=None):
-        from ansys.fluent.visualization.registrar import _visualizer, get_renderer
+        from ansys.fluent.visualization.registrar import _renderer, get_renderer
 
         if renderer_string is None:
             renderer_string = pyviz.config.three_dimensional_renderer
@@ -123,7 +123,7 @@ class GraphicsWindow(VisualizationWindow):
                 "  - The renderer might not be installed or available.\n"
                 "  - There might be an issue with the system configuration.\n\n"
                 "Currently available renderers are: "
-                f"{', '.join(_visualizer.keys())}.\n"
+                f"{', '.join(_renderer.keys())}.\n"
                 "Please ensure that the renderer name is correct or register the"
                 " renderer if it is custom. If the issue persists, check your"
                 " system configuration."
