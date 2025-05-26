@@ -27,20 +27,20 @@ import multiprocessing as mp
 from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.fluent_connection import FluentConnection
-from ansys.fluent.core.post_objects.check_in_notebook import in_notebook
-from ansys.fluent.core.post_objects.post_object_definitions import (
+
+from ansys.fluent.interface.post_objects.check_in_notebook import in_jupyter
+from ansys.fluent.interface.post_objects.post_object_definitions import (
     MonitorDefn,
     PlotDefn,
     XYPlotDefn,
 )
-from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
-
-from ansys.fluent.visualization import get_config
+from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
-from ansys.fluent.visualization.post_windows_manager import (
-    PostWindow,
-    PostWindowsManager,
+from ansys.fluent.visualization.visualization_windows_manager import (
+    VisualizationWindow,
+    VisualizationWindowsManager,
 )
 
 
@@ -64,7 +64,7 @@ class _ProcessPlotterHandle:
         self.plot_process.start()
         FluentConnection._monitor_thread.cbs.append(self.close)
 
-    def plot(self, data, grid=(1, 1), position=0, show=True, subplot_titles=[]):
+    def render(self, data, grid=(1, 1), position=0, show=True, subplot_titles=[]):
         self.plot_pipe.send(
             {"data": data, "grid": grid, "position": position, "show": show}
         )
@@ -97,22 +97,22 @@ class _ProcessPlotterHandle:
             pass
 
 
-class PlotterWindow(PostWindow):
+class PlotterWindow(VisualizationWindow):
     """Provides for managing Plotter windows."""
 
-    def __init__(self, id: str, post_object: PlotDefn):
+    def __init__(self, id: str, plotter: str = None):
         """Instantiate a plotter window.
 
         Parameters
         ----------
         id : str
             Window ID.
-        post_object : PlotDefn
-            Object to plot.
         """
         self.id: str = id
         self.post_object = None
-        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter()
+        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter(
+            plotter_string=plotter
+        )
         self.close: bool = False
         self.refresh: bool = False
 
@@ -130,20 +130,32 @@ class PlotterWindow(PostWindow):
         self.plotter.show()
 
     # private methods
-    def _get_plotter(self):
-        import ansys.fluent.visualization as pyviz
+    def _get_plotter(self, plotter_string=None):
+        from ansys.fluent.visualization.registrar import _renderer, get_renderer
 
-        if pyviz.PLOTTER == "matplotlib":
-            from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
-                Plotter,
+        if plotter_string is None:
+            plotter_string = pyviz.config.two_dimensional_renderer
+        try:
+            plotter = get_renderer(plotter_string)
+        except KeyError as ex:
+            error_message = (
+                f"Error: Renderer '{plotter_string}' not found or registered. "
+                "We tried to load the renderer but encountered an issue.\n"
+                "Possible reasons could include:\n"
+                "  - The renderer name might be misspelled.\n"
+                "  - The renderer might not be installed or available.\n"
+                "  - There might be an issue with the system configuration.\n\n"
+                "Currently available renderers are: "
+                f"{', '.join(_renderer.keys())}.\n"
+                "Please ensure that the renderer name is correct or register the"
+                " renderer if it is custom. If the issue persists, check your"
+                " system configuration."
             )
-        elif pyviz.PLOTTER == "plotly":
-            from ansys.fluent.visualization.plotter.plotly.plotter_defns import Plotter
-        else:
-            from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
+
+            raise KeyError(error_message) from ex
         return (
-            Plotter(self.id)
-            if in_notebook() or get_config()["blocking"]
+            plotter(self.id)
+            if in_jupyter() or not pyviz.config.interactive
             else _ProcessPlotterHandle(self.id)
         )
 
@@ -177,7 +189,7 @@ class _XYPlot:
             "xlabel": "position",
             "ylabel": self.post_object.y_axis_function(),
         }
-        if in_notebook() or get_config()["blocking"]:
+        if in_jupyter() or not pyviz.config.interactive:
             self.plotter.set_properties(properties)
         else:
             try:
@@ -187,7 +199,7 @@ class _XYPlot:
                     self._get_plotter()
                 )
                 self.plotter.set_properties(properties)
-        self.plotter.plot(
+        self.plotter.render(
             xy_data,
             grid=grid,
             position=position,
@@ -218,7 +230,7 @@ class _MonitorPlot:
         """Draw a monitor plot."""
         if not self.post_object:
             return
-        monitors = self.post_object._api_helper.monitors
+        monitors = self.post_object.session.monitors
         indices, columns_data = monitors.get_monitor_set_data(
             self.post_object.monitor_set_name()
         )
@@ -234,7 +246,7 @@ class _MonitorPlot:
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
-        if in_notebook() or get_config()["blocking"]:
+        if in_jupyter() or not pyviz.config.interactive:
             self.plotter.set_properties(properties)
         else:
             try:
@@ -245,7 +257,7 @@ class _MonitorPlot:
                 )
                 self.plotter.set_properties(properties)
         if xy_data:
-            self.plotter.plot(
+            self.plotter.render(
                 xy_data,
                 grid=grid,
                 position=position,
@@ -254,14 +266,16 @@ class _MonitorPlot:
             )
 
 
-class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+class PlotterWindowsManager(
+    VisualizationWindowsManager, metaclass=AbstractSingletonMeta
+):
     """Provides for managing Plotter windows."""
 
     def __init__(self):
         """Instantiate a windows manager for the plotter."""
         self._post_windows: Dict[str, PlotterWindow] = {}
 
-    def open_window(self, window_id: Optional[str] = None) -> str:
+    def open_window(self, window_id: Optional[str] = None, plotter=None) -> str:
         """Open a new window.
 
         Parameters
@@ -277,7 +291,7 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         """
         if not window_id:
             window_id = self._get_unique_window_id()
-        self._open_window(window_id)
+        self._open_window(window_id, plotter)
         return window_id
 
     def set_object_for_window(self, object: PlotDefn, window_id: str) -> None:
@@ -367,6 +381,7 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
         self,
         session_id: Optional[str] = "",
         windows_id: Optional[List[str]] = [],
+        overlay: Optional[bool] = None,
     ) -> None:
         """Refresh windows.
 
@@ -436,15 +451,17 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
 
     # private methods
 
-    def _open_window(self, window_id: str) -> Union["Plotter", _ProcessPlotterHandle]:
+    def _open_window(
+        self, window_id: str, plotter=None
+    ) -> Union["Plotter", _ProcessPlotterHandle]:
         window = self._post_windows.get(window_id)
         if window and not window.plotter.is_closed():
-            if not (in_notebook() or get_config()["blocking"]) or window.refresh:
+            if not (in_jupyter() or not pyviz.config.interactive) or window.refresh:
                 window.refresh = False
         else:
-            window = PlotterWindow(window_id, None)
+            window = PlotterWindow(window_id, plotter=plotter)
             self._post_windows[window_id] = window
-            if in_notebook():
+            if in_jupyter():
                 window.plotter()
         return window
 
@@ -459,9 +476,7 @@ class PlotterWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta)
                 window_id
                 for window_id, window in self._post_windows.items()
                 if not window.plotter.is_closed()
-                and (
-                    not session_id or session_id == window.post_object._api_helper.id()
-                )
+                and (not session_id or session_id == window.post_object.session.id)
             ]
             if not windows_id or window_id in windows_id
         ]

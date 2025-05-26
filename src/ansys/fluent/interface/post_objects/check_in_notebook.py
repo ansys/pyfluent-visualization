@@ -20,47 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Abstract module providing graphics functionality."""
+"""Provides a module to check if the library is being used in a Jupyter environment."""
+import warnings
 
-from abc import ABC, abstractmethod
+from ansys.fluent.core import PyFluentDeprecationWarning
 
 
-class AbstractRenderer(ABC):
-    """Abstract class for renderer."""
+def in_jupyter():
+    """Checks if the library is being used in a Jupyter environment."""
+    try:
+        from IPython import get_ipython
 
-    @abstractmethod
-    def show(self):
-        """Show graphics."""
-        pass
+        if "IPKernelApp" not in get_ipython().config:
+            return False
+    except (ImportError, AttributeError):
+        return False
+    return True
 
-    @abstractmethod
-    def render(self, mesh, **kwargs):
-        """Render graphics in window."""
-        pass
 
-    @abstractmethod
-    def save_graphic(self, file_name: str):
-        """Save graphics to the specified file.
-
-        Parameters
-        ----------
-        file_name : str
-            File name to save graphic.
-        """
-        pass
-
-    @abstractmethod
-    def get_animation(self, win_id: str):
-        """Animate windows.
-
-        Parameters
-        ----------
-        win_id : str
-            ID for the window to animate.
-        """
-        pass
-
-    @abstractmethod
-    def close(self):
-        """Close graphics window."""
-        pass
+def in_notebook():
+    warnings.warn("Please use 'in_jupyter' instead.", PyFluentDeprecationWarning)
+    return in_jupyter()

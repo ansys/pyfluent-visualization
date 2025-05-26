@@ -27,15 +27,15 @@ import itertools
 import threading
 from typing import Dict, List, Optional, Union
 
-from ansys.fluent.core.fluent_connection import FluentConnection
-from ansys.fluent.core.post_objects.check_in_notebook import in_notebook
-from ansys.fluent.core.post_objects.post_object_definitions import (
+import numpy as np
+import pyvista as pv
+
+from ansys.fluent.interface.post_objects.check_in_notebook import in_jupyter
+from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
-from ansys.fluent.core.post_objects.singleton_meta import AbstractSingletonMeta
-import numpy as np
-import pyvista as pv
+from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
 
 try:
     from pyvistaqt import BackgroundPlotter
@@ -43,14 +43,13 @@ except ModuleNotFoundError:
     BackgroundPlotter = None
 
 import ansys.fluent.visualization as pyviz
-from ansys.fluent.visualization import get_config
 from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
     XYPlotDataExtractor,
 )
-from ansys.fluent.visualization.post_windows_manager import (
-    PostWindow,
-    PostWindowsManager,
+from ansys.fluent.visualization.visualization_windows_manager import (
+    VisualizationWindow,
+    VisualizationWindowsManager,
 )
 
 
@@ -63,13 +62,16 @@ class FieldDataType(Enum):
     Pathlines = "Pathlines"
 
 
-from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
-
-
-class GraphicsWindow(PostWindow):
+class GraphicsWindow(VisualizationWindow):
     """Provides for managing Graphics windows."""
 
-    def __init__(self, id: str, post_object: GraphicsDefn, grid: tuple | None = (1, 1)):
+    def __init__(
+        self,
+        id: str,
+        post_object: GraphicsDefn,
+        grid: tuple | None = (1, 1),
+        renderer: str = None,
+    ):
         """Instantiate a Graphics window.
 
         Parameters
@@ -83,7 +85,8 @@ class GraphicsWindow(PostWindow):
         """
         self.post_object: GraphicsDefn = post_object
         self.id: str = id
-        self.renderer = Renderer(id, in_notebook(), get_config()["blocking"], grid)
+        self._grid = grid
+        self.renderer = self._get_renderer(renderer_string=renderer)
         self.overlay: bool = False
         self.fetch_data: bool = False
         self.show_window: bool = True
@@ -95,6 +98,39 @@ class GraphicsWindow(PostWindow):
         self._data = {}
         self._subplot = None
         self._opacity = None
+
+    # private methods
+    def _get_renderer(self, renderer_string=None):
+        from ansys.fluent.visualization.registrar import _renderer, get_renderer
+
+        if renderer_string is None:
+            renderer_string = pyviz.config.three_dimensional_renderer
+        try:
+            if renderer_string == "pyvista":
+                from ansys.fluent.visualization.graphics.pyvista.graphics_defns import (
+                    Renderer,
+                )
+
+                renderer = Renderer
+            else:
+                renderer = get_renderer(renderer_string)
+        except KeyError as ex:
+            error_message = (
+                f"Error: Renderer '{renderer_string}' not found or registered. "
+                "We tried to load the renderer but encountered an issue.\n"
+                "Possible reasons could include:\n"
+                "  - The renderer name might be misspelled.\n"
+                "  - The renderer might not be installed or available.\n"
+                "  - There might be an issue with the system configuration.\n\n"
+                "Currently available renderers are: "
+                f"{', '.join(_renderer.keys())}.\n"
+                "Please ensure that the renderer name is correct or register the"
+                " renderer if it is custom. If the issue persists, check your"
+                " system configuration."
+            )
+
+            raise KeyError(error_message) from ex
+        return renderer(self.id, in_jupyter(), not pyviz.config.interactive, self._grid)
 
     def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
         """Set data for graphics."""
@@ -132,7 +168,7 @@ class GraphicsWindow(PostWindow):
             opacity = self._opacity
 
         if not self.overlay:
-            self.renderer._clear_plotter(in_notebook())
+            self.renderer._clear_plotter(in_jupyter())
         if obj.__class__.__name__ == "Mesh":
             self._display_mesh(obj, position, opacity)
         elif obj.__class__.__name__ == "Surface":
@@ -149,7 +185,7 @@ class GraphicsWindow(PostWindow):
             self._display_monitor_plot(position, opacity)
         if self.animate:
             self.renderer.write_frame()
-        self.renderer._set_camera(get_config()["set_view_on_display"])
+        self.renderer._set_camera(pyviz.config.view)
 
     def add_graphics(self, position, opacity=1):
         """Fetch and render graphics."""
@@ -213,7 +249,7 @@ class GraphicsWindow(PostWindow):
         }
 
     def _fetch_monitor_data(self, obj):
-        monitors = obj._api_helper.monitors
+        monitors = obj.session.monitors
         indices, columns_data = monitors.get_monitor_set_data(obj.monitor_set_name())
         xy_data = {}
         for column_name, column_data in columns_data.items():
@@ -228,21 +264,28 @@ class GraphicsWindow(PostWindow):
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
+    @staticmethod
+    def _pack_faces_connectivity_data(faces_data):
+        flat = []
+        for face in faces_data:
+            flat.append(len(face))
+            flat.extend(face)
+        return np.array(flat)
+
     def _resolve_mesh_data(self, mesh_data):
-        topology = "line" if mesh_data["faces"][0] == 2 else "face"
-        if topology == "line":
+        if mesh_data.connectivity[0].shape[0] == 2:  # Line
             return pv.PolyData(
-                mesh_data["vertices"],
-                lines=mesh_data["faces"],
+                mesh_data.vertices,
+                lines=self._pack_faces_connectivity_data(mesh_data.connectivity),
             )
-        else:
+        else:  # Face
             return pv.PolyData(
-                mesh_data["vertices"],
-                faces=mesh_data["faces"],
+                mesh_data.vertices,
+                faces=self._pack_faces_connectivity_data(mesh_data.connectivity),
             )
 
     def _display_vector(self, obj, position=(0, 0), opacity=1):
-        field_info = obj._api_helper.field_info()
+        field_info = obj.session.field_info
         vectors_of = obj.vectors_of()
         # scalar bar properties
         scalar_bar_args = self.renderer._scalar_bar_default_properties()
@@ -252,18 +295,20 @@ class GraphicsWindow(PostWindow):
         field = f"{field}\n[{field_unit}]" if field_unit else field
 
         for surface_id, mesh_data in self._data[FieldDataType.Vectors].items():
-            if "vertices" not in mesh_data or "faces" not in mesh_data:
+            if not all(
+                hasattr(mesh_data, attr) for attr in ("vertices", "connectivity")
+            ):
                 continue
-            mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
-            mesh_data[vectors_of].shape = (
-                mesh_data[vectors_of].size // 3,
+            mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
+            getattr(mesh_data, vectors_of).shape = (
+                getattr(mesh_data, vectors_of).size // 3,
                 3,
             )
-            vector_scale = mesh_data["vector-scale"][0]
+            vector_scale = mesh_data.vector_scale[0]
             mesh = self._resolve_mesh_data(mesh_data)
-            mesh.cell_data["vectors"] = mesh_data[vectors_of]
-            scalar_field = mesh_data[obj.field()]
-            velocity_magnitude = np.linalg.norm(mesh_data[vectors_of], axis=1)
+            mesh.cell_data["vectors"] = getattr(mesh_data, vectors_of)
+            scalar_field = getattr(mesh_data, obj.field())
+            velocity_magnitude = np.linalg.norm(getattr(mesh_data, vectors_of), axis=1)
             if obj.range.option() == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
                 range_ = [auto_range_off.minimum(), auto_range_off.maximum()]
@@ -319,16 +364,16 @@ class GraphicsWindow(PostWindow):
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Pathlines].items():
-            if "vertices" not in surface_data or "lines" not in surface_data:
+            if not all(hasattr(surface_data, attr) for attr in ("vertices", "lines")):
                 continue
-            surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
+            surface_data.vertices.shape = surface_data.vertices.size // 3, 3
 
             mesh = pv.PolyData(
-                surface_data["vertices"],
-                lines=surface_data["lines"],
+                surface_data.vertices,
+                lines=self._pack_faces_connectivity_data(surface_data.lines),
             )
 
-            mesh.point_data[field] = surface_data[obj.field()]
+            mesh.point_data[field] = surface_data.scalar_field
             self.renderer.render(
                 mesh,
                 scalars=field,
@@ -352,14 +397,16 @@ class GraphicsWindow(PostWindow):
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Contours].items():
-            if "vertices" not in surface_data or "faces" not in surface_data:
+            if not all(
+                hasattr(surface_data, attr) for attr in ("vertices", "connectivity")
+            ):
                 continue
-            surface_data["vertices"].shape = surface_data["vertices"].size // 3, 3
+            surface_data.vertices.shape = surface_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(surface_data)
             if node_values:
-                mesh.point_data[field] = surface_data[obj.field()]
+                mesh.point_data[field] = getattr(surface_data, obj.field())
             else:
-                mesh.cell_data[field] = surface_data[obj.field()]
+                mesh.cell_data[field] = getattr(surface_data, obj.field())
             if range_option == "auto-range-off":
                 auto_range_off = obj.range.auto_range_off
                 if auto_range_off.clip_to_range():
@@ -419,7 +466,7 @@ class GraphicsWindow(PostWindow):
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
-                        field_info = obj._api_helper.field_info()
+                        field_info = obj.session.field_info
                         self.renderer.render(
                             mesh,
                             clim=field_info.get_scalar_field_range(obj.field(), False),
@@ -464,9 +511,11 @@ class GraphicsWindow(PostWindow):
 
     def _display_mesh(self, obj, position=(0, 0), opacity=1):
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
-            if "vertices" not in mesh_data or "faces" not in mesh_data:
+            if not all(
+                hasattr(mesh_data, attr) for attr in ("vertices", "connectivity")
+            ):
                 continue
-            mesh_data["vertices"].shape = mesh_data["vertices"].size // 3, 3
+            mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(mesh_data)
             color_size = len(self.renderer._colors)
             color = list(self.renderer._colors.values())[surface_id % color_size]
@@ -509,7 +558,9 @@ class GraphicsWindow(PostWindow):
         return refresh
 
 
-class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta):
+class GraphicsWindowsManager(
+    VisualizationWindowsManager, metaclass=AbstractSingletonMeta
+):
     """Provides for managing Graphics windows."""
 
     _condition = threading.Condition()
@@ -522,6 +573,12 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         self._window_id: Optional[str] = None
         self._exit_thread: bool = False
         self._app = None
+
+    @property
+    def _in_jupyter_or_non_interactive_or_single_window(self):
+        return (
+            in_jupyter() or not pyviz.config.interactive or pyviz.config.single_window
+        )
 
     def get_window(self, window_id: str) -> GraphicsWindow:
         """Get the Graphics window.
@@ -556,7 +613,10 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             return self._post_windows[window_id].renderer.plotter
 
     def open_window(
-        self, window_id: str | None = None, grid: tuple | None = (1, 1)
+        self,
+        window_id: str | None = None,
+        grid: tuple | None = (1, 1),
+        renderer=None,
     ) -> str:
         """Open a new window.
 
@@ -576,8 +636,8 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
-                self._open_window_notebook(window_id, grid)
+            if self._in_jupyter_or_non_interactive_or_single_window:
+                self._open_window_notebook(window_id, grid, renderer=renderer)
             else:
                 self._open_and_plot_console(None, window_id, grid=grid)
             return window_id
@@ -635,7 +695,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         with self._condition:
             if not window_id:
                 window_id = self._get_unique_window_id()
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
+            if self._in_jupyter_or_non_interactive_or_single_window:
                 self._plot_notebook(object, window_id, fetch_data, overlay)
             else:
                 self._open_and_plot_console(object, window_id, fetch_data, overlay)
@@ -674,7 +734,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         if not isinstance(object, (GraphicsDefn, PlotDefn)):
             raise RuntimeError("Object type currently not supported.")
         with self._condition:
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
+            if self._in_jupyter_or_non_interactive_or_single_window:
                 self._add_graphics_in_notebook(
                     object, window_id, fetch_data, overlay, position, opacity
                 )
@@ -686,7 +746,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
         with self._condition:
-            if in_notebook() or get_config()["blocking"] or pyviz.SINGLE_WINDOW:
+            if self._in_jupyter_or_non_interactive_or_single_window:
                 self._show_graphics_in_notebook(window_id)
 
     def save_graphic(
@@ -793,7 +853,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             for window_id in windows_id:
                 window = self._post_windows.get(window_id)
                 if window:
-                    if in_notebook() or get_config()["blocking"]:
+                    if in_jupyter() or not pyviz.config.interactive:
                         window.renderer.plotter.close()
                     window.close = True
 
@@ -831,9 +891,10 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             self._app.processEvents()
         with self._condition:
             for window in self._post_windows.values():
-                plotter = window.renderer.plotter
-                plotter.close()
-                plotter.app.quit()
+                if window:
+                    plotter = window.renderer.plotter
+                    plotter.close()
+                    plotter.app.quit()
             self._post_windows.clear()
             self._condition.notify()
 
@@ -859,8 +920,8 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             self._grid = grid
 
         if not self._plotter_thread:
-            if FluentConnection._monitor_thread:
-                FluentConnection._monitor_thread.cbs.append(self._exit)
+            if obj is not None:
+                obj.session._fluent_connection.register_finalizer_cb(self._exit)
             self._plotter_thread = threading.Thread(target=self._display, args=())
             self._plotter_thread.start()
 
@@ -868,13 +929,16 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
             self._condition.wait()
 
     def _open_window_notebook(
-        self, window_id: str, grid: tuple | None = (1, 1)
+        self,
+        window_id: str,
+        grid: tuple | None = (1, 1),
+        renderer=None,
     ) -> pv.Plotter:
         window = self._post_windows.get(window_id)
         if window and not window.close and window.refresh:
             window.refresh = False
         else:
-            window = GraphicsWindow(window_id, None, grid)
+            window = GraphicsWindow(window_id, None, grid, renderer=renderer)
             self._post_windows[window_id] = window
         return window
 
@@ -916,11 +980,9 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
                 for window_id in [
                     window_id
                     for window_id, window in self._post_windows.items()
-                    if not window.renderer.plotter._closed
-                    and (
-                        not session_id
-                        or session_id == window.post_object._api_helper.id()
-                    )
+                    if window
+                    and not window.renderer.plotter._closed
+                    and (not session_id or session_id == window.post_object.session.id)
                 ]
                 if not windows_id or window_id in windows_id
             ]
@@ -937,7 +999,7 @@ class GraphicsWindowsManager(PostWindowsManager, metaclass=AbstractSingletonMeta
         itr_count = itertools.count()
         with self._condition:
             while True:
-                window_id = f"window-{next(itr_count)}"
+                window_id = f"window-{next(itr_count) + 1}"
                 if window_id not in self._post_windows:
                     return window_id
 

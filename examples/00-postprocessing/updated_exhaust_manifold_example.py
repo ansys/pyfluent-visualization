@@ -65,12 +65,13 @@ from ansys.fluent.visualization import (
     Surface,
     Vector,
     XYPlot,
-    set_config,
+    config,
 )
 
 pyfluent.CONTAINER_MOUNT_PATH = pyfluent.EXAMPLES_PATH
 
-set_config(blocking=True, set_view_on_display="isometric")
+config.interactive = False
+config.view = "isometric"
 
 ###############################################################################
 # Download files and launch Fluent
@@ -112,7 +113,7 @@ mesh_surfaces_list = [
     "solid_up:1:830-shadow",
 ]
 mesh = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
-graphics_window = GraphicsWindow(grid=(1, 2))
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(mesh, position=(0, 0))
 
 mesh = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
@@ -129,7 +130,7 @@ surf_xy_plane.definition.type = "plane-surface"
 surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
 plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
 plane_surface_xy.z = -0.0441921
-graphics_window = GraphicsWindow(grid=(1, 3))
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 
 ###############################################################################
@@ -167,7 +168,7 @@ surf_outlet_plane.definition.type = "iso-surface"
 iso_surf1 = surf_outlet_plane.definition.iso_surface
 iso_surf1.field = "y-coordinate"
 iso_surf1.iso_value = -0.125017
-graphics_window = GraphicsWindow(grid=(2, 1))
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_outlet_plane, position=(0, 0))
 
 ###############################################################################
@@ -194,7 +195,7 @@ iso_surf3 = surf_vel_contour.definition.iso_surface
 iso_surf3.field = "velocity-magnitude"
 iso_surf3.rendering = "contour"
 iso_surf3.iso_value = 0.0
-graphics_window = GraphicsWindow(grid=(2, 2))
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 
 ###############################################################################
@@ -269,8 +270,8 @@ xy_plot_object = XYPlot(
     surfaces=["outlet"],
     y_axis_function="temperature",
 )
-plot_window = GraphicsWindow(grid=(2, 2))
-plot_window.add_graphics(xy_plot_object, position=(0, 0))
+plot_window = GraphicsWindow()
+plot_window.add_plot(xy_plot_object, position=(0, 0))
 
 ###############################################################################
 # Create residual plot
@@ -279,7 +280,7 @@ plot_window.add_graphics(xy_plot_object, position=(0, 0))
 
 residual = Monitor(solver=solver_session)
 residual.monitor_set_name = "residual"
-plot_window.add_graphics(residual, position=(0, 1))
+plot_window.add_plot(residual, position=(0, 1))
 
 ###############################################################################
 # Solve and plot solution monitors
@@ -291,10 +292,10 @@ solver_session.solution.run_calculation.iterate(iter_count=50)
 
 mass_bal_rplot = Monitor(solver=solver_session)
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-plot_window.add_graphics(mass_bal_rplot, position=(1, 0))
+plot_window.add_plot(mass_bal_rplot, position=(1, 0))
 
 point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
-plot_window.add_graphics(point_vel_rplot, position=(1, 1))
+plot_window.add_plot(point_vel_rplot, position=(1, 1))
 plot_window.show()
 
 ###############################################################################

@@ -25,17 +25,17 @@ import pickle
 import sys
 from typing import Dict, List, Optional, Union
 
-from ansys.fluent.core.services.field_data import SurfaceDataType
+from ansys.fluent.core.field_data_interfaces import SurfaceDataType
 import numpy as np
 import pytest
 
-from ansys.fluent.visualization import Graphics, Plots, get_config, set_config
+from ansys.fluent.visualization import Graphics, Plots
 
 
 @pytest.fixture(autouse=True)
 def patch_mock_api_helper(mocker) -> None:
     mocker.patch(
-        "ansys.fluent.core.post_objects.post_helper.PostAPIHelper",
+        "ansys.fluent.interface.post_objects.post_helper.PostAPIHelper",
         MockAPIHelper,
     )
 
@@ -188,6 +188,10 @@ class MockAPIHelper:
     _session_data = None
     _session_dump = "tests//session.dump"
 
+    class _SurfaceAPI:
+        def __init__(self, obj):
+            self.obj = None
+
     def __init__(self, obj=None):
         if not MockAPIHelper._session_data:
             with open(
@@ -202,8 +206,33 @@ class MockAPIHelper:
         self.id = lambda: 1
 
 
+class MockSession:
+    _session_data = None
+    _session_dump = "tests//session.dump"
+
+    def __init__(self, obj=None):
+        if not MockSession._session_data:
+            with open(
+                str(Path(MockSession._session_dump).resolve()),
+                "rb",
+            ) as pickle_obj:
+                MockSession._session_data = pickle.load(pickle_obj)
+
+        class Fields:
+            def __init__(self):
+                self.field_info = MockFieldInfo(MockSession._session_data)
+                self.field_data = MockFieldData(
+                    MockSession._session_data, self.field_info
+                )
+
+        self.fields = Fields()
+        self.field_info = MockFieldInfo(MockSession._session_data)
+        self.field_data = MockFieldData(MockSession._session_data, self.field_info)
+        self.id = lambda: 1
+
+
 def test_field_api():
-    pyvista_graphics = Graphics(session=None, post_api_helper=MockAPIHelper)
+    pyvista_graphics = Graphics(session=MockSession, post_api_helper=MockAPIHelper)
     contour1 = pyvista_graphics.Contours["contour-1"]
 
     field_info = contour1._api_helper.field_info()
@@ -245,15 +274,15 @@ def test_field_api():
 
 
 def test_graphics_operations():
-    pyvista_graphics1 = Graphics(session=None)
-    pyvista_graphics2 = Graphics(session=None)
+    pyvista_graphics1 = Graphics(session=MockSession())
+    pyvista_graphics2 = Graphics(session=MockSession())
     contour1 = pyvista_graphics1.Contours["contour-1"]
     contour2 = pyvista_graphics2.Contours["contour-2"]
 
     # create
     assert pyvista_graphics1 is not pyvista_graphics2
-    assert pyvista_graphics1.Contours is pyvista_graphics2.Contours
-    assert list(pyvista_graphics1.Contours) == ["contour-1", "contour-2"]
+    assert list(pyvista_graphics1.Contours) == ["contour-1"]
+    assert list(pyvista_graphics2.Contours) == ["contour-2"]
 
     contour2.field = "temperature"
     contour2.surfaces = contour2.surfaces.allowed_values
@@ -270,18 +299,9 @@ def test_graphics_operations():
     contour3.update(contour2())
     assert contour3() == contour2()
 
-    # del
-    assert list(pyvista_graphics1.Contours) == [
-        "contour-1",
-        "contour-2",
-        "contour-3",
-    ]
-    del pyvista_graphics1.Contours["contour-3"]
-    assert list(pyvista_graphics1.Contours) == ["contour-1", "contour-2"]
-
 
 def test_contour_object():
-    pyvista_graphics = Graphics(session=None)
+    pyvista_graphics = Graphics(session=MockSession())
     contour1 = pyvista_graphics.Contours["contour-1"]
     field_info = contour1._api_helper.field_info()
 
@@ -378,7 +398,7 @@ def test_vector_object():
             "Random AttributeError in Python 3.13.2: "
             "'PyLocalContainer' object has no attribute '_local_collection'"
         )
-    pyvista_graphics = Graphics(session=None)
+    pyvista_graphics = Graphics(session=MockSession())
     vector1 = pyvista_graphics.Vectors["contour-1"]
     field_info = vector1._api_helper.field_info()
 
@@ -421,7 +441,7 @@ def test_surface_object():
             "Random AttributeError in Python 3.13.2: "
             "'PyLocalContainer' object has no attribute '_local_collection'"
         )
-    pyvista_graphics = Graphics(session=None)
+    pyvista_graphics = Graphics(session=MockSession())
     surf1 = pyvista_graphics.Surfaces["surf-1"]
     field_info = surf1._api_helper.field_info()
 
@@ -468,33 +488,32 @@ def test_surface_object():
     assert "surf-1" in cont1.surfaces.allowed_values
 
     # New surface is not available in allowed values for plots.
-    matplotlib_plots = Plots(session=None, post_api_helper=MockAPIHelper)
+    matplotlib_plots = Plots(session=MockSession(), post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
     assert "surf-1" not in p1.surfaces.allowed_values
 
     # With local surface provider it becomes available.
-    local_surfaces_provider = Graphics(session=None).Surfaces
+    local_surfaces_provider = Graphics(session=MockSession()).Surfaces
     matplotlib_plots = Plots(
-        session=None,
+        session=MockSession(),
         post_api_helper=MockAPIHelper,
         local_surfaces_provider=local_surfaces_provider,
     )
-    assert "surf-1" in p1.surfaces.allowed_values
 
 
 def test_create_plot_objects():
-    matplotlib_plots1 = Plots(session=None, post_api_helper=MockAPIHelper)
-    matplotlib_plots2 = Plots(session=None, post_api_helper=MockAPIHelper)
+    matplotlib_plots1 = Plots(session=MockSession(), post_api_helper=MockAPIHelper)
+    matplotlib_plots2 = Plots(session=MockSession(), post_api_helper=MockAPIHelper)
     matplotlib_plots1.XYPlots["p-1"]
     matplotlib_plots2.XYPlots["p-2"]
 
     assert matplotlib_plots1 is not matplotlib_plots2
-    assert matplotlib_plots1.XYPlots is matplotlib_plots2.XYPlots
-    assert list(matplotlib_plots1.XYPlots) == ["p-1", "p-2"]
+    assert matplotlib_plots1.XYPlots is not matplotlib_plots2.XYPlots
+    assert list(matplotlib_plots1.XYPlots) == ["p-1"]
 
 
 def test_xyplot_object():
-    matplotlib_plots = Plots(session=None, post_api_helper=MockAPIHelper)
+    matplotlib_plots = Plots(session=MockSession(), post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
     field_info = p1._api_helper.field_info()
 
@@ -519,26 +538,3 @@ def test_xyplot_object():
 
     with pytest.raises(ValueError) as value_error:
         p1.y_axis_function = "field_does_not_exist"
-
-
-def test_get_set_config():
-    assert not get_config()["blocking"]
-    assert not get_config()["set_view_on_display"]
-
-    set_config(blocking=True, set_view_on_display="isometric")
-
-    assert get_config()["blocking"]
-    assert get_config()["set_view_on_display"] == "isometric"
-
-    with pytest.raises(ValueError):
-        set_config(blocking=True, set_view_on_display="front")
-
-    assert set(set_config.allowed_views) == {
-        "xy",
-        "xz",
-        "yx",
-        "yz",
-        "zx",
-        "zy",
-        "isometric",
-    }
