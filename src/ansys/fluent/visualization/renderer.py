@@ -264,3 +264,13 @@ class GraphicsWindow:
         """
         if self.window_id:
             self._renderer.close(session_id=session_id)
+
+    def real_time_update(self, events):
+        if self._graphics_objs:
+            for event in events:
+                session = self._graphics_objs[0]["object"].obj.session
+
+                def _callback(session, event_info):
+                    self.refresh(session.id)
+
+                session.events.register_callback(event, _callback)
