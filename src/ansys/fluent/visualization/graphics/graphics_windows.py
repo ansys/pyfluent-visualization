@@ -66,7 +66,7 @@ class _GraphicsWindow:
                 fetch_data=True,
                 overlay=True,
                 position=graphics_dict["position"],
-                opacity=graphics_dict["opacity"],
+                opacity=graphics_dict.get("opacity"),
             )
         if pyviz.config.single_window:
             global _qt_window

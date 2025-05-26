@@ -60,7 +60,13 @@ class Config:
     @interactive.setter
     def interactive(self, val: bool) -> None:
         """Set mode (interactive or non-interactive)."""
-        self._interactive = bool(val)
+        if self._single_window and val == False:
+            warnings.warn(
+                "Single window is only available for interactive mode."
+                "\nReverting 'interactive' to 'True'."
+            )
+        else:
+            self._interactive = bool(val)
 
     @property
     def single_window(self) -> bool:
@@ -70,7 +76,13 @@ class Config:
     @single_window.setter
     def single_window(self, val: bool) -> None:
         """Activate (or Deactivate) single Qt window."""
-        self._single_window = bool(val)
+        if val and not self._interactive:
+            warnings.warn(
+                "Single window is only available for interactive mode."
+                "\nReverting 'single_window' to 'False'."
+            )
+        else:
+            self._single_window = bool(val)
 
     @property
     def view(self) -> View:
