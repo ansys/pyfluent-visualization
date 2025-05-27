@@ -141,30 +141,18 @@ p_surf = GraphicsWindow()
 p_surf.add_graphics(surface1)
 p_surf.show()
 
-
-def auto_refersh_call_back_iteration(session, event_info):
-    p_cont.refresh(session.id)
-    p_res.refresh(session.id)
-    p_mtr.refresh(session.id)
-    p_mbr.refresh(session.id)
-
-
-def auto_refersh_call_back_time_step(session, event_info):
-    p_res.refresh(session.id)
-
-
-def initialize_call_back(session, event_info):
-    p_res.refresh(session.id)
-    p_mtr.refresh(session.id)
-
-
-session.events.register_callback(SolverEvent.SOLUTION_INITIALIZED, initialize_call_back)
-session.events.register_callback(SolverEvent.DATA_LOADED, initialize_call_back)
-session.events.register_callback(
-    SolverEvent.ITERATION_ENDED, auto_refersh_call_back_iteration
+p_res.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
 )
-
-p_cont.animate(session.id)
+p_mtr.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+)
+p_mbr.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+)
+p_cont.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+)
 
 session.settings.solution.initialization.hybrid_initialize()
 session.settings.solution.run_calculation.iterate(iter_count=50)
