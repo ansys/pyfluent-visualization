@@ -5,6 +5,9 @@ on:
     - cron:  '0 4 * * *'
   workflow_dispatch:
 
+env:
+  PYFLUENT_LAUNCH_CONTAINER: 1
+
 jobs:
   test:
     name: Unit Testing
