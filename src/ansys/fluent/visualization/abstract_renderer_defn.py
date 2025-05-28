@@ -20,17 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Abstract module providing plotter functionality."""
+"""Abstract module providing rendering functionality."""
 
 from abc import ABC, abstractmethod
 
 
-class AbstractPlotter(ABC):
-    """Abstract class for plotter."""
+class AbstractRenderer(ABC):
+    """Abstract class for rendering graphics and plots."""
 
     @abstractmethod
-    def plot(self, data: dict) -> None:
-        """Draw plot in window.
+    def render(self, data, grid, position, subplot_title, **kwargs) -> None:
+        """Render graphics and plots in window.
 
         Parameters
         ----------
@@ -50,11 +50,6 @@ class AbstractPlotter(ABC):
         pass
 
     @abstractmethod
-    def is_closed(self):
-        """Check if the plotter window is closed."""
-        pass
-
-    @abstractmethod
     def save_graphic(self, file_name: str):
         """Save graphics to the specified file.
 
@@ -62,16 +57,5 @@ class AbstractPlotter(ABC):
         ----------
         file_name : str
             File name to save graphic.
-        """
-        pass
-
-    @abstractmethod
-    def set_properties(self, properties: dict):
-        """Set plot properties.
-
-        Parameters
-        ----------
-        properties : dict
-            Plot properties i.e. curves, title, xlabel and ylabel.
         """
         pass

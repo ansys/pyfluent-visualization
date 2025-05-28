@@ -25,10 +25,10 @@ from typing import List, Optional
 import numpy as np
 import pyvista as pv
 
-from ansys.fluent.visualization.plotter.abstract_plotter_defns import AbstractPlotter
+from ansys.fluent.visualization.abstract_renderer_defn import AbstractRenderer
 
 
-class Plotter(AbstractPlotter):
+class Plotter(AbstractRenderer):
     """Class for pyvista chart 2D plotter."""
 
     def __init__(
@@ -78,7 +78,7 @@ class Plotter(AbstractPlotter):
         self.chart = None
         self.plotter = None
 
-    def plot(self, data: dict, grid=(1, 1), position=(0, 0), **kwargs) -> None:
+    def render(self, data: dict, grid=(1, 1), position=(0, 0), **kwargs) -> None:
         """Draw plot in window.
 
         Parameters

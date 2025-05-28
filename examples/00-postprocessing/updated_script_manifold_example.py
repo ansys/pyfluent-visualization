@@ -33,12 +33,12 @@ is an exhaust manifold.
 # Run the following in command prompt to execute this file:
 # exec(open("updated_script_manifold_example.py").read())
 
-from ansys.fluent.visualization import set_config
+from ansys.fluent.visualization import config
 
-set_config(blocking=False)
+config.interactive = True
 
 import ansys.fluent.core as pyfluent
-from ansys.fluent.core import examples
+from ansys.fluent.core import SolverEvent, examples
 
 import_case = examples.download_file(
     file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"
@@ -100,26 +100,26 @@ surface1.definition.iso_surface.iso_value = 0.0
 p1 = XYPlot(solver=session, surfaces=["solid_up:1:830"])
 p1.y_axis_function = "temperature"
 p_xy = GraphicsWindow()
-p_xy.add_graphics(p1)
+p_xy.add_plot(p1)
 p_xy.show()
 
 session.monitors.get_monitor_set_names()
 residual = Monitor(solver=session)
 residual.monitor_set_name = "residual"
 p_res = GraphicsWindow()
-p_res.add_graphics(residual)
+p_res.add_plot(residual)
 p_res.show()
 
 mtr = Monitor(solver=session)
 mtr.monitor_set_name = "mass-tot-rplot"
 p_mtr = GraphicsWindow()
-p_mtr.add_graphics(mtr)
+p_mtr.add_plot(mtr)
 p_mtr.show()
 
 mbr = Monitor(solver=session)
 mbr.monitor_set_name = "mass-bal-rplot"
 p_mbr = GraphicsWindow()
-p_mbr.add_graphics(mbr)
+p_mbr.add_plot(mbr)
 p_mbr.show()
 
 p_mesh = GraphicsWindow()
@@ -135,35 +135,24 @@ p_pathline = GraphicsWindow()
 p_pathline.add_graphics(pathlines1)
 p_pathline.show()
 
-p_cont.plotter.view_isometric()
+p_cont._renderer.plotter.view_isometric()
 
 p_surf = GraphicsWindow()
 p_surf.add_graphics(surface1)
 p_surf.show()
 
-
-def auto_refersh_call_back_iteration(session, event_info):
-    p_cont.refresh_windows(session.id)
-    p_res.refresh_windows(session.id)
-    p_mtr.refresh_windows(session.id)
-    p_mbr.refresh_windows(session.id)
-
-
-def auto_refersh_call_back_time_step(session, event_info):
-    p_res.refresh_windows(session.id)
-
-
-def initialize_call_back(session, event_info):
-    p_res.refresh_windows(session.id)
-    p_mtr.refresh_windows(session.id)
-
-
-cb_init_id = session.events.register_callback("InitializedEvent", initialize_call_back)
-cb_data_read_id = session.events.register_callback(
-    "DataReadEvent", initialize_call_back
+p_res.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
 )
-cb_itr_id = session.events.register_callback(
-    "IterationEndedEvent", auto_refersh_call_back_iteration
+p_mtr.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+)
+p_mbr.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+)
+p_cont.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
 )
 
-p_cont.animate_windows(session.id)
+session.settings.solution.initialization.hybrid_initialize()
+session.settings.solution.run_calculation.iterate(iter_count=50)

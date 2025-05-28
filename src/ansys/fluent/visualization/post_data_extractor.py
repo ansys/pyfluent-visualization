@@ -25,13 +25,19 @@
 import itertools
 from typing import Dict
 
-from ansys.api.fluent.v0.field_data_pb2 import DataLocation, PayloadTag
-from ansys.fluent.core.post_objects.post_object_definitions import (
+from ansys.fluent.core.field_data_interfaces import (
+    PathlinesFieldDataRequest,
+    ScalarFieldDataRequest,
+    SurfaceDataType,
+    SurfaceFieldDataRequest,
+    VectorFieldDataRequest,
+)
+import numpy as np
+
+from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
-from ansys.fluent.core.services.field_data import SurfaceDataType, _FieldDataConstants
-import numpy as np
 
 
 class ServerDataRequestError(RuntimeError):
@@ -81,8 +87,8 @@ class FieldDataExtractor:
         if not obj.surfaces():
             raise RuntimeError("Mesh definition is incomplete.")
         obj._pre_display()
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
@@ -91,16 +97,16 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
+        transaction.add_requests(surf_request)
         try:
-            fields = transaction.get_fields()
-            # 0 is old tag
-            surfaces_data = fields.get(0) or fields[(("type", "surface-data"),)]
+            fields = transaction.get_response()
+            surfaces_data = fields.get_field_data(surf_request)
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:
@@ -141,8 +147,8 @@ class FieldDataExtractor:
         node_values = obj.node_values()
         boundary_values = obj.boundary_values()
 
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
@@ -151,56 +157,31 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
         # get scalar field data
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
-        transaction.add_scalar_fields_request(
+        scalar_request = ScalarFieldDataRequest(
             field_name=field,
             surfaces=surface_ids,
             node_value=node_values,
             boundary_value=boundary_values,
         )
-
-        location_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.NODE_LOCATION]
-            if node_values
-            else _FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION]
-        )
-        boundary_value_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.BOUNDARY_VALUES]
-            if boundary_values
-            else 0
-        )
-
         try:
-            fields = transaction.get_fields()
-            data_tag = location_tag | boundary_value_tag
-            scalar_field_data = (
-                fields.get(data_tag)
-                or fields[
-                    (
-                        ("type", "scalar-field"),
-                        (
-                            "dataLocation",
-                            (
-                                DataLocation.Nodes
-                                if node_values
-                                else DataLocation.Elements
-                            ),
-                        ),
-                        ("boundaryValues", boundary_values),
-                    )
-                ]
-            )
-            surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
+            fields = transaction.add_requests(
+                surf_request, scalar_request
+            ).get_response()
+            scalar_field_data = fields.get_field_data(scalar_request)
+            surface_data = fields.get_field_data(surf_request)
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:
             obj._post_display()
-        return self._merge(surface_data, scalar_field_data)
+        for k, v in surface_data.items():
+            setattr(v, field, scalar_field_data.get(k))
+        return surface_data
 
     def _fetch_pathlines_data(self, obj, *args, **kwargs):
         if not obj.surfaces() or not obj.field():
@@ -208,8 +189,8 @@ class FieldDataExtractor:
         obj._pre_display()
         field = obj.field()
 
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         surfaces_info = field_info.get_surfaces_info()
         transaction = field_data.new_transaction()
         surface_ids = [
@@ -217,11 +198,13 @@ class FieldDataExtractor:
             for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
             for id in surfaces_info[surf]["surface_id"]
         ]
-        transaction.add_pathlines_fields_request(surfaces=surface_ids, field_name=field)
+        pathlines_request = PathlinesFieldDataRequest(
+            surfaces=surface_ids, field_name=field
+        )
 
         try:
-            fields = transaction.get_fields()
-            pathlines_data = fields[(("type", "pathlines-field"), ("field", field))]
+            fields = transaction.add_requests(pathlines_request).get_response()
+            pathlines_data = fields.get_field_data(pathlines_request)
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:
@@ -236,8 +219,8 @@ class FieldDataExtractor:
         field = obj.field()
         if not field:
             field = obj.field = "velocity-magnitude"
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
 
         transaction = field_data.new_transaction()
 
@@ -249,55 +232,39 @@ class FieldDataExtractor:
             for id in surfaces_info[surf]["surface_id"]
         ]
 
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
-        transaction.add_scalar_fields_request(
+        scalar_request = ScalarFieldDataRequest(
             surfaces=surface_ids,
             field_name=field,
             node_value=False,
             boundary_value=False,
         )
-        transaction.add_vector_fields_request(
+        vector_request = VectorFieldDataRequest(
             surfaces=surface_ids, field_name=obj.vectors_of()
         )
         try:
-            fields = transaction.get_fields()
-            vector_field = fields.get(0) or fields[(("type", "vector-field"),)]
-            scalar_field = (
-                fields.get(_FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION])
-                or fields[
-                    (
-                        ("type", "scalar-field"),
-                        (
-                            "dataLocation",
-                            DataLocation.Elements,
-                        ),
-                        ("boundaryValues", False),
-                    )
-                ]
-            )
-            surface_data = fields.get(0) or fields[(("type", "surface-data"),)]
+            fields = transaction.add_requests(
+                surf_request, scalar_request, vector_request
+            ).get_response()
+            # The below is required only for extracting 'vector_scale'
+            _vector_field = fields().get(0) or fields()[(("type", "vector-field"),)]
+            scalar_field = fields.get_field_data(scalar_request)
+            surface_data = fields.get_field_data(surf_request)
+            vector_field = fields.get_field_data(vector_request)
+            for k, v in surface_data.items():
+                setattr(v, field, scalar_field.get(k))
+                setattr(v, obj.vectors_of(), vector_field.get(k))
+                setattr(v, "vector_scale", _vector_field.get(k)["vector-scale"])
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:
             obj._post_display()
-        data = self._merge(surface_data, vector_field)
-        return self._merge(data, scalar_field)
-
-    def _merge(self, a, b):
-        if a is b:
-            return a
-        if b is not None:
-            for k, v in a.items():
-                if b.get(k):
-                    a[k].update(b[k])
-                    del b[k]
-            a.update(b)
-        return a
+        return surface_data
 
 
 class XYPlotDataExtractor:
@@ -336,8 +303,8 @@ class XYPlotDataExtractor:
         boundary_values = obj.boundary_values()
         direction_vector = obj.direction_vector()
         surfaces = obj.surfaces()
-        field_info = obj._api_helper.field_info()
-        field_data = obj._api_helper.field_data()
+        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         transaction = field_data.new_transaction()
         surfaces_info = field_info.get_surfaces_info()
         surface_ids = [
@@ -371,7 +338,7 @@ class XYPlotDataExtractor:
         ]
 
         # get scalar field data
-        transaction.add_surfaces_request(
+        surf_request = SurfaceFieldDataRequest(
             surfaces=surface_ids,
             data_types=(
                 [SurfaceDataType.Vertices]
@@ -379,54 +346,31 @@ class XYPlotDataExtractor:
                 else [SurfaceDataType.FacesCentroid]
             ),
         )
-        transaction.add_scalar_fields_request(
+        scalar_request = ScalarFieldDataRequest(
             field_name=field,
             surfaces=surface_ids,
             node_value=node_values,
             boundary_value=boundary_values,
         )
-
-        location_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.NODE_LOCATION]
-            if node_values
-            else _FieldDataConstants.payloadTags[PayloadTag.ELEMENT_LOCATION]
-        )
-        boundary_value_tag = (
-            _FieldDataConstants.payloadTags[PayloadTag.BOUNDARY_VALUES]
-            if boundary_values
-            else 0
-        )
-        surface_tag = 0
-        xyplot_payload_data = transaction.get_fields()
-        data_tag = location_tag | boundary_value_tag
-        if data_tag not in xyplot_payload_data:
-            data_tag = (
-                ("type", "scalar-field"),
-                (
-                    "dataLocation",
-                    DataLocation.Nodes if node_values else DataLocation.Elements,
-                ),
-                ("boundaryValues", boundary_values),
-            )
-            surface_tag = (("type", "surface-data"),)
-            if data_tag not in xyplot_payload_data:
-                raise RuntimeError("Plot surface is not valid.")
-        xyplot_data = xyplot_payload_data[data_tag]
-        surface_data = xyplot_payload_data[surface_tag]
+        xyplot_payload_data = transaction.add_requests(
+            surf_request, scalar_request
+        ).get_response()
+        xyplot_data = xyplot_payload_data.get_field_data(scalar_request)
+        surface_data = xyplot_payload_data.get_field_data(surf_request)
 
         # loop over all surfaces
         xy_plots_data = {}
         surfaces_list_iter = iter(surfaces_list_expanded)
         for surface_id, mesh_data in surface_data.items():
-            mesh_data["vertices" if node_values else "centroid"].shape = (
-                mesh_data["vertices" if node_values else "centroid"].size // 3,
-                3,
-            )
-            y_values = xyplot_data[surface_id][field]
+            if node_values:
+                mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
+            else:
+                mesh_data.centroid.shape = mesh_data.centroid.size // 3, 3
+            y_values = xyplot_data[surface_id]
             if y_values is None:
                 continue
             x_values = np.matmul(
-                mesh_data["vertices" if node_values else "centroid"],
+                mesh_data.vertices if node_values else mesh_data.centroid,
                 direction_vector,
             )
             structured_data = np.empty(

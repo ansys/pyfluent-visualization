@@ -52,9 +52,9 @@ session = pyfluent.launch_fluent(
     ui_mode="gui",
 )
 
-from ansys.fluent.visualization import set_config
+from ansys.fluent.visualization import config
 
-set_config(blocking=False)
+config.interactive = True
 
 
 from ansys.fluent.visualization import Graphics, Plots

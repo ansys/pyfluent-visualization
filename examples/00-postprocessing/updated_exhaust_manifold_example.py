@@ -65,12 +65,13 @@ from ansys.fluent.visualization import (
     Surface,
     Vector,
     XYPlot,
-    set_config,
+    config,
 )
 
 pyfluent.CONTAINER_MOUNT_PATH = pyfluent.EXAMPLES_PATH
 
-set_config(blocking=True, set_view_on_display="isometric")
+config.interactive = False
+config.view = "isometric"
 
 ###############################################################################
 # Download files and launch Fluent
@@ -112,7 +113,7 @@ mesh_surfaces_list = [
     "solid_up:1:830-shadow",
 ]
 mesh = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
-graphics_window = GraphicsWindow(grid=(1, 2))
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(mesh, position=(0, 0))
 
 mesh = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
@@ -124,12 +125,13 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface XY plane.
 
-surf_xy_plane = Surface(solver=solver_session)
-surf_xy_plane.definition.type = "plane-surface"
-surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
-plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
-plane_surface_xy.z = -0.0441921
-graphics_window = GraphicsWindow(grid=(1, 3))
+surf_xy_plane = Surface(
+    solver=solver_session,
+    type="plane-surface",
+    creation_method="xy-plane",
+    z=-0.0441921,
+)
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 
 ###############################################################################
@@ -137,11 +139,9 @@ graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface YZ plane.
 
-surf_yz_plane = Surface(solver=solver_session)
-surf_yz_plane.definition.type = "plane-surface"
-surf_yz_plane.definition.plane_surface.creation_method = "yz-plane"
-plane_surface_yz = surf_yz_plane.definition.plane_surface.yz_plane
-plane_surface_yz.x = -0.174628
+surf_yz_plane = Surface(
+    solver=solver_session, type="plane-surface", creation_method="yz-plane", x=-0.174628
+)
 graphics_window.add_graphics(surf_yz_plane, position=(0, 1))
 
 ###############################################################################
@@ -149,11 +149,12 @@ graphics_window.add_graphics(surf_yz_plane, position=(0, 1))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a plane-surface ZX plane.
 
-surf_zx_plane = Surface(solver=solver_session)
-surf_zx_plane.definition.type = "plane-surface"
-surf_zx_plane.definition.plane_surface.creation_method = "zx-plane"
-plane_surface_zx = surf_zx_plane.definition.plane_surface.zx_plane
-plane_surface_zx.y = -0.0627297
+surf_zx_plane = Surface(
+    solver=solver_session,
+    type="plane-surface",
+    creation_method="zx-plane",
+    y=-0.0627297,
+)
 graphics_window.add_graphics(surf_zx_plane, position=(0, 2))
 graphics_window.show()
 
@@ -163,11 +164,10 @@ graphics_window.show()
 # Create an iso-surface on the outlet plane.
 
 surf_outlet_plane = Surface(solver=solver_session)
-surf_outlet_plane.definition.type = "iso-surface"
-iso_surf1 = surf_outlet_plane.definition.iso_surface
-iso_surf1.field = "y-coordinate"
-iso_surf1.iso_value = -0.125017
-graphics_window = GraphicsWindow(grid=(2, 1))
+surf_outlet_plane.type = "iso-surface"
+surf_outlet_plane.field = "y-coordinate"
+surf_outlet_plane.iso_value = -0.125017
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_outlet_plane, position=(0, 0))
 
 ###############################################################################
@@ -175,11 +175,9 @@ graphics_window.add_graphics(surf_outlet_plane, position=(0, 0))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an iso-surface on the mid-plane.
 
-surf_mid_plane_x = Surface(solver=solver_session)
-surf_mid_plane_x.definition.type = "iso-surface"
-iso_surf2 = surf_mid_plane_x.definition.iso_surface
-iso_surf2.field = "x-coordinate"
-iso_surf2.iso_value = -0.174
+surf_mid_plane_x = Surface(
+    solver=solver_session, type="iso-surface", field="x-coordinate", iso_value=-0.174
+)
 graphics_window.add_graphics(surf_mid_plane_x, position=(1, 0))
 graphics_window.show()
 
@@ -188,13 +186,14 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an iso-surface using the velocity magnitude.
 
-surf_vel_contour = Surface(solver=solver_session)
-surf_vel_contour.definition.type = "iso-surface"
-iso_surf3 = surf_vel_contour.definition.iso_surface
-iso_surf3.field = "velocity-magnitude"
-iso_surf3.rendering = "contour"
-iso_surf3.iso_value = 0.0
-graphics_window = GraphicsWindow(grid=(2, 2))
+surf_vel_contour = Surface(
+    solver=solver_session,
+    type="iso-surface",
+    field="velocity-magnitude",
+    rendering="contour",
+    iso_value=0.0,
+)
+graphics_window = GraphicsWindow()
 graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 
 ###############################################################################
@@ -269,8 +268,8 @@ xy_plot_object = XYPlot(
     surfaces=["outlet"],
     y_axis_function="temperature",
 )
-plot_window = GraphicsWindow(grid=(2, 2))
-plot_window.add_graphics(xy_plot_object, position=(0, 0))
+plot_window = GraphicsWindow()
+plot_window.add_plot(xy_plot_object, position=(0, 0))
 
 ###############################################################################
 # Create residual plot
@@ -279,7 +278,7 @@ plot_window.add_graphics(xy_plot_object, position=(0, 0))
 
 residual = Monitor(solver=solver_session)
 residual.monitor_set_name = "residual"
-plot_window.add_graphics(residual, position=(0, 1))
+plot_window.add_plot(residual, position=(0, 1))
 
 ###############################################################################
 # Solve and plot solution monitors
@@ -291,10 +290,10 @@ solver_session.solution.run_calculation.iterate(iter_count=50)
 
 mass_bal_rplot = Monitor(solver=solver_session)
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
-plot_window.add_graphics(mass_bal_rplot, position=(1, 0))
+plot_window.add_plot(mass_bal_rplot, position=(1, 0))
 
 point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
-plot_window.add_graphics(point_vel_rplot, position=(1, 1))
+plot_window.add_plot(point_vel_rplot, position=(1, 1))
 plot_window.show()
 
 ###############################################################################

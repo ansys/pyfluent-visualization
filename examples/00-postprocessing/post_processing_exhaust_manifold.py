@@ -40,11 +40,12 @@ involves conjugate heat transfer.
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
 
-from ansys.fluent.visualization import Graphics, Plots, set_config
+from ansys.fluent.visualization import Graphics, Plots, config
 
 pyfluent.CONTAINER_MOUNT_PATH = pyfluent.EXAMPLES_PATH
 
-set_config(blocking=True, set_view_on_display="isometric")
+config.interactive = False
+config.view = "isometric"
 
 ###############################################################################
 # Download files and launch Fluent
