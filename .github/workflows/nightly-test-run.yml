@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 env:
+  ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYFLUENT_LAUNCH_CONTAINER: 1
 
 jobs:
