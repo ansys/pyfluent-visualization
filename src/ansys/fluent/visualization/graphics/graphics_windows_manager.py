@@ -658,7 +658,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
     def refresh_windows(
         self,
         session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        windows_id=None,
         overlay: Optional[bool] = False,
     ) -> None:
         """Refresh windows.
@@ -675,6 +675,8 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
         overlay : bool, Optional
             Overlay graphics over existing graphics.
         """
+        if windows_id is None:
+            windows_id = []
         with self._condition:
             windows_id = self._get_windows_id(session_id, windows_id)
             for window_id in windows_id:
@@ -748,8 +750,10 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
     def _get_windows_id(
         self,
         session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        windows_id=None,
     ) -> List[str]:
+        if windows_id is None:
+            windows_id = []
         with self._condition:
             return [
                 window_id
