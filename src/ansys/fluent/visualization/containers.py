@@ -46,7 +46,7 @@ class Mesh(_GraphicsContainer):
     >>> # `solver_session` is a live Fluent session with a case
     >>> # and data which contains the following surfaces
 
-    >>> mesh_object = Mesh(
+    >>> mesh = Mesh(
     >>>     solver=solver_session, show_edges=True, surfaces=["in1", "in2", "in3"]
     >>> )
     """

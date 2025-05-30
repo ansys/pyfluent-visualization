@@ -92,7 +92,7 @@ class Plotter(AbstractRenderer):
         return ret
 
     def render(
-        self, data: dict, grid=(1, 1), position=0, show=True, subplot_titles=[]
+        self, data: dict, grid=(1, 1), position=0, show=True, subplot_titles=None
     ) -> None:
         """Draw plot in window.
 
@@ -102,6 +102,8 @@ class Plotter(AbstractRenderer):
             Data to plot. Data consists the list of x and y
             values for each curve.
         """
+        if subplot_titles is None:
+            subplot_titles = []
         if not data:
             return
         for curve in data:
