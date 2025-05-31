@@ -334,8 +334,9 @@ def test_contour_object():
     with pytest.raises(ValueError) as value_error:
         contour1.field = "field_does_not_exist"
 
-    # Important. Because there is no type checking so following test passes.
-    contour1.node_values = "value should be boolean"
+    # Important. Because there is type checking so following test passes.
+    with pytest.raises(TypeError):
+        contour1.node_values = "value should be boolean"
 
     # changing filled to False or setting clip_to_range should set node_value
     # to True.

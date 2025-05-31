@@ -376,7 +376,7 @@ class SurfaceDefn(GraphicsDefn):
 
                 @value.setter
                 def value(self, value):
-                    self._value = value
+                    self._value = float(value)
 
                 @Attribute
                 def range(self):
@@ -453,7 +453,7 @@ class ContourDefn(GraphicsDefn):
                 raise ValueError(
                     "For unfilled and clipped contours, node values must be displayed. "
                 )
-            self._value = value
+            self._value = bool(value)
 
     class boundary_values(metaclass=PyLocalPropertyMeta):
         """Draw boundary values."""
@@ -536,7 +536,7 @@ class ContourDefn(GraphicsDefn):
 
                 @value.setter
                 def value(self, value):
-                    self._value = value
+                    self._value = float(value)
 
             class maximum(metaclass=PyLocalPropertyMeta):
                 """Range maximum."""
@@ -566,7 +566,7 @@ class ContourDefn(GraphicsDefn):
 
                 @value.setter
                 def value(self, value):
-                    self._value = value
+                    self._value = float(value)
 
 
 class VectorDefn(GraphicsDefn):
@@ -679,7 +679,7 @@ class VectorDefn(GraphicsDefn):
 
                 @value.setter
                 def value(self, value):
-                    self._value = value
+                    self._value = float(value)
 
             class maximum(metaclass=PyLocalPropertyMeta):
                 """Range maximum."""
@@ -700,4 +700,4 @@ class VectorDefn(GraphicsDefn):
 
                 @value.setter
                 def value(self, value):
-                    self._value = value
+                    self._value = float(value)
