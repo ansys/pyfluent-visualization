@@ -388,3 +388,28 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
         ]
         assert kwargs["subplot_titles"] == ["residual"]
         assert kwargs.get("position") == (0, 0)
+
+
+def test_exception_for_unsupported_argument_combination(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    solver = new_solver_session_with_exhaust_case_and_data
+
+    with pytest.raises(ValueError):
+        # if filled is False and range.auto_range_off.clip_to_range is also False,
+        # then node_values cannot be False
+        contour = Contour(
+            solver=solver, filled=False, node_values=False, surfaces=["in1"]
+        )
+
+    contour = Contour(solver=solver, surfaces=["in1"])
+    assert contour.filled() is True
+    contour.node_values = False
+    contour.filled = False
+
+    # Since filled is False, this is automatically set to True with a warning
+    assert contour.node_values() is True
+
+    with pytest.raises(ValueError):
+        # Trying to set the value to False now raises the error.
+        contour.node_values = False
