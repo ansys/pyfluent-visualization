@@ -432,15 +432,27 @@ class ContourDefn(GraphicsDefn):
             auto_range_off = self.get_ancestors_by_type(
                 ContourDefn
             ).range.auto_range_off
-            if not filled or (auto_range_off and auto_range_off.clip_to_range()):
+            if self._value is False and (
+                not filled or (auto_range_off and auto_range_off.clip_to_range())
+            ):
                 logger.warning(
-                    "For unfilled and clipped contours node values are displayed."
+                    "For unfilled and clipped contours, node values must be displayed. "
                 )
                 self._value = True
             return self._value
 
         @value.setter
         def value(self, value):
+            filled = self.get_ancestors_by_type(ContourDefn).filled()
+            auto_range_off = self.get_ancestors_by_type(
+                ContourDefn
+            ).range.auto_range_off
+            if value is False and (
+                not filled or (auto_range_off and auto_range_off.clip_to_range())
+            ):
+                raise ValueError(
+                    "For unfilled and clipped contours, node values must be displayed. "
+                )
             self._value = value
 
     class boundary_values(metaclass=PyLocalPropertyMeta):

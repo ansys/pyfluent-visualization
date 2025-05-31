@@ -25,7 +25,6 @@
 from abc import ABCMeta
 from collections.abc import MutableMapping
 import inspect
-from pprint import pformat
 from typing import List
 
 from ansys.fluent.core.exceptions import DisallowedValuesError, InvalidArgument
@@ -357,18 +356,9 @@ class PyLocalPropertyMeta(PyLocalBaseMeta):
 
         return wrapper
 
-    @classmethod
-    def __create_repr(cls):
-        def wrapper(self):
-            data = self()
-            return f"{data}"
-
-        return wrapper
-
     def __new__(cls, name, bases, attrs):
         attrs["__init__"] = cls.__create_init()
         attrs["__call__"] = cls.__create_get_state()
-        attrs["__repr__"] = cls.__create_repr()
         attrs["_validate"] = cls.__create_validate()
         attrs["_register_on_change_cb"] = cls.__create_register_on_change()
         attrs["set_state"] = cls.__create_set_state()
@@ -624,20 +614,12 @@ class PyLocalObjectMeta(PyLocalBaseMeta):
 
         return wrapper
 
-    @classmethod
-    def __create_repr(cls):
-        def wrapper(self):
-            return pformat(self(True), depth=1, indent=2)
-
-        return wrapper
-
     def __new__(cls, name, bases, attrs):
         attrs["__getattribute__"] = cls.__create_getattribute()
         attrs["__init__"] = attrs.get("__init__", cls.__create_init())
         if "__call__" not in attrs:
             attrs["__call__"] = cls.__create_get_state()
         attrs["__setattr__"] = cls.__create_setattr()
-        # attrs["__repr__"] = cls.__create_repr()
         attrs["update"] = cls.__create_updateitem()
         return super(PyLocalObjectMeta, cls).__new__(cls, name, bases, attrs)
 
