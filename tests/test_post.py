@@ -344,7 +344,8 @@ def test_contour_object():
     contour1.filled = False
     assert contour1.node_values() == True
     # node value can not be set to False because Filled is False
-    contour1.node_values = False
+    with pytest.raises(ValueError):
+        contour1.node_values = False
     assert contour1.node_values() == True
 
     contour1.filled = True
