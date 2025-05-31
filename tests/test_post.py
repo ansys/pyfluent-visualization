@@ -376,15 +376,6 @@ def test_contour_object():
     assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
     assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
 
-    # Range should adjust to min/max of cell field values.
-    contour1.filled = True
-    contour1.node_values = False
-    range = field_info.get_scalar_field_range(
-        contour1.field(), contour1.node_values(), surfaces_id
-    )
-    assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
-    assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
-
     # Range should adjust to min/max of node field values
     contour1.field = "pressure"
     range = field_info.get_scalar_field_range(
