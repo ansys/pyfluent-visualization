@@ -24,6 +24,8 @@ import sys
 
 import pytest
 
+from ansys.fluent.interface.post_objects.post_object_definitions import ContourDefn
+
 # Windows CI runners don't have the capacity to hold fluent image.
 # Adding this makes sure that these tests only run in ubuntu CI.
 if sys.platform == "win32":
@@ -413,3 +415,21 @@ def test_exception_for_unsupported_argument_combination(
     with pytest.raises(ValueError):
         # Trying to set the value to False now raises the error.
         contour.node_values = False
+
+
+def test_attribute_access_behaviour(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    solver = new_solver_session_with_exhaust_case_and_data
+    contour = Contour(solver=solver, filled=False, surfaces=["in1"])
+
+    assert isinstance(contour.node_values, ContourDefn.node_values)
+    # Accessing attribute value like this is not allowed,
+    # it will return the object only, not it's value
+    assert not contour.node_values is True
+    # Attribute can be accessed via method call
+    assert contour.node_values() is True
+
+    assert isinstance(contour.filled, ContourDefn.filled)
+    assert not contour.filled is False
+    assert contour.filled() is False
