@@ -64,7 +64,9 @@ class _ProcessPlotterHandle:
         self.plot_process.start()
         FluentConnection._monitor_thread.cbs.append(self.close)
 
-    def render(self, data, grid=(1, 1), position=0, show=True, subplot_titles=[]):
+    def render(self, data, grid=(1, 1), position=0, show=True, subplot_titles=None):
+        if subplot_titles is None:
+            subplot_titles = []
         self.plot_pipe.send(
             {"data": data, "grid": grid, "position": position, "show": show}
         )
@@ -116,8 +118,10 @@ class PlotterWindow(VisualizationWindow):
         self.close: bool = False
         self.refresh: bool = False
 
-    def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=[]):
+    def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
         """Draw a plot."""
+        if subplot_titles is None:
+            subplot_titles = []
         if self.post_object is not None:
             plot = (
                 _XYPlot(self.post_object, self.plotter)
@@ -178,8 +182,10 @@ class _XYPlot:
         self.post_object: XYPlotDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
 
-    def __call__(self, grid=(1, 1), position=0, show=True, subplot_titles=[]):
+    def __call__(self, grid=(1, 1), position=0, show=True, subplot_titles=None):
         """Draw an XY plot."""
+        if subplot_titles is None:
+            subplot_titles = []
         if not self.post_object:
             return
         xy_data = XYPlotDataExtractor(self.post_object).fetch_data()
@@ -226,8 +232,10 @@ class _MonitorPlot:
         self.post_object: MonitorDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
 
-    def __call__(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=[]):
+    def __call__(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
         """Draw a monitor plot."""
+        if subplot_titles is None:
+            subplot_titles = []
         if not self.post_object:
             return
         monitors = self.post_object.session.monitors
@@ -321,7 +329,7 @@ class PlotterWindowsManager(
         window_id: Optional[str] = None,
         grid=(1, 1),
         position=(0, 0),
-        subplot_titles=[],
+        subplot_titles=None,
         show=True,
     ) -> None:
         """Draw a plot.
@@ -339,6 +347,8 @@ class PlotterWindowsManager(
         RuntimeError
             If the window does not support the object.
         """
+        if subplot_titles is None:
+            subplot_titles = []
         if not isinstance(object, PlotDefn):
             raise RuntimeError("Object is not implemented.")
         if not window_id:
@@ -380,7 +390,7 @@ class PlotterWindowsManager(
     def refresh_windows(
         self,
         session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        windows_id=None,
         overlay: Optional[bool] = None,
     ) -> None:
         """Refresh windows.
@@ -395,6 +405,8 @@ class PlotterWindowsManager(
             IDs of the windows to refresh. The default is ``[]``, in which case
             all windows are refreshed.
         """
+        if windows_id is None:
+            windows_id = []
         windows_id = self._get_windows_id(session_id, windows_id)
         for window_id in windows_id:
             window = self._post_windows.get(window_id)
@@ -405,7 +417,7 @@ class PlotterWindowsManager(
     def animate_windows(
         self,
         session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        windows_id=None,
     ) -> None:
         """Animate windows.
 
@@ -423,12 +435,14 @@ class PlotterWindowsManager(
         NotImplementedError
             If not implemented.
         """
+        if windows_id is None:
+            windows_id = []
         raise NotImplementedError("animate_windows not implemented.")
 
     def close_windows(
         self,
         session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        windows_id=None,
     ) -> None:
         """Close windows.
 
@@ -442,6 +456,8 @@ class PlotterWindowsManager(
             List of IDs for the windows to close. The default is ``[]``, in which
             all windows are closed.
         """
+        if windows_id is None:
+            windows_id = []
         windows_id = self._get_windows_id(session_id, windows_id)
         for window_id in windows_id:
             window = self._post_windows.get(window_id)
@@ -468,8 +484,10 @@ class PlotterWindowsManager(
     def _get_windows_id(
         self,
         session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        windows_id=None,
     ) -> List[str]:
+        if windows_id is None:
+            windows_id = []
         return [
             window_id
             for window_id in [

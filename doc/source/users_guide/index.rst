@@ -114,7 +114,7 @@ Visualize velocity vectors over a selected surface:
 
     velocity_vector = Vector(
         solver=solver_session,
-        field="pressure",
+        field="x-velocity",
         surfaces=["solid_up:1:830"],
         scale=2,
     )
@@ -203,13 +203,12 @@ stages. Graphics updates occur:
 
 - During solution initialization
 
-- Whenever data is read
-
 - At the end of every time step during the calculation
 
 .. code-block:: python
 
     from ansys.fluent.visualization import Contour, XYPlot, Monitor, GraphicsWindow
+    from ansys.fluent.core import SolverEvent
 
     contour_object = Contour(
         solver=solver_session, field="velocity-magnitude", surfaces=["symmetry"]
@@ -234,18 +233,17 @@ stages. Graphics updates occur:
     monitor_window.add_plot(monitor1)
     monitor_window.show()
 
-    def auto_refresh_graphics(session, event_info):
-        contour_window.refresh(session.id)
-        xy_plot_window.refresh(session.id)
-        monitor_window.refresh(session.id)
+    contour_window.real_time_update(
+        events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+    )
 
-    #Register this callback with server events.
-    solver_session.events.register_callback('InitializedEvent', auto_refresh_graphics)
-    solver_session.events.register_callback('DataReadEvent', auto_refresh_graphics)
-    solver_session.events.register_callback('TimestepEndedEvent', auto_refresh_graphics)
+    xy_plot_window.real_time_update(
+        events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+    )
 
-    #Create animation for contour.
-    contour_window.animate(solver_session.id)
+    monitor_window.real_time_update(
+        events=[SolverEvent.SOLUTION_INITIALIZED, SolverEvent.ITERATION_ENDED]
+    )
 
     solver_session.settings.solution.initialization.hybrid_initialize()
     solver_session.settings.solution.run_calculation.iterate(iter_count=50)
