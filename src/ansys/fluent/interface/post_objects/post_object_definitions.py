@@ -107,6 +107,7 @@ class MonitorDefn(PlotDefn):
         @Attribute
         def allowed_values(self):
             """Monitor set allowed values."""
+            self.session.monitors.refresh(None, None)
             return self.session.monitors.get_monitor_set_names()
 
 

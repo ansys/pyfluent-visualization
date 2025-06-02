@@ -110,73 +110,73 @@ class Renderer(AbstractRenderer):
         """Show graphics."""
         self.plotter.show()
 
-    def render(self, mesh, **kwargs):
-        """Render graphics in window.
+    def render(self, mesh_object_list):
+        """Render graphics in window."""
+        for mesh_dict1 in mesh_object_list:
+            for mesh_dict in mesh_dict1:
+                mesh = mesh_dict.pop("data")
+                if "position" in mesh_dict:
+                    self.plotter.subplot(
+                        mesh_dict["position"][0], mesh_dict["position"][1]
+                    )
+                    del mesh_dict["position"]
+                if isinstance(mesh, pv.DataSet):
+                    self.plotter.add_mesh(mesh, **mesh_dict)
+                else:
+                    y_range = None
+                    chart = pv.Chart2D()
+                    chart.title = mesh["properties"].get("title") or ""
+                    chart.x_label = mesh["properties"].get("xlabel") or ""
+                    chart.y_label = mesh["properties"].get("ylabel") or ""
+                    if mesh["properties"].get("yscale") == "log":
+                        chart.y_axis.log_scale = True
+                        y_range = 0
+                    del mesh["properties"]
 
-        Parameters
-        ----------
-        mesh : pyvista.DataSet | dict
-            Any PyVista or VTK mesh is supported.
-        """
-        if "position" in kwargs:
-            self.plotter.subplot(kwargs["position"][0], kwargs["position"][1])
-            del kwargs["position"]
-        if isinstance(mesh, pv.DataSet):
-            self.plotter.add_mesh(mesh, **kwargs)
-        else:
-            y_range = None
-            chart = pv.Chart2D()
-            chart.title = mesh["properties"].get("title") or ""
-            chart.x_label = mesh["properties"].get("xlabel") or ""
-            chart.y_label = mesh["properties"].get("ylabel") or ""
-            if mesh["properties"].get("yscale") == "log":
-                chart.y_axis.log_scale = True
-                y_range = 0
-            del mesh["properties"]
+                    color_list = ["b", "r", "g", "c", "m", "y", "k"]
+                    style_list = ["-", "--", "-.", "-.."]
 
-            color_list = ["b", "r", "g", "c", "m", "y", "k"]
-            style_list = ["-", "--", "-.", "-.."]
-
-            min_y_value = max_y_value = min_x_value = max_x_value = None
-            for count, curve in enumerate(mesh):
-                chart.line(
-                    mesh[curve]["xvalues"].tolist(),
-                    mesh[curve]["yvalues"].tolist(),
-                    width=2.5,
-                    color=color_list[count % len(color_list)],
-                    style=style_list[count % len(style_list)],
-                    label=curve,
-                )
-                min_y_value = (
-                    min(np.amin(mesh[curve]["yvalues"]), min_y_value)
-                    if min_y_value
-                    else np.amin(mesh[curve]["yvalues"])
-                )
-                max_y_value = (
-                    max(np.amax(mesh[curve]["yvalues"]), max_y_value)
-                    if max_y_value
-                    else np.amax(mesh[curve]["yvalues"])
-                )
-                min_x_value = (
-                    min(np.amin(mesh[curve]["xvalues"]), min_x_value)
-                    if min_x_value
-                    else np.amin(mesh[curve]["xvalues"])
-                )
-                max_x_value = (
-                    max(np.amax(mesh[curve]["xvalues"]), max_x_value)
-                    if max_x_value
-                    else np.amax(mesh[curve]["xvalues"])
-                )
-            if min_x_value and max_x_value:
-                chart.x_range = [min_x_value, max_x_value]
-            if min_y_value and max_y_value:
-                if y_range is None:
-                    y_range = max_y_value - min_y_value
-                chart.y_range = [
-                    min_y_value - y_range * 0.2,
-                    max_y_value + y_range * 0.2,
-                ]
-            self.plotter.add_chart(chart, **kwargs)
+                    min_y_value = max_y_value = min_x_value = max_x_value = None
+                    for count, curve in enumerate(mesh):
+                        chart.line(
+                            mesh[curve]["xvalues"].tolist(),
+                            mesh[curve]["yvalues"].tolist(),
+                            width=2.5,
+                            color=color_list[count % len(color_list)],
+                            style=style_list[count % len(style_list)],
+                            label=curve,
+                        )
+                        min_y_value = (
+                            min(np.amin(mesh[curve]["yvalues"]), min_y_value)
+                            if min_y_value
+                            else np.amin(mesh[curve]["yvalues"])
+                        )
+                        max_y_value = (
+                            max(np.amax(mesh[curve]["yvalues"]), max_y_value)
+                            if max_y_value
+                            else np.amax(mesh[curve]["yvalues"])
+                        )
+                        min_x_value = (
+                            min(np.amin(mesh[curve]["xvalues"]), min_x_value)
+                            if min_x_value
+                            else np.amin(mesh[curve]["xvalues"])
+                        )
+                        max_x_value = (
+                            max(np.amax(mesh[curve]["xvalues"]), max_x_value)
+                            if max_x_value
+                            else np.amax(mesh[curve]["xvalues"])
+                        )
+                    if min_x_value and max_x_value:
+                        chart.x_range = [min_x_value, max_x_value]
+                    if min_y_value and max_y_value:
+                        if y_range is None:
+                            y_range = max_y_value - min_y_value
+                        chart.y_range = [
+                            min_y_value - y_range * 0.2,
+                            max_y_value + y_range * 0.2,
+                        ]
+                    self.plotter.add_chart(chart, **mesh_dict)
+        self.plotter.show()
 
     def save_graphic(self, file_name: str):
         """Save graphics to the specified file.

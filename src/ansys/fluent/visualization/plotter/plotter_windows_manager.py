@@ -54,28 +54,27 @@ class _ProcessPlotterHandle:
         title="XY Plot",
         xlabel="position",
         ylabel="",
+        grid=(1, 1),
     ):
         self._closed = False
         self.plot_pipe, plotter_pipe = mp.Pipe()
-        self.plotter = ProcessPlotter(window_id, curves, title, xlabel, ylabel)
+        self.plotter = ProcessPlotter(
+            window_id, curves, title, xlabel, ylabel, grid=grid
+        )
         self.plot_process = mp.Process(
             target=self.plotter, args=(plotter_pipe,), daemon=True
         )
         self.plot_process.start()
         FluentConnection._monitor_thread.cbs.append(self.close)
 
-    def render(self, data, grid=(1, 1), position=0, show=True, subplot_titles=None):
-        if subplot_titles is None:
-            subplot_titles = []
-        self.plot_pipe.send(
-            {"data": data, "grid": grid, "position": position, "show": show}
-        )
+    def render(self, data):
+        self.plot_pipe.send({"data": data})
 
     def show(self):
         self.plotter.show()
 
-    def set_properties(self, properties):
-        self.plot_pipe.send({"properties": properties})
+    # def set_properties(self, properties):
+    #     self.plot_pipe.send({"properties": properties})
 
     def save_graphic(self, name: str):
         self.plot_pipe.send({"save_graphic": name})
@@ -102,21 +101,32 @@ class _ProcessPlotterHandle:
 class PlotterWindow(VisualizationWindow):
     """Provides for managing Plotter windows."""
 
-    def __init__(self, id: str, plotter: str = None):
+    def __init__(
+        self,
+        id: str,
+        grid: tuple | None = (1, 1),
+        renderer: str = None,
+    ):
         """Instantiate a plotter window.
 
         Parameters
         ----------
         id : str
             Window ID.
+        grid: tuple, optional
+            Layout or arrangement of the graphics window. The default is ``(1, 1)``.
+        renderer: str, optional
+            Renderer for the graphics window. The default is ``None``.
         """
         self.id: str = id
         self.post_object = None
+        self._grid = grid
         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter(
-            plotter_string=plotter
+            plotter_string=renderer
         )
         self.close: bool = False
         self.refresh: bool = False
+        self._object_list_to_render: list = []
 
     def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
         """Draw a plot."""
@@ -129,6 +139,26 @@ class PlotterWindow(VisualizationWindow):
                 else _MonitorPlot(self.post_object, self.plotter)
             )
             plot(grid=grid, position=position, show=show, subplot_titles=subplot_titles)
+
+    def plot_graphics(self, object_list):
+        for obj_dict in object_list:
+            self.post_object = obj_dict["object"].obj
+            plot = (
+                _XYPlot(self.post_object, self.plotter)
+                if self.post_object.__class__.__name__ == "XYPlot"
+                else _MonitorPlot(self.post_object, self.plotter)
+            )
+
+            plot_data = plot()
+            self._object_list_to_render.append(
+                {
+                    "data": plot_data[0],
+                    "properties": plot_data[1],
+                    "position": obj_dict["position"],
+                    "title": obj_dict["title"],
+                }
+            )
+        self.plotter.render(self._object_list_to_render)
 
     def _show_plot(self):
         self.plotter.show()
@@ -158,9 +188,9 @@ class PlotterWindow(VisualizationWindow):
 
             raise KeyError(error_message) from ex
         return (
-            plotter(self.id)
+            plotter(self.id, grid=self._grid)
             if in_jupyter() or not pyviz.config.interactive
-            else _ProcessPlotterHandle(self.id)
+            else _ProcessPlotterHandle(self.id, grid=self._grid)
         )
 
 
@@ -182,10 +212,8 @@ class _XYPlot:
         self.post_object: XYPlotDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
 
-    def __call__(self, grid=(1, 1), position=0, show=True, subplot_titles=None):
+    def __call__(self):
         """Draw an XY plot."""
-        if subplot_titles is None:
-            subplot_titles = []
         if not self.post_object:
             return
         xy_data = XYPlotDataExtractor(self.post_object).fetch_data()
@@ -195,23 +223,17 @@ class _XYPlot:
             "xlabel": "position",
             "ylabel": self.post_object.y_axis_function(),
         }
-        if in_jupyter() or not pyviz.config.interactive:
-            self.plotter.set_properties(properties)
-        else:
-            try:
-                self.plotter.set_properties(properties)
-            except BrokenPipeError:
-                self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
-                    self._get_plotter()
-                )
-                self.plotter.set_properties(properties)
-        self.plotter.render(
-            xy_data,
-            grid=grid,
-            position=position,
-            show=show,
-            subplot_titles=subplot_titles,
-        )
+        # if in_jupyter() or not pyviz.config.interactive:
+        #     self.plotter.set_properties(properties)
+        # else:
+        #     try:
+        #         self.plotter.set_properties(properties)
+        #     except BrokenPipeError:
+        #         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
+        #             self._get_plotter()
+        #         )
+        #         self.plotter.set_properties(properties)
+        return xy_data, properties
 
 
 class _MonitorPlot:
@@ -232,12 +254,11 @@ class _MonitorPlot:
         self.post_object: MonitorDefn = post_object
         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
 
-    def __call__(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
+    def __call__(self):
         """Draw a monitor plot."""
-        if subplot_titles is None:
-            subplot_titles = []
         if not self.post_object:
             return
+        self.post_object.session.monitors.refresh(None, None)
         monitors = self.post_object.session.monitors
         indices, columns_data = monitors.get_monitor_set_data(
             self.post_object.monitor_set_name()
@@ -254,24 +275,18 @@ class _MonitorPlot:
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
-        if in_jupyter() or not pyviz.config.interactive:
-            self.plotter.set_properties(properties)
-        else:
-            try:
-                self.plotter.set_properties(properties)
-            except BrokenPipeError:
-                self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
-                    self._get_plotter()
-                )
-                self.plotter.set_properties(properties)
-        if xy_data:
-            self.plotter.render(
-                xy_data,
-                grid=grid,
-                position=position,
-                show=show,
-                subplot_titles=subplot_titles,
-            )
+        # if in_jupyter() or not pyviz.config.interactive:
+        #     self.plotter.set_properties(properties)
+        # else:
+        #     try:
+        #         self.plotter.set_properties(properties)
+        #     except BrokenPipeError:
+        #         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
+        #             self._get_plotter()
+        #         )
+        #         self.plotter.set_properties(properties)
+        # if xy_data:
+        return xy_data, properties
 
 
 class PlotterWindowsManager(
@@ -283,7 +298,12 @@ class PlotterWindowsManager(
         """Instantiate a windows manager for the plotter."""
         self._post_windows: Dict[str, PlotterWindow] = {}
 
-    def open_window(self, window_id: Optional[str] = None, plotter=None) -> str:
+    def open_window(
+        self,
+        window_id: str | None = None,
+        grid: tuple | None = (1, 1),
+        renderer: str | None = None,
+    ) -> str:
         """Open a new window.
 
         Parameters
@@ -291,6 +311,10 @@ class PlotterWindowsManager(
         window_id : str, optional
             ID for the new window. The default is ``None``, in which
             case a unique ID is automatically assigned.
+        grid: tuple, optional
+            Layout or arrangement of the graphics window. The default is ``(1, 1)``.
+        renderer: str, optional
+            Renderer for the graphics window. The default is ``None``.
 
         Returns
         -------
@@ -299,7 +323,7 @@ class PlotterWindowsManager(
         """
         if not window_id:
             window_id = self._get_unique_window_id()
-        self._open_window(window_id, plotter)
+        self._open_window(window_id, grid, renderer=renderer)
         return window_id
 
     def set_object_for_window(self, object: PlotDefn, window_id: str) -> None:
@@ -358,6 +382,13 @@ class PlotterWindowsManager(
         window.plot(
             grid=grid, position=position, show=show, subplot_titles=subplot_titles
         )
+
+    def plot_graphics(self, graphics_objects, window_id):
+        for graphics_object_dict in graphics_objects:
+            if not isinstance(graphics_object_dict["object"].obj, PlotDefn):
+                raise RuntimeError("Object type currently not supported.")
+        window = self._post_windows.get(window_id) or self._open_window(window_id)
+        window.plot_graphics(graphics_objects)
 
     def show_plots(self, window_id: str):
         window = self._open_window(window_id)
@@ -468,14 +499,17 @@ class PlotterWindowsManager(
     # private methods
 
     def _open_window(
-        self, window_id: str, plotter=None
+        self,
+        window_id: str,
+        grid: tuple | None = (1, 1),
+        renderer=None,
     ) -> Union["Plotter", _ProcessPlotterHandle]:
         window = self._post_windows.get(window_id)
         if window and not window.plotter.is_closed():
             if not (in_jupyter() or not pyviz.config.interactive) or window.refresh:
                 window.refresh = False
         else:
-            window = PlotterWindow(window_id, plotter=plotter)
+            window = PlotterWindow(window_id, grid, renderer=renderer)
             self._post_windows[window_id] = window
             if in_jupyter():
                 window.plotter()
