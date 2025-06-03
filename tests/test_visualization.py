@@ -413,13 +413,16 @@ def test_exception_for_unsupported_argument_combination(
         contour.node_values = False
 
     contour.filled = True
+    assert contour.node_values.is_active
     contour.node_values = False
     contour.filled = False
+    assert not contour.node_values.is_active
     assert contour.node_values() == True
 
     contour.filled = True
     contour.node_values = False
     contour.range.auto_range_off.clip_to_range = True
+    assert not contour.node_values.is_active
     assert contour.node_values() == True
 
 

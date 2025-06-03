@@ -425,9 +425,9 @@ class ContourDefn(GraphicsDefn):
 
         _value: bool = True
 
-        @property
-        def value(self):
-            """Node value property setter."""
+        @Attribute
+        def is_active(self):
+            """Check whether current object is active or not."""
             filled = self.get_ancestors_by_type(ContourDefn).filled()
             auto_range_off = self.get_ancestors_by_type(
                 ContourDefn
@@ -436,19 +436,19 @@ class ContourDefn(GraphicsDefn):
                 filled is False
                 or (auto_range_off and auto_range_off.clip_to_range()) is True
             ):
+                return False
+            return True
+
+        @property
+        def value(self):
+            """Node value property setter."""
+            if self.is_active is False:
                 return True
             return self._value
 
         @value.setter
         def value(self, value):
-            filled = self.get_ancestors_by_type(ContourDefn).filled()
-            auto_range_off = self.get_ancestors_by_type(
-                ContourDefn
-            ).range.auto_range_off
-            if value is False and (
-                filled is False
-                or (auto_range_off and auto_range_off.clip_to_range()) is True
-            ):
+            if value is False and self.is_active is False:
                 raise ValueError(
                     "For unfilled and clipped contours, node values must be displayed. "
                 )
