@@ -398,23 +398,29 @@ def test_exception_for_unsupported_argument_combination(
     solver = new_solver_session_with_exhaust_case_and_data
 
     with pytest.raises(ValueError):
-        # if filled is False and range.auto_range_off.clip_to_range is also False,
-        # then node_values cannot be False
+        # if filled is False then node_values cannot be False
         contour = Contour(
             solver=solver, filled=False, node_values=False, surfaces=["in1"]
         )
 
     contour = Contour(solver=solver, surfaces=["in1"])
     assert contour.filled() is True
-    contour.node_values = False
-    contour.filled = False
-
-    # Since filled is False, this is automatically set to True with a warning
     assert contour.node_values() is True
+    assert contour.range.auto_range_off.clip_to_range() is False
 
+    contour.filled = False
     with pytest.raises(ValueError):
-        # Trying to set the value to False now raises the error.
         contour.node_values = False
+
+    contour.filled = True
+    contour.node_values = False
+    with pytest.raises(ValueError):
+        contour.filled = False
+    with pytest.raises(ValueError):
+        contour.range.auto_range_off.clip_to_range = True
+
+    contour.node_values = True
+    contour.range.auto_range_off.clip_to_range = True
 
 
 def test_attribute_access_behaviour(
