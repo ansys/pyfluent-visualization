@@ -337,13 +337,12 @@ def test_contour_object():
     # Important. Because there is no type checking so following test passes.
     contour1.node_values = "value should be boolean"
 
-    # Cannot set filled to False after changing node_values to False .
+    # Setting filled to False.
     contour1.node_values = False
     assert contour1.node_values() == False
-    with pytest.raises(ValueError):
-        contour1.filled = False
-    contour1.node_values = True
     contour1.filled = False
+    assert contour1.node_values() == True
+
     # node value can not be set to False because Filled is False
     with pytest.raises(ValueError):
         contour1.node_values = False
@@ -353,9 +352,9 @@ def test_contour_object():
     contour1.node_values = False
     assert contour1.node_values() == False
     contour1.range.option = "auto-range-off"
-    # since node_values is False, you cannot set clip_to_range as True
-    with pytest.raises(ValueError):
-        contour1.range.auto_range_off.clip_to_range = True
+    # node_values is True on setting clip_to_range as True
+    contour1.range.auto_range_off.clip_to_range = True
+    assert contour1.node_values() == True
 
     contour1.range.option = "auto-range-on"
     assert contour1.range.auto_range_off() is None

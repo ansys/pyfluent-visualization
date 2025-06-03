@@ -414,13 +414,13 @@ def test_exception_for_unsupported_argument_combination(
 
     contour.filled = True
     contour.node_values = False
-    with pytest.raises(ValueError):
-        contour.filled = False
-    with pytest.raises(ValueError):
-        contour.range.auto_range_off.clip_to_range = True
+    contour.filled = False
+    assert contour.node_values() == True
 
-    contour.node_values = True
+    contour.filled = True
+    contour.node_values = False
     contour.range.auto_range_off.clip_to_range = True
+    assert contour.node_values() == True
 
 
 def test_attribute_access_behaviour(

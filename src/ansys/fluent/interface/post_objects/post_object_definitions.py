@@ -418,22 +418,7 @@ class ContourDefn(GraphicsDefn):
     class filled(metaclass=PyLocalPropertyMeta):
         """Draw filled contour."""
 
-        _value: bool = True
-
-        @property
-        def value(self):
-            """Node value property setter."""
-            return self._value
-
-        @value.setter
-        def value(self, value):
-            node_values = self.get_ancestors_by_type(ContourDefn).node_values()
-            if value is False and node_values is False:
-                raise ValueError(
-                    "For unfilled contours, node values must be displayed.\n"
-                    "Set 'node_values' to 'True' before setting 'filled' as False."
-                )
-            self._value = value
+        value: bool = True
 
     class node_values(metaclass=PyLocalPropertyMeta):
         """Draw nodal data."""
@@ -443,6 +428,15 @@ class ContourDefn(GraphicsDefn):
         @property
         def value(self):
             """Node value property setter."""
+            filled = self.get_ancestors_by_type(ContourDefn).filled()
+            auto_range_off = self.get_ancestors_by_type(
+                ContourDefn
+            ).range.auto_range_off
+            if (
+                filled is False
+                or (auto_range_off and auto_range_off.clip_to_range()) is True
+            ):
+                return True
             return self._value
 
         @value.setter
@@ -512,23 +506,7 @@ class ContourDefn(GraphicsDefn):
             class clip_to_range(metaclass=PyLocalPropertyMeta):
                 """Clip contour within range."""
 
-                _value: bool = False
-
-                @property
-                def value(self):
-                    """Node value property setter."""
-                    return self._value
-
-                @value.setter
-                def value(self, value):
-                    node_values = self.get_ancestors_by_type(ContourDefn).node_values()
-                    if value is True and node_values is False:
-                        raise ValueError(
-                            "For clipped contours, node values must be displayed.\n"
-                            "Set 'node_values' to 'True' before setting "
-                            "'clip_to_range' as True."
-                        )
-                    self._value = value
+                value: bool = False
 
             class minimum(metaclass=PyLocalPropertyMeta):
                 """Range minimum."""
