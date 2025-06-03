@@ -333,7 +333,7 @@ class GraphicsWindow(VisualizationWindow):
             mesh.cell_data[field] = scalar_field
             glyphs = mesh.glyph(
                 orient="vectors",
-                scale="Velocity Magnitude",
+                scale=False,
                 factor=vector_scale * obj.scale(),
                 geom=pv.Arrow(),
             )
