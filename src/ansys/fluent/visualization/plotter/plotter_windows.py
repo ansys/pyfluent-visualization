@@ -113,29 +113,6 @@ class _PlotterWindow:
                 windows_id=[self.window_id], session_id=session_id
             )
 
-    def animate(
-        self,
-        session_id: str | None = "",
-    ) -> None:
-        """Animate windows.
-
-        Parameters
-        ----------
-        session_id : str, optional
-           Session ID for animating the windows that belong only to this
-           session. The default is ``""``, in which case the windows in all
-           sessions are animated.
-
-        Raises
-        ------
-        NotImplementedError
-            If not implemented.
-        """
-        if self.window_id:
-            plotter_windows_manager.animate_windows(
-                windows_id=[self.window_id], session_id=session_id
-            )
-
     def close(
         self,
         session_id: str | None = "",

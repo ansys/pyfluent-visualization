@@ -90,7 +90,6 @@ class GraphicsWindow(VisualizationWindow):
         self.overlay: bool = False
         self.fetch_data: bool = False
         self.show_window: bool = True
-        self.animate: bool = False
         self.close: bool = False
         self.refresh: bool = False
         self.update: bool = False
@@ -183,8 +182,6 @@ class GraphicsWindow(VisualizationWindow):
             self._display_xy_plot(position, opacity)
         elif obj.__class__.__name__ == "MonitorPlot":
             self._display_monitor_plot(position, opacity)
-        if self.animate:
-            self.renderer.write_frame()
         self.renderer._set_camera(pyviz.config.view)
 
     def add_graphics(self, position, opacity=1):
@@ -544,7 +541,6 @@ class GraphicsWindow(VisualizationWindow):
             with GraphicsWindowsManager._condition:
                 plotter = window.renderer
                 if window.close:
-                    window.animate = False
                     plotter.close()
                     return
                 if not window.update:
@@ -684,38 +680,6 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
                 if window:
                     window.refresh = True
                     self.plot(window.post_object, window.id, overlay=overlay)
-
-    def animate_windows(
-        self,
-        session_id: Optional[str] = "",
-        windows_id=None,
-    ) -> None:
-        """Animate windows.
-
-        Parameters
-        ----------
-        session_id : str, optional
-           Session ID for animating the windows that belong only to this
-           session. The default is ``""``, in which case the windows in all
-           sessions are animated.
-        windows_id : List[str], optional
-            List of IDs for the windows to animate. The default is ``[]``, in which
-            case all windows are animated.
-
-        Raises
-        ------
-        NotImplementedError
-            If not implemented.
-        """
-        if windows_id is None:
-            windows_id = []
-        with self._condition:
-            windows_id = self._get_windows_id(session_id, windows_id)
-            for window_id in windows_id:
-                window = self._post_windows.get(window_id)
-                if window:
-                    window.animate = True
-                    window.renderer.get_animation(window.id)
 
     def close_windows(
         self,
@@ -1041,7 +1005,6 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
                 if self._window_id:
                     window = self._post_windows.get(self._window_id)
                     plotter = window.renderer.plotter if window else None
-                    animate = window.animate if window else False
                     if not plotter or plotter._closed:
                         window = GraphicsWindow(
                             self._window_id, self._post_object, grid=self._grid
@@ -1057,7 +1020,6 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
                     window._opacity = self._opacity
                     window.fetch_data = self._fetch_data
                     window.overlay = self._overlay
-                    window.animate = animate
                     window.update = True
                     self._post_windows[self._window_id] = window
                     self._post_object = None
