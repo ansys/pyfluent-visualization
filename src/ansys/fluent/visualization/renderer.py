@@ -34,8 +34,7 @@ from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
 
 
 class GraphicsWindow:
-    """Create a graphics window to perform operations like display,
-    save, animate on graphics and plot objects.
+    """Create a graphics window to perform operations on graphics and plot objects.
 
     Examples
     --------
@@ -227,27 +226,6 @@ class GraphicsWindow:
         """
         if self.window_id:
             self._renderer.refresh(session_id=session_id, overlay=overlay)
-
-    def animate(
-        self,
-        session_id: str | None = "",
-    ) -> None:
-        """Animate windows.
-
-        Parameters
-        ----------
-        session_id : str, optional
-           Session ID for animating the windows that belong only to this
-           session. The default is ``""``, in which case the windows in all
-           sessions are animated.
-
-        Raises
-        ------
-        NotImplementedError
-            If not implemented.
-        """
-        if self.window_id:
-            self._renderer.animate(session_id=session_id)
 
     def close(
         self,

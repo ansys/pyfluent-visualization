@@ -154,32 +154,6 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def animate_windows(
-        self,
-        session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
-    ) -> None:
-        """Animate windows.
-
-        Parameters
-        ----------
-        session_id : str, optional
-           Session id to animate. If specified, animation will be created
-           for windows which belong to specified session. Otherwise
-           animation will be created for all windows.
-
-        windows_id : List[str], optional
-            Windows id to animate. If not specified, animation will be
-            created for all windows.
-
-        Raises
-        ------
-        NotImplementedError
-            If not implemented.
-        """
-        pass
-
-    @abstractmethod
     def close_windows(
         self,
         session_id: Optional[str] = "",

@@ -188,16 +188,6 @@ class Renderer(AbstractRenderer):
         """
         self.plotter.save_graphic(file_name)
 
-    def get_animation(self, win_id: str):
-        """Animate windows.
-
-        Parameters
-        ----------
-        win_id : str
-            ID for the window to animate.
-        """
-        self.plotter.open_gif(f"{win_id}.gif")
-
     def close(self):
         """Close graphics window."""
         self.plotter.close()

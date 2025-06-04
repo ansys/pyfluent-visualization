@@ -36,9 +36,7 @@ _qt_window = None
 
 
 class _GraphicsWindow:
-    """Create a graphics window to perform operations like display,
-    save, animate, etc. on graphics objects.
-    """
+    """Create a graphics window to perform operations on graphics objects."""
 
     def __init__(self, grid: tuple = (1, 1)):
         """__init__ method of GraphicsWindow class."""
@@ -144,29 +142,6 @@ class _GraphicsWindow:
         if self.window_id:
             graphics_windows_manager.refresh_windows(
                 windows_id=[self.window_id], session_id=session_id, overlay=overlay
-            )
-
-    def animate(
-        self,
-        session_id: str | None = "",
-    ) -> None:
-        """Animate windows.
-
-        Parameters
-        ----------
-        session_id : str, optional
-           Session ID for animating the windows that belong only to this
-           session. The default is ``""``, in which case the windows in all
-           sessions are animated.
-
-        Raises
-        ------
-        NotImplementedError
-            If not implemented.
-        """
-        if self.window_id:
-            graphics_windows_manager.animate_windows(
-                windows_id=[self.window_id], session_id=session_id
             )
 
     def close(
