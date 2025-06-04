@@ -337,20 +337,22 @@ def test_contour_object():
     # Important. Because there is no type checking so following test passes.
     contour1.node_values = "value should be boolean"
 
-    # changing filled to False or setting clip_to_range should set node_value
-    # to True.
+    # Setting filled to False.
     contour1.node_values = False
     assert contour1.node_values() == False
     contour1.filled = False
     assert contour1.node_values() == True
+
     # node value can not be set to False because Filled is False
-    contour1.node_values = False
+    with pytest.raises(ValueError):
+        contour1.node_values = False
     assert contour1.node_values() == True
 
     contour1.filled = True
     contour1.node_values = False
     assert contour1.node_values() == False
     contour1.range.option = "auto-range-off"
+    # node_values is True on setting clip_to_range as True
     contour1.range.auto_range_off.clip_to_range = True
     assert contour1.node_values() == True
 
@@ -369,14 +371,6 @@ def test_contour_object():
         if k in contour1.surfaces()
     ]
 
-    range = field_info.get_scalar_field_range(
-        contour1.field(), contour1.node_values(), surfaces_id
-    )
-    assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
-    assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
-
-    # Range should adjust to min/max of cell field values.
-    contour1.node_values = False
     range = field_info.get_scalar_field_range(
         contour1.field(), contour1.node_values(), surfaces_id
     )

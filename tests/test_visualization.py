@@ -24,6 +24,8 @@ import sys
 
 import pytest
 
+from ansys.fluent.interface.post_objects.post_object_definitions import ContourDefn
+
 # Windows CI runners don't have the capacity to hold fluent image.
 # Adding this makes sure that these tests only run in ubuntu CI.
 if sys.platform == "win32":
@@ -388,3 +390,55 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
         ]
         assert kwargs["subplot_titles"] == ["residual"]
         assert kwargs.get("position") == (0, 0)
+
+
+def test_exception_for_unsupported_argument_combination(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    solver = new_solver_session_with_exhaust_case_and_data
+
+    with pytest.raises(ValueError):
+        # if filled is False then node_values cannot be False
+        contour = Contour(
+            solver=solver, filled=False, node_values=False, surfaces=["in1"]
+        )
+
+    contour = Contour(solver=solver, surfaces=["in1"])
+    assert contour.filled() is True
+    assert contour.node_values() is True
+    assert contour.range.auto_range_off.clip_to_range() is False
+
+    contour.filled = False
+    with pytest.raises(ValueError):
+        contour.node_values = False
+
+    contour.filled = True
+    assert contour.node_values.is_active
+    contour.node_values = False
+    contour.filled = False
+    assert not contour.node_values.is_active
+    assert contour.node_values() == True
+
+    contour.filled = True
+    contour.node_values = False
+    contour.range.auto_range_off.clip_to_range = True
+    assert not contour.node_values.is_active
+    assert contour.node_values() == True
+
+
+def test_attribute_access_behaviour(
+    new_solver_session_with_exhaust_case_and_data,
+):
+    solver = new_solver_session_with_exhaust_case_and_data
+    contour = Contour(solver=solver, filled=False, surfaces=["in1"])
+
+    assert isinstance(contour.node_values, ContourDefn.node_values)
+    # Accessing attribute value like this is not allowed,
+    # it will return the object only, not it's value
+    assert not contour.node_values is True
+    # Attribute can be accessed via method call
+    assert contour.node_values() is True
+
+    assert isinstance(contour.filled, ContourDefn.filled)
+    assert not contour.filled is False
+    assert contour.filled() is False
