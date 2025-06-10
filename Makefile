@@ -26,3 +26,6 @@ build-doc:
 	@xvfb-run make -C doc html
 	@touch doc/_build/html/.nojekyll
 	@echo "$(DOCS_CNAME)" >> doc/_build/html/CNAME
+
+docker-clean-images:
+	@docker image prune -a -f
