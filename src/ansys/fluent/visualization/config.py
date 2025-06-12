@@ -46,7 +46,7 @@ class Config:
 
     def __init__(self):
         """__init__ method of Config class."""
-        self._interactive = False if os.getenv("PYVIZ_BLOCKING") == "1" else True
+        self._interactive = os.getenv("PYVIZ_BLOCKING") != "1"
         self._view = View.ISOMETRIC
         self._single_window = False
         self._two_dimensional_renderer = "pyvista"
