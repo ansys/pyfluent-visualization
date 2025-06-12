@@ -28,4 +28,4 @@ build-doc:
 	@echo "$(DOCS_CNAME)" >> doc/_build/html/CNAME
 
 docker-clean-images:
-	@docker image prune -a -f
+	@docker system prune --volumes -a -f
