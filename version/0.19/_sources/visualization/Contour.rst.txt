@@ -1,0 +1,11 @@
+.. _ref_Contour:
+
+Contour
+=======
+
+.. autoclass:: ansys.fluent.visualization.Contour
+    :members:
+    :show-inheritance:
+    :undoc-members:
+    :exclude-members: __weakref__, __dict__
+    :special-members: __init__
