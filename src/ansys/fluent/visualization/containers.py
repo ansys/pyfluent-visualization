@@ -35,6 +35,9 @@ class _GraphicsContainer:
     def __setattr__(self, attr, value):
         setattr(self.obj, attr, value)
 
+    def __dir__(self):
+        return sorted(set(super().__dir__()) | set(dir(self.obj)))
+
 
 class Mesh(_GraphicsContainer):
     """Mesh.
