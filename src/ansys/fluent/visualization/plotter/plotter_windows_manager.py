@@ -414,31 +414,6 @@ class PlotterWindowsManager(
                 window.refresh = True
                 self.plot(window.post_object, window.id)
 
-    def animate_windows(
-        self,
-        session_id: Optional[str] = "",
-        windows_id=None,
-    ) -> None:
-        """Animate windows.
-
-         Parameters
-        ----------
-        session_id : str, optional
-           Session ID for animating the windows that belong only to this
-           session. The default is ``""``, in which case the windows in all
-           sessions are animated.
-        windows_id : List[str], optional
-            List of IDs for the windows to animate. The default is ``[]``, in which
-            case all windows are animated.
-        Raises
-        ------
-        NotImplementedError
-            If not implemented.
-        """
-        if windows_id is None:
-            windows_id = []
-        raise NotImplementedError("animate_windows not implemented.")
-
     def close_windows(
         self,
         session_id: Optional[str] = "",
