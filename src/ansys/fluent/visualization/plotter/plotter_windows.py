@@ -48,9 +48,9 @@ class _PlotterWindow:
         for obj_dict in self._plot_objs:
             if obj_dict.get("title"):
                 self._subplot_titles.append(obj_dict.get("title"))
-            elif hasattr(obj_dict.get("object").obj, "monitor_set_name"):
+            elif hasattr(obj_dict.get("object")._obj, "monitor_set_name"):
                 self._subplot_titles.append(
-                    obj_dict.get("object").obj.monitor_set_name()
+                    obj_dict.get("object")._obj.monitor_set_name()
                 )
             else:
                 self._subplot_titles.append("XYPlot")
@@ -65,7 +65,7 @@ class _PlotterWindow:
         self.plotter = self.plotter_window.plotter
         for i, plots_dict in enumerate(self._plot_objs):
             plotter_windows_manager.plot(
-                object=plots_dict["object"].obj,
+                object=plots_dict["object"]._obj,
                 window_id=self.window_id,
                 grid=self._grid,
                 position=plots_dict["position"],

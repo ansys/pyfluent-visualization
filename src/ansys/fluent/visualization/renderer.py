@@ -82,7 +82,7 @@ class GraphicsWindow:
             Transparency of the sub-plot.
         """
         self._list_of_positions.append(position)
-        if isinstance(graphics_obj.obj, GraphicsDefn):
+        if isinstance(graphics_obj._obj, GraphicsDefn):
             locals()["object"] = locals().pop("graphics_obj")
             self._graphics_objs.append({**locals()})
         else:
@@ -106,7 +106,7 @@ class GraphicsWindow:
             Title of the sub-plot.
         """
         self._list_of_positions.append(position)
-        if isinstance(plot_obj.obj, PlotDefn):
+        if isinstance(plot_obj._obj, PlotDefn):
             locals()["object"] = locals().pop("plot_obj")
             self._graphics_objs.append({**locals()})
         else:
@@ -114,7 +114,7 @@ class GraphicsWindow:
 
     def _all_plt_objs(self):
         for obj in self._graphics_objs:
-            if not isinstance(obj["object"].obj, PlotDefn):
+            if not isinstance(obj["object"]._obj, PlotDefn):
                 return False
         return True
 
@@ -276,7 +276,7 @@ class GraphicsWindow:
         """
         if self._graphics_objs:
             for event in events:
-                session = self._graphics_objs[0]["object"].obj.session
+                session = self._graphics_objs[0]["object"]._obj.session
 
                 def _callback(session, event_info):
                     self.refresh(session.id)

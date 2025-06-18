@@ -30,13 +30,13 @@ class _GraphicsContainer:
     """Base class for graphics containers."""
 
     def __getattr__(self, attr):
-        return getattr(self.obj, attr)
+        return getattr(self._obj, attr)
 
     def __setattr__(self, attr, value):
-        setattr(self.obj, attr, value)
+        setattr(self._obj, attr, value)
 
     def __dir__(self):
-        return sorted(set(super().__dir__()) | set(dir(self.obj)))
+        return sorted(set(super().__dir__()) | set(dir(self._obj)))
 
 
 class Mesh(_GraphicsContainer):
@@ -56,7 +56,7 @@ class Mesh(_GraphicsContainer):
 
     def __init__(self, solver, **kwargs):
         """__init__ method of Mesh class."""
-        self.__dict__["obj"] = Graphics(session=solver).Meshes.create(**kwargs)
+        self.__dict__["_obj"] = Graphics(session=solver).Meshes.create(**kwargs)
 
 
 class Surface(_GraphicsContainer):
@@ -95,7 +95,7 @@ class Surface(_GraphicsContainer):
                 field=kwargs.pop("field", None),
                 iso_value=kwargs.pop("iso_value", None),
                 rendering=kwargs.pop("rendering", None),
-                obj=Graphics(session=solver).Surfaces.create(**kwargs),
+                _obj=Graphics(session=solver).Surfaces.create(**kwargs),
             )
         )
         for attr in [
@@ -114,26 +114,26 @@ class Surface(_GraphicsContainer):
 
     def __setattr__(self, attr, value):
         if attr == "type":
-            self.obj.definition.type = value
+            self._obj.definition.type = value
         elif attr == "creation_method":
-            self.obj.definition.plane_surface.creation_method = value
+            self._obj.definition.plane_surface.creation_method = value
         elif attr == "z":
-            assert self.obj.definition.plane_surface.creation_method() == "xy-plane"
-            self.obj.definition.plane_surface.xy_plane.z = value
+            assert self._obj.definition.plane_surface.creation_method() == "xy-plane"
+            self._obj.definition.plane_surface.xy_plane.z = value
         elif attr == "y":
-            assert self.obj.definition.plane_surface.creation_method() == "zx-plane"
-            self.obj.definition.plane_surface.zx_plane.y = value
+            assert self._obj.definition.plane_surface.creation_method() == "zx-plane"
+            self._obj.definition.plane_surface.zx_plane.y = value
         elif attr == "x":
-            assert self.obj.definition.plane_surface.creation_method() == "yz-plane"
-            self.obj.definition.plane_surface.yz_plane.x = value
+            assert self._obj.definition.plane_surface.creation_method() == "yz-plane"
+            self._obj.definition.plane_surface.yz_plane.x = value
         elif attr == "field":
-            self.obj.definition.iso_surface.field = value
+            self._obj.definition.iso_surface.field = value
         elif attr == "iso_value":
-            self.obj.definition.iso_surface.iso_value = value
+            self._obj.definition.iso_surface.iso_value = value
         elif attr == "rendering":
-            self.obj.definition.iso_surface.rendering = value
+            self._obj.definition.iso_surface.rendering = value
         else:
-            setattr(self.obj, attr, value)
+            setattr(self._obj, attr, value)
 
 
 class Contour(_GraphicsContainer):
@@ -153,7 +153,7 @@ class Contour(_GraphicsContainer):
 
     def __init__(self, solver, **kwargs):
         """__init__ method of Contour class."""
-        self.__dict__["obj"] = Graphics(session=solver).Contours.create(**kwargs)
+        self.__dict__["_obj"] = Graphics(session=solver).Contours.create(**kwargs)
 
 
 class Vector(_GraphicsContainer):
@@ -176,7 +176,7 @@ class Vector(_GraphicsContainer):
 
     def __init__(self, solver, **kwargs):
         """__init__ method of Vector class."""
-        self.__dict__["obj"] = Graphics(session=solver).Vectors.create(**kwargs)
+        self.__dict__["_obj"] = Graphics(session=solver).Vectors.create(**kwargs)
 
 
 class Pathline(_GraphicsContainer):
@@ -196,7 +196,7 @@ class Pathline(_GraphicsContainer):
 
     def __init__(self, solver, **kwargs):
         """__init__ method of Pathline class."""
-        self.__dict__["obj"] = Graphics(session=solver).Pathlines.create(**kwargs)
+        self.__dict__["_obj"] = Graphics(session=solver).Pathlines.create(**kwargs)
 
 
 class XYPlot(_GraphicsContainer):
@@ -215,7 +215,7 @@ class XYPlot(_GraphicsContainer):
 
     def __init__(self, solver, local_surfaces_provider=None, **kwargs):
         """__init__ method of XYPlot class."""
-        self.__dict__["obj"] = Plots(
+        self.__dict__["_obj"] = Plots(
             session=solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).XYPlots.create(**kwargs)
 
@@ -233,6 +233,6 @@ class Monitor(_GraphicsContainer):
 
     def __init__(self, solver, local_surfaces_provider=None, **kwargs):
         """__init__ method of Monitor class."""
-        self.__dict__["obj"] = Plots(
+        self.__dict__["_obj"] = Plots(
             session=solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).Monitors.create(**kwargs)
