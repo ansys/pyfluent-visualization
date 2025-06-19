@@ -81,6 +81,10 @@ jobs:
         env:
           FLUENT_IMAGE_TAG: v25.2.0
 
+      - name: Remove all docker images
+        if: always()
+        run: make docker-clean-images
+
   docs:
     name: Documentation
     needs: docs-style
@@ -152,6 +156,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
+
+      - name: Remove all docker images
+        if: always()
+        run: make docker-clean-images
 
   build:
     name: Build library
