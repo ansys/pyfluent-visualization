@@ -236,7 +236,7 @@ velocity_vector = Vector(
     solver=solver_session,
     field="x-velocity",
     surfaces=["solid_up:1:830"],
-    scale=2,
+    scale=20,
 )
 graphics_window.add_graphics(velocity_vector, position=(1, 1))
 graphics_window.show()
