@@ -24,7 +24,7 @@
 
 import inspect
 
-from ansys.units.variable_descriptor import VariableDescriptor
+from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 
 from ansys.fluent.interface.post_objects.meta import PyLocalContainer
 
@@ -131,8 +131,7 @@ class Container:
                             py_cont._get_unique_chid_name()
                         )
                         if "field" in kwargs:
-                            if isinstance(kwargs["field"], VariableDescriptor):
-                                kwargs["field"] = kwargs["field"].name
+                            kwargs["field"] = _to_field_name_str(kwargs["field"])
                         # Validate that all kwargs are valid attributes for the object
                         unexpected_args = set(kwargs) - set(new_object())
                         if unexpected_args:
