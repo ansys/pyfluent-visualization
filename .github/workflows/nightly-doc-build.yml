@@ -50,6 +50,10 @@ jobs:
         env:
           FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
+      - name: Remove all docker images
+        if: always()
+        run: make docker-clean-images
+
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@v4
         with:
@@ -66,7 +70,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
-
-      - name: Remove all docker images
-        if: always()
-        run: make docker-clean-images
