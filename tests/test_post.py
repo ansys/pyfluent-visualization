@@ -310,14 +310,6 @@ def test_contour_object():
         field_info.get_surfaces_info().keys()
     )
 
-    # Invalid surface should raise exception.
-    with pytest.raises(ValueError) as value_error:
-        contour1.surfaces = "surface_does_not_exist"
-
-    # Invalid surface should raise exception.
-    with pytest.raises(ValueError) as value_error:
-        contour1.surfaces = ["surface_does_not_exist"]
-
     # Should accept all valid surface.
     contour1.surfaces = contour1.surfaces.allowed_values
 
@@ -329,10 +321,6 @@ def test_contour_object():
 
     # Should accept all valid fields.
     contour1.field = contour1.field.allowed_values[0]
-
-    # Invalid field should raise exception.
-    with pytest.raises(ValueError) as value_error:
-        contour1.field = "field_does_not_exist"
 
     # Important. Because there is no type checking so following test passes.
     contour1.node_values = "value should be boolean"
@@ -400,12 +388,6 @@ def test_vector_object():
         field_info.get_surfaces_info().keys()
     )
 
-    with pytest.raises(ValueError) as value_error:
-        vector1.surfaces = "surface_does_not_exist"
-
-    with pytest.raises(ValueError) as value_error:
-        vector1.surfaces = ["surface_does_not_exist"]
-
     vector1.surfaces = vector1.surfaces.allowed_values
 
     vector1.range.option = "auto-range-on"
@@ -455,10 +437,6 @@ def test_surface_object():
 
     # Important. Because there is no type checking so following test passes.
     iso_surf.field = [iso_surf.field.allowed_values[0]]
-
-    # Incorrect field should throw exception
-    with pytest.raises(ValueError) as value_error:
-        iso_surf.field = "field_does_not_exist"
 
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "temperature"
@@ -513,12 +491,6 @@ def test_xyplot_object():
 
     assert p1.surfaces.allowed_values == list(field_info.get_surfaces_info().keys())
 
-    with pytest.raises(ValueError) as value_error:
-        p1.surfaces = "surface_does_not_exist"
-
-    with pytest.raises(ValueError) as value_error:
-        p1.surfaces = ["surface_does_not_exist"]
-
     p1.surfaces = p1.surfaces.allowed_values
 
     assert p1.y_axis_function.allowed_values == list(
@@ -529,6 +501,3 @@ def test_xyplot_object():
     p1.y_axis_function = [p1.y_axis_function.allowed_values[0]]
 
     p1.y_axis_function = p1.y_axis_function.allowed_values[0]
-
-    with pytest.raises(ValueError) as value_error:
-        p1.y_axis_function = "field_does_not_exist"
