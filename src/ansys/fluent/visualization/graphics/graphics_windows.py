@@ -61,7 +61,7 @@ class _GraphicsWindow:
         self.plotter = self.graphics_window.renderer.plotter
         for i, graphics_dict in enumerate(self._graphics_objs):
             graphics_windows_manager.add_graphics(
-                graphics_object=graphics_dict["object"].obj,
+                graphics_object=graphics_dict["object"]._obj,
                 window_id=self.window_id,
                 fetch_data=True,
                 overlay=True,
