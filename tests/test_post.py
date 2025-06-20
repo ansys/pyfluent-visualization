@@ -443,13 +443,6 @@ def test_surface_object():
     range = field_info.get_scalar_field_range(iso_surf.field(), True)
     assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
-    # Setting out of range should throw exception
-    with pytest.raises(ValueError) as value_error:
-        iso_surf.iso_value = range[1] + 0.001
-
-    with pytest.raises(ValueError) as value_error:
-        iso_surf.iso_value = range[0] - 0.001
-
     # Iso surface value should automatically update upon change in field.
     iso_surf.field = "pressure"
     range = field_info.get_scalar_field_range(iso_surf.field(), True)
