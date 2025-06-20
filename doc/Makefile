@@ -27,3 +27,6 @@ clean:
 	rm -rf $(BUILDDIR)/*
 	rm -rf $(SOURCEDIR)/examples
 	find . -type d -name "_autosummary" -exec rm -rf {} +
+
+docker-clean-images:
+	@docker system prune --volumes -a -f
