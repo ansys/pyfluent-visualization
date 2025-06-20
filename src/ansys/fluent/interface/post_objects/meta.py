@@ -262,33 +262,6 @@ class PyLocalPropertyMeta(PyLocalBaseMeta):
     """Metaclass for local property classes."""
 
     @classmethod
-    def __create_validate(cls):
-        def wrapper(self, value):
-            attrs = getattr(self, "attributes", None)
-            if attrs:
-                for attr in attrs:
-                    if attr == "range":
-                        if self.range and (
-                            value < self.range[0] or value > self.range[1]
-                        ):
-                            raise DisallowedValuesError("value", value, self.range)
-                    elif attr == "allowed_values":
-                        if isinstance(value, list):
-                            if not all(
-                                v is None or v in self.allowed_values for v in value
-                            ):
-                                raise DisallowedValuesError(
-                                    "value", value, self.allowed_values
-                                )
-                        elif value is not None and value not in self.allowed_values:
-                            raise DisallowedValuesError(
-                                "value", value, self.allowed_values
-                            )
-            return value
-
-        return wrapper
-
-    @classmethod
     def __create_init(cls):
         def wrapper(self, parent, api_helper, name=""):
             """Create the initialization method for 'PyLocalPropertyMeta'."""
@@ -342,8 +315,8 @@ class PyLocalPropertyMeta(PyLocalBaseMeta):
 
     @classmethod
     def __create_set_state(cls):
-        def wrapper(self, value, validate=True):
-            self.value = self._validate(value) if validate else value
+        def wrapper(self, value):
+            self.value = value
             for on_change_cb in self._on_change_cbs:
                 on_change_cb()
 
@@ -359,7 +332,6 @@ class PyLocalPropertyMeta(PyLocalBaseMeta):
     def __new__(cls, name, bases, attrs):
         attrs["__init__"] = cls.__create_init()
         attrs["__call__"] = cls.__create_get_state()
-        attrs["_validate"] = cls.__create_validate()
         attrs["_register_on_change_cb"] = cls.__create_register_on_change()
         attrs["set_state"] = cls.__create_set_state()
         return super(PyLocalPropertyMeta, cls).__new__(cls, name, bases, attrs)
