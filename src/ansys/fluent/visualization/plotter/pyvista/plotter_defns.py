@@ -94,8 +94,8 @@ class Plotter(AbstractRenderer):
                 self.plotter = pv.Plotter(
                     title=f"PyFluent [{self._window_id}]", shape=self._grid
                 )
-            self.chart = pv.Chart2D()
         for data_dict in data_object_list:
+            self.chart = pv.Chart2D()
             self.set_properties(data_dict.pop("properties"))
             data = data_dict.pop("data")
             for curve in data:
@@ -119,10 +119,10 @@ class Plotter(AbstractRenderer):
                 )
 
                 self.plotter.subplot(data_dict["position"][0], data_dict["position"][1])
+                self.chart.title = data_dict["kwargs"].get("title") or self._title
+                self.chart.x_label = self._xlabel or ""
+                self.chart.y_label = self._ylabel or ""
                 self.plotter.add_chart(self.chart)
-            self.chart.title = data_dict["title"] or self._title
-            self.chart.x_label = self._xlabel or ""
-            self.chart.y_label = self._ylabel or ""
             color_list = ["b", "r", "g", "c", "m", "y", "k"]
             style_list = ["-", "--", "-.", "-.."]
             for count, curve in enumerate(self._curves):
@@ -135,18 +135,18 @@ class Plotter(AbstractRenderer):
                     label=curve,
                 )
 
-            if self._max_x and self._min_x:
-                if self._max_x > self._min_x:
-                    self.chart.x_range = [self._min_x, self._max_x]
+            # if self._max_x and self._min_x:
+            #     if self._max_x > self._min_x:
+            #         self.chart.x_range = [self._min_x, self._max_x]
             if self._max_y and self._min_y:
                 y_range = self._max_y - self._min_y
                 if self._yscale == "log":
                     self.chart.y_axis.log_scale = True
                     y_range = 0
-                self.chart.y_range = [
-                    self._min_y - y_range * 0.2,
-                    self._max_y + y_range * 0.2,
-                ]
+            #     self.chart.y_range = [
+            #         self._min_y - y_range * 0.2,
+            #         self._max_y + y_range * 0.2,
+            #     ]
         self.plotter.show()
 
     def show(self):

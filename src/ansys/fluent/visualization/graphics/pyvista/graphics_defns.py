@@ -112,8 +112,9 @@ class Renderer(AbstractRenderer):
 
     def render(self, mesh_object_list):
         """Render graphics in window."""
-        for mesh_dict1 in mesh_object_list:
-            for mesh_dict in mesh_dict1:
+        for mesh_sub_item in mesh_object_list:
+
+            for mesh_dict in mesh_sub_item:
                 mesh = mesh_dict.pop("data")
                 if "position" in mesh_dict:
                     self.plotter.subplot(
@@ -121,6 +122,7 @@ class Renderer(AbstractRenderer):
                     )
                     del mesh_dict["position"]
                 if isinstance(mesh, pv.DataSet):
+                    mesh_dict.update(mesh_dict.pop("kwargs"))
                     self.plotter.add_mesh(mesh, **mesh_dict)
                 else:
                     y_range = None

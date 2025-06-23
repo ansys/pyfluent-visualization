@@ -142,7 +142,7 @@ class PlotterWindow(VisualizationWindow):
 
     def plot_graphics(self, object_list):
         for obj_dict in object_list:
-            self.post_object = obj_dict["object"].obj
+            self.post_object = obj_dict["object"]._obj
             plot = (
                 _XYPlot(self.post_object, self.plotter)
                 if self.post_object.__class__.__name__ == "XYPlot"
@@ -155,7 +155,7 @@ class PlotterWindow(VisualizationWindow):
                     "data": plot_data[0],
                     "properties": plot_data[1],
                     "position": obj_dict["position"],
-                    "title": obj_dict["title"],
+                    "kwargs": obj_dict["kwargs"],
                 }
             )
         self.plotter.render(self._object_list_to_render)
@@ -260,10 +260,20 @@ class _MonitorPlot:
             return
         self.post_object.session.monitors.refresh(None, None)
         monitors = self.post_object.session.monitors
-        indices, columns_data = monitors.get_monitor_set_data(
-            self.post_object.monitor_set_name()
-        )
         xy_data = {}
+        timeout = 5
+        count = 0.0
+        import time
+
+        while True:
+            indices, columns_data = monitors.get_monitor_set_data(
+                self.post_object.monitor_set_name()
+            )
+            if columns_data != {} or count > timeout:
+                break
+            time.sleep(0.1)
+            count += 0.1
+
         for column_name, column_data in columns_data.items():
             xy_data[column_name] = {"xvalues": indices, "yvalues": column_data}
         monitor_set_name = self.post_object.monitor_set_name()
@@ -385,7 +395,7 @@ class PlotterWindowsManager(
 
     def plot_graphics(self, graphics_objects, window_id):
         for graphics_object_dict in graphics_objects:
-            if not isinstance(graphics_object_dict["object"].obj, PlotDefn):
+            if not isinstance(graphics_object_dict["object"]._obj, PlotDefn):
                 raise RuntimeError("Object type currently not supported.")
         window = self._post_windows.get(window_id) or self._open_window(window_id)
         window.plot_graphics(graphics_objects)
