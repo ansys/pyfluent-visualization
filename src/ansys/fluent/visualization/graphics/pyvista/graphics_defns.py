@@ -113,7 +113,6 @@ class Renderer(AbstractRenderer):
     def render(self, mesh_object_list):
         """Render graphics in window."""
         for mesh_sub_item in mesh_object_list:
-
             for mesh_dict in mesh_sub_item:
                 mesh = mesh_dict.pop("data")
                 if "position" in mesh_dict:

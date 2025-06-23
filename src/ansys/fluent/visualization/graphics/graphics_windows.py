@@ -54,12 +54,12 @@ class _GraphicsWindow:
             grid=self._grid,
             renderer=renderer,
         )
+        graphics_windows_manager.plot_graphics(self._graphics_objs, self.window_id)
         self.graphics_window = graphics_windows_manager._post_windows.get(
             self.window_id
         )
         self._renderer = self.graphics_window.renderer
         self.plotter = self.graphics_window.renderer.plotter
-        graphics_windows_manager.plot_graphics(self._graphics_objs, self.window_id)
         if pyviz.config.single_window:
             global _qt_window
             if not _qt_window:

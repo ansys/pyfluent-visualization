@@ -201,8 +201,6 @@ class GraphicsWindow(VisualizationWindow):
     def plot_graphics(self, object_list):
         for obj_dict in object_list:
             self.post_object = obj_dict["object"]._obj
-            # self._subplot = obj_dict["position"]
-            # self._opacity = obj_dict.get("opacity")
             self.fetch()
             self._render_graphics(obj_dict)
         self.renderer.render(self._object_list_to_render)
@@ -621,7 +619,6 @@ class GraphicsWindow(VisualizationWindow):
                     return
                 window.update = False
                 try:
-                    print(graphics_obj_list)
                     window.plot_graphics(object_list=graphics_obj_list)
                 finally:
                     GraphicsWindowsManager._condition.notify()
@@ -1026,6 +1023,7 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
         window_id: str | None = None,
         grid: tuple | None = (1, 1),
         renderer: str | None = None,
+        old_interface: bool = False,
     ) -> str:
         """Open a new window.
 
@@ -1046,7 +1044,10 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
         """
         with self._condition:
             window_id = self._get_unique_window_id() if window_id is None else window_id
-            self._open_and_plot_console(None, window_id, grid=grid)
+            if old_interface:
+                self._open_and_plot_console(None, window_id, grid=grid)
+            else:
+                self._open_console(None, window_id, grid=grid)
             return window_id
 
     def plot(
@@ -1088,20 +1089,20 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
             window_id = self._get_unique_window_id() if window_id is None else window_id
             self._window_id = window_id
             self._post_objects_list = graphics_objects
-            self._post_object = graphics_objects[0]
+            self._post_object = graphics_objects[0] if graphics_objects else None
             self._fetch_data = True
             self._overlay = True
 
-            if not self._plotter_thread:
-                if self._post_object is not None:
-                    self._post_object.session._fluent_connection.register_finalizer_cb(
-                        self._exit
-                    )
-                self._plotter_thread = threading.Thread(target=self._display, args=())
-                self._plotter_thread.start()
+        if not self._plotter_thread:
+            if self._post_object is not None:
+                self._post_object[
+                    "object"
+                ]._obj.session._fluent_connection.register_finalizer_cb(self._exit)
+            self._plotter_thread = threading.Thread(target=self._display, args=())
+            self._plotter_thread.start()
 
-            with self._condition:
-                self._condition.wait()
+        with self._condition:
+            self._condition.wait()
 
     def add_graphics(
         self,
@@ -1166,14 +1167,11 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
                             100,
                         )
                     # window.post_object = self._post_object
-                    # window._subplot = self._subplot
-                    # window._opacity = self._opacity
-                    # window.fetch_data = self._fetch_data
-                    # window.overlay = self._overlay
+                    window.fetch_data = self._fetch_data
+                    window.overlay = self._overlay
                     window.animate = animate
                     window.update = True
                     self._post_windows[self._window_id] = window
-                    # self._post_object = None
                     self._window_id = None
             self._app.processEvents()
         with self._condition:
@@ -1214,6 +1212,25 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
 
         with self._condition:
             self._condition.wait()
+
+    def _open_console(
+        self,
+        obj: object,
+        window_id: str,
+        fetch_data: bool = False,
+        overlay: bool = False,
+        position=(0, 0),
+        opacity=1.0,
+        grid=(1, 1),
+    ) -> None:
+        if self._exit_thread:
+            return
+        with self._condition:
+            self._window_id = window_id
+            self._post_object = obj
+            self._fetch_data = fetch_data
+            self._overlay = overlay
+            self._grid = grid
 
 
 class _GraphicsManagerProxy:
