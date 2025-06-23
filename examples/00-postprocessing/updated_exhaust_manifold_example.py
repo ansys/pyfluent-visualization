@@ -55,6 +55,7 @@ the temperature and flow characteristics in the exhaust manifold.
 
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
+from ansys.units import VariableCatalog
 
 from ansys.fluent.visualization import (
     Contour,
@@ -221,7 +222,7 @@ cont_surfaces_list = [
 ]
 temperature_contour_manifold = Contour(
     solver=solver_session,
-    field="temperature",
+    field=VariableCatalog.TEMPERATURE,
     surfaces=cont_surfaces_list,
 )
 graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
@@ -235,7 +236,7 @@ velocity_vector = Vector(
     solver=solver_session,
     field="x-velocity",
     surfaces=["solid_up:1:830"],
-    scale=2,
+    scale=20,
 )
 graphics_window.add_graphics(velocity_vector, position=(1, 1))
 graphics_window.show()

@@ -22,6 +22,7 @@
 
 import sys
 
+from ansys.units import VariableCatalog
 import pytest
 
 from ansys.fluent.interface.post_objects.post_object_definitions import ContourDefn
@@ -218,8 +219,13 @@ def test_visualization_calls_render_correctly_with_contour(
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
         contour = Contour(
-            solver=solver, field="temperature", surfaces=["in1", "in2", "in3"]
+            solver=solver,
+            field=VariableCatalog.TEMPERATURE,
+            surfaces=["in1", "in2", "in3"],
         )
+        # All attributes are exposed at this level.
+        assert "field" in dir(contour)
+        assert contour.field is not None
         graphics_window = GraphicsWindow()
         graphics_window.add_graphics(contour)
         graphics_window.show()

@@ -48,9 +48,9 @@ class _PlotterWindow:
         for obj_dict in self._plot_objs:
             if obj_dict.get("title"):
                 self._subplot_titles.append(obj_dict.get("title"))
-            elif hasattr(obj_dict.get("object").obj, "monitor_set_name"):
+            elif hasattr(obj_dict.get("object")._obj, "monitor_set_name"):
                 self._subplot_titles.append(
-                    obj_dict.get("object").obj.monitor_set_name()
+                    obj_dict.get("object")._obj.monitor_set_name()
                 )
             else:
                 self._subplot_titles.append("XYPlot")
