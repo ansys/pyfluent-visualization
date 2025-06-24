@@ -185,11 +185,6 @@ class GraphicsWindow(VisualizationWindow):
             self.renderer.write_frame()
         self.renderer._set_camera(pyviz.config.view)
 
-    def add_graphics(self, position, opacity=1):
-        """Fetch and render graphics."""
-        self.fetch()
-        self._render_graphics()
-
     def show_graphics(self):
         """Display graphics."""
         if not self._visible and self.show_window:
@@ -197,6 +192,13 @@ class GraphicsWindow(VisualizationWindow):
             self._visible = True
 
     def plot_graphics(self, object_list):
+        """Draw plots.
+
+        Parameters
+        ----------
+        object_list: list[{'keys': GraphicsDefn}]
+            Object to plot.
+        """
         for obj_dict in object_list:
             if obj_dict.get("old_interface"):
                 self.post_object = obj_dict["object"]
@@ -933,49 +935,22 @@ class NonInteractiveGraphicsManager(
             self._plot_notebook(graphics_object, window_id, fetch_data, overlay)
 
     def plot_graphics(self, graphics_objects, window_id):
+        """Draw plots.
+
+        Parameters
+        ----------
+        graphics_objects: list[GraphicsDefn]
+            Object to plot.
+        window_id : str, optional
+            Window ID for the plot. The default is ``None``, in which
+            case a unique ID is assigned.
+        """
         self._safety_check_before_plotting(graphics_objects)
         with self._condition:
             window = self._post_windows.get(window_id)
             window.fetch_data = True
             window.overlay = True
             window.plot_graphics(graphics_objects)
-
-    def add_graphics(
-        self,
-        graphics_object: GraphicsDefn,
-        window_id: str = None,
-        fetch_data: bool | None = False,
-        overlay: bool | None = False,
-        position: tuple | None = (0, 0),
-        opacity: float | None = 1,
-    ) -> None:
-        """Add graphics object to a window.
-
-        Parameters
-        ----------
-        graphics_object: GraphicsDefn
-            Object to plot.
-        window_id : str
-            Window ID for the plot.
-        fetch_data : bool, optional
-            Whether to fetch data. The default is ``False``.
-        overlay : bool, optional
-            Whether to overlay graphics over existing graphics.
-            The default is ``False``.
-        position: tuple, optional
-            Position of the sub-plot.
-        opacity: float, optional
-            Transparency of the sub-plot.
-        Raises
-        ------
-        RuntimeError
-            If the window does not support the object.
-        """
-        self._safety_check_for_plot(graphics_object)
-        with self._condition:
-            self._add_graphics_in_notebook(
-                graphics_object, window_id, fetch_data, overlay, position, opacity
-            )
 
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
@@ -1004,21 +979,6 @@ class NonInteractiveGraphicsManager(
         window.fetch_data = fetch_data
         window.overlay = overlay
         window.plot()
-
-    def _add_graphics_in_notebook(
-        self,
-        obj: object,
-        window_id: str,
-        fetch_data: bool,
-        overlay: bool,
-        position=(0, 0),
-        opacity=1.0,
-    ) -> None:
-        window = self._post_windows.get(window_id)
-        window.post_object = obj
-        window.fetch_data = fetch_data
-        window.overlay = overlay
-        window.add_graphics(position, opacity)
 
     def _show_graphics_in_notebook(self, window_id: str):
         self._post_windows[window_id].show_graphics()
@@ -1086,7 +1046,17 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
             window_id = self._get_unique_window_id() if window_id is None else window_id
             self._open_and_plot_console(graphics_object, window_id, fetch_data, overlay)
 
-    def plot_graphics(self, graphics_objects, window_id):
+    def plot_graphics(self, graphics_objects: list[GraphicsDefn], window_id: str):
+        """Draw plots.
+
+        Parameters
+        ----------
+        graphics_objects: list[GraphicsDefn]
+            Object to plot.
+        window_id : str, optional
+            Window ID for the plot. The default is ``None``, in which
+            case a unique ID is assigned.
+        """
         self._safety_check_before_plotting(graphics_objects)
         if self._exit_thread:
             return
@@ -1108,43 +1078,6 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
 
         with self._condition:
             self._condition.wait()
-
-    def add_graphics(
-        self,
-        graphics_object: GraphicsDefn,
-        window_id: str = None,
-        fetch_data: bool | None = False,
-        overlay: bool | None = False,
-        position: tuple | None = (0, 0),
-        opacity: float | None = 1,
-    ) -> None:
-        """Add graphics object to a window.
-
-        Parameters
-        ----------
-        graphics_object: GraphicsDefn
-            Object to plot.
-        window_id : str
-            Window ID for the plot.
-        fetch_data : bool, optional
-            Whether to fetch data. The default is ``False``.
-        overlay : bool, optional
-            Whether to overlay graphics over existing graphics.
-            The default is ``False``.
-        position: tuple, optional
-            Position of the sub-plot.
-        opacity: float, optional
-            Transparency of the sub-plot.
-        Raises
-        ------
-        RuntimeError
-            If the window does not support the object.
-        """
-        self._safety_check_for_plot(graphics_object)
-        with self._condition:
-            self._open_and_plot_console(
-                graphics_object, window_id, fetch_data, overlay, position, opacity
-            )
 
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
