@@ -157,9 +157,7 @@ class GraphicsWindow(VisualizationWindow):
     def render(self):
         """Render graphics."""
         self._render_graphics()
-        if not self._visible and self.show_window:
-            self.renderer.show()
-            self._visible = True
+        self.renderer.render(self._object_list_to_render)
 
     def _render_graphics(self, obj_dict=None):
         """Render graphics."""
@@ -200,9 +198,14 @@ class GraphicsWindow(VisualizationWindow):
 
     def plot_graphics(self, object_list):
         for obj_dict in object_list:
-            self.post_object = obj_dict["object"]._obj
-            self.fetch()
-            self._render_graphics(obj_dict)
+            if obj_dict.get("old_interface"):
+                self.post_object = obj_dict["object"]
+                self.fetch()
+                self._render_graphics()
+            else:
+                self.post_object = obj_dict["object"]._obj
+                self.fetch()
+                self._render_graphics(obj_dict)
         self.renderer.render(self._object_list_to_render)
 
     def plot(self):
@@ -346,28 +349,31 @@ class GraphicsWindow(VisualizationWindow):
                 factor=vector_scale * obj.scale(),
                 geom=pv.Arrow(),
             )
-            mesh_obj_list.append(
-                {
-                    "data": glyphs,
-                    "scalars": field,
-                    "scalar_bar_args": scalar_bar_args,
-                    "clim": range_,
-                    "position": obj_dict.get("position"),
-                    "opacity": obj_dict.get("opacity"),
-                    "kwargs": obj_dict.get("kwargs"),
-                }
-            )
+            _mesh_dict = {
+                "data": glyphs,
+                "scalars": field,
+                "scalar_bar_args": scalar_bar_args,
+                "clim": range_,
+            }
+            _mesh_dict["kwargs"] = {}
+            if obj_dict is not None:
+                _mesh_dict["position"] = obj_dict.get("position")
+                _mesh_dict["opacity"] = obj_dict.get("opacity")
+                _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+
+            mesh_obj_list.append(_mesh_dict)
             if obj.show_edges():
-                mesh_obj_list.append(
-                    {
-                        "data": mesh,
-                        "show_edges": True,
-                        "color": "white",
-                        "position": obj_dict.get("position"),
-                        "opacity": obj_dict.get("opacity"),
-                        "kwargs": obj_dict.get("kwargs"),
-                    }
-                )
+                _mesh_dict = {
+                    "data": mesh,
+                    "show_edges": True,
+                    "color": "white",
+                }
+                _mesh_dict["kwargs"] = {}
+                if obj_dict is not None:
+                    _mesh_dict["position"] = obj_dict.get("position")
+                    _mesh_dict["opacity"] = obj_dict.get("opacity")
+                    _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                mesh_obj_list.append(_mesh_dict)
         self._object_list_to_render.append(mesh_obj_list)
 
     def _display_pathlines(self, obj, obj_dict):
@@ -392,16 +398,19 @@ class GraphicsWindow(VisualizationWindow):
             )
 
             mesh.point_data[field] = surface_data.scalar_field
-            mesh_obj_list.append(
-                {
-                    "data": mesh,
-                    "scalars": field,
-                    "scalar_bar_args": scalar_bar_args,
-                    "position": obj_dict.get("position"),
-                    "opacity": obj_dict.get("opacity"),
-                    "kwargs": obj_dict.get("kwargs"),
-                }
-            )
+
+            _mesh_dict = {
+                "data": mesh,
+                "scalars": field,
+                "scalar_bar_args": scalar_bar_args,
+            }
+            _mesh_dict["kwargs"] = {}
+            if obj_dict is not None:
+                _mesh_dict["position"] = obj_dict.get("position")
+                _mesh_dict["opacity"] = obj_dict.get("opacity")
+                _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+
+            mesh_obj_list.append(_mesh_dict)
         self._object_list_to_render.append(mesh_obj_list)
 
     def _display_contour(self, obj, obj_dict):
@@ -446,113 +455,115 @@ class GraphicsWindow(VisualizationWindow):
                                 value=auto_range_off.minimum(),
                             )
                             if filled:
-                                mesh_obj_list.append(
-                                    {
-                                        "data": minimum_above,
-                                        "scalars": field,
-                                        "show_edges": obj.show_edges(),
-                                        "scalar_bar_args": scalar_bar_args,
-                                        "position": obj_dict.get("position"),
-                                        "opacity": obj_dict.get("opacity"),
-                                        "kwargs": obj_dict.get("kwargs"),
-                                    }
-                                )
+                                _mesh_dict = {
+                                    "data": minimum_above,
+                                    "scalars": field,
+                                    "show_edges": obj.show_edges(),
+                                    "scalar_bar_args": scalar_bar_args,
+                                }
+                                _mesh_dict["kwargs"] = {}
+                                if obj_dict is not None:
+                                    _mesh_dict["position"] = obj_dict.get("position")
+                                    _mesh_dict["opacity"] = obj_dict.get("opacity")
+                                    _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                                mesh_obj_list.append(_mesh_dict)
 
                             if (not filled or contour_lines) and (
                                 np.min(minimum_above[field])
                                 != np.max(minimum_above[field])
                             ):
-                                mesh_obj_list.append(
-                                    {
-                                        "data": minimum_above.contour(isosurfaces=20),
-                                        "position": obj_dict.get("position"),
-                                        "opacity": obj_dict.get("opacity"),
-                                        "kwargs": obj_dict.get("kwargs"),
-                                    }
-                                )
+                                _mesh_dict = {
+                                    "data": minimum_above.contour(isosurfaces=20)
+                                }
+                                _mesh_dict["kwargs"] = {}
+                                if obj_dict is not None:
+                                    _mesh_dict["position"] = obj_dict.get("position")
+                                    _mesh_dict["opacity"] = obj_dict.get("opacity")
+                                    _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                                mesh_obj_list.append(_mesh_dict)
                 else:
                     if filled:
-                        mesh_obj_list.append(
-                            {
-                                "data": mesh,
-                                "clim": [
-                                    auto_range_off.minimum(),
-                                    auto_range_off.maximum(),
-                                ],
-                                "scalars": field,
-                                "show_edges": obj.show_edges(),
-                                "scalar_bar_args": scalar_bar_args,
-                                "position": obj_dict.get("position"),
-                                "opacity": obj_dict.get("opacity"),
-                                "kwargs": obj_dict.get("kwargs"),
-                            }
-                        )
+                        _mesh_dict = {
+                            "data": mesh,
+                            "clim": [
+                                auto_range_off.minimum(),
+                                auto_range_off.maximum(),
+                            ],
+                            "scalars": field,
+                            "show_edges": obj.show_edges(),
+                            "scalar_bar_args": scalar_bar_args,
+                        }
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        mesh_obj_list.append(
-                            {
-                                "data": mesh.contour(isosurfaces=20),
-                                "position": obj_dict.get("position"),
-                                "opacity": obj_dict.get("opacity"),
-                                "kwargs": obj_dict.get("kwargs"),
-                            }
-                        )
+                        _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
                         field_info = obj.session.field_info
-                        mesh_obj_list.append(
-                            {
-                                "data": mesh,
-                                "clim": field_info.get_scalar_field_range(
-                                    obj.field(), False
-                                ),
-                                "scalars": field,
-                                "show_edges": obj.show_edges(),
-                                "scalar_bar_args": scalar_bar_args,
-                                "position": obj_dict.get("position"),
-                                "opacity": obj_dict.get("opacity"),
-                                "kwargs": obj_dict.get("kwargs"),
-                            }
-                        )
+                        _mesh_dict = {
+                            "data": mesh,
+                            "clim": field_info.get_scalar_field_range(
+                                obj.field(), False
+                            ),
+                            "scalars": field,
+                            "show_edges": obj.show_edges(),
+                            "scalar_bar_args": scalar_bar_args,
+                        }
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        mesh_obj_list.append(
-                            {
-                                "data": mesh.contour(isosurfaces=20),
-                                "position": obj_dict.get("position"),
-                                "opacity": obj_dict.get("opacity"),
-                                "kwargs": obj_dict.get("kwargs"),
-                            }
-                        )
+                        _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
 
                 else:
                     if filled:
-                        mesh_obj_list.append(
-                            {
-                                "data": mesh,
-                                "scalars": field,
-                                "show_edges": obj.show_edges(),
-                                "scalar_bar_args": scalar_bar_args,
-                                "position": obj_dict.get("position"),
-                                "opacity": obj_dict.get("opacity"),
-                                "kwargs": obj_dict.get("kwargs"),
-                            }
-                        )
+                        _mesh_dict = {
+                            "data": mesh,
+                            "scalars": field,
+                            "show_edges": obj.show_edges(),
+                            "scalar_bar_args": scalar_bar_args,
+                        }
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        mesh_obj_list.append(
-                            {
-                                "data": mesh.contour(isosurfaces=20),
-                                "position": obj_dict.get("position"),
-                                "opacity": obj_dict.get("opacity"),
-                                "kwargs": obj_dict.get("kwargs"),
-                            }
-                        )
+                        _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
         self._object_list_to_render.append(mesh_obj_list)
 
     def _display_surface(self, obj, obj_dict=None):
@@ -573,16 +584,13 @@ class GraphicsWindow(VisualizationWindow):
             mesh = self._resolve_mesh_data(mesh_data)
             color_size = len(self.renderer._colors)
             color = list(self.renderer._colors.values())[surface_id % color_size]
-            mesh_obj_list.append(
-                {
-                    "data": mesh,
-                    "show_edges": obj.show_edges(),
-                    "color": color,
-                    "position": obj_dict.get("position"),
-                    "opacity": obj_dict.get("opacity"),
-                    "kwargs": obj_dict.get("kwargs"),
-                }
-            )
+            _mesh_dict = {"data": mesh, "show_edges": obj.show_edges(), "color": color}
+            _mesh_dict["kwargs"] = {}
+            if obj_dict is not None:
+                _mesh_dict["position"] = obj_dict.get("position")
+                _mesh_dict["opacity"] = obj_dict.get("opacity")
+                _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+            mesh_obj_list.append(_mesh_dict)
         self._object_list_to_render.append(mesh_obj_list)
 
     def _display_xy_plot(self, obj_dict):
@@ -1044,10 +1052,7 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
         """
         with self._condition:
             window_id = self._get_unique_window_id() if window_id is None else window_id
-            if old_interface:
-                self._open_and_plot_console(None, window_id, grid=grid)
-            else:
-                self._open_console(None, window_id, grid=grid)
+            self._open_console(window_id, grid=grid)
             return window_id
 
     def plot(
@@ -1145,7 +1150,7 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
         """Display the graphics window."""
         pass
 
-    def _display(self, grid=(1, 1)) -> None:
+    def _display(self) -> None:
         while True:
             with self._condition:
                 if self._exit_thread:
@@ -1203,6 +1208,7 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
             self._subplot = position
             self._opacity = opacity
             self._grid = grid
+            self._post_objects_list = [{"old_interface": True, "object": obj}]
 
         if not self._plotter_thread:
             if obj is not None:
@@ -1215,21 +1221,15 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
 
     def _open_console(
         self,
-        obj: object,
         window_id: str,
-        fetch_data: bool = False,
-        overlay: bool = False,
-        position=(0, 0),
-        opacity=1.0,
         grid=(1, 1),
     ) -> None:
         if self._exit_thread:
             return
         with self._condition:
             self._window_id = window_id
-            self._post_object = obj
-            self._fetch_data = fetch_data
-            self._overlay = overlay
+            self._fetch_data = False
+            self._overlay = False
             self._grid = grid
 
 

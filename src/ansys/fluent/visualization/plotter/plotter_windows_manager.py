@@ -138,7 +138,16 @@ class PlotterWindow(VisualizationWindow):
                 if self.post_object.__class__.__name__ == "XYPlot"
                 else _MonitorPlot(self.post_object, self.plotter)
             )
-            plot(grid=grid, position=position, show=show, subplot_titles=subplot_titles)
+            plot_data = plot()
+            self._object_list_to_render.append(
+                {
+                    "data": plot_data[0],
+                    "properties": plot_data[1],
+                    "position": (0, 0),
+                    "kwargs": {},
+                }
+            )
+            self.plotter.render(self._object_list_to_render)
 
     def plot_graphics(self, object_list):
         for obj_dict in object_list:
