@@ -991,7 +991,6 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
         window_id: str | None = None,
         grid: tuple | None = (1, 1),
         renderer: str | None = None,
-        old_interface: bool = False,
     ) -> str:
         """Open a new window.
 
