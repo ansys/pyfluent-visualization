@@ -176,6 +176,9 @@ class Renderer(AbstractRenderer):
                             min_y_value - y_range * 0.2,
                             max_y_value + y_range * 0.2,
                         ]
+                    mesh_dict.update(mesh_dict.pop("kwargs"))
+                    if "title" in mesh_dict:
+                        chart.title = mesh_dict.pop("title")
                     self.plotter.add_chart(chart, **mesh_dict)
         self.plotter.show()
 

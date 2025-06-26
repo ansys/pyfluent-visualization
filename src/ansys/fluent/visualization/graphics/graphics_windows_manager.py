@@ -629,6 +629,7 @@ class GraphicsWindow(VisualizationWindow):
                     return
                 window.update = False
                 try:
+                    window._object_list_to_render = []
                     window.plot_graphics(object_list=graphics_obj_list)
                 finally:
                     GraphicsWindowsManager._condition.notify()
@@ -770,7 +771,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
                 window = self._post_windows.get(window_id)
                 if window:
                     window.refresh = True
-                    self.plot(window.post_object, window.id, overlay=overlay)
+                    self.plot_graphics(self._post_objects_list, window.id)
 
     def animate_windows(
         self,
