@@ -127,6 +127,7 @@ class PlotterWindow(VisualizationWindow):
         self.close: bool = False
         self.refresh: bool = False
         self._object_list_to_render: list = []
+        self._obj_list: list = []
 
     def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
         """Draw a plot."""
@@ -150,6 +151,9 @@ class PlotterWindow(VisualizationWindow):
             self.plotter.render(self._object_list_to_render)
 
     def plot_graphics(self, object_list):
+        self._obj_list = object_list
+        if self.refresh:
+            self._object_list_to_render = []
         for obj_dict in object_list:
             self.post_object = obj_dict["object"]._obj
             plot = (
@@ -462,7 +466,7 @@ class PlotterWindowsManager(
             window = self._post_windows.get(window_id)
             if window:
                 window.refresh = True
-                self.plot(window.post_object, window.id)
+                window.plot_graphics(window._obj_list)
 
     def animate_windows(
         self,
