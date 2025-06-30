@@ -199,6 +199,7 @@ class GraphicsWindow(VisualizationWindow):
         object_list: list[{'keys': GraphicsDefn}]
             Object to plot.
         """
+        self._post_objects = object_list
         for obj_dict in object_list:
             if obj_dict.get("old_interface"):
                 self.post_object = obj_dict["object"]
@@ -771,7 +772,8 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
                 window = self._post_windows.get(window_id)
                 if window:
                     window.refresh = True
-                    self.plot_graphics(self._post_objects_list, window.id)
+                    window._object_list_to_render = []
+                    self.plot_graphics(window._post_objects, window.id)
 
     def animate_windows(
         self,
