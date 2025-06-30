@@ -69,6 +69,7 @@ class GraphicsWindow:
         graphics_obj,
         position: tuple = (0, 0),
         opacity: float = 1,
+        **kwargs,
     ) -> None:
         """Add graphics-data to a window.
 
@@ -92,7 +93,7 @@ class GraphicsWindow:
         self,
         plot_obj,
         position: tuple = (0, 0),
-        title: str = "",
+        **kwargs,
     ) -> None:
         """Add 2D plot-data to a window.
 
@@ -133,7 +134,7 @@ class GraphicsWindow:
     def show(self, renderer=None) -> None:
         """Render the objects in window and display the same."""
         if pyviz.config.interactive:
-            allowed = {"pyvista", "matplotlib"}
+            allowed = ["pyvista", "matplotlib"]
             check = (
                 renderer not in allowed
                 if renderer

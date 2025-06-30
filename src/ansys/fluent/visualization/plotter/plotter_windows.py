@@ -59,20 +59,11 @@ class _PlotterWindow:
         """Render the objects in window and display the same."""
         self._populate_subplot_titles()
         self.window_id = plotter_windows_manager.open_window(
-            window_id=win_id, plotter=renderer
+            window_id=win_id, grid=self._grid, renderer=renderer
         )
         self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
         self.plotter = self.plotter_window.plotter
-        for i, plots_dict in enumerate(self._plot_objs):
-            plotter_windows_manager.plot(
-                object=plots_dict["object"]._obj,
-                window_id=self.window_id,
-                grid=self._grid,
-                position=plots_dict["position"],
-                subplot_titles=self._subplot_titles,
-                show=False,
-            )
-        plotter_windows_manager.show_plots(window_id=self.window_id)
+        plotter_windows_manager.plot_graphics(self._plot_objs, self.window_id)
 
     def save_graphic(
         self,

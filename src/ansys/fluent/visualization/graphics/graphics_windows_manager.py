@@ -82,6 +82,8 @@ class GraphicsWindow(VisualizationWindow):
             Object to draw.
         grid: tuple, optional
             Layout or arrangement of the graphics window. The default is ``(1, 1)``.
+        renderer: str, optional
+            Renderer for the graphics window. The default is ``None``.
         """
         self.post_object: GraphicsDefn = post_object
         self.id: str = id
@@ -98,6 +100,8 @@ class GraphicsWindow(VisualizationWindow):
         self._data = {}
         self._subplot = None
         self._opacity = None
+        self._object_list_to_render = []
+        self._post_objects = []
 
     # private methods
     def _get_renderer(self, renderer_string=None):
@@ -153,50 +157,59 @@ class GraphicsWindow(VisualizationWindow):
     def render(self):
         """Render graphics."""
         self._render_graphics()
-        if not self._visible and self.show_window:
-            self.renderer.show()
-            self._visible = True
+        self.renderer.render(self._object_list_to_render)
 
-    def _render_graphics(self, position=(0, 0), opacity=1):
+    def _render_graphics(self, obj_dict=None):
         """Render graphics."""
         if not self.post_object:
             return
         obj = self.post_object
-        if self._subplot:
-            position = self._subplot
-        if self._opacity:
-            opacity = self._opacity
 
         if not self.overlay:
             self.renderer._clear_plotter(in_jupyter())
         if obj.__class__.__name__ == "Mesh":
-            self._display_mesh(obj, position, opacity)
+            self._display_mesh(obj, obj_dict)
         elif obj.__class__.__name__ == "Surface":
-            self._display_surface(obj, position, opacity)
+            self._display_surface(obj, obj_dict)
         elif obj.__class__.__name__ == "Contour":
-            self._display_contour(obj, position, opacity)
+            self._display_contour(obj, obj_dict)
         elif obj.__class__.__name__ == "Vector":
-            self._display_vector(obj, position, opacity)
+            self._display_vector(obj, obj_dict)
         elif obj.__class__.__name__ == "Pathlines":
-            self._display_pathlines(obj, position, opacity)
+            self._display_pathlines(obj, obj_dict)
         elif obj.__class__.__name__ == "XYPlot":
-            self._display_xy_plot(position, opacity)
+            self._display_xy_plot(obj_dict)
         elif obj.__class__.__name__ == "MonitorPlot":
-            self._display_monitor_plot(position, opacity)
+            self._display_monitor_plot(obj_dict)
         if self.animate:
             self.renderer.write_frame()
         self.renderer._set_camera(pyviz.config.view)
-
-    def add_graphics(self, position, opacity=1):
-        """Fetch and render graphics."""
-        self.fetch()
-        self._render_graphics(position, opacity)
 
     def show_graphics(self):
         """Display graphics."""
         if not self._visible and self.show_window:
             self.renderer.show()
             self._visible = True
+
+    def plot_graphics(self, object_list):
+        """Draw plots.
+
+        Parameters
+        ----------
+        object_list: list[{'keys': GraphicsDefn}]
+            Object to plot.
+        """
+        self._post_objects = object_list
+        for obj_dict in object_list:
+            if obj_dict.get("old_interface"):
+                self.post_object = obj_dict["object"]
+                self.fetch()
+                self._render_graphics()
+            else:
+                self.post_object = obj_dict["object"]._obj
+                self.fetch()
+                self._render_graphics(obj_dict)
+        self.renderer.render(self._object_list_to_render)
 
     def plot(self):
         """Display graphics."""
@@ -208,7 +221,7 @@ class GraphicsWindow(VisualizationWindow):
         if self._data.get(data_type) is None or self.fetch_data:
             self._data[data_type] = FieldDataExtractor(obj).fetch_data()
 
-    def _fetch_or_display_surface(self, obj, fetch: bool, position=[0, 0], opacity=1):
+    def _fetch_or_display_surface(self, obj, fetch: bool, obj_dict=None):
         dummy_object = "dummy_object"
         post_session = obj.get_root()
         if (
@@ -224,7 +237,7 @@ class GraphicsWindow(VisualizationWindow):
             if fetch:
                 self._fetch_data(contour, FieldDataType.Contours)
             else:
-                self._display_contour(contour, position=position, opacity=opacity)
+                self._display_contour(contour, obj_dict=obj_dict)
             del post_session.Contours[dummy_object]
         else:
             mesh = post_session.Meshes[dummy_object]
@@ -233,7 +246,7 @@ class GraphicsWindow(VisualizationWindow):
             if fetch:
                 self._fetch_data(mesh, FieldDataType.Meshes)
             else:
-                self._display_mesh(mesh, position=position, opacity=opacity)
+                self._display_mesh(mesh, obj_dict=obj_dict)
             del post_session.Meshes[dummy_object]
 
     def _fetch_surface(self, obj):
@@ -284,7 +297,7 @@ class GraphicsWindow(VisualizationWindow):
                 faces=self._pack_faces_connectivity_data(mesh_data.connectivity),
             )
 
-    def _display_vector(self, obj, position=(0, 0), opacity=1):
+    def _display_vector(self, obj, obj_dict):
         field_info = obj.session.field_info
         vectors_of = obj.vectors_of()
         # scalar bar properties
@@ -293,6 +306,8 @@ class GraphicsWindow(VisualizationWindow):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
+
+        mesh_obj_list = []
 
         for surface_id, mesh_data in self._data[FieldDataType.Vectors].items():
             if not all(
@@ -337,30 +352,42 @@ class GraphicsWindow(VisualizationWindow):
                 factor=vector_scale * obj.scale(),
                 geom=pv.Arrow(),
             )
-            self.renderer.render(
-                glyphs,
-                scalars=field,
-                scalar_bar_args=scalar_bar_args,
-                clim=range_,
-                position=position,
-                opacity=opacity,
-            )
-            if obj.show_edges():
-                self.renderer.render(
-                    mesh,
-                    show_edges=True,
-                    color="white",
-                    position=position,
-                    opacity=opacity,
-                )
+            _mesh_dict = {
+                "data": glyphs,
+                "scalars": field,
+                "scalar_bar_args": scalar_bar_args,
+                "clim": range_,
+            }
+            _mesh_dict["kwargs"] = {}
+            if obj_dict is not None:
+                _mesh_dict["position"] = obj_dict.get("position")
+                _mesh_dict["opacity"] = obj_dict.get("opacity")
+                _mesh_dict["kwargs"] = obj_dict.get("kwargs")
 
-    def _display_pathlines(self, obj, position=(0, 0), opacity=1):
+            mesh_obj_list.append(_mesh_dict)
+            if obj.show_edges():
+                _mesh_dict = {
+                    "data": mesh,
+                    "show_edges": True,
+                    "color": "white",
+                }
+                _mesh_dict["kwargs"] = {}
+                if obj_dict is not None:
+                    _mesh_dict["position"] = obj_dict.get("position")
+                    _mesh_dict["opacity"] = obj_dict.get("opacity")
+                    _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                mesh_obj_list.append(_mesh_dict)
+        self._object_list_to_render.append(mesh_obj_list)
+
+    def _display_pathlines(self, obj, obj_dict):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
 
         # scalar bar properties
         scalar_bar_args = self.renderer._scalar_bar_default_properties()
+
+        mesh_obj_list = []
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Pathlines].items():
@@ -374,15 +401,22 @@ class GraphicsWindow(VisualizationWindow):
             )
 
             mesh.point_data[field] = surface_data.scalar_field
-            self.renderer.render(
-                mesh,
-                scalars=field,
-                scalar_bar_args=scalar_bar_args,
-                position=position,
-                opacity=opacity,
-            )
 
-    def _display_contour(self, obj, position=(0, 0), opacity=1):
+            _mesh_dict = {
+                "data": mesh,
+                "scalars": field,
+                "scalar_bar_args": scalar_bar_args,
+            }
+            _mesh_dict["kwargs"] = {}
+            if obj_dict is not None:
+                _mesh_dict["position"] = obj_dict.get("position")
+                _mesh_dict["opacity"] = obj_dict.get("opacity")
+                _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+
+            mesh_obj_list.append(_mesh_dict)
+        self._object_list_to_render.append(mesh_obj_list)
+
+    def _display_contour(self, obj, obj_dict):
         # contour properties
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
@@ -394,6 +428,8 @@ class GraphicsWindow(VisualizationWindow):
 
         # scalar bar properties
         scalar_bar_args = self.renderer._scalar_bar_default_properties()
+
+        mesh_obj_list = []
 
         # loop over all meshes
         for surface_id, surface_data in self._data[FieldDataType.Contours].items():
@@ -422,94 +458,126 @@ class GraphicsWindow(VisualizationWindow):
                                 value=auto_range_off.minimum(),
                             )
                             if filled:
-                                self.renderer.render(
-                                    minimum_above,
-                                    scalars=field,
-                                    show_edges=obj.show_edges(),
-                                    scalar_bar_args=scalar_bar_args,
-                                    position=position,
-                                    opacity=opacity,
-                                )
+                                _mesh_dict = {
+                                    "data": minimum_above,
+                                    "scalars": field,
+                                    "show_edges": obj.show_edges(),
+                                    "scalar_bar_args": scalar_bar_args,
+                                }
+                                _mesh_dict["kwargs"] = {}
+                                if obj_dict is not None:
+                                    _mesh_dict["position"] = obj_dict.get("position")
+                                    _mesh_dict["opacity"] = obj_dict.get("opacity")
+                                    _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                                mesh_obj_list.append(_mesh_dict)
 
                             if (not filled or contour_lines) and (
                                 np.min(minimum_above[field])
                                 != np.max(minimum_above[field])
                             ):
-                                self.renderer.render(
-                                    minimum_above.contour(isosurfaces=20),
-                                    position=position,
-                                    opacity=opacity,
-                                )
+                                _mesh_dict = {
+                                    "data": minimum_above.contour(isosurfaces=20)
+                                }
+                                _mesh_dict["kwargs"] = {}
+                                if obj_dict is not None:
+                                    _mesh_dict["position"] = obj_dict.get("position")
+                                    _mesh_dict["opacity"] = obj_dict.get("opacity")
+                                    _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                                mesh_obj_list.append(_mesh_dict)
                 else:
                     if filled:
-                        self.renderer.render(
-                            mesh,
-                            clim=[
+                        _mesh_dict = {
+                            "data": mesh,
+                            "clim": [
                                 auto_range_off.minimum(),
                                 auto_range_off.maximum(),
                             ],
-                            scalars=field,
-                            show_edges=obj.show_edges(),
-                            scalar_bar_args=scalar_bar_args,
-                            position=position,
-                            opacity=opacity,
-                        )
+                            "scalars": field,
+                            "show_edges": obj.show_edges(),
+                            "scalar_bar_args": scalar_bar_args,
+                        }
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        self.renderer.render(
-                            mesh.contour(isosurfaces=20),
-                            position=position,
-                            opacity=opacity,
-                        )
+                        _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
                         field_info = obj.session.field_info
-                        self.renderer.render(
-                            mesh,
-                            clim=field_info.get_scalar_field_range(obj.field(), False),
-                            scalars=field,
-                            show_edges=obj.show_edges(),
-                            scalar_bar_args=scalar_bar_args,
-                            position=position,
-                            opacity=opacity,
-                        )
+                        _mesh_dict = {
+                            "data": mesh,
+                            "clim": field_info.get_scalar_field_range(
+                                obj.field(), False
+                            ),
+                            "scalars": field,
+                            "show_edges": obj.show_edges(),
+                            "scalar_bar_args": scalar_bar_args,
+                        }
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        self.renderer.render(
-                            mesh.contour(isosurfaces=20),
-                            position=position,
-                            opacity=opacity,
-                        )
+                        _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
 
                 else:
                     if filled:
-                        self.renderer.render(
-                            mesh,
-                            scalars=field,
-                            show_edges=obj.show_edges(),
-                            scalar_bar_args=scalar_bar_args,
-                            position=position,
-                            opacity=opacity,
-                        )
+                        _mesh_dict = {
+                            "data": mesh,
+                            "scalars": field,
+                            "show_edges": obj.show_edges(),
+                            "scalar_bar_args": scalar_bar_args,
+                        }
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
                     if (not filled or contour_lines) and (
                         np.min(mesh[field]) != np.max(mesh[field])
                     ):
-                        self.renderer.render(
-                            mesh.contour(isosurfaces=20),
-                            position=position,
-                            opacity=opacity,
-                        )
+                        _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
+                        _mesh_dict["kwargs"] = {}
+                        if obj_dict is not None:
+                            _mesh_dict["position"] = obj_dict.get("position")
+                            _mesh_dict["opacity"] = obj_dict.get("opacity")
+                            _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+                        mesh_obj_list.append(_mesh_dict)
+        self._object_list_to_render.append(mesh_obj_list)
 
-    def _display_surface(self, obj, position=(0, 0), opacity=1):
+    def _display_surface(self, obj, obj_dict=None):
         self._fetch_or_display_surface(
-            obj, fetch=False, position=position, opacity=opacity
+            obj,
+            fetch=False,
+            obj_dict=obj_dict,
         )
 
-    def _display_mesh(self, obj, position=(0, 0), opacity=1):
+    def _display_mesh(self, obj, obj_dict=None):
+        mesh_obj_list = []
         for surface_id, mesh_data in self._data[FieldDataType.Meshes].items():
             if not all(
                 hasattr(mesh_data, attr) for attr in ("vertices", "connectivity")
@@ -519,27 +587,38 @@ class GraphicsWindow(VisualizationWindow):
             mesh = self._resolve_mesh_data(mesh_data)
             color_size = len(self.renderer._colors)
             color = list(self.renderer._colors.values())[surface_id % color_size]
-            self.renderer.render(
-                mesh,
-                show_edges=obj.show_edges(),
-                color=color,
-                position=position,
-                opacity=opacity,
-            )
+            _mesh_dict = {"data": mesh, "show_edges": obj.show_edges(), "color": color}
+            _mesh_dict["kwargs"] = {}
+            if obj_dict is not None:
+                _mesh_dict["position"] = obj_dict.get("position")
+                _mesh_dict["opacity"] = obj_dict.get("opacity")
+                _mesh_dict["kwargs"] = obj_dict.get("kwargs")
+            mesh_obj_list.append(_mesh_dict)
+        self._object_list_to_render.append(mesh_obj_list)
 
-    def _display_xy_plot(self, position=(0, 0), opacity=1):
-        self.renderer.render(
-            self._data["XYPlot"],
-            position=position,
+    def _display_xy_plot(self, obj_dict):
+        self._object_list_to_render.append(
+            [
+                {
+                    "data": self._data["XYPlot"],
+                    "position": obj_dict.get("position"),
+                    "kwargs": obj_dict.get("kwargs"),
+                }
+            ]
         )
 
-    def _display_monitor_plot(self, position=(0, 0), opacity=1):
-        self.renderer.render(
-            self._data["MonitorPlot"],
-            position=position,
+    def _display_monitor_plot(self, obj_dict):
+        self._object_list_to_render.append(
+            [
+                {
+                    "data": self._data["MonitorPlot"],
+                    "position": obj_dict.get("position"),
+                    "kwargs": obj_dict.get("kwargs"),
+                }
+            ]
         )
 
-    def _get_refresh_for_plotter(self, window: "GraphicsWindow"):
+    def _get_refresh_for_plotter(self, window: "GraphicsWindow", graphics_obj_list):
         def refresh():
             with GraphicsWindowsManager._condition:
                 plotter = window.renderer
@@ -551,7 +630,8 @@ class GraphicsWindow(VisualizationWindow):
                     return
                 window.update = False
                 try:
-                    window.plot()
+                    window._object_list_to_render = []
+                    window.plot_graphics(object_list=graphics_obj_list)
                 finally:
                     GraphicsWindowsManager._condition.notify()
 
@@ -571,6 +651,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
         self._window_id: Optional[str] = None
         self._exit_thread: bool = False
         self._app = None
+        self._post_objects_list = []
 
     def get_window(self, window_id: str) -> GraphicsWindow:
         """Get the Graphics window.
@@ -631,6 +712,14 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
         if not isinstance(graphics_object, (GraphicsDefn, PlotDefn)):
             raise RuntimeError("Object type currently not supported.")
 
+    @staticmethod
+    def _safety_check_before_plotting(graphics_objects):
+        for graphics_object_dict in graphics_objects:
+            if not isinstance(
+                graphics_object_dict["object"]._obj, (GraphicsDefn, PlotDefn)
+            ):
+                raise RuntimeError("Object type currently not supported.")
+
     def save_graphic(
         self,
         window_id: str,
@@ -683,7 +772,8 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
                 window = self._post_windows.get(window_id)
                 if window:
                     window.refresh = True
-                    self.plot(window.post_object, window.id, overlay=overlay)
+                    window._object_list_to_render = []
+                    self.plot_graphics(window._post_objects, window.id)
 
     def animate_windows(
         self,
@@ -847,42 +937,23 @@ class NonInteractiveGraphicsManager(
             window_id = self._get_unique_window_id() if window_id is None else window_id
             self._plot_notebook(graphics_object, window_id, fetch_data, overlay)
 
-    def add_graphics(
-        self,
-        graphics_object: GraphicsDefn,
-        window_id: str = None,
-        fetch_data: bool | None = False,
-        overlay: bool | None = False,
-        position: tuple | None = (0, 0),
-        opacity: float | None = 1,
-    ) -> None:
-        """Add graphics object to a window.
+    def plot_graphics(self, graphics_objects, window_id):
+        """Draw plots.
 
         Parameters
         ----------
-        graphics_object: GraphicsDefn
+        graphics_objects: list[GraphicsDefn]
             Object to plot.
-        window_id : str
-            Window ID for the plot.
-        fetch_data : bool, optional
-            Whether to fetch data. The default is ``False``.
-        overlay : bool, optional
-            Whether to overlay graphics over existing graphics.
-            The default is ``False``.
-        position: tuple, optional
-            Position of the sub-plot.
-        opacity: float, optional
-            Transparency of the sub-plot.
-        Raises
-        ------
-        RuntimeError
-            If the window does not support the object.
+        window_id : str, optional
+            Window ID for the plot. The default is ``None``, in which
+            case a unique ID is assigned.
         """
-        self._safety_check_for_plot(graphics_object)
+        self._safety_check_before_plotting(graphics_objects)
         with self._condition:
-            self._add_graphics_in_notebook(
-                graphics_object, window_id, fetch_data, overlay, position, opacity
-            )
+            window = self._post_windows.get(window_id)
+            window.fetch_data = True
+            window.overlay = True
+            window.plot_graphics(graphics_objects)
 
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
@@ -911,21 +982,6 @@ class NonInteractiveGraphicsManager(
         window.fetch_data = fetch_data
         window.overlay = overlay
         window.plot()
-
-    def _add_graphics_in_notebook(
-        self,
-        obj: object,
-        window_id: str,
-        fetch_data: bool,
-        overlay: bool,
-        position=(0, 0),
-        opacity=1.0,
-    ) -> None:
-        window = self._post_windows.get(window_id)
-        window.post_object = obj
-        window.fetch_data = fetch_data
-        window.overlay = overlay
-        window.add_graphics(position, opacity)
 
     def _show_graphics_in_notebook(self, window_id: str):
         self._post_windows[window_id].show_graphics()
@@ -958,7 +1014,7 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
         """
         with self._condition:
             window_id = self._get_unique_window_id() if window_id is None else window_id
-            self._open_and_plot_console(None, window_id, grid=grid)
+            self._open_console(window_id, grid=grid)
             return window_id
 
     def plot(
@@ -992,48 +1048,44 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
             window_id = self._get_unique_window_id() if window_id is None else window_id
             self._open_and_plot_console(graphics_object, window_id, fetch_data, overlay)
 
-    def add_graphics(
-        self,
-        graphics_object: GraphicsDefn,
-        window_id: str = None,
-        fetch_data: bool | None = False,
-        overlay: bool | None = False,
-        position: tuple | None = (0, 0),
-        opacity: float | None = 1,
-    ) -> None:
-        """Add graphics object to a window.
+    def plot_graphics(self, graphics_objects: list[GraphicsDefn], window_id: str):
+        """Draw plots.
 
         Parameters
         ----------
-        graphics_object: GraphicsDefn
+        graphics_objects: list[GraphicsDefn]
             Object to plot.
-        window_id : str
-            Window ID for the plot.
-        fetch_data : bool, optional
-            Whether to fetch data. The default is ``False``.
-        overlay : bool, optional
-            Whether to overlay graphics over existing graphics.
-            The default is ``False``.
-        position: tuple, optional
-            Position of the sub-plot.
-        opacity: float, optional
-            Transparency of the sub-plot.
-        Raises
-        ------
-        RuntimeError
-            If the window does not support the object.
+        window_id : str, optional
+            Window ID for the plot. The default is ``None``, in which
+            case a unique ID is assigned.
         """
-        self._safety_check_for_plot(graphics_object)
+        self._safety_check_before_plotting(graphics_objects)
+        if self._exit_thread:
+            return
         with self._condition:
-            self._open_and_plot_console(
-                graphics_object, window_id, fetch_data, overlay, position, opacity
-            )
+            window_id = self._get_unique_window_id() if window_id is None else window_id
+            self._window_id = window_id
+            self._post_objects_list = graphics_objects
+            self._post_object = graphics_objects[0] if graphics_objects else None
+            self._fetch_data = True
+            self._overlay = True
+
+        if not self._plotter_thread:
+            if self._post_object is not None:
+                self._post_object[
+                    "object"
+                ]._obj.session._fluent_connection.register_finalizer_cb(self._exit)
+            self._plotter_thread = threading.Thread(target=self._display, args=())
+            self._plotter_thread.start()
+
+        with self._condition:
+            self._condition.wait()
 
     def show_graphics(self, window_id: str):
         """Display the graphics window."""
         pass
 
-    def _display(self, grid=(1, 1)) -> None:
+    def _display(self) -> None:
         while True:
             with self._condition:
                 if self._exit_thread:
@@ -1049,18 +1101,17 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
                         plotter = window.renderer.plotter
                         self._app = plotter.app
                         plotter.add_callback(
-                            window._get_refresh_for_plotter(window),
+                            window._get_refresh_for_plotter(
+                                window, self._post_objects_list
+                            ),
                             100,
                         )
-                    window.post_object = self._post_object
-                    window._subplot = self._subplot
-                    window._opacity = self._opacity
+                    # window.post_object = self._post_object
                     window.fetch_data = self._fetch_data
                     window.overlay = self._overlay
                     window.animate = animate
                     window.update = True
                     self._post_windows[self._window_id] = window
-                    self._post_object = None
                     self._window_id = None
             self._app.processEvents()
         with self._condition:
@@ -1092,6 +1143,7 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
             self._subplot = position
             self._opacity = opacity
             self._grid = grid
+            self._post_objects_list = [{"old_interface": True, "object": obj}]
 
         if not self._plotter_thread:
             if obj is not None:
@@ -1101,6 +1153,19 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
 
         with self._condition:
             self._condition.wait()
+
+    def _open_console(
+        self,
+        window_id: str,
+        grid=(1, 1),
+    ) -> None:
+        if self._exit_thread:
+            return
+        with self._condition:
+            self._window_id = window_id
+            self._fetch_data = False
+            self._overlay = False
+            self._grid = grid
 
 
 class _GraphicsManagerProxy:

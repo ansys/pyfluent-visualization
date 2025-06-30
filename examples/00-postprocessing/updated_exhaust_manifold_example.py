@@ -270,7 +270,7 @@ xy_plot_object = XYPlot(
     y_axis_function="temperature",
 )
 plot_window = GraphicsWindow()
-plot_window.add_plot(xy_plot_object, position=(0, 0))
+plot_window.add_plot(xy_plot_object, position=(0, 0), title="Temperature")
 
 ###############################################################################
 # Create residual plot
