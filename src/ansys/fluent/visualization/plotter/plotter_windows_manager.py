@@ -236,16 +236,6 @@ class _XYPlot:
             "xlabel": "position",
             "ylabel": self.post_object.y_axis_function(),
         }
-        # if in_jupyter() or not pyviz.config.interactive:
-        #     self.plotter.set_properties(properties)
-        # else:
-        #     try:
-        #         self.plotter.set_properties(properties)
-        #     except BrokenPipeError:
-        #         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
-        #             self._get_plotter()
-        #         )
-        #         self.plotter.set_properties(properties)
         return xy_data, properties
 
 
@@ -297,18 +287,6 @@ class _MonitorPlot:
             "ylabel": monitors.get_monitor_set_prop(monitor_set_name, "ylabel"),
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
-
-        # if in_jupyter() or not pyviz.config.interactive:
-        #     self.plotter.set_properties(properties)
-        # else:
-        #     try:
-        #         self.plotter.set_properties(properties)
-        #     except BrokenPipeError:
-        #         self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = (
-        #             self._get_plotter()
-        #         )
-        #         self.plotter.set_properties(properties)
-        # if xy_data:
         return xy_data, properties
 
 
