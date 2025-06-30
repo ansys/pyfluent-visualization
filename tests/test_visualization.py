@@ -386,7 +386,7 @@ def test_visualization_calls_render_correctly_with_xy_plot_pyvista(
         # Get the actual arguments
         args, kwargs = mock_render.call_args
         assert kwargs == {}
-        data_dict = args[0][0]
+        data_dict = args[0][0][0]
 
         # Assertions on arguments
         assert isinstance(data_dict["data"]["outlet"], np.ndarray)
@@ -416,7 +416,7 @@ def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
         # Get the actual arguments
         args, kwargs = mock_render.call_args
         assert kwargs == {}
-        data_dict = args[0][0]
+        data_dict = args[0][0][0]
 
         # Assertions on arguments
         assert isinstance(data_dict["data"]["outlet"], np.ndarray)
@@ -443,7 +443,7 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
         # Get the actual arguments
         args, kwargs = mock_render.call_args
         assert kwargs == {}
-        data_dict = args[0][0]
+        data_dict = args[0][0][0]
 
         # Assertions on arguments
         assert list(data_dict["data"].keys()) == [
