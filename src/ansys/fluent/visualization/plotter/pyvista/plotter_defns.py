@@ -80,12 +80,12 @@ class Plotter(AbstractRenderer):
         self.plotter = None
         self._grid = grid
 
-    def render(self, data_object_list) -> None:
+    def render(self, data_object_list: list[list[dict]]) -> None:
         """Draw plot in window.
 
         Parameters
         ----------
-        data : dict
+        data_object_list : list[list[dict]]
             Data to plot. Data consists the list of x and y
             values for each curve.
         """
@@ -94,59 +94,52 @@ class Plotter(AbstractRenderer):
                 self.plotter = pv.Plotter(
                     title=f"PyFluent [{self._window_id}]", shape=self._grid
                 )
-        for data_dict in data_object_list:
-            self.chart = pv.Chart2D()
-            self.set_properties(data_dict.pop("properties"))
-            data = data_dict.pop("data")
-            for curve in data:
-                min_y_value = np.amin(data[curve]["yvalues"])
-                max_y_value = np.amax(data[curve]["yvalues"])
-                min_x_value = np.amin(data[curve]["xvalues"])
-                max_x_value = np.amax(data[curve]["xvalues"])
-                self._data[curve]["xvalues"] = data[curve]["xvalues"].tolist()
-                self._data[curve]["yvalues"] = data[curve]["yvalues"].tolist()
-                self._min_y = (
-                    min(self._min_y, min_y_value) if self._min_y else min_y_value
-                )
-                self._max_y = (
-                    max(self._max_y, max_y_value) if self._max_y else max_y_value
-                )
-                self._min_x = (
-                    min(self._min_x, min_x_value) if self._min_x else min_x_value
-                )
-                self._max_x = (
-                    max(self._max_x, max_x_value) if self._max_x else max_x_value
-                )
+        for data_sub_item in data_object_list:
+            for data_dict in data_sub_item:
+                self.chart = pv.Chart2D()
+                self.set_properties(data_dict.pop("properties"))
+                data = data_dict.pop("data")
+                for curve in data:
+                    min_y_value = np.amin(data[curve]["yvalues"])
+                    max_y_value = np.amax(data[curve]["yvalues"])
+                    min_x_value = np.amin(data[curve]["xvalues"])
+                    max_x_value = np.amax(data[curve]["xvalues"])
+                    self._data[curve]["xvalues"] = data[curve]["xvalues"].tolist()
+                    self._data[curve]["yvalues"] = data[curve]["yvalues"].tolist()
+                    self._min_y = (
+                        min(self._min_y, min_y_value) if self._min_y else min_y_value
+                    )
+                    self._max_y = (
+                        max(self._max_y, max_y_value) if self._max_y else max_y_value
+                    )
+                    self._min_x = (
+                        min(self._min_x, min_x_value) if self._min_x else min_x_value
+                    )
+                    self._max_x = (
+                        max(self._max_x, max_x_value) if self._max_x else max_x_value
+                    )
 
-                self.plotter.subplot(data_dict["position"][0], data_dict["position"][1])
-                self.chart.title = data_dict["kwargs"].get("title") or self._title
-                self.chart.x_label = self._xlabel or ""
-                self.chart.y_label = self._ylabel or ""
-                self.plotter.add_chart(self.chart)
-            color_list = ["b", "r", "g", "c", "m", "y", "k"]
-            style_list = ["-", "--", "-.", "-.."]
-            for count, curve in enumerate(self._curves):
-                plot = self.chart.line(
-                    self._data[curve]["xvalues"],
-                    self._data[curve]["yvalues"],
-                    width=2.5,
-                    color=color_list[count % len(color_list)],
-                    style=style_list[count % len(style_list)],
-                    label=curve,
-                )
-
-            # if self._max_x and self._min_x:
-            #     if self._max_x > self._min_x:
-            #         self.chart.x_range = [self._min_x, self._max_x]
-            if self._max_y and self._min_y:
-                y_range = self._max_y - self._min_y
-                if self._yscale == "log":
-                    self.chart.y_axis.log_scale = True
-                    y_range = 0
-            #     self.chart.y_range = [
-            #         self._min_y - y_range * 0.2,
-            #         self._max_y + y_range * 0.2,
-            #     ]
+                    self.plotter.subplot(
+                        data_dict["position"][0], data_dict["position"][1]
+                    )
+                    self.chart.title = data_dict["kwargs"].get("title") or self._title
+                    self.chart.x_label = self._xlabel or ""
+                    self.chart.y_label = self._ylabel or ""
+                    self.plotter.add_chart(self.chart)
+                color_list = ["b", "r", "g", "c", "m", "y", "k"]
+                style_list = ["-", "--", "-.", "-.."]
+                for count, curve in enumerate(self._curves):
+                    plot = self.chart.line(
+                        self._data[curve]["xvalues"],
+                        self._data[curve]["yvalues"],
+                        width=2.5,
+                        color=color_list[count % len(color_list)],
+                        style=style_list[count % len(style_list)],
+                        label=curve,
+                    )
+                if self._max_y and self._min_y:
+                    if self._yscale == "log":
+                        self.chart.y_axis.log_scale = True
         self.plotter.show()
 
     def show(self):

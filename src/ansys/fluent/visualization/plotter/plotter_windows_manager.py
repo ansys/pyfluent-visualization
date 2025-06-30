@@ -131,8 +131,6 @@ class PlotterWindow(VisualizationWindow):
 
     def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
         """Draw a plot."""
-        if subplot_titles is None:
-            subplot_titles = []
         if self.post_object is not None:
             plot = (
                 _XYPlot(self.post_object, self.plotter)
@@ -141,12 +139,14 @@ class PlotterWindow(VisualizationWindow):
             )
             plot_data = plot()
             self._object_list_to_render.append(
-                {
-                    "data": plot_data[0],
-                    "properties": plot_data[1],
-                    "position": (0, 0),
-                    "kwargs": {},
-                }
+                [
+                    {
+                        "data": plot_data[0],
+                        "properties": plot_data[1],
+                        "position": (0, 0),
+                        "kwargs": {},
+                    }
+                ]
             )
             self.plotter.render(self._object_list_to_render)
 
@@ -164,12 +164,14 @@ class PlotterWindow(VisualizationWindow):
 
             plot_data = plot()
             self._object_list_to_render.append(
-                {
-                    "data": plot_data[0],
-                    "properties": plot_data[1],
-                    "position": obj_dict["position"],
-                    "kwargs": obj_dict["kwargs"],
-                }
+                [
+                    {
+                        "data": plot_data[0],
+                        "properties": plot_data[1],
+                        "position": obj_dict["position"],
+                        "kwargs": obj_dict["kwargs"],
+                    }
+                ]
             )
         self.plotter.render(self._object_list_to_render)
 

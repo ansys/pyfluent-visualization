@@ -110,8 +110,15 @@ class Renderer(AbstractRenderer):
         """Show graphics."""
         self.plotter.show()
 
-    def render(self, mesh_object_list):
-        """Render graphics in window."""
+    def render(self, mesh_object_list: list[list[dict]]):
+        """Render graphics in window.
+
+        Parameters
+        ----------
+        mesh_object_list : list[list[dict]]
+            Data to plot. Data consists the list of x and y
+            values for each curve.
+        """
         self.plotter.clear()
         for mesh_sub_item in mesh_object_list:
             for mesh_dict in mesh_sub_item:
