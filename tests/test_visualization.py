@@ -105,22 +105,49 @@ def test_visualization_calls_render_correctly_with_single_mesh(
         TGraphicsWindow.show_graphics = lambda win_id: None
         mesh = Mesh(solver=solver, show_edges=True, surfaces=mesh_surfaces_list)
         graphics_window = GraphicsWindow()
-        graphics_window.add_graphics(mesh, opacity=0.05)
+        # One can pass any args to the plotter using 'add_graphics'
+        graphics_window.add_graphics(
+            mesh, opacity=0.05, random_str_arg="any_val", random_int_arg=5
+        )
         graphics_window.show()
 
-        # Check that render was called 3 times for 3 surfaces
-        assert mock_render.call_count == 3
+        # Check that render was called only 1 times
+        mock_render.assert_called_once()
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        called_mesh = args[0]
+        assert kwargs == {}
+
+        # For single mesh object
+        assert len(args[0]) == 1
+        # For 3 surfaces
+        assert len(args[0][0]) == 3
+
+        # For first surface
+        mesh_dict = args[0][0][0]
+        assert list(mesh_dict.keys()) == [
+            "data",
+            "show_edges",
+            "color",
+            "kwargs",
+            "position",
+            "opacity",
+        ]
 
         # Assertions on arguments
-        assert isinstance(called_mesh, pv.PolyData)
-        assert kwargs.get("color") == [128, 0, 0]
-        assert kwargs.get("show_edges") is True
-        assert kwargs.get("position") == (0, 0)
-        assert kwargs.get("opacity") == 0.05
+        assert isinstance(mesh_dict["data"], pv.PolyData)
+        assert mesh_dict.get("color") == [0, 128, 0]
+        assert mesh_dict.get("show_edges") is True
+        assert mesh_dict.get("position") == (0, 0)
+        assert mesh_dict.get("opacity") == 0.05
+
+        # For third surface
+        mesh_dict = args[0][0][2]
+        assert mesh_dict.get("color") == [128, 0, 0]
+        assert mesh_dict.get("kwargs") == {
+            "random_str_arg": "any_val",
+            "random_int_arg": 5,
+        }
 
 
 def test_visualization_calls_render_correctly_with_dual_mesh(
@@ -143,19 +170,41 @@ def test_visualization_calls_render_correctly_with_dual_mesh(
         graphics_window.add_graphics(mesh, position=(0, 1))
         graphics_window.show()
 
-        # Check that render was called 3 times for 3 surfaces
-        assert mock_render.call_count == 6
+        # Check that render was called only 1 times
+        mock_render.assert_called_once()
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        called_mesh = args[0]
+        assert kwargs == {}
+
+        # For two mesh objects
+        assert len(args[0]) == 2
+        # For 3 surfaces
+        assert len(args[0][0]) == 3
+        assert len(args[0][1]) == 3
+
+        # For first surface in second mesh
+        mesh_dict = args[0][1][0]
+        assert list(mesh_dict.keys()) == [
+            "data",
+            "show_edges",
+            "color",
+            "kwargs",
+            "position",
+            "opacity",
+        ]
 
         # Assertions on arguments
-        assert isinstance(called_mesh, pv.PolyData)
-        assert kwargs.get("color") == [128, 0, 0]
-        assert kwargs.get("show_edges") is False
-        assert kwargs.get("position") == (0, 1)
-        assert kwargs.get("opacity") == 1
+        assert isinstance(mesh_dict["data"], pv.PolyData)
+        assert mesh_dict.get("color") == [0, 128, 0]
+        assert mesh_dict.get("show_edges") is False
+        assert mesh_dict.get("position") == (0, 1)
+
+        # For third surface in first mesh
+        mesh_dict = args[0][0][2]
+        assert mesh_dict.get("color") == [128, 0, 0]
+        assert mesh_dict.get("show_edges") is True
+        assert mesh_dict.get("position") == (0, 0)
 
 
 def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
@@ -181,12 +230,13 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        called_mesh = args[0]
+        mesh_dict = args[0][0][0]
+        assert kwargs == {}
 
         # Assertions on arguments
-        assert isinstance(called_mesh, pv.PolyData)
-        assert kwargs.get("color") == [128, 0, 128]
-        assert kwargs.get("position") == (0, 0)
+        assert isinstance(mesh_dict["data"], pv.PolyData)
+        assert mesh_dict.get("color") == [128, 0, 128]
+        assert mesh_dict.get("position") == (0, 0)
 
         # Iso-surface
         surf_outlet_plane = Surface(solver=solver)
@@ -198,17 +248,18 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
         graphics_window.add_graphics(surf_outlet_plane)
         graphics_window.show()
 
-        # Check that render was called 2 times for 1 iso-surface (contains 2 surfaces)
+        # Check that render was called 2 times 2nd time in the same module
         assert mock_render.call_count == 2
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        called_mesh = args[0]
+        assert kwargs == {}
+        mesh_dict = args[0][0][0]
 
         # Assertions on arguments
-        assert isinstance(called_mesh, pv.PolyData)
-        assert kwargs.get("color") == [128, 0, 128]
-        assert kwargs.get("position") == (0, 0)
+        assert isinstance(mesh_dict["data"], pv.PolyData)
+        assert mesh_dict.get("color") == [128, 0, 128]
+        assert mesh_dict.get("position") == (0, 0)
 
 
 def test_visualization_calls_render_correctly_with_contour(
@@ -230,19 +281,22 @@ def test_visualization_calls_render_correctly_with_contour(
         graphics_window.add_graphics(contour)
         graphics_window.show()
 
-        # Check that render was called 3 times for 3 surfaces
-        assert mock_render.call_count == 3
+        # Check that render was called 1 time
+        mock_render.assert_called_once()
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        called_mesh = args[0]
+        assert kwargs == {}
+        # For 3 surfaces
+        assert len(args[0][0]) == 3
+        mesh_dict = args[0][0][0]
 
         # Assertions on arguments
-        assert isinstance(called_mesh, pv.PolyData)
-        assert kwargs["scalar_bar_args"]
-        assert kwargs.get("show_edges") is False
-        assert kwargs.get("position") == (0, 0)
-        assert kwargs.get("opacity") == 1
+        assert isinstance(mesh_dict["data"], pv.PolyData)
+        assert mesh_dict["scalar_bar_args"]
+        assert mesh_dict.get("show_edges") is False
+        assert mesh_dict.get("position") == (0, 0)
+        assert mesh_dict.get("opacity") == 1
 
 
 def test_visualization_calls_render_correctly_with_vector(
@@ -262,19 +316,20 @@ def test_visualization_calls_render_correctly_with_vector(
         graphics_window.add_graphics(velocity_vector)
         graphics_window.show()
 
-        # Check that render was called 1 time for 1 surfaces
+        # Check that render was called 1 time
         mock_render.assert_called_once()
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        called_mesh = args[0]
+        assert kwargs == {}
+        mesh_dict = args[0][0][0]
 
         # Assertions on arguments
-        assert isinstance(called_mesh, pv.PolyData)
-        assert kwargs["scalar_bar_args"]
-        assert kwargs.get("scalars") == "x-velocity\n[m s^-1]"
-        assert kwargs.get("position") == (0, 0)
-        assert kwargs.get("opacity") == 1
+        assert isinstance(mesh_dict["data"], pv.PolyData)
+        assert mesh_dict["scalar_bar_args"]
+        assert mesh_dict.get("scalars") == "x-velocity\n[m s^-1]"
+        assert mesh_dict.get("position") == (0, 0)
+        assert mesh_dict.get("opacity") == 1
 
 
 def test_visualization_calls_render_correctly_with_pathlines(
@@ -291,19 +346,22 @@ def test_visualization_calls_render_correctly_with_pathlines(
         graphics_window.add_graphics(pathlines)
         graphics_window.show()
 
-        # Check that render was called 3 times for 3 surfaces
-        assert mock_render.call_count == 3
+        # Check that render was called 1 time
+        mock_render.assert_called_once()
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        called_mesh = args[0]
+        assert kwargs == {}
+        # For 3 surfaces
+        assert len(args[0][0]) == 3
+        mesh_dict = args[0][0][0]
 
         # Assertions on arguments
-        assert isinstance(called_mesh, pv.PolyData)
-        assert kwargs["scalar_bar_args"]
-        assert kwargs.get("scalars") == "velocity-magnitude\n[m s^-1]"
-        assert kwargs.get("position") == (0, 0)
-        assert kwargs.get("opacity") == 1
+        assert isinstance(mesh_dict["data"], pv.PolyData)
+        assert mesh_dict["scalar_bar_args"]
+        assert mesh_dict.get("scalars") == "velocity-magnitude\n[m s^-1]"
+        assert mesh_dict.get("position") == (0, 0)
+        assert mesh_dict.get("opacity") == 1
 
 
 def test_visualization_calls_render_correctly_with_xy_plot_pyvista(
@@ -322,17 +380,18 @@ def test_visualization_calls_render_correctly_with_xy_plot_pyvista(
         plot_window.add_plot(xy_plot_object)
         plot_window.show()
 
-        # Check that render was called 1 time for 1 surface
+        # Check that render was called 1 time
         mock_render.assert_called_once()
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        data = args[0]
+        assert kwargs == {}
+        data_dict = args[0][0][0]
 
         # Assertions on arguments
-        assert isinstance(data["outlet"], np.ndarray)
-        assert kwargs["subplot_titles"] == ["XYPlot"]
-        assert kwargs.get("position") == (0, 0)
+        assert isinstance(data_dict["data"]["outlet"], np.ndarray)
+        assert data_dict["properties"]["title"] == "XY Plot"
+        assert data_dict.get("position") == (0, 0)
 
 
 def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
@@ -356,12 +415,13 @@ def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        data = args[0]
+        assert kwargs == {}
+        data_dict = args[0][0][0]
 
         # Assertions on arguments
-        assert isinstance(data["outlet"], np.ndarray)
-        assert kwargs["subplot_titles"] == ["XYPlot"]
-        assert kwargs.get("position") == (0, 0)
+        assert isinstance(data_dict["data"]["outlet"], np.ndarray)
+        assert data_dict["properties"]["title"] == "XY Plot"
+        assert data_dict.get("position") == (0, 0)
 
 
 def test_visualization_calls_render_correctly_with_monitor_plot(
@@ -382,10 +442,11 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
 
         # Get the actual arguments
         args, kwargs = mock_render.call_args
-        data = args[0]
+        assert kwargs == {}
+        data_dict = args[0][0][0]
 
         # Assertions on arguments
-        assert list(data.keys()) == [
+        assert list(data_dict["data"].keys()) == [
             "continuity",
             "x-velocity",
             "y-velocity",
@@ -394,8 +455,8 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
             "k",
             "omega",
         ]
-        assert kwargs["subplot_titles"] == ["residual"]
-        assert kwargs.get("position") == (0, 0)
+        assert data_dict["properties"]["title"] == "residual"
+        assert data_dict.get("position") == (0, 0)
 
 
 def test_exception_for_unsupported_argument_combination(

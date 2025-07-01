@@ -14,9 +14,10 @@ Use the following script to launch Fluent and load your case and data files:
 
     import ansys.fluent.core as pyfluent
     from ansys.fluent.core import examples
-    from ansys.fluent.visualization import set_config
+    from ansys.fluent.visualization import config
 
-    set_config(blocking=True, set_view_on_display="isometric")
+    config.interactive = False
+    config.view = "isometric"
 
     import_case = examples.download_file(
         file_name="exhaust_system.cas.h5", directory="pyfluent/exhaust_system"

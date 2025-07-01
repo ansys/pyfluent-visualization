@@ -54,20 +54,12 @@ class _GraphicsWindow:
             grid=self._grid,
             renderer=renderer,
         )
+        graphics_windows_manager.plot_graphics(self._graphics_objs, self.window_id)
         self.graphics_window = graphics_windows_manager._post_windows.get(
             self.window_id
         )
         self._renderer = self.graphics_window.renderer
         self.plotter = self.graphics_window.renderer.plotter
-        for i, graphics_dict in enumerate(self._graphics_objs):
-            graphics_windows_manager.add_graphics(
-                graphics_object=graphics_dict["object"]._obj,
-                window_id=self.window_id,
-                fetch_data=True,
-                overlay=True,
-                position=graphics_dict["position"],
-                opacity=graphics_dict.get("opacity"),
-            )
         if pyviz.config.single_window:
             global _qt_window
             if not _qt_window:
@@ -78,8 +70,6 @@ class _GraphicsWindow:
                 self.plotter,
                 title=self.window_id,
             )
-        else:
-            graphics_windows_manager.show_graphics(self.window_id)
 
     def save_graphic(
         self,

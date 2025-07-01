@@ -29,14 +29,31 @@ class AbstractRenderer(ABC):
     """Abstract class for rendering graphics and plots."""
 
     @abstractmethod
-    def render(self, data, grid, position, subplot_title, **kwargs) -> None:
-        """Render graphics and plots in window.
+    def render(self, meshes: list[list[dict]]) -> None:
+        """Render graphics and plots in a window.
 
         Parameters
         ----------
-        data : dict
-            Data to plot. Data consists the list of x and y
-            values for each curve.
+        meshes : list[list[dict]]
+            A nested list structure defining the layout and content of the graphics
+            to be rendered.
+
+            - The outer list represents the number of subplots to be plotted
+            into a single plotter window.
+
+            - Each inner list corresponds to a single sub-plot and
+            contains multiple surface definitions.
+
+            - Each dictionary in the inner list defines a surface to be plotted,
+            with the following keys:
+
+                - 'data': The mesh or 2d plot object to be plotted.
+                - 'position': tuple(int, int),  Location of subplot. Defaults to (0, 0).
+                - 'opacity': int, Sets the transparency of the subplot. Defaults to 1,
+                meaning fully opaque.
+                - 'title': str, Title of the subplot.
+                - 'kwargs': A dictionary of additional keyword arguments passed
+                directly to the plotter.
         """
         pass
 

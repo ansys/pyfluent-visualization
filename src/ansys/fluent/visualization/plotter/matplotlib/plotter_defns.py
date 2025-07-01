@@ -36,11 +36,12 @@ class Plotter(AbstractRenderer):
     def __init__(
         self,
         window_id: str,
-        curves: Optional[List[str]] = None,
-        title: Optional[str] = "XY Plot",
-        xlabel: Optional[str] = "position",
-        ylabel: Optional[str] = "",
+        curves: List[str] | None = None,
+        title: str | None = "XY Plot",
+        xlabel: str | None = "position",
+        ylabel: str | None = "",
         remote_process: Optional[bool] = False,
+        grid: tuple | None = (1, 1),
     ):
         """Instantiate a matplotlib plotter.
 
@@ -78,6 +79,7 @@ class Plotter(AbstractRenderer):
         self._visible = False
         self._remote_process = remote_process
         self.fig = None
+        self._grid = grid
 
     @staticmethod
     def _compute_position(position: tuple) -> int:
@@ -91,59 +93,74 @@ class Plotter(AbstractRenderer):
             ret = x + y + 1
         return ret
 
-    def render(
-        self, data: dict, grid=(1, 1), position=0, show=True, subplot_titles=None
-    ) -> None:
+    def render(self, meshes: list[list[dict]]) -> None:
         """Draw plot in window.
 
         Parameters
         ----------
-        data : dict
+        meshes : list[list[dict]]
             Data to plot. Data consists the list of x and y
             values for each curve.
         """
-        if subplot_titles is None:
-            subplot_titles = []
-        if not data:
-            return
-        for curve in data:
-            min_y_value = np.amin(data[curve]["yvalues"])
-            max_y_value = np.amax(data[curve]["yvalues"])
-            min_x_value = np.amin(data[curve]["xvalues"])
-            max_x_value = np.amax(data[curve]["xvalues"])
-            self._data[curve]["xvalues"] = data[curve]["xvalues"].tolist()
-            self._data[curve]["yvalues"] = data[curve]["yvalues"].tolist()
-            self._min_y = min(self._min_y, min_y_value) if self._min_y else min_y_value
-            self._max_y = max(self._max_y, max_y_value) if self._max_y else max_y_value
-            self._min_x = min(self._min_x, min_x_value) if self._min_x else min_x_value
-            self._max_x = max(self._max_x, max_x_value) if self._max_x else max_x_value
+        for data_sub_item in meshes:
+            for data_dict in data_sub_item:
+                self.set_properties(data_dict.pop("properties"))
+                data = data_dict.pop("data")
+                for curve in data:
+                    min_y_value = np.amin(data[curve]["yvalues"])
+                    max_y_value = np.amax(data[curve]["yvalues"])
+                    min_x_value = np.amin(data[curve]["xvalues"])
+                    max_x_value = np.amax(data[curve]["xvalues"])
+                    self._data[curve]["xvalues"] = data[curve]["xvalues"].tolist()
+                    self._data[curve]["yvalues"] = data[curve]["yvalues"].tolist()
+                    self._min_y = (
+                        min(self._min_y, min_y_value) if self._min_y else min_y_value
+                    )
+                    self._max_y = (
+                        max(self._max_y, max_y_value) if self._max_y else max_y_value
+                    )
+                    self._min_x = (
+                        min(self._min_x, min_x_value) if self._min_x else min_x_value
+                    )
+                    self._max_x = (
+                        max(self._max_x, max_x_value) if self._max_x else max_x_value
+                    )
 
-        if not self._remote_process:
-            self.fig = plt.figure(num=self._window_id)
+                if not self._remote_process:
+                    self.fig = plt.figure(num=self._window_id)
 
-        self.ax = self.fig.add_subplot(
-            grid[0], grid[1], self._compute_position(position) + 1
-        )
-        if self._yscale:
-            self.ax.set_yscale(self._yscale)
-        self.fig.canvas.manager.set_window_title("PyFluent [" + self._window_id + "]")
-        plt.title(self._title)
-        plt.xlabel(self._xlabel)
-        plt.ylabel(self._ylabel)
-        for curve in self._curves:
-            self.ax.plot(self._data[curve]["xvalues"], self._data[curve]["yvalues"])
-        plt.legend(labels=self._curves, loc="upper right")
+                self.ax = self.fig.add_subplot(
+                    self._grid[0],
+                    self._grid[1],
+                    self._compute_position(data_dict["position"]) + 1,
+                )
+                if self._yscale:
+                    self.ax.set_yscale(self._yscale)
+                self.fig.canvas.manager.set_window_title(
+                    "PyFluent [" + self._window_id + "]"
+                )
+                plt.title(self._title)
+                plt.xlabel(self._xlabel)
+                plt.ylabel(self._ylabel)
+                for curve in self._curves:
+                    self.ax.plot(
+                        self._data[curve]["xvalues"], self._data[curve]["yvalues"]
+                    )
+                plt.legend(labels=self._curves, loc="upper right")
 
-        if self._max_x > self._min_x:
-            self.ax.set_xlim(self._min_x, self._max_x)
-        y_range = self._max_y - self._min_y
-        if self._yscale == "log":
-            y_range = 0
-        self.ax.set_ylim(self._min_y - y_range * 0.2, self._max_y + y_range * 0.2)
-        if show:
-            if not self._visible:
-                self._visible = True
-                plt.show()
+                if self._max_x and self._min_x:
+                    if self._max_x > self._min_x:
+                        self.ax.set_xlim(self._min_x, self._max_x)
+                if self._max_y and self._min_y:
+                    y_range = self._max_y - self._min_y
+                    if self._yscale == "log":
+                        y_range = 0
+                    self.ax.set_ylim(
+                        self._min_y - y_range * 0.2, self._max_y + y_range * 0.2
+                    )
+        if not self._visible:
+            self._visible = True
+            plt.show()
 
     def show(self):
         if not self._visible:
@@ -219,10 +236,11 @@ class ProcessPlotter(Plotter):
     def __init__(
         self,
         window_id,
-        curves_name=[],
-        title="XY Plot",
-        xlabel="position",
-        ylabel="",
+        curves_name: List[str] | None = None,
+        title: str | None = "XY Plot",
+        xlabel: str | None = "position",
+        ylabel: str | None = "",
+        grid: tuple | None = (1, 1),
     ):
         """Instantiate a matplotlib process plotter.
 
@@ -239,7 +257,9 @@ class ProcessPlotter(Plotter):
         ylabel : str, optional
             Y axis label.
         """
-        super().__init__(window_id, curves_name, title, xlabel, ylabel, True)
+        super().__init__(window_id, curves_name, title, xlabel, ylabel, True, grid=grid)
+        if curves_name is None:
+            curves_name = []
 
     def _call_back(self):
         try:
@@ -255,14 +275,8 @@ class ProcessPlotter(Plotter):
                     elif "save_graphic" in data:
                         name = data["save_graphic"]
                         self.save_graphic(name)
-                    elif "data" in data:
-                        self.render(
-                            data=data["data"],
-                            grid=data["grid"],
-                            position=data["position"],
-                        )
                     else:
-                        self.plot(data)
+                        self.render(data_object_list=data["data"])
             self.fig.canvas.draw()
         except BrokenPipeError:
             self.close()
