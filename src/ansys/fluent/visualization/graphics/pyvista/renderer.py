@@ -31,7 +31,7 @@ try:
 except ModuleNotFoundError:
     BackgroundPlotter = None
 
-from ansys.fluent.visualization.abstract_renderer_defn import AbstractRenderer
+from ansys.fluent.visualization.base.renderer import AbstractRenderer
 
 
 class Renderer(AbstractRenderer):

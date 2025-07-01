@@ -27,7 +27,7 @@ from typing import List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ansys.fluent.visualization.abstract_renderer_defn import AbstractRenderer
+from ansys.fluent.visualization.base.renderer import AbstractRenderer
 
 
 class Plotter(AbstractRenderer):

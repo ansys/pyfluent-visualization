@@ -25,7 +25,7 @@ from typing import List, Optional
 import numpy as np
 import pyvista as pv
 
-from ansys.fluent.visualization.abstract_renderer_defn import AbstractRenderer
+from ansys.fluent.visualization.base.renderer import AbstractRenderer
 
 
 class Plotter(AbstractRenderer):
