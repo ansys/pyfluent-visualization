@@ -50,7 +50,7 @@ class AbstractRenderer(ABC):
                 - 'data': The mesh or 2d plot object to be plotted.
                 - 'position': tuple(int, int),  Location of subplot. Defaults to (0, 0).
                 - 'opacity': int, Sets the transparency of the subplot. Defaults to 1,
-                meaning fully opaque and not transparent.
+                meaning fully opaque.
                 - 'title': str, Title of the subplot.
                 - 'kwargs': A dictionary of additional keyword arguments passed
                 directly to the plotter.
