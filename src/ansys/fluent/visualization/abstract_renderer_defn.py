@@ -29,12 +29,12 @@ class AbstractRenderer(ABC):
     """Abstract class for rendering graphics and plots."""
 
     @abstractmethod
-    def render(self, data_dict_list) -> None:
+    def render(self, meshes: list[list[dict]]) -> None:
         """Render graphics and plots in a window.
 
         Parameters
         ----------
-        data_dict_list : list[list[dict]]
+        meshes : list[list[dict]]
             A nested list structure defining the layout and content of the graphics
             to be rendered.
 

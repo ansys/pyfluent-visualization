@@ -93,16 +93,16 @@ class Plotter(AbstractRenderer):
             ret = x + y + 1
         return ret
 
-    def render(self, data_object_list: list[list[dict]]) -> None:
+    def render(self, meshes: list[list[dict]]) -> None:
         """Draw plot in window.
 
         Parameters
         ----------
-        data_object_list : list[list[dict]]
+        meshes : list[list[dict]]
             Data to plot. Data consists the list of x and y
             values for each curve.
         """
-        for data_sub_item in data_object_list:
+        for data_sub_item in meshes:
             for data_dict in data_sub_item:
                 self.set_properties(data_dict.pop("properties"))
                 data = data_dict.pop("data")
