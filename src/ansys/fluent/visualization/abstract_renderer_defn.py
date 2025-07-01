@@ -29,12 +29,12 @@ class AbstractRenderer(ABC):
     """Abstract class for rendering graphics and plots."""
 
     @abstractmethod
-    def render(self, data_dict_list) -> None:
+    def render(self, meshes: list[list[dict]]) -> None:
         """Render graphics and plots in a window.
 
         Parameters
         ----------
-        data_dict_list : list[list[dict]]
+        meshes : list[list[dict]]
             A nested list structure defining the layout and content of the graphics
             to be rendered.
 
@@ -49,8 +49,8 @@ class AbstractRenderer(ABC):
 
                 - 'data': The mesh or 2d plot object to be plotted.
                 - 'position': tuple(int, int),  Location of subplot. Defaults to (0, 0).
-                - 'opacity': int, sets the transparency of the subplot. Defaults to 1,
-                meaning fully opaque and not transparent.
+                - 'opacity': int, Sets the transparency of the subplot. Defaults to 1,
+                meaning fully opaque.
                 - 'title': str, Title of the subplot.
                 - 'kwargs': A dictionary of additional keyword arguments passed
                 directly to the plotter.
