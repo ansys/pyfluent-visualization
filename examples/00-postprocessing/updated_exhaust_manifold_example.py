@@ -285,7 +285,7 @@ plot_window.add_plot(residual, position=(0, 1))
 # Solve and plot solution monitors.
 
 solver_session.solution.initialization.hybrid_initialize()
-solver_session.solution.run_calculation.iterate(iter_count=5)
+solver_session.solution.run_calculation.iterate(iter_count=50)
 
 mass_bal_rplot = Monitor(solver=solver_session)
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
