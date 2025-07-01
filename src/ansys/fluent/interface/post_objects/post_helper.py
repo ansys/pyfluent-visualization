@@ -57,7 +57,7 @@ class PostAPIHelper:
         @staticmethod
         def surface_name_on_server(local_surface_name):
             """Return the surface name on server."""
-            return "_dummy_surface_for_pyfluent:" + local_surface_name.lower()
+            return local_surface_name.lower()
 
         def _get_api_handle(self):
             return self.obj.get_root().session.results.surfaces

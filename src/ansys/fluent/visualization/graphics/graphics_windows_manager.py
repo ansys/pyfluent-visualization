@@ -586,7 +586,7 @@ class GraphicsWindow(VisualizationWindow):
             mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(mesh_data)
             color_size = len(self.renderer._colors)
-            color = list(self.renderer._colors.values())[surface_id % color_size]
+            color = list(self.renderer._colors.values())[len(surface_id) % color_size]
             _mesh_dict = {"data": mesh, "show_edges": obj.show_edges(), "color": color}
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:

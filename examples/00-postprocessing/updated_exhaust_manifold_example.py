@@ -55,6 +55,7 @@ the temperature and flow characteristics in the exhaust manifold.
 
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
+from ansys.fluent.core.solver import VelocityInlets, WallBoundaries, WallBoundary
 from ansys.units import VariableCatalog
 
 from ansys.fluent.visualization import (
@@ -104,20 +105,17 @@ solver_session.settings.file.read_data(file_name=import_data)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a graphics object for the mesh display.
 
-mesh_surfaces_list = [
-    "in1",
-    "in2",
-    "in3",
-    "out1",
-    "solid_up:1",
-    "solid_up:1:830",
-    "solid_up:1:830-shadow",
-]
-mesh = Mesh(solver=solver_session, show_edges=True, surfaces=mesh_surfaces_list)
+mesh = Mesh(
+    solver=solver_session,
+    show_edges=True,
+    surfaces=solver_session.setup.boundary_conditions.wall,
+)
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(mesh, position=(0, 0))
 
-mesh = Mesh(solver=solver_session, surfaces=mesh_surfaces_list)
+mesh = Mesh(
+    solver=solver_session, surfaces=[WallBoundaries(settings_source=solver_session)]
+)
 graphics_window.add_graphics(mesh, position=(0, 1))
 graphics_window.show()
 
@@ -235,7 +233,7 @@ graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 velocity_vector = Vector(
     solver=solver_session,
     field="x-velocity",
-    surfaces=["solid_up:1:830"],
+    surfaces=[WallBoundary(settings_source=solver_session, name="solid_up:1:830")],
     scale=20,
 )
 graphics_window.add_graphics(velocity_vector, position=(1, 1))
@@ -248,7 +246,7 @@ graphics_window.show()
 
 pathlines = Pathline(solver=solver_session)
 pathlines.field = "velocity-magnitude"
-pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+pathlines.surfaces = VelocityInlets(settings_source=solver_session)
 
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(pathlines)
@@ -287,7 +285,7 @@ plot_window.add_plot(residual, position=(0, 1))
 # Solve and plot solution monitors.
 
 solver_session.solution.initialization.hybrid_initialize()
-solver_session.solution.run_calculation.iterate(iter_count=50)
+solver_session.solution.run_calculation.iterate(iter_count=5)
 
 mass_bal_rplot = Monitor(solver=solver_session)
 mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
