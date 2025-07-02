@@ -59,14 +59,12 @@ from ansys.fluent.visualization import (
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     GraphicsWindow as TGraphicsWindow,
 )
-from ansys.fluent.visualization.graphics.pyvista.graphics_defns import Renderer
-from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import (
-    Plotter as MatPlotter,
-)
+from ansys.fluent.visualization.graphics.pyvista.renderer import Renderer
+from ansys.fluent.visualization.plotter.matplotlib.renderer import Plotter as MatPlotter
 from ansys.fluent.visualization.plotter.plotter_windows_manager import (
     PlotterWindow as TPlotterWindow,
 )
-from ansys.fluent.visualization.plotter.pyvista.plotter_defns import Plotter
+from ansys.fluent.visualization.plotter.pyvista.renderer import Plotter
 
 
 @pytest.fixture(scope="module")

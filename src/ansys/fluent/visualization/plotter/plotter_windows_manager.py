@@ -36,7 +36,7 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
 )
 from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
 import ansys.fluent.visualization as pyviz
-from ansys.fluent.visualization.plotter.matplotlib.plotter_defns import ProcessPlotter
+from ansys.fluent.visualization.plotter.matplotlib.renderer import ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
 from ansys.fluent.visualization.visualization_windows_manager import (
     VisualizationWindow,
