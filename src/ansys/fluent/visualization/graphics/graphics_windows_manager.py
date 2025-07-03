@@ -111,7 +111,7 @@ class GraphicsWindow(VisualizationWindow):
             renderer_string = pyviz.config.three_dimensional_renderer
         try:
             if renderer_string == "pyvista":
-                from ansys.fluent.visualization.graphics.pyvista.graphics_defns import (
+                from ansys.fluent.visualization.graphics.pyvista.renderer import (
                     Renderer,
                 )
 

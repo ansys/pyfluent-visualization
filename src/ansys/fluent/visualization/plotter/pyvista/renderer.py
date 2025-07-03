@@ -20,30 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module providing matplotlib plotter functionality."""
-
 from typing import List, Optional
 
-import matplotlib.pyplot as plt
 import numpy as np
+import pyvista as pv
 
-from ansys.fluent.visualization.abstract_renderer_defn import AbstractRenderer
+from ansys.fluent.visualization.base.renderer import AbstractRenderer
 
 
 class Plotter(AbstractRenderer):
-    """Class for matplotlib plotter."""
+    """Class for pyvista chart 2D plotter."""
 
     def __init__(
         self,
         window_id: str,
-        curves: List[str] | None = None,
-        title: str | None = "XY Plot",
-        xlabel: str | None = "position",
-        ylabel: str | None = "",
+        curves: Optional[List[str]] = None,
+        title: Optional[str] = "XY Plot",
+        xlabel: Optional[str] = "position",
+        ylabel: Optional[str] = "",
         remote_process: Optional[bool] = False,
         grid: tuple | None = (1, 1),
     ):
-        """Instantiate a matplotlib plotter.
+        """Instantiate a pyvista chart 2D plotter.
 
         Parameters
         ----------
@@ -78,20 +76,9 @@ class Plotter(AbstractRenderer):
         self._closed = False
         self._visible = False
         self._remote_process = remote_process
-        self.fig = None
+        self.chart = None
+        self.plotter = None
         self._grid = grid
-
-    @staticmethod
-    def _compute_position(position: tuple) -> int:
-        x = position[0]
-        y = position[1]
-        if x == y == 0:
-            ret = 0
-        elif x < y:
-            ret = x + y
-        else:
-            ret = x + y + 1
-        return ret
 
     def render(self, meshes: list[list[dict]]) -> None:
         """Draw plot in window.
@@ -102,8 +89,14 @@ class Plotter(AbstractRenderer):
             Data to plot. Data consists the list of x and y
             values for each curve.
         """
+        if not self._remote_process:
+            if self.plotter is None:
+                self.plotter = pv.Plotter(
+                    title=f"PyFluent [{self._window_id}]", shape=self._grid
+                )
         for data_sub_item in meshes:
             for data_dict in data_sub_item:
+                self.chart = pv.Chart2D()
                 self.set_properties(data_dict.pop("properties"))
                 data = data_dict.pop("data")
                 for curve in data:
@@ -126,50 +119,37 @@ class Plotter(AbstractRenderer):
                         max(self._max_x, max_x_value) if self._max_x else max_x_value
                     )
 
-                if not self._remote_process:
-                    self.fig = plt.figure(num=self._window_id)
-
-                self.ax = self.fig.add_subplot(
-                    self._grid[0],
-                    self._grid[1],
-                    self._compute_position(data_dict["position"]) + 1,
-                )
-                if self._yscale:
-                    self.ax.set_yscale(self._yscale)
-                self.fig.canvas.manager.set_window_title(
-                    "PyFluent [" + self._window_id + "]"
-                )
-                plt.title(self._title)
-                plt.xlabel(self._xlabel)
-                plt.ylabel(self._ylabel)
-                for curve in self._curves:
-                    self.ax.plot(
-                        self._data[curve]["xvalues"], self._data[curve]["yvalues"]
+                    self.plotter.subplot(
+                        data_dict["position"][0], data_dict["position"][1]
                     )
-                plt.legend(labels=self._curves, loc="upper right")
-
-                if self._max_x and self._min_x:
-                    if self._max_x > self._min_x:
-                        self.ax.set_xlim(self._min_x, self._max_x)
+                    self.chart.title = data_dict["kwargs"].get("title") or self._title
+                    self.chart.x_label = self._xlabel or ""
+                    self.chart.y_label = self._ylabel or ""
+                    self.plotter.add_chart(self.chart)
+                color_list = ["b", "r", "g", "c", "m", "y", "k"]
+                style_list = ["-", "--", "-.", "-.."]
+                for count, curve in enumerate(self._curves):
+                    plot = self.chart.line(
+                        self._data[curve]["xvalues"],
+                        self._data[curve]["yvalues"],
+                        width=2.5,
+                        color=color_list[count % len(color_list)],
+                        style=style_list[count % len(style_list)],
+                        label=curve,
+                    )
                 if self._max_y and self._min_y:
-                    y_range = self._max_y - self._min_y
                     if self._yscale == "log":
-                        y_range = 0
-                    self.ax.set_ylim(
-                        self._min_y - y_range * 0.2, self._max_y + y_range * 0.2
-                    )
-        if not self._visible:
-            self._visible = True
-            plt.show()
+                        self.chart.y_axis.log_scale = True
+        self.plotter.show()
 
     def show(self):
         if not self._visible:
             self._visible = True
-            plt.show()
+            self.plotter.show()
 
     def close(self):
         """Close window."""
-        plt.close(self.fig)
+        self.plotter.close()
         self._closed = True
 
     def is_closed(self):
@@ -182,12 +162,9 @@ class Plotter(AbstractRenderer):
         Parameters
         ----------
         file_name : str
-            File name to save graphic.
+            File name to save graphics.
         """
-        if self.fig:
-            self.fig.savefig(file_name)
-        else:
-            plt.savefig(file_name)
+        self.plotter.save_graphic(file_name)
 
     def set_properties(self, properties: dict):
         """Set plot properties.
@@ -220,76 +197,8 @@ class Plotter(AbstractRenderer):
             self._data[curve_name] = {}
             self._data[curve_name]["xvalues"] = []
             self._data[curve_name]["yvalues"] = []
-        if not self.fig:
+        if not self.plotter:
             return
-        plt.figure(self.fig.number)
         for curve_name in self._curves:
-            self.ax.plot([], [], label=curve_name)
-
-
-class ProcessPlotter(Plotter):
-    """Class for matplotlib process plotter.
-
-    Opens matplotlib window in a separate process.
-    """
-
-    def __init__(
-        self,
-        window_id,
-        curves_name: List[str] | None = None,
-        title: str | None = "XY Plot",
-        xlabel: str | None = "position",
-        ylabel: str | None = "",
-        grid: tuple | None = (1, 1),
-    ):
-        """Instantiate a matplotlib process plotter.
-
-        Parameters
-        ----------
-        window_id : str
-            Window id.
-        curves : List[str], optional
-            List of curves name.
-        title : str, optional
-            Plot title.
-        xlabel : str, optional
-            X axis label.
-        ylabel : str, optional
-            Y axis label.
-        """
-        super().__init__(window_id, curves_name, title, xlabel, ylabel, True, grid=grid)
-        if curves_name is None:
-            curves_name = []
-
-    def _call_back(self):
-        try:
-            while self.pipe.poll():
-                data = self.pipe.recv()
-                if data is None:
-                    self.close()
-                    return False
-                elif data and isinstance(data, dict):
-                    if "properties" in data:
-                        properties = data["properties"]
-                        self.set_properties(properties)
-                    elif "save_graphic" in data:
-                        name = data["save_graphic"]
-                        self.save_graphic(name)
-                    else:
-                        self.render(data_object_list=data["data"])
-            self.fig.canvas.draw()
-        except BrokenPipeError:
-            self.close()
-        return True
-
-    def __call__(self, pipe):
-        """Reset and show plot."""
-        self.pipe = pipe
-        self.fig = plt.figure(num=self._window_id)
-        self.ax = self.fig.add_subplot(111)
-        self._reset()
-        timer = self.fig.canvas.new_timer(interval=10)
-        timer.add_callback(self._call_back)
-        timer.start()
-        self._visible = True
-        plt.show()
+            plot = self.chart.line([], [])
+            plot.label = curve_name
