@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 """Containers for graphics."""
+from ansys.fluent.core.field_data_interfaces import _to_field_name_str
+from ansys.fluent.core.utils.context_managers import _get_active_session
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
@@ -28,6 +30,14 @@ from ansys.fluent.visualization.plotter import Plots
 
 class _GraphicsContainer:
     """Base class for graphics containers."""
+
+    def __init__(self, solver, **kwargs):
+        self.__dict__["solver"] = solver or _get_active_session()
+        self.__dict__["kwargs"] = kwargs
+        if self.solver is None:
+            raise RuntimeError("No solver session provided and none found in context.")
+        if "field" in self.kwargs:
+            self.kwargs["field"] = _to_field_name_str(self.kwargs["field"])
 
     def __getattr__(self, attr):
         return getattr(self._obj, attr)
@@ -59,9 +69,12 @@ class Mesh(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, solver, **kwargs):
+    def __init__(self, solver=None, **kwargs):
         """__init__ method of Mesh class."""
-        self.__dict__["_obj"] = Graphics(session=solver).Meshes.create(**kwargs)
+        super().__init__(solver, **kwargs)
+        self.__dict__["_obj"] = Graphics(session=self.solver).Meshes.create(
+            **self.kwargs
+        )
 
 
 class Surface(_GraphicsContainer):
@@ -88,19 +101,20 @@ class Surface(_GraphicsContainer):
     >>> surf_outlet_plane.iso_value = -0.125017
     """
 
-    def __init__(self, solver, **kwargs):
+    def __init__(self, solver=None, **kwargs):
         """__init__ method of Surface class."""
+        super().__init__(solver, **kwargs)
         self.__dict__.update(
             dict(
-                type=kwargs.pop("type", None),
-                creation_method=kwargs.pop("creation_method", None),
-                x=kwargs.pop("x", None),
-                y=kwargs.pop("y", None),
-                z=kwargs.pop("z", None),
-                field=kwargs.pop("field", None),
-                iso_value=kwargs.pop("iso_value", None),
-                rendering=kwargs.pop("rendering", None),
-                _obj=Graphics(session=solver).Surfaces.create(**kwargs),
+                type=self.kwargs.pop("type", None),
+                creation_method=self.kwargs.pop("creation_method", None),
+                x=self.kwargs.pop("x", None),
+                y=self.kwargs.pop("y", None),
+                z=self.kwargs.pop("z", None),
+                field=self.kwargs.pop("field", None),
+                iso_value=self.kwargs.pop("iso_value", None),
+                rendering=self.kwargs.pop("rendering", None),
+                _obj=Graphics(session=self.solver).Surfaces.create(**self.kwargs),
             )
         )
         for attr in [
@@ -132,7 +146,7 @@ class Surface(_GraphicsContainer):
             assert self._obj.definition.plane_surface.creation_method() == "yz-plane"
             self._obj.definition.plane_surface.yz_plane.x = value
         elif attr == "field":
-            self._obj.definition.iso_surface.field = value
+            self._obj.definition.iso_surface.field = _to_field_name_str(value)
         elif attr == "iso_value":
             self._obj.definition.iso_surface.iso_value = value
         elif attr == "rendering":
@@ -156,9 +170,12 @@ class Contour(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, solver, **kwargs):
+    def __init__(self, solver=None, **kwargs):
         """__init__ method of Contour class."""
-        self.__dict__["_obj"] = Graphics(session=solver).Contours.create(**kwargs)
+        super().__init__(solver, **kwargs)
+        self.__dict__["_obj"] = Graphics(session=self.solver).Contours.create(
+            **self.kwargs
+        )
 
 
 class Vector(_GraphicsContainer):
@@ -179,9 +196,12 @@ class Vector(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, solver, **kwargs):
+    def __init__(self, solver=None, **kwargs):
         """__init__ method of Vector class."""
-        self.__dict__["_obj"] = Graphics(session=solver).Vectors.create(**kwargs)
+        super().__init__(solver, **kwargs)
+        self.__dict__["_obj"] = Graphics(session=self.solver).Vectors.create(
+            **self.kwargs
+        )
 
 
 class Pathline(_GraphicsContainer):
@@ -199,9 +219,12 @@ class Pathline(_GraphicsContainer):
     >>> pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
     """
 
-    def __init__(self, solver, **kwargs):
+    def __init__(self, solver=None, **kwargs):
         """__init__ method of Pathline class."""
-        self.__dict__["_obj"] = Graphics(session=solver).Pathlines.create(**kwargs)
+        super().__init__(solver, **kwargs)
+        self.__dict__["_obj"] = Graphics(session=self.solver).Pathlines.create(
+            **self.kwargs
+        )
 
 
 class XYPlot(_GraphicsContainer):
@@ -218,11 +241,16 @@ class XYPlot(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, solver, local_surfaces_provider=None, **kwargs):
+    def __init__(self, solver=None, local_surfaces_provider=None, **kwargs):
         """__init__ method of XYPlot class."""
+        super().__init__(solver, **kwargs)
+        if "y_axis_function" in self.kwargs:
+            self.kwargs["y_axis_function"] = _to_field_name_str(
+                self.kwargs["y_axis_function"]
+            )
         self.__dict__["_obj"] = Plots(
-            session=solver, local_surfaces_provider=Graphics(solver).Surfaces
-        ).XYPlots.create(**kwargs)
+            session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
+        ).XYPlots.create(**self.kwargs)
 
 
 class Monitor(_GraphicsContainer):
@@ -236,8 +264,9 @@ class Monitor(_GraphicsContainer):
     >>> residual.monitor_set_name = "residual"
     """
 
-    def __init__(self, solver, local_surfaces_provider=None, **kwargs):
+    def __init__(self, solver=None, local_surfaces_provider=None, **kwargs):
         """__init__ method of Monitor class."""
+        super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Plots(
-            session=solver, local_surfaces_provider=Graphics(solver).Surfaces
-        ).Monitors.create(**kwargs)
+            session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
+        ).Monitors.create(**self.kwargs)
