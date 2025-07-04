@@ -176,6 +176,25 @@ class Surface(_GraphicsContainer):
 class PlaneSurface(Surface):
     """PlaneSurface derived from Surface.
     Provides factory methods for creating plane surfaces like XY, YZ, and XZ planes.
+
+    Examples
+    --------
+    >>> from ansys.fluent.visualization import PlaneSurface
+
+    >>> # `solver_session` is a live Fluent session with a case file loaded
+
+    >>> # Creating using point and normal
+    >>> surf_xy_plane = PlaneSurface.create_from_point_and_normal(
+    >>>     solver=solver_session,
+    >>>     point=[0.0, 0.0, -0.0441921],
+    >>>     normal=[0.0, 0.0, 1.0],
+    >>>     )
+
+    >>> # Create same plane using 'create_xy_plane' method
+    >>> surf_xy_plane = PlaneSurface.create_xy_plane(
+    >>>     solver=solver_session,
+    >>>     z=-0.0441921,
+    >>>     )
     """
 
     @classmethod
@@ -233,6 +252,19 @@ class PlaneSurface(Surface):
 class IsoSurface(Surface):
     """IsoSurface derived from Surface.
     Provides factory method for creating iso-surfaces.
+
+    Examples
+    --------
+    >>> from ansys.fluent.visualization import IsoSurface
+
+    >>> # `solver_session` is a live Fluent session with a case file loaded
+
+    >>> # Creating iso-surface
+    >>> surf_outlet_plane = IsoSurface.create(
+    >>>     solver=solver_session,
+    >>>     field="y-coordinate",
+    >>>     iso_value=-0.125017,
+    >>>     )
     """
 
     @classmethod
