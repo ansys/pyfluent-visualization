@@ -55,7 +55,13 @@ the temperature and flow characteristics in the exhaust manifold.
 
 import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
-from ansys.fluent.core.solver import VelocityInlets, WallBoundaries, WallBoundary, using
+from ansys.fluent.core.solver import (
+    PressureOutlets,
+    VelocityInlets,
+    WallBoundaries,
+    WallBoundary,
+    using,
+)
 from ansys.units import VariableCatalog
 
 from ansys.fluent.visualization import (
@@ -173,7 +179,7 @@ with using(solver_session):
     graphics_window.add_graphics(temperature_contour, position=(0, 1))
 
     temperature_contour_manifold = Contour(
-        field=VariableCatalog.TEMPERATURE, surfaces=WallBoundaries
+        field=VariableCatalog.TEMPERATURE, surfaces=WallBoundaries()
     )
     graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
@@ -208,7 +214,7 @@ with using(solver_session):
     plot_window = GraphicsWindow()
 
     xy_plot_object = XYPlot(
-        surfaces=["outlet"], y_axis_function=VariableCatalog.TEMPERATURE
+        surfaces=PressureOutlets(), y_axis_function=VariableCatalog.TEMPERATURE
     )
     plot_window.add_plot(xy_plot_object, position=(0, 0), title="Temperature")
 

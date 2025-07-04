@@ -135,10 +135,8 @@ class Container:
                                 f"create() got an unexpected keyword argument '{next(iter(unexpected_args))}'."  # noqa: E501
                             )
                         for key, value in kwargs.items():
-                            try:
-                                value = list(value())
-                            except TypeError:
-                                value = value
+                            if key == "surfaces":
+                                value = list(value)
                             setattr(new_object, key, value)
                         return new_object
 

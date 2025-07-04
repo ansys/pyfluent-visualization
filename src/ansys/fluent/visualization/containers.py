@@ -45,10 +45,7 @@ class _GraphicsContainer:
 
     def __setattr__(self, attr, value):
         if attr == "surfaces":
-            try:
-                value = list(value())
-            except TypeError:
-                value = value
+            value = list(value)
         setattr(self._obj, attr, value)
 
     def __dir__(self):
