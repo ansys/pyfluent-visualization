@@ -23,6 +23,7 @@
 """Containers for graphics."""
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
+from ansys.units import VariableDescriptor
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
@@ -114,6 +115,8 @@ class Surface(_GraphicsContainer):
                 field=self.kwargs.pop("field", None),
                 iso_value=self.kwargs.pop("iso_value", None),
                 rendering=self.kwargs.pop("rendering", None),
+                point=self.kwargs.pop("point", None),
+                normal=self.kwargs.pop("normal", None),
                 _obj=Graphics(session=self.solver).Surfaces.create(**self.kwargs),
             )
         )
@@ -126,6 +129,8 @@ class Surface(_GraphicsContainer):
             "field",
             "iso_value",
             "rendering",
+            "point",
+            "normal",
         ]:
             val = getattr(self, attr)
             if val is not None:
@@ -151,8 +156,106 @@ class Surface(_GraphicsContainer):
             self._obj.definition.iso_surface.iso_value = value
         elif attr == "rendering":
             self._obj.definition.iso_surface.rendering = value
+        elif attr == "point":
+            assert (
+                self._obj.definition.plane_surface.creation_method()
+                == "point-and-normal"
+            )
+            self._obj.definition.plane_surface.point.x = value[0]
+            self._obj.definition.plane_surface.point.y = value[1]
+            self._obj.definition.plane_surface.point.z = value[2]
+        elif attr == "normal":
+            assert (
+                self._obj.definition.plane_surface.creation_method()
+                == "point-and-normal"
+            )
+            self._obj.definition.plane_surface.normal.x = value[0]
+            self._obj.definition.plane_surface.normal.y = value[1]
+            self._obj.definition.plane_surface.normal.z = value[2]
         else:
             setattr(self._obj, attr, value)
+
+
+class PlaneSurface(Surface):
+    """PlaneSurface derived from Surface.
+    Provides factory methods for creating plane surfaces like XY, YZ, and XZ planes.
+    """
+
+    @classmethod
+    def create_xy_plane(cls, solver=None, z: float = 0.0, **kwargs):
+        """Create a plane surface in the XY plane at a given Z value."""
+        return cls(
+            solver=solver,
+            type="plane-surface",
+            creation_method="xy-plane",
+            z=z,
+            **kwargs,
+        )
+
+    @classmethod
+    def create_yz_plane(cls, solver=None, x=0.0, **kwargs):
+        """Create a plane surface in the YZ plane at a given X value."""
+        return cls(
+            solver=solver,
+            type="plane-surface",
+            creation_method="yz-plane",
+            x=x,
+            **kwargs,
+        )
+
+    @classmethod
+    def create_zx_plane(cls, solver=None, y=0.0, **kwargs):
+        """Create a plane surface in the ZX plane at a given Y value."""
+        return cls(
+            solver=solver,
+            type="plane-surface",
+            creation_method="zx-plane",
+            y=y,
+            **kwargs,
+        )
+
+    @classmethod
+    def create_from_point_and_normal(
+        cls, solver=None, point=None, normal=None, **kwargs
+    ):
+        """Create a plane surface from a point and a normal vector."""
+        if normal is None:
+            normal = [0.0, 0.0, 0.0]
+        if point is None:
+            point = [0.0, 0.0, 0.0]
+        return cls(
+            solver=solver,
+            type="plane-surface",
+            creation_method="point-and-normal",
+            point=point,
+            normal=normal,
+            **kwargs,
+        )
+
+
+class IsoSurface(Surface):
+    """IsoSurface derived from Surface.
+    Provides factory method for creating iso-surfaces.
+    """
+
+    @classmethod
+    def create(
+        cls,
+        solver=None,
+        field: str | VariableDescriptor | None = None,
+        rendering: str | None = None,
+        iso_value: float | None = None,
+        **kwargs
+    ):
+        """Create an iso-surface."""
+        return cls(
+            solver=solver,
+            type="iso-surface",
+            field=field,
+            rendering=rendering,
+            iso_value=iso_value,
+            **kwargs,
+        )
 
 
 class Contour(_GraphicsContainer):

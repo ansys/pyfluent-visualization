@@ -61,10 +61,11 @@ from ansys.units import VariableCatalog
 from ansys.fluent.visualization import (
     Contour,
     GraphicsWindow,
+    IsoSurface,
     Mesh,
     Monitor,
     Pathline,
-    Surface,
+    PlaneSurface,
     Vector,
     XYPlot,
     config,
@@ -108,43 +109,49 @@ with using(solver_session):
     mesh = Mesh(show_edges=True, surfaces=WallBoundaries())
     graphics_window.add_graphics(mesh, position=(0, 0))
 
-    mesh = Mesh(surfaces=WallBoundaries)
+    mesh = Mesh(surfaces=WallBoundaries())
     graphics_window.add_graphics(mesh, position=(0, 1))
 
     graphics_window.show()
 
-    # Create XY, YZ and ZX plane-surface objects and display.
+    # Create XY, YZ, ZX and an arbitrary plane-surface objects
+    # from point and normal and display.
     graphics_window = GraphicsWindow()
 
-    surf_xy_plane = Surface(
-        type="plane-surface", creation_method="xy-plane", z=-0.0441921
+    surf_xy_plane = PlaneSurface.create_from_point_and_normal(
+        point=[0.0, 0.0, -0.0441921], normal=[0.0, 0.0, 1.0]
     )
     graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 
-    surf_yz_plane = Surface(
-        type="plane-surface", creation_method="yz-plane", x=-0.174628
+    surf_yz_plane = PlaneSurface.create_from_point_and_normal(
+        point=[-0.174628, 0.0, 0.0], normal=[1.0, 0.0, 0.0]
     )
     graphics_window.add_graphics(surf_yz_plane, position=(0, 1))
 
-    surf_zx_plane = Surface(
-        type="plane-surface", creation_method="zx-plane", y=-0.0627297
+    surf_zx_plane = PlaneSurface.create_from_point_and_normal(
+        point=[0.0, -0.0627297, 0.0], normal=[0.0, 1.0, 0.0]
     )
     graphics_window.add_graphics(surf_zx_plane, position=(0, 2))
+
+    # Create XY, YZ and ZX plane-surface objects and display.
+    surf_xy_plane = PlaneSurface.create_xy_plane(z=-0.0441921)
+    graphics_window.add_graphics(surf_xy_plane, position=(1, 0))
+
+    surf_yz_plane = PlaneSurface.create_yz_plane(x=-0.174628)
+    graphics_window.add_graphics(surf_yz_plane, position=(1, 1))
+
+    surf_zx_plane = PlaneSurface.create_zx_plane(y=-0.0627297)
+    graphics_window.add_graphics(surf_zx_plane, position=(1, 2))
 
     graphics_window.show()
 
     # Create an iso-surface on the outlet and mid-plane.
     graphics_window = GraphicsWindow()
 
-    surf_outlet_plane = Surface()
-    surf_outlet_plane.type = "iso-surface"
-    surf_outlet_plane.field = "y-coordinate"
-    surf_outlet_plane.iso_value = -0.125017
+    surf_outlet_plane = IsoSurface.create(field="y-coordinate", iso_value=-0.125017)
     graphics_window.add_graphics(surf_outlet_plane, position=(0, 0))
 
-    surf_mid_plane_x = Surface(
-        type="iso-surface", field="x-coordinate", iso_value=-0.174
-    )
+    surf_mid_plane_x = IsoSurface(field="x-coordinate", iso_value=-0.174)
     graphics_window.add_graphics(surf_mid_plane_x, position=(1, 0))
 
     graphics_window.show()
@@ -154,11 +161,8 @@ with using(solver_session):
     # manifold and a vector on a predefined surface.
     graphics_window = GraphicsWindow()
 
-    surf_vel_contour = Surface(
-        type="iso-surface",
-        field=VariableCatalog.VELOCITY_MAGNITUDE,
-        rendering="contour",
-        iso_value=0.0,
+    surf_vel_contour = IsoSurface.create(
+        field=VariableCatalog.VELOCITY_MAGNITUDE, rendering="contour", iso_value=0.0
     )
     graphics_window.add_graphics(surf_vel_contour)
 
