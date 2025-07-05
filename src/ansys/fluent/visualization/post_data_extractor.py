@@ -83,22 +83,16 @@ class FieldDataExtractor:
         elif self._post_object.__class__.__name__ == "Pathlines":
             return self._fetch_pathlines_data(self._post_object, *args, **kwargs)
 
-    def _fetch_mesh_data(self, obj, *args, **kwargs):
+    @staticmethod
+    def _fetch_mesh_data(obj, *args, **kwargs):
         if not obj.surfaces():
             raise RuntimeError("Mesh definition is incomplete.")
         obj._pre_display()
-        field_info = obj.session.fields.field_info
         field_data = obj.session.fields.field_data
         transaction = field_data.new_transaction()
-        surfaces_info = field_info.get_surfaces_info()
-        surface_ids = [
-            id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
-            for id in surfaces_info[surf]["surface_id"]
-        ]
 
         surf_request = SurfaceFieldDataRequest(
-            surfaces=surface_ids,
+            surfaces=obj.surfaces(),
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
@@ -137,7 +131,8 @@ class FieldDataExtractor:
         surface_api.delete_surface_on_server()
         return surface_data
 
-    def _fetch_contour_data(self, obj, *args, **kwargs):
+    @staticmethod
+    def _fetch_contour_data(obj, *args, **kwargs):
         if not obj.surfaces() or not obj.field():
             raise RuntimeError("Contour definition is incomplete.")
 
@@ -147,25 +142,18 @@ class FieldDataExtractor:
         node_values = obj.node_values()
         boundary_values = obj.boundary_values()
 
-        field_info = obj.session.fields.field_info
         field_data = obj.session.fields.field_data
         transaction = field_data.new_transaction()
-        surfaces_info = field_info.get_surfaces_info()
-        surface_ids = [
-            id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
-            for id in surfaces_info[surf]["surface_id"]
-        ]
         # get scalar field data
         surf_request = SurfaceFieldDataRequest(
-            surfaces=surface_ids,
+            surfaces=obj.surfaces(),
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
         scalar_request = ScalarFieldDataRequest(
             field_name=field,
-            surfaces=surface_ids,
+            surfaces=obj.surfaces(),
             node_value=node_values,
             boundary_value=boundary_values,
         )
@@ -183,23 +171,16 @@ class FieldDataExtractor:
             setattr(v, field, scalar_field_data.get(k))
         return surface_data
 
-    def _fetch_pathlines_data(self, obj, *args, **kwargs):
+    @staticmethod
+    def _fetch_pathlines_data(obj, *args, **kwargs):
         if not obj.surfaces() or not obj.field():
             raise RuntimeError("Ptahline definition is incomplete.")
         obj._pre_display()
         field = obj.field()
-
-        field_info = obj.session.fields.field_info
         field_data = obj.session.fields.field_data
-        surfaces_info = field_info.get_surfaces_info()
         transaction = field_data.new_transaction()
-        surface_ids = [
-            id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
-            for id in surfaces_info[surf]["surface_id"]
-        ]
         pathlines_request = PathlinesFieldDataRequest(
-            surfaces=surface_ids, field_name=field
+            surfaces=obj.surfaces(), field_name=field
         )
 
         try:
@@ -226,26 +207,21 @@ class FieldDataExtractor:
 
         # surface ids
         surfaces_info = field_info.get_surfaces_info()
-        surface_ids = [
-            id
-            for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
-            for id in surfaces_info[surf]["surface_id"]
-        ]
 
         surf_request = SurfaceFieldDataRequest(
-            surfaces=surface_ids,
+            surfaces=obj.surfaces(),
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             *args,
             **kwargs,
         )
         scalar_request = ScalarFieldDataRequest(
-            surfaces=surface_ids,
+            surfaces=obj.surfaces(),
             field_name=field,
             node_value=False,
             boundary_value=False,
         )
         vector_request = VectorFieldDataRequest(
-            surfaces=surface_ids, field_name=obj.vectors_of()
+            surfaces=obj.surfaces(), field_name=obj.vectors_of()
         )
         try:
             fields = transaction.add_requests(
@@ -259,7 +235,14 @@ class FieldDataExtractor:
             for k, v in surface_data.items():
                 setattr(v, field, scalar_field.get(k))
                 setattr(v, obj.vectors_of(), vector_field.get(k))
-                setattr(v, "vector_scale", _vector_field.get(k)["vector-scale"])
+                if surfaces_info.get(k):
+                    setattr(
+                        v,
+                        "vector_scale",
+                        _vector_field.get(surfaces_info.get(k)["surface_id"][0])[
+                            "vector-scale"
+                        ],
+                    )
         except Exception as e:
             raise ServerDataRequestError() from e
         finally:

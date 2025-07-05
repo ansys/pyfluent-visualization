@@ -59,7 +59,10 @@ class _GraphicsWindow:
             self.window_id
         )
         self._renderer = self.graphics_window.renderer
-        self.plotter = self.graphics_window.renderer.plotter
+        try:
+            self.plotter = self.graphics_window.renderer.plotter
+        except AttributeError:
+            self.plotter = None
         if pyviz.config.single_window:
             global _qt_window
             if not _qt_window:
