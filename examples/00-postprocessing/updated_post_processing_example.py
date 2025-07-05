@@ -154,7 +154,7 @@ with using(solver_session):
     # Create an iso-surface on the outlet and mid-plane.
     graphics_window = GraphicsWindow()
 
-    surf_outlet_plane = IsoSurface.create(field="y-coordinate", iso_value=-0.125017)
+    surf_outlet_plane = IsoSurface(field="y-coordinate", iso_value=-0.125017)
     graphics_window.add_graphics(surf_outlet_plane, position=(0, 0))
 
     surf_mid_plane_x = IsoSurface(field="x-coordinate", iso_value=-0.174)
@@ -167,7 +167,7 @@ with using(solver_session):
     # manifold and a vector on a predefined surface.
     graphics_window = GraphicsWindow()
 
-    surf_vel_contour = IsoSurface.create(
+    surf_vel_contour = IsoSurface(
         field=VariableCatalog.VELOCITY_MAGNITUDE, rendering="contour", iso_value=0.0
     )
     graphics_window.add_graphics(surf_vel_contour)

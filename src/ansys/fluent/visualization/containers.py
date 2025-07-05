@@ -267,9 +267,8 @@ class IsoSurface(Surface):
     >>>     )
     """
 
-    @classmethod
-    def create(
-        cls,
+    def __init__(
+        self,
         solver=None,
         field: str | VariableDescriptor | None = None,
         rendering: str | None = None,
@@ -277,7 +276,7 @@ class IsoSurface(Surface):
         **kwargs
     ):
         """Create an iso-surface."""
-        return cls(
+        super().__init__(
             solver=solver,
             type="iso-surface",
             field=field,
