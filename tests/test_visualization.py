@@ -141,7 +141,7 @@ def test_visualization_calls_render_correctly_with_single_mesh(
 
         # For third surface
         mesh_dict = args[0][0][2]
-        assert mesh_dict.get("color") == [128, 0, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("kwargs") == {
             "random_str_arg": "any_val",
             "random_int_arg": 5,
@@ -200,7 +200,7 @@ def test_visualization_calls_render_correctly_with_dual_mesh(
 
         # For third surface in first mesh
         mesh_dict = args[0][0][2]
-        assert mesh_dict.get("color") == [128, 0, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("show_edges") is True
         assert mesh_dict.get("position") == (0, 0)
 
@@ -256,7 +256,7 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [128, 0, 128]
+        assert mesh_dict.get("color") == [128, 128, 0]
         assert mesh_dict.get("position") == (0, 0)
 
 
