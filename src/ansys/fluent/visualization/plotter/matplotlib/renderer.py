@@ -171,9 +171,6 @@ class Plotter(AbstractRenderer):
                         )
                 except KeyError:
                     pass
-        if not self._visible:
-            self._visible = True
-            plt.show()
 
     def show(self):
         if not self._visible:
@@ -292,7 +289,7 @@ class ProcessPlotter(Plotter):
                         name = data["save_graphic"]
                         self.save_graphic(name)
                     else:
-                        self.render(data_object_list=data["data"])
+                        self.render(meshes=data["data"])
             self.fig.canvas.draw()
         except BrokenPipeError:
             self.close()
