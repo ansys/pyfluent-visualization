@@ -31,6 +31,7 @@ import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.graphics.graphics_windows import _GraphicsWindow
 from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
+from ansys.fluent.visualization.registrar import _renderer
 
 
 class GraphicsWindow:
@@ -57,11 +58,12 @@ class GraphicsWindow:
     >>> graphics_window.show()
     """
 
-    def __init__(self):
+    def __init__(self, renderer=None):
         """__init__ method of GraphicsWindow class."""
         self._graphics_objs = []
         self.window_id = None
         self._renderer = None
+        self._renderer_str = renderer
         self._list_of_positions = []
 
     def add_graphics(
@@ -131,13 +133,12 @@ class GraphicsWindow:
 
         return x_size, y_size
 
-    def show(self, renderer=None) -> None:
-        """Render the objects in window and display the same."""
+    def _initialize_renderer(self):
         if pyviz.config.interactive:
             allowed = ["pyvista", "matplotlib"]
             check = (
-                renderer not in allowed
-                if renderer
+                self._renderer_str not in allowed
+                if self._renderer_str
                 else pyviz.config.two_dimensional_renderer not in allowed
                 or pyviz.config.three_dimensional_renderer not in allowed
             )
@@ -151,21 +152,33 @@ class GraphicsWindow:
             graphics_windows_manager._post_windows[self.window_id] = None
         if self._all_plt_objs() and not pyviz.config.single_window:
             self._renderer = _PlotterWindow(
-                grid=self._show_find_grid_size(self._list_of_positions)
+                self.window_id,
+                grid=self._show_find_grid_size(self._list_of_positions),
+                renderer=self._renderer_str,
+                plot_objs=self._graphics_objs,
             )
-            self._renderer._plot_objs = self._graphics_objs
         else:
             self._renderer = _GraphicsWindow(
-                grid=self._show_find_grid_size(self._list_of_positions)
+                self.window_id,
+                grid=self._show_find_grid_size(self._list_of_positions),
+                renderer=self._renderer_str,
+                graphics_objs=self._graphics_objs,
             )
-            self._renderer._graphics_objs = self._graphics_objs
-        self._renderer.show(self.window_id, renderer=renderer)
 
-    def save_graphic(
+    def _update_renderer(self):
+        if self._renderer is None:
+            self._initialize_renderer()
+
+    def show(self) -> None:
+        """Render the objects in window and display the same."""
+        self._update_renderer()
+        self.renderer.show()
+
+    def save_graphics(
         self,
         filename: str,
     ) -> None:
-        """Save a screenshot of the rendering window as a graphic file.
+        """Save a screenshot of the rendering window as a graphics file.
 
         Parameters
         ----------
@@ -200,15 +213,28 @@ class GraphicsWindow:
         >>> )
         >>> graphics_window = GraphicsWindow()
         >>> graphics_window.add_graphics(velocity_vector)
-        >>> graphics_window.save_graphic("saved_vector.svg")
+        >>> graphics_window.save_graphics("saved_vector.svg")
         """
-        if self.window_id:
-            self._renderer.save_graphic(filename)
+        self.renderer.save_graphic(filename)
 
     @property
     def renderer(self):
         """Returns the plotter object."""
-        return self._renderer.plotter
+        self._update_renderer()
+        try:
+            return self._renderer.plotter.plotter
+        except AttributeError:
+            return self._renderer.plotter
+
+    @renderer.setter
+    def renderer(self, name: str):
+        if name not in _renderer:
+            raise ValueError(
+                f"{name} is not a valid renderer. "
+                f"Valid renderers are {list(_renderer)}."
+            )
+        self._renderer_str = name
+        self._renderer = None
 
     def refresh(
         self,

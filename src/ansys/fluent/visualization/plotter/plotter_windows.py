@@ -24,11 +24,17 @@ from ansys.fluent.visualization.plotter import plotter_windows_manager
 
 
 class _PlotterWindow:
-    def __init__(self, grid: tuple = (1, 1)):
+    def __init__(self, win_id, grid: tuple = (1, 1), renderer=None, plot_objs=None):
         self._grid = grid
-        self._plot_objs = []
+        self._plot_objs = plot_objs
         self._subplot_titles = []
-        self.window_id = None
+        self.window_id = plotter_windows_manager.open_window(
+            window_id=win_id, grid=self._grid, renderer=renderer
+        )
+        self._populate_subplot_titles()
+        plotter_windows_manager.plot_graphics(self._plot_objs, self.window_id)
+        self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
+        self.plotter = self.plotter_window.plotter
 
     def add_plots(self, object, position: tuple = (0, 0), title: str = "") -> None:
         """Add data to a plot.
@@ -54,16 +60,6 @@ class _PlotterWindow:
                 )
             else:
                 self._subplot_titles.append("XYPlot")
-
-    def show(self, win_id=None, renderer=None) -> None:
-        """Render the objects in window and display the same."""
-        self._populate_subplot_titles()
-        self.window_id = plotter_windows_manager.open_window(
-            window_id=win_id, grid=self._grid, renderer=renderer
-        )
-        self.plotter_window = plotter_windows_manager._post_windows.get(self.window_id)
-        self.plotter = self.plotter_window.plotter
-        plotter_windows_manager.plot_graphics(self._plot_objs, self.window_id)
 
     def save_graphic(
         self,

@@ -140,12 +140,9 @@ class Plotter(AbstractRenderer):
                 if self._max_y and self._min_y:
                     if self._yscale == "log":
                         self.chart.y_axis.log_scale = True
-        self.plotter.show()
 
     def show(self):
-        if not self._visible:
-            self._visible = True
-            self.plotter.show()
+        self.plotter.show()
 
     def close(self):
         """Close window."""
