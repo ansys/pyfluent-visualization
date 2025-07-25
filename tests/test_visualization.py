@@ -134,7 +134,7 @@ def test_visualization_calls_render_correctly_with_single_mesh(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [0, 128, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("show_edges") is True
         assert mesh_dict.get("position") == (0, 0)
         assert mesh_dict.get("opacity") == 0.05
@@ -194,7 +194,7 @@ def test_visualization_calls_render_correctly_with_dual_mesh(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [0, 128, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("show_edges") is False
         assert mesh_dict.get("position") == (0, 1)
 
@@ -233,7 +233,7 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [128, 0, 128]
+        assert mesh_dict.get("color") == [128, 128, 0]
         assert mesh_dict.get("position") == (0, 0)
 
         # Iso-surface
