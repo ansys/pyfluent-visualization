@@ -1,0 +1,42 @@
+
+
+.. _sphx_glr_examples_00-postprocessing:
+
+Postprocessing examples
+=======================
+These examples show how to use external packages to postprocess Fluent
+results.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Postprocessing using PyVista and Matplotlib">
+
+.. only:: html
+
+  .. image:: /examples/00-postprocessing/images/thumb/sphx_glr_post_processing_exhaust_manifold_thumb.png
+    :alt: Postprocessing using PyVista and Matplotlib
+
+  :ref:`sphx_glr_examples_00-postprocessing_post_processing_exhaust_manifold.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Postprocessing using PyVista and Matplotlib</div>
+    </div>
+
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/00-postprocessing/post_processing_exhaust_manifold
+
