@@ -41,13 +41,13 @@ class _GraphicsWindow:
     """
 
     def __init__(
-        self, wind_id, grid: tuple = (1, 1), renderer=None, graphics_objs=None
+        self, window_id, grid: tuple = (1, 1), renderer=None, graphics_objs=None
     ):
         """__init__ method of GraphicsWindow class."""
         self._grid = grid
         self._graphics_objs = graphics_objs
         self.window_id = graphics_windows_manager.open_window(
-            window_id=wind_id,
+            window_id=window_id,
             grid=self._grid,
             renderer=renderer,
         )

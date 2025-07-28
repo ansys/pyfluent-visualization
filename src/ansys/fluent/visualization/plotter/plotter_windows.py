@@ -24,12 +24,12 @@ from ansys.fluent.visualization.plotter import plotter_windows_manager
 
 
 class _PlotterWindow:
-    def __init__(self, win_id, grid: tuple = (1, 1), renderer=None, plot_objs=None):
+    def __init__(self, window_id, grid: tuple = (1, 1), renderer=None, plot_objs=None):
         self._grid = grid
         self._plot_objs = plot_objs
         self._subplot_titles = []
         self.window_id = plotter_windows_manager.open_window(
-            window_id=win_id, grid=self._grid, renderer=renderer
+            window_id=window_id, grid=self._grid, renderer=renderer
         )
         self._populate_subplot_titles()
         plotter_windows_manager.plot_graphics(self._plot_objs, self.window_id)
