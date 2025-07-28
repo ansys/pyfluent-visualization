@@ -149,6 +149,7 @@ class PlotterWindow(VisualizationWindow):
                 ]
             )
             self.plotter.render(self._object_list_to_render)
+            self.plotter.show()
 
     def plot_graphics(self, object_list):
         self._obj_list = object_list

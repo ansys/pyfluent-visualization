@@ -158,6 +158,7 @@ class GraphicsWindow(VisualizationWindow):
         """Render graphics."""
         self._render_graphics()
         self.renderer.render(self._object_list_to_render)
+        self.renderer.show()
 
     def _render_graphics(self, obj_dict=None):
         """Render graphics."""
