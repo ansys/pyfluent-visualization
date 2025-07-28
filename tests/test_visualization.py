@@ -404,9 +404,9 @@ def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
             surfaces=["outlet"],
             y_axis_function="temperature",
         )
-        plot_window = GraphicsWindow()
+        plot_window = GraphicsWindow(renderer="matplotlib")
         plot_window.add_plot(xy_plot_object)
-        plot_window.show(renderer="matplotlib")
+        plot_window.show()
 
         # Check that render was called 1 time for 1 surface
         mock_render.assert_called_once()
