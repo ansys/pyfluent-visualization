@@ -49,9 +49,11 @@ def version_info() -> str:
 from ansys.fluent.visualization.config import config, get_config, set_config
 from ansys.fluent.visualization.containers import (  # noqa: F401
     Contour,
+    IsoSurface,
     Mesh,
     Monitor,
     Pathline,
+    PlaneSurface,
     Surface,
     Vector,
     XYPlot,

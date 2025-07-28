@@ -268,7 +268,89 @@ class SurfaceDefn(GraphicsDefn):
                 @Attribute
                 def allowed_values(self):
                     """Surface type allowed values."""
-                    return ["xy-plane", "yz-plane", "zx-plane"]
+                    return ["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
+
+            class point(metaclass=PyLocalObjectMeta):
+                """Point entry for point-and-normal surface."""
+
+                @Attribute
+                def is_active(self):
+                    """Check whether current object is active or not."""
+                    return self._parent.creation_method() == "point-and-normal"
+
+                class x(metaclass=PyLocalPropertyMeta):
+                    """X value."""
+
+                    value: float = 0
+
+                    @Attribute
+                    def range(self):
+                        """X value range."""
+                        return self.session.field_info.get_scalar_field_range(
+                            "x-coordinate", True
+                        )
+
+                class y(metaclass=PyLocalPropertyMeta):
+                    """Y value."""
+
+                    value: float = 0
+
+                    @Attribute
+                    def range(self):
+                        """Y value range."""
+                        return self.session.field_info.get_scalar_field_range(
+                            "y-coordinate", True
+                        )
+
+                class z(metaclass=PyLocalPropertyMeta):
+                    """Z value."""
+
+                    value: float = 0
+
+                    @Attribute
+                    def range(self):
+                        """Z value range."""
+                        return self.session.field_info.get_scalar_field_range(
+                            "z-coordinate", True
+                        )
+
+            class normal(metaclass=PyLocalObjectMeta):
+                """Normal entry for point-and-normal surface."""
+
+                @Attribute
+                def is_active(self):
+                    """Check whether current object is active or not."""
+                    return self._parent.creation_method() == "point-and-normal"
+
+                class x(metaclass=PyLocalPropertyMeta):
+                    """X value."""
+
+                    value: float = 0
+
+                    @Attribute
+                    def range(self):
+                        """X value range."""
+                        return [-1, 1]
+
+                class y(metaclass=PyLocalPropertyMeta):
+                    """Y value."""
+
+                    value: float = 0
+
+                    @Attribute
+                    def range(self):
+                        """Y value range."""
+                        return [-1, 1]
+
+                class z(metaclass=PyLocalPropertyMeta):
+                    """Z value."""
+
+                    value: float = 0
+
+                    @Attribute
+                    def range(self):
+                        """Z value range."""
+                        return [-1, 1]
 
             class xy_plane(metaclass=PyLocalObjectMeta):
                 """XY Plane definition."""

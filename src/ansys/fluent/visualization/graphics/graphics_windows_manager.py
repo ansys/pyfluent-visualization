@@ -158,6 +158,7 @@ class GraphicsWindow(VisualizationWindow):
         """Render graphics."""
         self._render_graphics()
         self.renderer.render(self._object_list_to_render)
+        self.renderer.show()
 
     def _render_graphics(self, obj_dict=None):
         """Render graphics."""
@@ -183,7 +184,11 @@ class GraphicsWindow(VisualizationWindow):
             self._display_monitor_plot(obj_dict)
         if self.animate:
             self.renderer.write_frame()
-        self.renderer._set_camera(pyviz.config.view)
+        try:
+            self.renderer._set_camera(pyviz.config.view)
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
     def show_graphics(self):
         """Display graphics."""
@@ -301,7 +306,11 @@ class GraphicsWindow(VisualizationWindow):
         field_info = obj.session.field_info
         vectors_of = obj.vectors_of()
         # scalar bar properties
-        scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        try:
+            scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
@@ -385,7 +394,11 @@ class GraphicsWindow(VisualizationWindow):
         field = f"{field}\n[{field_unit}]" if field_unit else field
 
         # scalar bar properties
-        scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        try:
+            scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
         mesh_obj_list = []
 
@@ -427,7 +440,11 @@ class GraphicsWindow(VisualizationWindow):
         node_values = obj.node_values()
 
         # scalar bar properties
-        scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        try:
+            scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
         mesh_obj_list = []
 
@@ -585,8 +602,13 @@ class GraphicsWindow(VisualizationWindow):
                 continue
             mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(mesh_data)
-            color_size = len(self.renderer._colors)
-            color = list(self.renderer._colors.values())[surface_id % color_size]
+            try:
+                color_size = len(self.renderer._colors)
+                color = list(self.renderer._colors.values())[
+                    len(surface_id) % color_size
+                ]
+            except AttributeError:
+                color = ""
             _mesh_dict = {"data": mesh, "show_edges": obj.show_edges(), "color": color}
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:

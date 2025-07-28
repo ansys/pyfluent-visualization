@@ -57,7 +57,7 @@ class PostAPIHelper:
         @staticmethod
         def surface_name_on_server(local_surface_name):
             """Return the surface name on server."""
-            return "_dummy_surface_for_pyfluent:" + local_surface_name.lower()
+            return local_surface_name.lower()
 
         def _get_api_handle(self):
             return self.obj.get_root().session.results.surfaces
@@ -91,26 +91,45 @@ class PostAPIHelper:
                 }
             elif self.obj.definition.type() == "plane-surface":
                 plane_surface = self.obj.definition.plane_surface
-                xy_plane = plane_surface.xy_plane
-                yz_plane = plane_surface.yz_plane
-                zx_plane = plane_surface.zx_plane
-                self._delete_if_exists_on_server()
-                if xy_plane():
-                    method = "xy-plane"
-                    position = "z"
-                    value = xy_plane.z()
-                elif yz_plane():
-                    method = "yz-plane"
-                    position = "x"
-                    value = yz_plane.x()
+                if plane_surface.creation_method() == "point-and-normal":
+                    self._get_api_handle().plane_surface[
+                        self._surface_name_on_server
+                    ] = {
+                        "method": "point-and-normal",
+                        "normal": [
+                            plane_surface.normal.x(),
+                            plane_surface.normal.y(),
+                            plane_surface.normal.z(),
+                        ],
+                        "point": [
+                            plane_surface.point.x(),
+                            plane_surface.point.y(),
+                            plane_surface.point.z(),
+                        ],
+                    }
                 else:
-                    method = "zx-plane"
-                    position = "y"
-                    value = zx_plane.y()
-                self._get_api_handle().plane_surface[self._surface_name_on_server] = {
-                    "method": method,
-                    position: value,
-                }
+                    xy_plane = plane_surface.xy_plane
+                    yz_plane = plane_surface.yz_plane
+                    zx_plane = plane_surface.zx_plane
+                    self._delete_if_exists_on_server()
+                    if xy_plane():
+                        method = "xy-plane"
+                        position = "z"
+                        value = xy_plane.z()
+                    elif yz_plane():
+                        method = "yz-plane"
+                        position = "x"
+                        value = yz_plane.x()
+                    else:
+                        method = "zx-plane"
+                        position = "y"
+                        value = zx_plane.y()
+                    self._get_api_handle().plane_surface[
+                        self._surface_name_on_server
+                    ] = {
+                        "method": method,
+                        position: value,
+                    }
             field_info = self.obj._api_helper.field_info()
             surfaces_list = list(field_info.get_surfaces_info().keys())
             if self._surface_name_on_server not in surfaces_list:

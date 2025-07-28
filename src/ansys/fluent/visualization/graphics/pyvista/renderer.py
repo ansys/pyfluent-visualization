@@ -188,7 +188,6 @@ class Renderer(AbstractRenderer):
                     if "title" in mesh_dict:
                         chart.title = mesh_dict.pop("title")
                     self.plotter.add_chart(chart, **mesh_dict)
-        self.plotter.show()
 
     def save_graphic(self, file_name: str):
         """Save graphics to the specified file.
