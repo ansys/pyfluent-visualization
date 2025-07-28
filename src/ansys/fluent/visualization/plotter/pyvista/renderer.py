@@ -142,7 +142,8 @@ class Plotter(AbstractRenderer):
                         self.chart.y_axis.log_scale = True
 
     def show(self):
-        self.plotter.show()
+        if self.plotter:
+            self.plotter.show()
 
     def close(self):
         """Close window."""
