@@ -221,10 +221,12 @@ class GraphicsWindow:
     def renderer(self):
         """Returns the plotter object."""
         self._update_renderer()
-        try:
+        if (
+            hasattr(self._renderer.plotter, "plotter")
+            and self._renderer.plotter.plotter is not None
+        ):
             return self._renderer.plotter.plotter
-        except AttributeError:
-            return self._renderer.plotter
+        return self._renderer.plotter
 
     @renderer.setter
     def renderer(self, name: str):
