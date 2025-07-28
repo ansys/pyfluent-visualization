@@ -47,6 +47,9 @@ The new design provides a streamlined workflow for exploring and analyzing
 the temperature and flow characteristics in the exhaust manifold.
 
 """
+###############################################################################
+# Run the following in command prompt to execute this file:
+# exec(open("updated_post_processing_example.py").read())
 
 ###############################################################################
 # Perform required imports
@@ -230,4 +233,7 @@ with using(solver_session):
     point_vel_rplot = Monitor(monitor_set_name="point-vel-rplot")
     plot_window.add_plot(point_vel_rplot, position=(1, 1))
 
+    plot_window.show()
+
+    plot_window.renderer = "matplotlib"
     plot_window.show()
