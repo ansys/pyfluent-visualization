@@ -200,13 +200,12 @@ class FieldDataExtractor:
         field = obj.field()
         if not field:
             field = obj.field = "velocity-magnitude"
-        field_info = obj.session.fields.field_info
         field_data = obj.session.fields.field_data
 
         transaction = field_data.new_transaction()
 
         # surface ids
-        surfaces_info = field_info.get_surfaces_info()
+        surfaces_info = field_data.surfaces()
 
         surf_request = SurfaceFieldDataRequest(
             surfaces=obj.surfaces(),
@@ -286,10 +285,9 @@ class XYPlotDataExtractor:
         boundary_values = obj.boundary_values()
         direction_vector = obj.direction_vector()
         surfaces = obj.surfaces()
-        field_info = obj.session.fields.field_info
         field_data = obj.session.fields.field_data
-        transaction = field_data.new_transaction()
-        surfaces_info = field_info.get_surfaces_info()
+        transaction = field_data.new_batch()
+        surfaces_info = field_data.surfaces()
         surface_ids = [
             id
             for surf in map(obj._api_helper.remote_surface_name, obj.surfaces())
