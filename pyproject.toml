@@ -30,7 +30,6 @@ pyvista = ">=0.44.0"
 matplotlib = ">=3.6.0"
 pyvistaqt = { version = "~=0.11.1", optional = true }
 pyside6 = { version = "~=6.8.1", optional = true }
-imageio = { version = ">=2.36.1", optional = true }
 
 [tool.poetry.extras]
 interactive = ["pyvistaqt"]
