@@ -56,6 +56,8 @@ from ansys.fluent.visualization import (
     XYPlot,
     config,
 )
+
+config.interactive = False
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     GraphicsWindow as TGraphicsWindow,
 )
@@ -93,7 +95,6 @@ def test_visualization_calls_render_correctly_with_single_mesh(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         mesh_surfaces_list = [
             "in1",
@@ -152,7 +153,6 @@ def test_visualization_calls_render_correctly_with_dual_mesh(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         mesh_surfaces_list = [
             "in1",
@@ -209,7 +209,6 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
 
@@ -264,7 +263,6 @@ def test_visualization_calls_render_correctly_with_contour(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
         contour = Contour(
@@ -301,7 +299,6 @@ def test_visualization_calls_render_correctly_with_vector(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
         velocity_vector = Vector(
@@ -334,7 +331,6 @@ def test_visualization_calls_render_correctly_with_pathlines(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
         pathlines = Pathline(solver=solver)
@@ -366,7 +362,6 @@ def test_visualization_calls_render_correctly_with_xy_plot_pyvista(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Plotter, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TPlotterWindow._show_plot = lambda win_id: None
         xy_plot_object = XYPlot(
@@ -396,7 +391,6 @@ def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(MatPlotter, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TPlotterWindow._show_plot = lambda win_id: None
         xy_plot_object = XYPlot(
@@ -426,7 +420,6 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Plotter, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TPlotterWindow._show_plot = lambda win_id: None
         residual = Monitor(solver=solver)
