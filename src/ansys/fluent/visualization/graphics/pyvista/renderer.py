@@ -28,8 +28,12 @@ import ansys.fluent.visualization as pyviz
 
 try:
     from pyvistaqt import BackgroundPlotter
-except ModuleNotFoundError:
-    BackgroundPlotter = None
+except ModuleNotFoundError as ex:
+    if pyviz.config.interactive:
+        raise ModuleNotFoundError(
+            "Missing dependencies, "
+            "use 'pip install ansys-fluent-visualization[interactive]' to install them."
+        ) from ex
 
 from ansys.fluent.visualization.base.renderer import AbstractRenderer
 

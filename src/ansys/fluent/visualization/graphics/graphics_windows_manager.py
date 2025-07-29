@@ -25,7 +25,7 @@
 from enum import Enum
 import itertools
 import threading
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import numpy as np
 import pyvista as pv
@@ -36,12 +36,6 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
     PlotDefn,
 )
 from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
-
-try:
-    from pyvistaqt import BackgroundPlotter
-except ModuleNotFoundError:
-    BackgroundPlotter = None
-
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
@@ -691,7 +685,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
         with self._condition:
             return self._post_windows.get(window_id, None)
 
-    def get_plotter(self, window_id: str) -> Union[BackgroundPlotter, pv.Plotter]:
+    def get_plotter(self, window_id: str):
         """Get the PyVista plotter.
 
         Parameters
@@ -701,8 +695,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 
         Returns
         -------
-        Union[BackgroundPlotter, pv.Plotter]
-            PyVista plotter.
+            Plotter.
         """
         with self._condition:
             return self._post_windows[window_id].renderer.plotter
