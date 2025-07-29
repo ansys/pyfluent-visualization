@@ -157,9 +157,9 @@ jobs:
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
-      - name: Remove all docker images
-        if: always()
-        run: make docker-clean-images
+#      - name: Remove all docker images
+#        if: always()
+#        run: make docker-clean-images
 
   build:
     name: Build library
