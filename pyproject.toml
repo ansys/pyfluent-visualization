@@ -33,7 +33,7 @@ pyside6 = { version = "~=6.8.1", optional = true }
 
 [tool.poetry.extras]
 interactive = ["pyvistaqt"]
-single-window = ["pyside6"]
+single-window = ["pyvistaqt", "pyside6"]
 
 [tool.poetry.urls]
 "Documentation" = "https://visualization.fluent.docs.pyansys.com/"
