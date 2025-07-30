@@ -163,11 +163,11 @@ class MockFieldData:
             return self._scalar_data
 
     @property
-    def scalars(self) -> _Scalars:
+    def scalar_fields(self) -> _Scalars:
         return self._Scalars(self._session_data["scalar_fields_info"])
 
     @property
-    def vectors(self) -> dict:
+    def vector_fields(self) -> dict:
         return self._session_data["vector_fields_info"]
 
     def surfaces(self) -> dict:
@@ -342,7 +342,7 @@ def test_vector_object():
     vector1.range.option = "auto-range-off"
     assert vector1.range.auto_range_on() is None
 
-    range = field_data.scalars.range("velocity-magnitude", False)
+    range = field_data.scalar_fields.range("velocity-magnitude", False)
     assert range == pytest.approx(
         [
             vector1.range.auto_range_off.minimum(),
@@ -413,7 +413,7 @@ def test_xyplot_object():
 
     p1.surfaces = p1.surfaces.allowed_values
 
-    assert p1.y_axis_function.allowed_values == list(field_data.scalars())
+    assert p1.y_axis_function.allowed_values == list(field_data.scalar_fields())
 
     # Important. Because there is no type checking so following passes.
     p1.y_axis_function = [p1.y_axis_function.allowed_values[0]]

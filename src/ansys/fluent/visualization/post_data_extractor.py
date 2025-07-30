@@ -89,11 +89,12 @@ class FieldDataExtractor:
             raise RuntimeError("Mesh definition is incomplete.")
         obj._pre_display()
         field_data = obj.session.fields.field_data
-        transaction = field_data.new_transaction()
+        transaction = field_data.new_batch()
 
         surf_request = SurfaceFieldDataRequest(
             surfaces=obj.surfaces(),
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
+            flatten_connectivity=True,
             *args,
             **kwargs,
         )
@@ -143,11 +144,12 @@ class FieldDataExtractor:
         boundary_values = obj.boundary_values()
 
         field_data = obj.session.fields.field_data
-        transaction = field_data.new_transaction()
+        transaction = field_data.new_batch()
         # get scalar field data
         surf_request = SurfaceFieldDataRequest(
             surfaces=obj.surfaces(),
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
+            flatten_connectivity=True,
             *args,
             **kwargs,
         )
@@ -178,9 +180,11 @@ class FieldDataExtractor:
         obj._pre_display()
         field = obj.field()
         field_data = obj.session.fields.field_data
-        transaction = field_data.new_transaction()
+        transaction = field_data.new_batch()
         pathlines_request = PathlinesFieldDataRequest(
-            surfaces=obj.surfaces(), field_name=field
+            surfaces=obj.surfaces(),
+            field_name=field,
+            flatten_connectivity=True,
         )
 
         try:
@@ -202,7 +206,7 @@ class FieldDataExtractor:
             field = obj.field = "velocity-magnitude"
         field_data = obj.session.fields.field_data
 
-        transaction = field_data.new_transaction()
+        transaction = field_data.new_batch()
 
         # surface ids
         surfaces_info = field_data.surfaces()
@@ -210,6 +214,7 @@ class FieldDataExtractor:
         surf_request = SurfaceFieldDataRequest(
             surfaces=obj.surfaces(),
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
+            flatten_connectivity=True,
             *args,
             **kwargs,
         )
