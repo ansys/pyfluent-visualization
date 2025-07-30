@@ -176,7 +176,7 @@ class MockFieldData:
 
 class MockAPIHelper:
     _session_data = None
-    _session_dump = "session.dump"
+    _session_dump = "tests//session.dump"
 
     class _SurfaceAPI:
         def __init__(self, obj):
@@ -195,7 +195,7 @@ class MockAPIHelper:
 
 class MockSession:
     _session_data = None
-    _session_dump = "session.dump"
+    _session_dump = "tests//session.dump"
 
     def __init__(self, obj=None):
         if not MockSession._session_data:
