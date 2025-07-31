@@ -1,22 +1,18 @@
 [
-  {
-    "version": "dev",
-    "url": "https://visualization.fluent.docs.pyansys.com/version/dev/"
-  },
-  {
-    "version": "0.21 (stable)",
-    "url": "https://visualization.fluent.docs.pyansys.com/version/stable/"
-  },
-  {
-    "version": "0.20",
-    "url": "https://visualization.fluent.docs.pyansys.com/version/0.20/"
-  },
-  {
-    "version": "0.19",
-    "url": "https://visualization.fluent.docs.pyansys.com/version/0.19/"
-  },
-  {
-    "version": "N/A",
-    "url": "https://visualization.fluent.docs.pyansys.com/version/"
-  }
+    {
+        "version": "dev",
+        "url": "https://visualization.fluent.docs.pyansys.com/dev/"
+    },
+    {
+        "version": "0.7",
+        "url": "https://visualization.fluent.docs.pyansys.com/version/0.7/"
+    },
+    {
+        "version": "0.6",
+        "url": "https://visualization.fluent.docs.pyansys.com/version/0.6/"
+    },
+    {
+        "version": "0.5",
+        "url": "https://visualization.fluent.docs.pyansys.com/version/0.5/"
+    }
 ]
