@@ -107,7 +107,7 @@ class MonitorDefn(PlotDefn):
         @Attribute
         def allowed_values(self):
             """Monitor set allowed values."""
-            return self.session.monitors.get_monitor_set_names()
+            return self.monitors.get_monitor_set_names()
 
 
 class XYPlotDefn(PlotDefn):
@@ -138,7 +138,7 @@ class XYPlotDefn(PlotDefn):
         @Attribute
         def allowed_values(self):
             """Y axis function allowed values."""
-            return list(self.session.field_data.scalar_fields())
+            return list(self.field_data.scalar_fields())
 
     class x_axis_function(metaclass=PyLocalPropertyMeta):
         """X Axis Function."""
@@ -158,7 +158,7 @@ class XYPlotDefn(PlotDefn):
         @Attribute
         def allowed_values(self):
             """Surface list allowed values."""
-            return list(self.session.field_data.surfaces()) + list(
+            return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
@@ -176,7 +176,7 @@ class MeshDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Surface list allowed values."""
-            return list(self.session.field_data.surfaces()) + list(
+            return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
@@ -209,7 +209,7 @@ class PathlinesDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Field allowed values."""
-            return list(self.session.field_data.scalar_fields())
+            return list(self.field_data.scalar_fields())
 
     class surfaces(metaclass=PyLocalPropertyMeta):
         """List of surfaces for pathlines."""
@@ -219,7 +219,7 @@ class PathlinesDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Surface list allowed values."""
-            return list(self.session.field_data.surfaces()) + list(
+            return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
@@ -286,9 +286,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """X value range."""
-                        return self.session.field_data.scalar_fields.range(
-                            "x-coordinate", True
-                        )
+                        return self.field_data.scalar_fields.range("x-coordinate", True)
 
                 class y(metaclass=PyLocalPropertyMeta):
                     """Y value."""
@@ -298,9 +296,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """Y value range."""
-                        return self.session.field_data.scalar_fields.range(
-                            "y-coordinate", True
-                        )
+                        return self.field_data.scalar_fields.range("y-coordinate", True)
 
                 class z(metaclass=PyLocalPropertyMeta):
                     """Z value."""
@@ -310,9 +306,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """Z value range."""
-                        return self.session.field_data.scalar_fields.range(
-                            "z-coordinate", True
-                        )
+                        return self.field_data.scalar_fields.range("z-coordinate", True)
 
             class normal(metaclass=PyLocalObjectMeta):
                 """Normal entry for point-and-normal surface."""
@@ -368,9 +362,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """Z value range."""
-                        return self.session.field_data.scalar_fields.range(
-                            "z-coordinate", True
-                        )
+                        return self.field_data.scalar_fields.range("z-coordinate", True)
 
             class yz_plane(metaclass=PyLocalObjectMeta):
                 """YZ Plane definition."""
@@ -388,9 +380,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """X value range."""
-                        return self.session.field_data.scalar_fields.range(
-                            "x-coordinate", True
-                        )
+                        return self.field_data.scalar_fields.range("x-coordinate", True)
 
             class zx_plane(metaclass=PyLocalObjectMeta):
                 """ZX Plane definition."""
@@ -408,9 +398,7 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self):
                         """Y value range."""
-                        return self.session.field_data.scalar_fields.range(
-                            "y-coordinate", True
-                        )
+                        return self.field_data.scalar_fields.range("y-coordinate", True)
 
         class iso_surface(metaclass=PyLocalObjectMeta):
             """Iso surface definition."""
@@ -428,7 +416,7 @@ class SurfaceDefn(GraphicsDefn):
                 @Attribute
                 def allowed_values(self):
                     """Field allowed values."""
-                    return list(self.session.field_data.scalar_fields())
+                    return list(self.field_data.scalar_fields())
 
             class rendering(metaclass=PyLocalPropertyMeta):
                 """Iso surface rendering."""
@@ -465,7 +453,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Iso value range."""
                     field = self._parent.field()
                     if field:
-                        return self.session.field_data.scalar_fields.range(field, True)
+                        return self.field_data.scalar_fields.range(field, True)
 
 
 class ContourDefn(GraphicsDefn):
@@ -481,7 +469,7 @@ class ContourDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Field allowed values."""
-            return list(self.session.field_data.scalar_fields())
+            return list(self.field_data.scalar_fields())
 
     class surfaces(metaclass=PyLocalPropertyMeta):
         """Contour surfaces."""
@@ -491,7 +479,7 @@ class ContourDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Surfaces list allowed values."""
-            return list(self.session.field_data.surfaces()) + list(
+            return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
@@ -605,7 +593,7 @@ class ContourDefn(GraphicsDefn):
                     if getattr(self, "_value", None) is None:
                         field = self.get_ancestors_by_type(ContourDefn).field()
                         if field:
-                            field_data = self.session.field_data
+                            field_data = self.field_data
                             field_range = field_data.scalar_fields.range(
                                 field,
                                 self.get_ancestors_by_type(ContourDefn).node_values(),
@@ -634,7 +622,7 @@ class ContourDefn(GraphicsDefn):
                     if getattr(self, "_value", None) is None:
                         field = self.get_ancestors_by_type(ContourDefn).field()
                         if field:
-                            field_data = self.session.field_data
+                            field_data = self.field_data
                             field_range = field_data.scalar_fields.range(
                                 field,
                                 self.get_ancestors_by_type(ContourDefn).node_values(),
@@ -661,7 +649,7 @@ class VectorDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Vectors of allowed values."""
-            return list(self.session.field_data.vectors())
+            return list(self.field_data.vectors())
 
     class field(metaclass=PyLocalPropertyMeta):
         """Vector color field."""
@@ -671,7 +659,7 @@ class VectorDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Field allowed values."""
-            return list(self.session.field_data.scalar_fields())
+            return list(self.field_data.scalar_fields())
 
     class surfaces(metaclass=PyLocalPropertyMeta):
         """List of surfaces for vector graphics."""
@@ -681,7 +669,7 @@ class VectorDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Surface list allowed values."""
-            return list(self.session.field_data.surfaces()) + list(
+            return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
@@ -748,7 +736,7 @@ class VectorDefn(GraphicsDefn):
                 def value(self):
                     """Range minimum property setter."""
                     if getattr(self, "_value", None) is None:
-                        field_data = self.session.field_data
+                        field_data = self.field_data
                         field_range = field_data.scalar_fields.range(
                             "velocity-magnitude",
                             False,
@@ -769,7 +757,7 @@ class VectorDefn(GraphicsDefn):
                 def value(self):
                     """Range maximum property setter."""
                     if getattr(self, "_value", None) is None:
-                        field_data = self.session.field_data
+                        field_data = self.field_data
                         field_range = field_data.scalar_fields.range(
                             "velocity-magnitude",
                             False,
