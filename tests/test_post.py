@@ -212,6 +212,7 @@ class MockSession:
         self.fields = Fields()
         self.field_data = MockFieldData(MockSession._session_data)
         self.id = lambda: 1
+        self.monitors = lambda: None
 
 
 def test_field_api():
