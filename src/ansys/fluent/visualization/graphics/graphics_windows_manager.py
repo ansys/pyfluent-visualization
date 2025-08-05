@@ -277,6 +277,8 @@ class GraphicsWindow(VisualizationWindow):
         }
 
     def _resolve_mesh_data(self, mesh_data):
+        if mesh_data.connectivity.size == 0:
+            return pv.PolyData()
         if mesh_data.connectivity[0] == 2:  # Line
             return pv.PolyData(
                 mesh_data.vertices,
