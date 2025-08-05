@@ -276,28 +276,22 @@ class GraphicsWindow(VisualizationWindow):
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
-    @staticmethod
-    def _pack_faces_connectivity_data(faces_data):
-        flat = []
-        for face in faces_data:
-            flat.append(len(face))
-            flat.extend(face)
-        return np.array(flat)
-
     def _resolve_mesh_data(self, mesh_data):
-        if mesh_data.connectivity[0].shape[0] == 2:  # Line
+        if mesh_data.connectivity.size == 0:
+            return pv.PolyData()
+        if mesh_data.connectivity[0] == 2:  # Line
             return pv.PolyData(
                 mesh_data.vertices,
-                lines=self._pack_faces_connectivity_data(mesh_data.connectivity),
+                lines=mesh_data.connectivity,
             )
         else:  # Face
             return pv.PolyData(
                 mesh_data.vertices,
-                faces=self._pack_faces_connectivity_data(mesh_data.connectivity),
+                faces=mesh_data.connectivity,
             )
 
     def _display_vector(self, obj, obj_dict):
-        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         vectors_of = obj.vectors_of()
         # scalar bar properties
         try:
@@ -339,7 +333,7 @@ class GraphicsWindow(VisualizationWindow):
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
-                    range_ = field_info.get_scalar_field_range(obj.field(), False)
+                    range_ = field_data.scalar_fields.range(obj.field(), False)
                 else:
                     range_ = [np.min(scalar_field), np.max(scalar_field)]
 
@@ -404,7 +398,7 @@ class GraphicsWindow(VisualizationWindow):
 
             mesh = pv.PolyData(
                 surface_data.vertices,
-                lines=self._pack_faces_connectivity_data(surface_data.lines),
+                lines=surface_data.lines,
             )
 
             mesh.point_data[field] = surface_data.scalar_field
@@ -527,12 +521,10 @@ class GraphicsWindow(VisualizationWindow):
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
-                        field_info = obj.session.field_info
+                        field_data = obj.session.field_data
                         _mesh_dict = {
                             "data": mesh,
-                            "clim": field_info.get_scalar_field_range(
-                                obj.field(), False
-                            ),
+                            "clim": field_data.scalar_fields.range(obj.field(), False),
                             "scalars": field,
                             "show_edges": obj.show_edges(),
                             "scalar_bar_args": scalar_bar_args,

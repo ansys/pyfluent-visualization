@@ -133,8 +133,9 @@ class Renderer(AbstractRenderer):
                     )
                     del mesh_dict["position"]
                 if isinstance(mesh, pv.DataSet):
-                    mesh_dict.update(mesh_dict.pop("kwargs"))
-                    self.plotter.add_mesh(mesh, **mesh_dict)
+                    if mesh.n_points > 0:
+                        mesh_dict.update(mesh_dict.pop("kwargs"))
+                        self.plotter.add_mesh(mesh, **mesh_dict)
                 else:
                     y_range = None
                     chart = pv.Chart2D()
