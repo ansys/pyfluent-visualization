@@ -272,3 +272,9 @@ Additionally, animations can be created from a graphics window.
 This guide provides a structured approach to using PyFluent-Visualization.
 For detailed usage of individual modules,
 refer to the respective module documentation, see :ref:`ref_visualization`.
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+
+   advanced_topics/index
