@@ -63,8 +63,8 @@ class PostAPIHelper:
             return self.obj.get_root().session.results.surfaces
 
         def _delete_if_exists_on_server(self):
-            field_info = self.obj._api_helper.field_info()
-            surfaces_list = list(field_info.get_surfaces_info().keys())
+            field_data = self.obj._api_helper.field_data()
+            surfaces_list = list(field_data.surfaces())
             if self._surface_name_on_server in surfaces_list:
                 self.delete_surface_on_server()
 
@@ -130,8 +130,8 @@ class PostAPIHelper:
                         "method": method,
                         position: value,
                     }
-            field_info = self.obj._api_helper.field_info()
-            surfaces_list = list(field_info.get_surfaces_info().keys())
+            field_data = self.obj._api_helper.field_data()
+            surfaces_list = list(field_data.surfaces())
             if self._surface_name_on_server not in surfaces_list:
                 raise SurfaceCreationError()
 
@@ -145,7 +145,6 @@ class PostAPIHelper:
     def __init__(self, obj):
         """__init__ method of PostAPIHelper class."""
         self.obj = obj
-        self.field_info = lambda: obj.get_root().session.fields.field_info
         self.field_data = lambda: obj.get_root().session.fields.field_data
         if obj.__class__.__name__ == "Surface":
             self.surface_api = PostAPIHelper._SurfaceAPI(obj)
@@ -163,14 +162,14 @@ class PostAPIHelper:
     def get_field_unit(self, field):
         """Return the unit of the field."""
         session = self.obj.get_root().session
-        if FluentVersion(session.scheme_eval.version) < FluentVersion.v252:
+        if FluentVersion(session.scheme.version) < FluentVersion.v252:
             quantity = self._field_unit_quantity(field)
             if quantity == "*null*":
                 return ""
             scheme_eval_str = f"(units/get-pretty-wb-units-from-dimension (units/inquire-dimension '{quantity}))"  # noqa: E501
             return " ".join(self._scheme_str_to_py_list(scheme_eval_str))
         else:
-            fields_info = self.field_info().get_scalar_fields_info()
+            fields_info = self.field_data().scalar_fields()
             return get_si_unit_for_fluent_quantity(fields_info[field]["quantity_name"])
 
     def _field_unit_quantity(self, field):
@@ -180,7 +179,7 @@ class PostAPIHelper:
     def _scheme_str_to_py_list(self, scheme_eval_str):
         session = self.obj.get_root().session
         if hasattr(session, "scheme_eval"):
-            str_val = session.scheme_eval.string_eval(scheme_eval_str)
+            str_val = session.scheme.string_eval(scheme_eval_str)
             return list(filter(None, re.split(r'[\s()"\']', str_val)))
         else:
             return ["*null*"]
