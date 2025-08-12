@@ -28,8 +28,12 @@ import ansys.fluent.visualization as pyviz
 
 try:
     from pyvistaqt import BackgroundPlotter
-except ModuleNotFoundError:
-    BackgroundPlotter = None
+except ModuleNotFoundError as ex:
+    if pyviz.config.interactive:
+        raise ModuleNotFoundError(
+            "Missing dependencies, "
+            "use 'pip install ansys-fluent-visualization[interactive]' to install them."
+        ) from ex
 
 from ansys.fluent.visualization.base.renderer import AbstractRenderer
 
@@ -129,8 +133,9 @@ class Renderer(AbstractRenderer):
                     )
                     del mesh_dict["position"]
                 if isinstance(mesh, pv.DataSet):
-                    mesh_dict.update(mesh_dict.pop("kwargs"))
-                    self.plotter.add_mesh(mesh, **mesh_dict)
+                    if mesh.n_points > 0:
+                        mesh_dict.update(mesh_dict.pop("kwargs"))
+                        self.plotter.add_mesh(mesh, **mesh_dict)
                 else:
                     y_range = None
                     chart = pv.Chart2D()
@@ -188,7 +193,6 @@ class Renderer(AbstractRenderer):
                     if "title" in mesh_dict:
                         chart.title = mesh_dict.pop("title")
                     self.plotter.add_chart(chart, **mesh_dict)
-        self.plotter.show()
 
     def save_graphic(self, file_name: str):
         """Save graphics to the specified file.

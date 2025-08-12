@@ -104,63 +104,73 @@ class Plotter(AbstractRenderer):
         """
         for data_sub_item in meshes:
             for data_dict in data_sub_item:
-                self.set_properties(data_dict.pop("properties"))
-                data = data_dict.pop("data")
-                for curve in data:
-                    min_y_value = np.amin(data[curve]["yvalues"])
-                    max_y_value = np.amax(data[curve]["yvalues"])
-                    min_x_value = np.amin(data[curve]["xvalues"])
-                    max_x_value = np.amax(data[curve]["xvalues"])
-                    self._data[curve]["xvalues"] = data[curve]["xvalues"].tolist()
-                    self._data[curve]["yvalues"] = data[curve]["yvalues"].tolist()
-                    self._min_y = (
-                        min(self._min_y, min_y_value) if self._min_y else min_y_value
-                    )
-                    self._max_y = (
-                        max(self._max_y, max_y_value) if self._max_y else max_y_value
-                    )
-                    self._min_x = (
-                        min(self._min_x, min_x_value) if self._min_x else min_x_value
-                    )
-                    self._max_x = (
-                        max(self._max_x, max_x_value) if self._max_x else max_x_value
-                    )
-
                 if not self._remote_process:
                     self.fig = plt.figure(num=self._window_id)
+                if "properties" in data_dict:
+                    self.set_properties(data_dict.pop("properties"))
+                data = data_dict.pop("data")
+                try:
+                    for curve in data:
+                        min_y_value = np.amin(data[curve]["yvalues"])
+                        max_y_value = np.amax(data[curve]["yvalues"])
+                        min_x_value = np.amin(data[curve]["xvalues"])
+                        max_x_value = np.amax(data[curve]["xvalues"])
+                        self._data[curve]["xvalues"] = data[curve]["xvalues"].tolist()
+                        self._data[curve]["yvalues"] = data[curve]["yvalues"].tolist()
+                        self._min_y = (
+                            min(self._min_y, min_y_value)
+                            if self._min_y
+                            else min_y_value
+                        )
+                        self._max_y = (
+                            max(self._max_y, max_y_value)
+                            if self._max_y
+                            else max_y_value
+                        )
+                        self._min_x = (
+                            min(self._min_x, min_x_value)
+                            if self._min_x
+                            else min_x_value
+                        )
+                        self._max_x = (
+                            max(self._max_x, max_x_value)
+                            if self._max_x
+                            else max_x_value
+                        )
 
-                self.ax = self.fig.add_subplot(
-                    self._grid[0],
-                    self._grid[1],
-                    self._compute_position(data_dict["position"]) + 1,
-                )
-                if self._yscale:
-                    self.ax.set_yscale(self._yscale)
-                self.fig.canvas.manager.set_window_title(
-                    "PyFluent [" + self._window_id + "]"
-                )
-                plt.title(self._title)
-                plt.xlabel(self._xlabel)
-                plt.ylabel(self._ylabel)
-                for curve in self._curves:
-                    self.ax.plot(
-                        self._data[curve]["xvalues"], self._data[curve]["yvalues"]
+                    self.ax = self.fig.add_subplot(
+                        self._grid[0],
+                        self._grid[1],
+                        self._compute_position(data_dict["position"]) + 1,
                     )
-                plt.legend(labels=self._curves, loc="upper right")
+                    if self._yscale:
+                        self.ax.set_yscale(self._yscale)
+                    self.fig.canvas.manager.set_window_title(
+                        "PyFluent [" + self._window_id + "]"
+                    )
+                    plt.title(self._title)
+                    plt.xlabel(self._xlabel)
+                    plt.ylabel(self._ylabel)
+                    if self._curves:
+                        for curve in self._curves:
+                            self.ax.plot(
+                                self._data[curve]["xvalues"],
+                                self._data[curve]["yvalues"],
+                            )
+                        plt.legend(labels=self._curves, loc="upper right")
 
-                if self._max_x and self._min_x:
-                    if self._max_x > self._min_x:
-                        self.ax.set_xlim(self._min_x, self._max_x)
-                if self._max_y and self._min_y:
-                    y_range = self._max_y - self._min_y
-                    if self._yscale == "log":
-                        y_range = 0
-                    self.ax.set_ylim(
-                        self._min_y - y_range * 0.2, self._max_y + y_range * 0.2
-                    )
-        if not self._visible:
-            self._visible = True
-            plt.show()
+                    if self._max_x and self._min_x:
+                        if self._max_x > self._min_x:
+                            self.ax.set_xlim(self._min_x, self._max_x)
+                    if self._max_y and self._min_y:
+                        y_range = self._max_y - self._min_y
+                        if self._yscale == "log":
+                            y_range = 0
+                        self.ax.set_ylim(
+                            self._min_y - y_range * 0.2, self._max_y + y_range * 0.2
+                        )
+                except KeyError:
+                    pass
 
     def show(self):
         if not self._visible:
@@ -224,7 +234,10 @@ class Plotter(AbstractRenderer):
             return
         plt.figure(self.fig.number)
         for curve_name in self._curves:
-            self.ax.plot([], [], label=curve_name)
+            try:
+                self.ax.plot([], [], label=curve_name)
+            except AttributeError:
+                pass
 
 
 class ProcessPlotter(Plotter):
@@ -276,7 +289,7 @@ class ProcessPlotter(Plotter):
                         name = data["save_graphic"]
                         self.save_graphic(name)
                     else:
-                        self.render(data_object_list=data["data"])
+                        self.render(meshes=data["data"])
             self.fig.canvas.draw()
         except BrokenPipeError:
             self.close()

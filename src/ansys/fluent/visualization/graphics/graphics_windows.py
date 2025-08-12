@@ -21,14 +21,6 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
-)
-
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 
@@ -40,17 +32,14 @@ class _GraphicsWindow:
     save, animate, etc. on graphics objects.
     """
 
-    def __init__(self, grid: tuple = (1, 1)):
+    def __init__(
+        self, window_id, grid: tuple = (1, 1), renderer=None, graphics_objs=None
+    ):
         """__init__ method of GraphicsWindow class."""
         self._grid = grid
-        self._graphics_objs = []
-        self.window_id = None
-
-    def show(self, wind_id, renderer=None) -> None:
-        """Render the objects in window and display the same."""
-        self.window_id = wind_id
+        self._graphics_objs = graphics_objs
         self.window_id = graphics_windows_manager.open_window(
-            window_id=self.window_id,
+            window_id=window_id,
             grid=self._grid,
             renderer=renderer,
         )
@@ -59,8 +48,24 @@ class _GraphicsWindow:
             self.window_id
         )
         self._renderer = self.graphics_window.renderer
-        self.plotter = self.graphics_window.renderer.plotter
+        try:
+            self.plotter = self.graphics_window.renderer.plotter
+        except AttributeError:
+            self.plotter = None
         if pyviz.config.single_window:
+            try:
+                from PySide6.QtWidgets import QApplication
+
+                from ansys.fluent.visualization.graphics.single_qt_windows import (
+                    MainWindow,
+                )
+            except ModuleNotFoundError as ex:
+                raise ModuleNotFoundError(
+                    "Missing dependencies, "
+                    "use 'pip install ansys-fluent-visualization[single-window]' "
+                    "to install them."
+                ) from ex
+
             global _qt_window
             if not _qt_window:
                 QApplication.instance() or QApplication()
@@ -176,42 +181,3 @@ class _GraphicsWindow:
             graphics_windows_manager.close_windows(
                 windows_id=[self.window_id], session_id=session_id
             )
-
-
-# Define the main window
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("PyFluent Visualization Plots")
-        screen = QApplication.primaryScreen().availableGeometry()
-        width = int(screen.width() * 0.75)
-        height = int(screen.height() * 0.75)
-        self.setGeometry(
-            (screen.width() - width) // 2,  # Center X
-            (screen.height() - height) // 2,  # Center Y
-            width,
-            height,
-        )
-        self.tabs = QTabWidget()
-        self.setCentralWidget(self.tabs)
-        self.tabs.setMovable(True)
-        self.plotters = []
-
-    def _add_tab(self, plotter, title="-"):
-        tab = QWidget()
-        layout = QVBoxLayout()
-
-        self.plotters.append(plotter)
-        layout.addWidget(plotter.interactor)
-        tab.setLayout(layout)
-
-        # Add tabs with PyVista BackgroundPlotters
-        self.tabs.addTab(tab, f"PyViz ({title})")
-
-    def closeEvent(self, event):
-        """Ensure proper cleanup of plotter instances on window close."""
-        for plotter in self.plotters:
-            plotter.close()  # Properly close each PyVista plotter
-        event.accept()
-        global _qt_window
-        _qt_window = None

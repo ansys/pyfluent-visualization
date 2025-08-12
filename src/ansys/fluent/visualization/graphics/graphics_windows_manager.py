@@ -25,7 +25,7 @@
 from enum import Enum
 import itertools
 import threading
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import numpy as np
 import pyvista as pv
@@ -36,12 +36,6 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
     PlotDefn,
 )
 from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
-
-try:
-    from pyvistaqt import BackgroundPlotter
-except ModuleNotFoundError:
-    BackgroundPlotter = None
-
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
@@ -158,6 +152,7 @@ class GraphicsWindow(VisualizationWindow):
         """Render graphics."""
         self._render_graphics()
         self.renderer.render(self._object_list_to_render)
+        self.renderer.show()
 
     def _render_graphics(self, obj_dict=None):
         """Render graphics."""
@@ -183,7 +178,11 @@ class GraphicsWindow(VisualizationWindow):
             self._display_monitor_plot(obj_dict)
         if self.animate:
             self.renderer.write_frame()
-        self.renderer._set_camera(pyviz.config.view)
+        try:
+            self.renderer._set_camera(pyviz.config.view)
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
     def show_graphics(self):
         """Display graphics."""
@@ -277,31 +276,29 @@ class GraphicsWindow(VisualizationWindow):
             "yscale": "log" if monitor_set_name == "residual" else "linear",
         }
 
-    @staticmethod
-    def _pack_faces_connectivity_data(faces_data):
-        flat = []
-        for face in faces_data:
-            flat.append(len(face))
-            flat.extend(face)
-        return np.array(flat)
-
     def _resolve_mesh_data(self, mesh_data):
-        if mesh_data.connectivity[0].shape[0] == 2:  # Line
+        if mesh_data.connectivity.size == 0:
+            return pv.PolyData()
+        if mesh_data.connectivity[0] == 2:  # Line
             return pv.PolyData(
                 mesh_data.vertices,
-                lines=self._pack_faces_connectivity_data(mesh_data.connectivity),
+                lines=mesh_data.connectivity,
             )
         else:  # Face
             return pv.PolyData(
                 mesh_data.vertices,
-                faces=self._pack_faces_connectivity_data(mesh_data.connectivity),
+                faces=mesh_data.connectivity,
             )
 
     def _display_vector(self, obj, obj_dict):
-        field_info = obj.session.field_info
+        field_data = obj.session.field_data
         vectors_of = obj.vectors_of()
         # scalar bar properties
-        scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        try:
+            scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
@@ -336,7 +333,7 @@ class GraphicsWindow(VisualizationWindow):
             else:
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
-                    range_ = field_info.get_scalar_field_range(obj.field(), False)
+                    range_ = field_data.scalar_fields.range(obj.field(), False)
                 else:
                     range_ = [np.min(scalar_field), np.max(scalar_field)]
 
@@ -385,7 +382,11 @@ class GraphicsWindow(VisualizationWindow):
         field = f"{field}\n[{field_unit}]" if field_unit else field
 
         # scalar bar properties
-        scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        try:
+            scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
         mesh_obj_list = []
 
@@ -397,7 +398,7 @@ class GraphicsWindow(VisualizationWindow):
 
             mesh = pv.PolyData(
                 surface_data.vertices,
-                lines=self._pack_faces_connectivity_data(surface_data.lines),
+                lines=surface_data.lines,
             )
 
             mesh.point_data[field] = surface_data.scalar_field
@@ -427,7 +428,11 @@ class GraphicsWindow(VisualizationWindow):
         node_values = obj.node_values()
 
         # scalar bar properties
-        scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        try:
+            scalar_bar_args = self.renderer._scalar_bar_default_properties()
+        except AttributeError:
+            # In case 2d renderer is selected, the above will not be available.
+            pass
 
         mesh_obj_list = []
 
@@ -516,12 +521,10 @@ class GraphicsWindow(VisualizationWindow):
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
-                        field_info = obj.session.field_info
+                        field_data = obj.session.field_data
                         _mesh_dict = {
                             "data": mesh,
-                            "clim": field_info.get_scalar_field_range(
-                                obj.field(), False
-                            ),
+                            "clim": field_data.scalar_fields.range(obj.field(), False),
                             "scalars": field,
                             "show_edges": obj.show_edges(),
                             "scalar_bar_args": scalar_bar_args,
@@ -585,8 +588,13 @@ class GraphicsWindow(VisualizationWindow):
                 continue
             mesh_data.vertices.shape = mesh_data.vertices.size // 3, 3
             mesh = self._resolve_mesh_data(mesh_data)
-            color_size = len(self.renderer._colors)
-            color = list(self.renderer._colors.values())[surface_id % color_size]
+            try:
+                color_size = len(self.renderer._colors)
+                color = list(self.renderer._colors.values())[
+                    len(surface_id) % color_size
+                ]
+            except AttributeError:
+                color = ""
             _mesh_dict = {"data": mesh, "show_edges": obj.show_edges(), "color": color}
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:
@@ -669,7 +677,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
         with self._condition:
             return self._post_windows.get(window_id, None)
 
-    def get_plotter(self, window_id: str) -> Union[BackgroundPlotter, pv.Plotter]:
+    def get_plotter(self, window_id: str):
         """Get the PyVista plotter.
 
         Parameters
@@ -679,8 +687,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 
         Returns
         -------
-        Union[BackgroundPlotter, pv.Plotter]
-            PyVista plotter.
+            Plotter.
         """
         with self._condition:
             return self._post_windows[window_id].renderer.plotter

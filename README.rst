@@ -64,6 +64,19 @@ Install the latest release from `PyPI
 
    pip install ansys-fluent-visualization
 
+There are optional dependencies depending on the desired usage mode.
+To run the plotter in interactive mode, install with:
+
+.. code:: console
+
+   pip install ansys-fluent-visualization[interactive]
+
+For interactive mode with graphics displayed in a single Qt window using multiple tabs, install with:
+
+.. code:: console
+
+   pip install ansys-fluent-visualization[single-window]
+
 Alternatively, install the latest release from `GitHub
 <https://github.com/ansys/pyfluent-visualization>`_ with:
 

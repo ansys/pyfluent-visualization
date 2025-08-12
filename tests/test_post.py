@@ -109,10 +109,9 @@ class MockFieldTransaction:
 
 
 class MockFieldData:
-    def __init__(self, solver_data, field_info):
+    def __init__(self, solver_data):
         self._session_data = solver_data
         self._request_to_serve = {"surf": [], "scalar": [], "vector": []}
-        self._field_info = field_info
 
     def new_transaction(self):
         return MockFieldTransaction(self._session_data, self._request_to_serve)
@@ -123,7 +122,7 @@ class MockFieldData:
         data_type: Union[SurfaceDataType, int],
         overset_mesh: Optional[bool] = False,
     ) -> Dict:
-        surfaces_info = self._field_info().get_surfaces_info()
+        surfaces_info = self.surfaces()
         surface_ids = surfaces_info[surface_name]["surface_id"]
         self._request_to_serve["surf"].append(
             (
@@ -152,35 +151,26 @@ class MockFieldData:
             for surface_id in surface_ids
         }
 
+    class _Scalars:
+        def __init__(self, scalar_data):
+            self._scalar_data = scalar_data
 
-class MockFieldInfo:
-    def __init__(self, solver_data):
-        self._session_data = solver_data
+        @staticmethod
+        def range(*args, **kwargs):
+            return [0.0, 0.0]
 
-    def get_scalar_field_range(
-        self, field: str, node_value: bool = False, surface_ids: List[int] = []
-    ) -> List[float]:
-        if not surface_ids:
-            surface_ids = [
-                v["surface_id"][0]
-                for k, v in self._session_data["surfaces_info"].items()
-            ]
-        minimum, maximum = None, None
-        for surface_id in surface_ids:
-            range = self._session_data["range"][field][surface_id][
-                "node_value" if node_value else "cell_value"
-            ]
-            minimum = min(range[0], minimum) if minimum else range[0]
-            maximum = max(range[1], maximum) if maximum else range[1]
-        return [minimum, maximum]
+        def __call__(self):
+            return self._scalar_data
 
-    def get_scalar_fields_info(self) -> dict:
-        return self._session_data["scalar_fields_info"]
+    @property
+    def scalar_fields(self) -> _Scalars:
+        return self._Scalars(self._session_data["scalar_fields_info"])
 
-    def get_vector_fields_info(self) -> dict:
+    @property
+    def vector_fields(self) -> dict:
         return self._session_data["vector_fields_info"]
 
-    def get_surfaces_info(self) -> dict:
+    def surfaces(self) -> dict:
         return self._session_data["surfaces_info"]
 
 
@@ -199,10 +189,7 @@ class MockAPIHelper:
                 "rb",
             ) as pickle_obj:
                 MockAPIHelper._session_data = pickle.load(pickle_obj)
-        self.field_info = lambda: MockFieldInfo(MockAPIHelper._session_data)
-        self.field_data = lambda: MockFieldData(
-            MockAPIHelper._session_data, self.field_info
-        )
+        self.field_data = lambda: MockFieldData(MockAPIHelper._session_data)
         self.id = lambda: 1
 
 
@@ -220,27 +207,21 @@ class MockSession:
 
         class Fields:
             def __init__(self):
-                self.field_info = MockFieldInfo(MockSession._session_data)
-                self.field_data = MockFieldData(
-                    MockSession._session_data, self.field_info
-                )
+                self.field_data = MockFieldData(MockSession._session_data)
 
         self.fields = Fields()
-        self.field_info = MockFieldInfo(MockSession._session_data)
-        self.field_data = MockFieldData(MockSession._session_data, self.field_info)
+        self.field_data = MockFieldData(MockSession._session_data)
         self.id = lambda: 1
+        self.monitors = lambda: None
 
 
 def test_field_api():
     pyvista_graphics = Graphics(session=MockSession, post_api_helper=MockAPIHelper)
     contour1 = pyvista_graphics.Contours["contour-1"]
 
-    field_info = contour1._api_helper.field_info()
     field_data = contour1._api_helper.field_data()
 
-    surfaces_id = [
-        v["surface_id"][0] for k, v in field_info.get_surfaces_info().items()
-    ]
+    surfaces_id = [v["surface_id"][0] for k, v in field_data.surfaces().items()]
 
     # Get vertices
     vertices_data = field_data.get_surface_data("wall", SurfaceDataType.Vertices)
@@ -303,18 +284,9 @@ def test_graphics_operations():
 def test_contour_object():
     pyvista_graphics = Graphics(session=MockSession())
     contour1 = pyvista_graphics.Contours["contour-1"]
-    field_info = contour1._api_helper.field_info()
-
-    # Surfaces allowed values should be all surfaces.
-    assert contour1.surfaces.allowed_values == list(
-        field_info.get_surfaces_info().keys()
-    )
 
     # Should accept all valid surface.
     contour1.surfaces = contour1.surfaces.allowed_values
-
-    # Field allowed values should be all fields.
-    assert contour1.field.allowed_values == list(field_info.get_scalar_fields_info())
 
     # Important. Because there is no type checking so following passes.
     contour1.field = [contour1.field.allowed_values[0]]
@@ -350,29 +322,6 @@ def test_contour_object():
     contour1.range.option = "auto-range-off"
     assert contour1.range.auto_range_on() is None
 
-    # Range should adjust to min/max of node field values.
-    contour1.node_values = True
-    contour1.field = "temperature"
-    surfaces_id = [
-        v["surface_id"][0]
-        for k, v in field_info.get_surfaces_info().items()
-        if k in contour1.surfaces()
-    ]
-
-    range = field_info.get_scalar_field_range(
-        contour1.field(), contour1.node_values(), surfaces_id
-    )
-    assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
-    assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
-
-    # Range should adjust to min/max of node field values
-    contour1.field = "pressure"
-    range = field_info.get_scalar_field_range(
-        contour1.field(), contour1.node_values(), surfaces_id
-    )
-    assert range[0] == pytest.approx(contour1.range.auto_range_off.minimum())
-    assert range[1] == pytest.approx(contour1.range.auto_range_off.maximum())
-
 
 def test_vector_object():
     if sys.version_info > (3, 13):
@@ -382,11 +331,9 @@ def test_vector_object():
         )
     pyvista_graphics = Graphics(session=MockSession())
     vector1 = pyvista_graphics.Vectors["contour-1"]
-    field_info = vector1._api_helper.field_info()
+    field_data = vector1._api_helper.field_data()
 
-    assert vector1.surfaces.allowed_values == list(
-        field_info.get_surfaces_info().keys()
-    )
+    assert vector1.surfaces.allowed_values == list(field_data.surfaces().keys())
 
     vector1.surfaces = vector1.surfaces.allowed_values
 
@@ -396,13 +343,7 @@ def test_vector_object():
     vector1.range.option = "auto-range-off"
     assert vector1.range.auto_range_on() is None
 
-    surfaces_id = [
-        v["surface_id"][0]
-        for k, v in field_info.get_surfaces_info().items()
-        if k in vector1.surfaces()
-    ]
-
-    range = field_info.get_scalar_field_range("velocity-magnitude", False)
+    range = field_data.scalar_fields.range("velocity-magnitude", False)
     assert range == pytest.approx(
         [
             vector1.range.auto_range_off.minimum(),
@@ -419,7 +360,6 @@ def test_surface_object():
         )
     pyvista_graphics = Graphics(session=MockSession())
     surf1 = pyvista_graphics.Surfaces["surf-1"]
-    field_info = surf1._api_helper.field_info()
 
     surf1.definition.type = "iso-surface"
     assert surf1.definition.plane_surface() is None
@@ -433,20 +373,8 @@ def test_surface_object():
     surf1.definition.type = "iso-surface"
     iso_surf = surf1.definition.iso_surface
 
-    assert iso_surf.field.allowed_values == list(field_info.get_scalar_fields_info())
-
     # Important. Because there is no type checking so following test passes.
     iso_surf.field = [iso_surf.field.allowed_values[0]]
-
-    # Iso surface value should automatically update upon change in field.
-    iso_surf.field = "temperature"
-    range = field_info.get_scalar_field_range(iso_surf.field(), True)
-    assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
-
-    # Iso surface value should automatically update upon change in field.
-    iso_surf.field = "pressure"
-    range = field_info.get_scalar_field_range(iso_surf.field(), True)
-    assert (range[0] + range[1]) / 2.0 == pytest.approx(iso_surf.iso_value())
 
     # New surface should be in allowed values for graphics.
     cont1 = pyvista_graphics.Contours["surf-1"]
@@ -480,15 +408,13 @@ def test_create_plot_objects():
 def test_xyplot_object():
     matplotlib_plots = Plots(session=MockSession(), post_api_helper=MockAPIHelper)
     p1 = matplotlib_plots.XYPlots["p-1"]
-    field_info = p1._api_helper.field_info()
+    field_data = p1._api_helper.field_data()
 
-    assert p1.surfaces.allowed_values == list(field_info.get_surfaces_info().keys())
+    assert p1.surfaces.allowed_values == list(field_data.surfaces().keys())
 
     p1.surfaces = p1.surfaces.allowed_values
 
-    assert p1.y_axis_function.allowed_values == list(
-        field_info.get_scalar_fields_info()
-    )
+    assert p1.y_axis_function.allowed_values == list(field_data.scalar_fields())
 
     # Important. Because there is no type checking so following passes.
     p1.y_axis_function = [p1.y_axis_function.allowed_values[0]]

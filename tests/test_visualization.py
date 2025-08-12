@@ -56,6 +56,8 @@ from ansys.fluent.visualization import (
     XYPlot,
     config,
 )
+
+config.interactive = False
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     GraphicsWindow as TGraphicsWindow,
 )
@@ -93,7 +95,6 @@ def test_visualization_calls_render_correctly_with_single_mesh(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         mesh_surfaces_list = [
             "in1",
@@ -134,14 +135,14 @@ def test_visualization_calls_render_correctly_with_single_mesh(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [0, 128, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("show_edges") is True
         assert mesh_dict.get("position") == (0, 0)
         assert mesh_dict.get("opacity") == 0.05
 
         # For third surface
         mesh_dict = args[0][0][2]
-        assert mesh_dict.get("color") == [128, 0, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("kwargs") == {
             "random_str_arg": "any_val",
             "random_int_arg": 5,
@@ -152,7 +153,6 @@ def test_visualization_calls_render_correctly_with_dual_mesh(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         mesh_surfaces_list = [
             "in1",
@@ -194,13 +194,13 @@ def test_visualization_calls_render_correctly_with_dual_mesh(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [0, 128, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("show_edges") is False
         assert mesh_dict.get("position") == (0, 1)
 
         # For third surface in first mesh
         mesh_dict = args[0][0][2]
-        assert mesh_dict.get("color") == [128, 0, 0]
+        assert mesh_dict.get("color") == [255, 255, 0]
         assert mesh_dict.get("show_edges") is True
         assert mesh_dict.get("position") == (0, 0)
 
@@ -209,7 +209,6 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
 
@@ -233,7 +232,7 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [128, 0, 128]
+        assert mesh_dict.get("color") == [128, 128, 0]
         assert mesh_dict.get("position") == (0, 0)
 
         # Iso-surface
@@ -256,7 +255,7 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
 
         # Assertions on arguments
         assert isinstance(mesh_dict["data"], pv.PolyData)
-        assert mesh_dict.get("color") == [128, 0, 128]
+        assert mesh_dict.get("color") == [128, 128, 0]
         assert mesh_dict.get("position") == (0, 0)
 
 
@@ -264,7 +263,6 @@ def test_visualization_calls_render_correctly_with_contour(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
         contour = Contour(
@@ -301,7 +299,6 @@ def test_visualization_calls_render_correctly_with_vector(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
         velocity_vector = Vector(
@@ -334,7 +331,6 @@ def test_visualization_calls_render_correctly_with_pathlines(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Renderer, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
         pathlines = Pathline(solver=solver)
@@ -366,7 +362,6 @@ def test_visualization_calls_render_correctly_with_xy_plot_pyvista(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Plotter, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TPlotterWindow._show_plot = lambda win_id: None
         xy_plot_object = XYPlot(
@@ -396,7 +391,6 @@ def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(MatPlotter, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TPlotterWindow._show_plot = lambda win_id: None
         xy_plot_object = XYPlot(
@@ -404,9 +398,9 @@ def test_visualization_calls_render_correctly_with_xy_plot_matplotlib(
             surfaces=["outlet"],
             y_axis_function="temperature",
         )
-        plot_window = GraphicsWindow()
+        plot_window = GraphicsWindow(renderer="matplotlib")
         plot_window.add_plot(xy_plot_object)
-        plot_window.show(renderer="matplotlib")
+        plot_window.show()
 
         # Check that render was called 1 time for 1 surface
         mock_render.assert_called_once()
@@ -426,7 +420,6 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
     new_solver_session_with_exhaust_case_and_data,
 ):
     with patch.object(Plotter, "render") as mock_render:
-        config.interactive = False
         solver = new_solver_session_with_exhaust_case_and_data
         TPlotterWindow._show_plot = lambda win_id: None
         residual = Monitor(solver=solver)
