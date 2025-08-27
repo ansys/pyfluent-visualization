@@ -280,6 +280,4 @@ sys.path.append(os.path.abspath("./_ext"))
 autosectionlabel_maxdepth = 4
 
 # PyAnsys tags configuration
-html_context = {
-    "pyansys_tags": ['Fluids']
-}
+html_context = {"pyansys_tags": ["Fluids"]}
