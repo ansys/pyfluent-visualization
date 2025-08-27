@@ -278,3 +278,8 @@ sys.path.append(os.path.abspath("./_ext"))
 
 # Generate section labels up to four levels deep
 autosectionlabel_maxdepth = 4
+
+# PyAnsys tags configuration
+html_context = {
+    "pyansys_tags": ['Fluids']
+}
