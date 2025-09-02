@@ -46,7 +46,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -94,7 +94,7 @@ jobs:
       DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -166,7 +166,7 @@ jobs:
     needs: [tests, docs]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -203,7 +203,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
 
       - name: Display package file list
         run: ls -R
