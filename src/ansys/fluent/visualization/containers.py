@@ -139,13 +139,16 @@ class Surface(_GraphicsContainer):
         elif attr == "creation_method":
             self._obj.definition.plane_surface.creation_method = value
         elif attr == "z":
-            assert self._obj.definition.plane_surface.creation_method() == "xy-plane"
+            if self._obj.definition.plane_surface.creation_method() != "xy-plane":
+                raise ValueError("Expected plane creation method to be 'xy-plane'")
             self._obj.definition.plane_surface.xy_plane.z = value
         elif attr == "y":
-            assert self._obj.definition.plane_surface.creation_method() == "zx-plane"
+            if self._obj.definition.plane_surface.creation_method() != "zx-plane":
+                raise ValueError("Expected plane creation method to be 'zx-plane'")
             self._obj.definition.plane_surface.zx_plane.y = value
         elif attr == "x":
-            assert self._obj.definition.plane_surface.creation_method() == "yz-plane"
+            if self._obj.definition.plane_surface.creation_method() != "yz-plane":
+                raise ValueError("Expected plane creation method to be 'yz-plane'")
             self._obj.definition.plane_surface.yz_plane.x = value
         elif attr == "field":
             self._obj.definition.iso_surface.field = _to_field_name_str(value)
@@ -153,22 +156,22 @@ class Surface(_GraphicsContainer):
             self._obj.definition.iso_surface.iso_value = value
         elif attr == "rendering":
             self._obj.definition.iso_surface.rendering = value
-        elif attr == "point":
-            assert (
+        elif attr in ["point", "normal"]:
+            if (
                 self._obj.definition.plane_surface.creation_method()
-                == "point-and-normal"
-            )
-            self._obj.definition.plane_surface.point.x = value[0]
-            self._obj.definition.plane_surface.point.y = value[1]
-            self._obj.definition.plane_surface.point.z = value[2]
-        elif attr == "normal":
-            assert (
-                self._obj.definition.plane_surface.creation_method()
-                == "point-and-normal"
-            )
-            self._obj.definition.plane_surface.normal.x = value[0]
-            self._obj.definition.plane_surface.normal.y = value[1]
-            self._obj.definition.plane_surface.normal.z = value[2]
+                != "point-and-normal"
+            ):
+                raise ValueError(
+                    "Expected plane creation method to be 'point-and-normal'"
+                )
+            if attr == "point":
+                self._obj.definition.plane_surface.point.x = value[0]
+                self._obj.definition.plane_surface.point.y = value[1]
+                self._obj.definition.plane_surface.point.z = value[2]
+            elif attr == "normal":
+                self._obj.definition.plane_surface.normal.x = value[0]
+                self._obj.definition.plane_surface.normal.y = value[1]
+                self._obj.definition.plane_surface.normal.z = value[2]
         else:
             setattr(self._obj, attr, value)
 

@@ -31,11 +31,9 @@ def in_jupyter():
     try:
         from IPython import get_ipython
 
-        if "IPKernelApp" not in get_ipython().config:
-            return False
+        return "IPKernelApp" in get_ipython().config
     except (ImportError, AttributeError):
         return False
-    return True
 
 
 def in_notebook():
