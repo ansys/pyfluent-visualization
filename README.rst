@@ -114,12 +114,19 @@ the PyFluent-Visualization documentation.
 
 .. code:: python
 
-   from ansys.fluent.visualization import Graphics
-   graphics = Graphics(session=session)
-   temperature_contour = graphics.Contours["contour-temperature"]
-   temperature_contour.field = "temperature"
-   temperature_contour.surfaces = ["in1", "in2", "out1"]
-   temperature_contour.display("window-1")
+   from ansys.fluent.visualization import Contour, GraphicsWindow
+   from ansys.fluent.core.solver import VelocityInlets, PressureOutlets, using
+   from ansys.units import VariableCatalog
+
+   graphics_window = GraphicsWindow()
+
+   with using(solver_session):
+       pressure_contour = Contour()
+       pressure_contour.field = VariableCatalog.STATIC_PRESSURE
+       pressure_contour.surfaces = VelocityInlets() + PressureOutlets()
+
+       graphics_window.add_graphics(pressure_contour)
+       graphics_window.show()
 
 Usage in a JupyterLab environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
