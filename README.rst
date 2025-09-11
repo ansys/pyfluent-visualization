@@ -122,6 +122,7 @@ the PyFluent-Visualization documentation.
 
    # Use an existing PyFluent solver session for the duration of this block
    with using(solver_session):
+      # Define a contour plot of static pressure across all velocity inlets and pressure outlets
        pressure_contour = Contour(field=VariableCatalog.STATIC_PRESSURE, surfaces=VelocityInlets() + PressureOutlets())
        graphics_window.add_graphics(pressure_contour)
        graphics_window.show()
