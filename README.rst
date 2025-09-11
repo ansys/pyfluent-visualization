@@ -120,6 +120,7 @@ the PyFluent-Visualization documentation.
 
    graphics_window = GraphicsWindow()
 
+   # Use an exisiting PyFluent solver session for the duration of this block
    with using(solver_session):
        pressure_contour = Contour()
        pressure_contour.field = VariableCatalog.STATIC_PRESSURE
