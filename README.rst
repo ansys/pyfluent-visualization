@@ -109,17 +109,23 @@ Basic usage
 The following code assumes that a PyFluent session has already been created
 and a Fluent case with input parameters has been set up. For a complete
 example, see `Analyzing your results
-<https://fluentvisualization.docs.pyansys.com/users_guide/postprocessing.html>`_ in
+<https://visualization.fluent.docs.pyansys.com/version/stable/users_guide/index.html>`_ in
 the PyFluent-Visualization documentation.
 
 .. code:: python
 
-   from ansys.fluent.visualization import Graphics
-   graphics = Graphics(session=session)
-   temperature_contour = graphics.Contours["contour-temperature"]
-   temperature_contour.field = "temperature"
-   temperature_contour.surfaces = ["in1", "in2", "out1"]
-   temperature_contour.display("window-1")
+   from ansys.fluent.visualization import Contour, GraphicsWindow
+   from ansys.fluent.core.solver import VelocityInlets, PressureOutlets, using
+   from ansys.units import VariableCatalog
+
+   graphics_window = GraphicsWindow()
+
+   # Use an existing PyFluent solver session for the duration of this block
+   with using(solver_session):
+      # Define a contour plot of static pressure across all velocity inlets and pressure outlets
+       pressure_contour = Contour(field=VariableCatalog.STATIC_PRESSURE, surfaces=VelocityInlets() + PressureOutlets())
+       graphics_window.add_graphics(pressure_contour)
+       graphics_window.show()
 
 Usage in a JupyterLab environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
