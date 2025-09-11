@@ -109,7 +109,7 @@ Basic usage
 The following code assumes that a PyFluent session has already been created
 and a Fluent case with input parameters has been set up. For a complete
 example, see `Analyzing your results
-<https://fluentvisualization.docs.pyansys.com/users_guide/postprocessing.html>`_ in
+<https://visualization.fluent.docs.pyansys.com/version/stable/users_guide/index.html>`_ in
 the PyFluent-Visualization documentation.
 
 .. code:: python
