@@ -128,6 +128,21 @@ jobs:
           sudo apt update
           sudo apt install pandoc libegl1
 
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          tinytex: true
+
+      - name: Check Quarto Version
+        shell: bash
+        run: |
+          quarto --version
+      - name: "Install Poppler for PDF to PNG conversion"
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
       - name: Install pyfluent-visualization
         run: make install
 

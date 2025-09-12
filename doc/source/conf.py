@@ -200,6 +200,12 @@ html_theme_options = {
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
+    "cheatsheet": {
+        "file": "cheatsheet/cheat_sheet.qmd",
+        "pages": ["index", "getting_started/index", "user_guide/index"],
+        "title": "PyFluent-Visualization cheat sheet",
+        "version": __version__,
+    },
 }
 
 # -- Options for HTMLHelp output ---------------------------------------------
