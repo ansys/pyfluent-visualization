@@ -94,6 +94,15 @@ jobs:
         env:
           FLUENT_IMAGE_TAG: v25.2.0
 
+      - name: Upload 25.2 Coverage Artifacts
+        if: matrix.os == 'windows-latest' && matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage_report
+          path: ./htmlcov
+        env:
+          FLUENT_IMAGE_TAG: v25.2.0
+
       - name: Remove all docker images
         if: always()
         run: make docker-clean-images
