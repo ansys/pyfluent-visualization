@@ -17,7 +17,7 @@ docker-pull:
 
 unittest:
 	@pip install -r requirements/requirements_tests.txt
-	@pytest -v --cov=ansys.fluent --cov-report html:cov_html --cov-config=.coveragerc
+	@pytest -v --cov=ansys.fluent --cov-report=xml:cov_xml.xml --cov-report=html -n 4
 
 build-doc:
 	@sudo rm -rf /home/ansys/.local/share/ansys_fluent_core/examples/*
