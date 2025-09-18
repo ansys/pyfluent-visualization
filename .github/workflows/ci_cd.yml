@@ -175,8 +175,9 @@ jobs:
           path: doc/_build/html
           retention-days: 7
 
-      - name: Ensure gh-pages branch exists
+      - name: Deploy
         if: github.event_name == 'push'
+        uses: ansys/actions/doc-deploy-stable@v10.1.0
         run: |
           BRANCH="gh-pages"
           git fetch origin
@@ -191,10 +192,6 @@ jobs:
           else
             echo "The $BRANCH branch exists."
           fi
-
-      - name: Deploy
-        if: github.event_name == 'push'
-        uses: ansys/actions/doc-deploy-stable@v10.1.0
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
           cname: ${{ env.DOCUMENTATION_CNAME }}
