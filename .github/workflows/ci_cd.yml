@@ -169,21 +169,22 @@ jobs:
           path: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}.zip
           retention-days: 7
 
-      - name: Deploy
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-        steps:
-          - name: "Deploy the stable documentation"
-            uses: ansys/actions/doc-deploy-stable@v10.1.0
-            with:
-              doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
-              cname: ${{ env.DOCUMENTATION_CNAME }}
-              token: ${{ secrets.GITHUB_TOKEN }}
-              bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
-              bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
-
       - name: Remove all docker images
         if: always()
         run: make docker-clean-images
+
+  deploy-docs-release:
+    name: "Upload release documentation"
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: "Deploy the stable documentation"
+        uses: ansys/actions/doc-deploy-stable@v10.1.0
+        with:
+          doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   build:
     name: Build library
