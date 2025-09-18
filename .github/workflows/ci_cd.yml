@@ -114,9 +114,15 @@ jobs:
     env:
       DOC_DEPLOYMENT_IMAGE_TAG: v25.1.0
       DOCUMENTATION_CNAME: "visualization.fluent.docs.pyansys.com"
+      XDG_RUNTIME_DIR: /tmp/runtime-${{ github.run_id }}
 
     steps:
       - uses: actions/checkout@v5
+
+      - name: Create XDG_RUNTIME_DIR
+        run: |
+          mkdir -p "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
 
       - name: Set up Python
         uses: actions/setup-python@v5
