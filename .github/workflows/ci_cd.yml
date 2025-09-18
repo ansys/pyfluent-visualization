@@ -172,26 +172,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
-          path: doc/_build/html
+          path: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}.zip
           retention-days: 7
 
       - name: Deploy
         if: github.event_name == 'push'
         uses: ansys/actions/doc-deploy-stable@v10.1.0
-        run: |
-          BRANCH="gh-pages"
-          git fetch origin
-          branch_exists=$(git ls-remote --heads origin "$BRANCH")
-          if [ -z "$branch_exists" ]; then
-            echo "The $BRANCH branch does not exist. Creating $BRANCH."
-            git checkout --orphan "$BRANCH"
-            git rm -rf .
-            git commit --allow-empty -m "Initial $BRANCH commit"
-            git push origin "$BRANCH"
-            git checkout -
-          else
-            echo "The $BRANCH branch exists."
-          fi
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
           cname: ${{ env.DOCUMENTATION_CNAME }}
