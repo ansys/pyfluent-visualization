@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -125,7 +125,7 @@ jobs:
           chmod 700 "$XDG_RUNTIME_DIR"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -202,7 +202,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -232,7 +232,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
