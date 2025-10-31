@@ -55,3 +55,25 @@ source = ["ansys/fluent"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = [
+    "B101",
+    "B105",
+    "B106",
+    "B110",
+    "B112",
+    "B301",
+    "B307",
+    "B310",
+    "B311",
+    "B314",
+    "B403",
+    "B404",
+    "B405",
+    "B602",
+    "B603",
+    "B604",
+    "B607",
+    ]

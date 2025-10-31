@@ -164,7 +164,7 @@ sphinx_gallery_conf = {
     "filename_pattern": r"\.py",
     # Disabled example scripts
     "ignore_pattern": r"script_manifold\.py|post_processing_exhaust_manifold\.py|"
-    r"updated_script_manifold_example\.py|enhanced_postprocessing\.py|flycheck*",
+    r"updated_script_manifold_example\.py|enhanced_postprocessing\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
@@ -200,6 +200,12 @@ html_theme_options = {
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
+    "cheatsheet": {
+        "file": "cheatsheet/cheat_sheet.qmd",
+        "pages": ["index", "getting_started/index", "user_guide/index"],
+        "title": "PyFluent-Visualization cheat sheet",
+        "version": __version__,
+    },
 }
 
 # -- Options for HTMLHelp output ---------------------------------------------
