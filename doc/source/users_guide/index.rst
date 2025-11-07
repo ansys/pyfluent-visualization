@@ -49,11 +49,11 @@ The following example demonstrates how to display a mesh with and without edges:
     from ansys.fluent.visualization import GraphicsWindow, Mesh
     from ansys.fluent.core.solver import WallBoundaries
 
-    mesh = Mesh(solver=solver_session, show_edges=True, surfaces=WallBoundaries())
+    mesh = Mesh(solver=solver_session, show_edges=True, surfaces=WallBoundaries(settings_source=solver_session))
     window = GraphicsWindow()
     window.add_graphics(mesh, position=(0, 0))
 
-    mesh = Mesh(solver=solver_session, surfaces=WallBoundaries())
+    mesh = Mesh(solver=solver_session, surfaces=WallBoundaries(settings_source=solver_session))
     window.add_graphics(mesh, position=(0, 1))
     window.show()
 
@@ -110,7 +110,7 @@ Plot a temperature contour over selected surfaces:
     temperature_contour_manifold = Contour(
         solver=solver_session,
         field=VariableCatalog.TEMPERATURE,
-        surfaces=WallBoundaries(),
+        surfaces=WallBoundaries(settings_source=solver_session),
     )
     window = GraphicsWindow()
     window.add_graphics(temperature_contour_manifold)
@@ -129,7 +129,7 @@ Visualize velocity vectors over a selected surface:
     velocity_vector = Vector(
         solver=solver_session,
         field=VariableCatalog.VELOCITY_X,
-        surfaces=[WallBoundary(name="solid_up:1:830")],
+        surfaces=[WallBoundary(settings_source=solver_session, name="solid_up:1:830")],
         scale=20,
     )
     window = GraphicsWindow()
@@ -148,7 +148,7 @@ Visualize pathlines to analyze flow patterns:
 
     pathlines = Pathline(solver=solver_session)
     pathlines.field = VariableCatalog.VELOCITY_MAGNITUDE
-    pathlines.surfaces = VelocityInlets()
+    pathlines.surfaces = VelocityInlets(settings_source=solver_session)
 
     window = GraphicsWindow()
     window.add_graphics(pathlines)
@@ -170,7 +170,7 @@ Generate an XY plot of temperature variations at an outlet:
 
     xy_plot = XYPlot(
         solver=solver_session,
-        surfaces=PressureOutlets(),
+        surfaces=PressureOutlets(settings_source=solver_session),
         y_axis_function=VariableCatalog.TEMPERATURE,
     )
     window = GraphicsWindow()
