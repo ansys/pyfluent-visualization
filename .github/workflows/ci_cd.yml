@@ -208,6 +208,8 @@ jobs:
     name: "Upload release documentation"
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs: [ docs ]
     steps:
       - name: "Deploy the stable documentation"
