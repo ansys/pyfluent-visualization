@@ -14,9 +14,6 @@ concurrency:
 
 permissions:
   contents: read
-  packages: read
-  pull-requests: read
-  issues: read
 
 env:
   # Following env vars when changed will "reset" the mentioned cache,
