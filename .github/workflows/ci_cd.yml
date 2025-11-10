@@ -7,7 +7,7 @@ on:
       - "*"
     branches:
       - main
-      - release/*
+      - release
 
 concurrency:
   group: ${{ github.ref }}
@@ -258,7 +258,8 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+      - name: "Download the library artifacts from build-library step"
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
 
       - name: Display package file list
         run: ls -R
@@ -276,7 +277,7 @@ jobs:
       - name: Upload to Public PyPi
         run: |
           pip install 'twine<6.2.0'
-          twine upload --skip-existing ./**/*.whl
+          python -m twine upload --skip-existing ./**/*.whl
           python -m twine upload --skip-existing ./**/*.tar.gz
         env:
           TWINE_USERNAME: __token__
