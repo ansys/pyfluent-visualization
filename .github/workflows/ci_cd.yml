@@ -13,6 +13,12 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: read
+  pull-requests: read
+  issues: read
+
 env:
   # Following env vars when changed will "reset" the mentioned cache,
   # by changing the cache file name. It is rendered as ...-v%RESET_XXX%-...
@@ -170,7 +176,7 @@ jobs:
         id: version
 
       - name: Cache examples
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: doc/source/examples
           key: Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}-${{ hashFiles('examples/**') }}-${{ github.sha }}
@@ -252,7 +258,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
 
       - name: Display package file list
         run: ls -R
@@ -277,7 +283,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.ANSYS_FLUENT_VISUALIZATION_PYPI_TOKEN }}
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@aec2ec56f94eb8180ceec724245f64ef008b89f5 # v2.4.0
         with:
           files: |
             ./**/*.whl
