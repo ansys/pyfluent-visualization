@@ -5,6 +5,12 @@ on:
     - cron:  '0 4 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: read
+  pull-requests: read
+  issues: read
+
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYFLUENT_LAUNCH_CONTAINER: 1
