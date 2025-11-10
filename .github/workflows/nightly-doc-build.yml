@@ -69,7 +69,14 @@ jobs:
 
           retention-days: 7
 
-      - name: Deploy
+  deploy-dev-docs:
+    name: "Deploy development documentation"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [ nightly_docs_build ]
+    steps:
+      - name: "Deploy the development documentation"
         uses: ansys/actions/doc-deploy-dev@v10
         with:
           doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
