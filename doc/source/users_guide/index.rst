@@ -276,5 +276,3 @@ refer to the respective module documentation, see :ref:`ref_visualization`.
 .. toctree::
    :hidden:
    :maxdepth: 2
-
-   advanced_topics/index
