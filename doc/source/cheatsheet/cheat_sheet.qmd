@@ -31,35 +31,33 @@ jupyter:
     name: python3
 ---
 
-### Launch a fluent solver session
+### Launch a fluent solver session using PyFluent
 
 ```{python}
 import ansys.fluent.core as pyfluent
-solver_session = pyfluent.launch_fluent()
+solver_session = pyfluent.Solver.from_install()
 ```
 
-### Set-up PyFluent session
+### Set up PyFluent session
 
 ```{python}
 from ansys.fluent.core import examples, SolverEvent
 from ansys.fluent.core.solver import (
+    ReadCaseData,
     PressureOutlets,
     VelocityInlets,
     WallBoundaries,
     WallBoundary,
 )
-import_case = examples.download_file(
+file_path = examples.download_file(
     file_name="exhaust_system.cas.h5",
     directory="pyfluent/exhaust_system")
 
-import_data = examples.download_file(
+examples.download_file(
     file_name="exhaust_system.dat.h5",
     directory="pyfluent/exhaust_system")
 
-solver_session.settings.file.read_case(
-    file_name=import_case)
-solver_session.settings.file.read_data(
-    file_name=import_data)
+ReadCaseData(settings_source=solver_session)(file_name=file_path)
 ```
 
 ### Set-up PyFluent-Visualization for post-processing
@@ -84,31 +82,31 @@ config.view = "isometric"
 ### Display mesh at wall
 
 ```{python}
-graphics_window = GraphicsWindow()
+window = GraphicsWindow()
 mesh = Mesh(
     solver=solver_session,
     show_edges=True,
     surfaces=WallBoundaries(
         settings_source=solver_session))
-graphics_window.add_graphics(mesh)
-graphics_window.show()
+window.add_graphics(mesh)
+window.show()
 ```
 
 ### Create XY, YZ and ZX plane-surface objects and display
 
 ```{python}
 graphics_window = GraphicsWindow()
-surf_xy_plane = PlaneSurface.create_xy_plane(
+xy_plane = PlaneSurface.create_xy_plane(
     solver=solver_session, z=-0.0441921)
-graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
+graphics_window.add_graphics(xy_plane, position=(0, 0))
 
-surf_yz_plane = PlaneSurface.create_yz_plane(
+yz_plane = PlaneSurface.create_yz_plane(
     solver=solver_session, x=-0.174628)
-graphics_window.add_graphics(surf_yz_plane, position=(0, 1))
+graphics_window.add_graphics(yz_plane, position=(0, 1))
 
-surf_zx_plane = PlaneSurface.create_zx_plane(
+zx_plane = PlaneSurface.create_zx_plane(
     solver=solver_session, y=-0.0627297)
-graphics_window.add_graphics(surf_zx_plane, position=(0, 2))
+graphics_window.add_graphics(zx_plane, position=(0, 2))
 graphics_window.show()
 ```
 
@@ -116,11 +114,11 @@ graphics_window.show()
 
 ```{python}
 graphics_window = GraphicsWindow()
-surf_xy_plane = PlaneSurface.create_from_point_and_normal(
+xy_plane = PlaneSurface.create_from_point_and_normal(
     solver=solver_session,
     point=[0.0, 0.0, -0.0441921],
     normal=[0.0, 0.0, 1.0])
-graphics_window.add_graphics(surf_xy_plane)
+graphics_window.add_graphics(xy_plane)
 graphics_window.show()
 ```
 
@@ -128,11 +126,11 @@ graphics_window.show()
 
 ```{python}
 graphics_window = GraphicsWindow()
-surf_mid_plane_x = IsoSurface(
+mid_plane_x = IsoSurface(
     solver=solver_session,
     field="x-coordinate",
     iso_value=-0.174)
-graphics_window.add_graphics(surf_mid_plane_x)
+graphics_window.add_graphics(mid_plane_x)
 graphics_window.show()
 ```
 
