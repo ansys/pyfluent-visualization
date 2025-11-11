@@ -7,11 +7,13 @@ on:
       - "*"
     branches:
       - main
-      - release/*
 
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
   # Following env vars when changed will "reset" the mentioned cache,
@@ -39,7 +41,7 @@ jobs:
 
   check-vulnerabilities:
     name: "Check library vulnerabilities"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: ansys/actions/check-vulnerabilities@main
         with:
@@ -49,9 +51,22 @@ jobs:
           dev-mode: ${{ github.ref != 'refs/heads/main' }}
           bandit-configfile: "pyproject.toml"
 
+  actions-security:
+    name: "Actions Security"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ansys/actions/check-actions-security@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
+        with:
+          generate-summary: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          auditing-level: 'high'
+
   tests:
     name: Tests and coverage
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      packages: read
     strategy:
       matrix:
         os: [windows-latest, public-ubuntu-latest-8-cores]
@@ -59,10 +74,12 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -77,7 +94,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if:  matrix.os == 'public-ubuntu-latest-8-cores'
-        uses: docker/login-action@v3
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.BOT_APPLICATION_ID }}
@@ -96,7 +113,7 @@ jobs:
 
       - name: Upload 25.2 Coverage Artifacts
         if: matrix.os == 'windows-latest' && matrix.python-version == '3.12'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: coverage_report
           path: ./htmlcov
@@ -111,15 +128,26 @@ jobs:
     name: Documentation
     needs: docs-style
     runs-on: [self-hosted, pyfluent]
+    permissions:
+      contents: read
+      packages: read
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v25.1.0
+      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
       DOCUMENTATION_CNAME: "visualization.fluent.docs.pyansys.com"
+      XDG_RUNTIME_DIR: /tmp/runtime-${{ github.run_id }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Create XDG_RUNTIME_DIR
+        run: |
+          mkdir -p "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -147,7 +175,7 @@ jobs:
         run: make install
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.BOT_APPLICATION_ID }}
@@ -165,12 +193,13 @@ jobs:
         id: version
 
       - name: Cache examples
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: doc/source/examples
           key: Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}-${{ hashFiles('examples/**') }}-${{ github.sha }}
           restore-keys: |
             Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}-${{ hashFiles('examples/**') }}
+          lookup-only: false # zizmor: ignore[cache-poisoning]
 
       - name: Generate the documentation
         run: make build-doc
@@ -178,35 +207,44 @@ jobs:
           FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
-          path: doc/_build/html
+          path: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}.zip
           retention-days: 7
-
-      - name: Deploy
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'dev')
-        uses: ansys/actions/doc-deploy-stable@v10
-        with:
-          doc-artifact-name: 'HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}'
-          cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
-          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
       - name: Remove all docker images
         if: always()
         run: make docker-clean-images
+
+  deploy-docs-release:
+    name: "Upload release documentation"
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [ docs ]
+    steps:
+      - name: "Deploy the stable documentation"
+        uses: ansys/actions/doc-deploy-stable@v10.1.0
+        with:
+          doc-artifact-name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   build:
     name: Build library
     needs: [tests, docs]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -221,7 +259,7 @@ jobs:
           python -m twine check dist/*
 
       - name: Upload package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: PyFluent-packages
           path: |
@@ -230,42 +268,45 @@ jobs:
           retention-days: 7
 
   release:
-    name: Release
+    name: "Release project to private, public PyPI and GitHub"
     needs: build
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # required for trusted publishing
+      contents: write # required for GitHub release upload
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - uses: actions/download-artifact@v5
+      - name: "Download the library artifacts from build-library step"
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: ${{ env.LIBRARY_NAME }}-artifacts
+          path: ${{ env.LIBRARY_NAME }}-artifacts
 
       - name: Display package file list
         run: ls -R
 
-      - name: Upload to Private PyPi
-        run: |
-          pip install twine
-          python -m twine upload --skip-existing ./**/*.whl
-          python -m twine upload --skip-existing ./**/*.tar.gz
-        env:
-          TWINE_USERNAME: PAT
-          TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
-          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
+      - name: "Release to the private PyPI repository"
+        uses: ansys/actions/release-pypi-private@v10
+        with:
+          library-name: ${{ env.LIBRARY_NAME }}
+          twine-username: "__token__"
+          twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
 
-      - name: Upload to Public PyPi
-        run: |
-          pip install twine
-          twine upload --skip-existing ./**/*.whl
-          python -m twine upload --skip-existing ./**/*.tar.gz
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.ANSYS_FLUENT_VISUALIZATION_PYPI_TOKEN }}
+      - name: "Upload artifacts to PyPI using trusted publisher"
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        with:
+          repository-url: "https://upload.pypi.org/legacy/"
+          print-hash: true
+          packages-dir: ${{ env.LIBRARY_NAME }}-artifacts
+          skip-existing: false
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@aec2ec56f94eb8180ceec724245f64ef008b89f5 # v2.4.0
         with:
           files: |
             ./**/*.whl
