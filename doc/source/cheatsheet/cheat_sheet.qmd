@@ -95,62 +95,62 @@ window.show()
 ### Create XY, YZ and ZX plane-surface objects and display
 
 ```{python}
-graphics_window = GraphicsWindow()
+window = GraphicsWindow()
 xy_plane = PlaneSurface.create_xy_plane(
     solver=solver_session, z=-0.0441921)
-graphics_window.add_graphics(xy_plane, position=(0, 0))
+window.add_graphics(xy_plane, position=(0, 0))
 
 yz_plane = PlaneSurface.create_yz_plane(
     solver=solver_session, x=-0.174628)
-graphics_window.add_graphics(yz_plane, position=(0, 1))
+window.add_graphics(yz_plane, position=(0, 1))
 
 zx_plane = PlaneSurface.create_zx_plane(
     solver=solver_session, y=-0.0627297)
-graphics_window.add_graphics(zx_plane, position=(0, 2))
-graphics_window.show()
+window.add_graphics(zx_plane, position=(0, 2))
+window.show()
 ```
 
 ### Create plane-surface objects from point and normal and display
 
 ```{python}
-graphics_window = GraphicsWindow()
+window = GraphicsWindow()
 xy_plane = PlaneSurface.create_from_point_and_normal(
     solver=solver_session,
     point=[0.0, 0.0, -0.0441921],
     normal=[0.0, 0.0, 1.0])
-graphics_window.add_graphics(xy_plane)
-graphics_window.show()
+window.add_graphics(xy_plane)
+window.show()
 ```
 
 ### Create and display an iso-surface
 
 ```{python}
-graphics_window = GraphicsWindow()
+window = GraphicsWindow()
 mid_plane_x = IsoSurface(
     solver=solver_session,
     field="x-coordinate",
     iso_value=-0.174)
-graphics_window.add_graphics(mid_plane_x)
-graphics_window.show()
+window.add_graphics(mid_plane_x)
+window.show()
 ```
 
 ### Display pressure contour at wall
 
 ```{python}
-graphics_window = GraphicsWindow()
+window = GraphicsWindow()
 pressure_contour = Contour(
     solver=solver_session,
     field=VariableCatalog.ABSOLUTE_PRESSURE,
     surfaces=WallBoundaries(settings_source=solver_session)
 )
-graphics_window.add_graphics(pressure_contour)
-graphics_window.show()
+window.add_graphics(pressure_contour)
+window.show()
 ```
 
 ### Display vector at a wall boundary
 
 ```{python}
-graphics_window = GraphicsWindow()
+window = GraphicsWindow()
 velocity_vector = Vector(
     solver=solver_session,
     field=VariableCatalog.VELOCITY_X,
@@ -158,65 +158,65 @@ velocity_vector = Vector(
         name="solid_up:1:830")],
     scale=20,
 )
-graphics_window.add_graphics(velocity_vector)
-graphics_window.show()
+window.add_graphics(velocity_vector)
+window.show()
 ```
 
 ### Display pathlines
 
 ```{python}
-graphics_window = GraphicsWindow()
+window = GraphicsWindow()
 pathlines = Pathline(
     solver=solver_session,
     field=VariableCatalog.VELOCITY_MAGNITUDE,
     surfaces=VelocityInlets(settings_source=solver_session))
-graphics_window.add_graphics(pathlines)
-graphics_window.show()
+window.add_graphics(pathlines)
+window.show()
 ```
 
 ### Varying opacity
 
 ```{python}
-graphics_window = GraphicsWindow()
-graphics_window.add_graphics(mesh, opacity=0.05)
-graphics_window.add_graphics(velocity_vector)
-graphics_window.show()
+window = GraphicsWindow()
+window.add_graphics(mesh, opacity=0.05)
+window.add_graphics(velocity_vector)
+window.show()
 ```
 
 ### Create and display XY plot
 
 ```{python}
-plot_window = GraphicsWindow()
+window = GraphicsWindow()
 xy_plot_object = XYPlot(
     solver=solver_session,
     surfaces=PressureOutlets(settings_source=solver_session),
     y_axis_function=VariableCatalog.TEMPERATURE
 )
-plot_window.add_plot(xy_plot_object, title="Temperature")
-plot_window.show()
+window.add_plot(xy_plot_object, title="Temperature")
+window.show()
 ```
 
 ### Create and display monitors plot
 
 ```{python}
-plot_window = GraphicsWindow()
+window = GraphicsWindow()
 residual = Monitor(solver=solver_session,
     monitor_set_name="residual")
-plot_window.add_plot(residual)
-plot_window.show()
+window.add_plot(residual)
+window.show()
 ```
 
 ### Change 'renderer' and save plots
 
 ```{python}
-plot_window = GraphicsWindow()
+window = GraphicsWindow()
 residual = Monitor(solver=solver_session,
     monitor_set_name="residual")
-plot_window.add_plot(residual)
-plot_window.save_graphics("sample_plot.pdf")
+window.add_plot(residual)
+window.save_graphics("sample_plot.pdf")
 
-plot_window.renderer = "matplotlib"
-plot_window.save_graphics("sample_plot.png")
+window.renderer = "matplotlib"
+window.save_graphics("sample_plot.png")
 ```
 
 ### Update graphics in real-time
