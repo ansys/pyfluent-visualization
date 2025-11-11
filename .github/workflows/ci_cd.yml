@@ -23,7 +23,7 @@ env:
   # It applies 7 days retention policy by default.
   RESET_EXAMPLES_CACHE: 0
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-  MAIN_PYTHON_VERSION: "3.10"
+  MAIN_PYTHON_VERSION: "3.11"
   LIBRARY_NAME: 'ansys-fluent-visualization'
   PYFLUENT_TIMEOUT_FORCE_EXIT: 5
   PYFLUENT_LAUNCH_CONTAINER: 1
