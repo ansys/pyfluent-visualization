@@ -184,7 +184,6 @@ jobs:
           key: Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}-${{ hashFiles('examples/**') }}-${{ github.sha }}
           restore-keys: |
             Examples-v${{ env.RESET_EXAMPLES_CACHE }}-${{ steps.version.outputs.PYFLUENT_VISUALIZATION_VERSION }}-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}-${{ hashFiles('examples/**') }}
-          lookup-only: false # zizmor: ignore[cache-poisoning]
 
       - name: Generate the documentation
         run: make build-doc
@@ -192,7 +191,7 @@ jobs:
           FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@v5
         with:
           name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
           path: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}.zip
