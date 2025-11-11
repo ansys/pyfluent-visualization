@@ -5,6 +5,10 @@ on:
     - cron:  '0 4 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: read
+
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYFLUENT_LAUNCH_CONTAINER: 1
@@ -20,10 +24,12 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -38,7 +44,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: matrix.os == 'public-ubuntu-latest-8-cores'
-        uses: docker/login-action@v3
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
           registry: ghcr.io
           username: ${{ secrets.BOT_APPLICATION_ID }}
