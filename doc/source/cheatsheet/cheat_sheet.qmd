@@ -99,6 +99,8 @@ window.add_graphics(mesh)
 window.show()
 ```
 
+![Mesh](../_static/mesh1.png)
+
 ### Create XY, YZ and ZX plane-surface objects and display
 
 ```{python}
@@ -177,6 +179,8 @@ window.add_graphics(velocity_vector)
 window.show()
 ```
 
+![Velocity vector](../_static/vect1.png)
+
 ### Display pathlines
 
 ```{python}
@@ -201,6 +205,8 @@ window.add_graphics(velocity_vector)
 window.show()
 ```
 
+![Varying opacity](../_static/opacity1.png)
+
 ### Create and display XY plot
 
 ```{python}
@@ -215,6 +221,8 @@ xy_plot_object = XYPlot(
 window.add_plot(xy_plot_object, title="Temperature")
 window.show()
 ```
+
+![XY plot](../_static/plot1.png)
 
 ### Create and display monitors plot
 
@@ -271,14 +279,3 @@ graphics_window.real_time_update(
 Initialize(settings_source=solver_session)()
 Iterate(settings_source=solver_session)(iter_count=50)
 ```
-
-![Mesh](../_static/mesh1.png)
-![XY, YX & ZX Plane](../_static/surf1.png)
-![XY Plane](../_static/surf2.png)
-![X mid plane](../_static/surf3.png)
-![Pressure contour](../_static/cont1.png)
-![Velocity vector](../_static/vect1.png)
-![Pathlines](../_static/pathline1.png)
-![Varying opacity](../_static/opacity1.png)
-![XY plot](../_static/plot1.png)
-![Residual](../_static/plot2.png)
