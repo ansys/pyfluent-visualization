@@ -179,8 +179,6 @@ window.add_graphics(velocity_vector)
 window.show()
 ```
 
-![Velocity vector](../_static/vect1.png)
-
 ### Display pathlines
 
 ```{python}
