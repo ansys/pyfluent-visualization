@@ -156,6 +156,24 @@ jobs:
           sudo apt update
           sudo apt install pandoc libegl1
 
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@9e48da27e184aa238fcb49f5db75469626d43adb # v2.1.9
+
+      - name: Check Quarto Version
+        shell: bash
+        run: |
+          quarto --version
+
+      - name: Verify tinytex is installed
+        run: |
+          quarto install tinytex --no-prompt --update-path
+
+      - name: "Install Poppler for PDF to PNG conversion"
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
       - name: Install pyfluent-visualization
         run: make install
 
@@ -195,7 +213,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
-          path: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}.zip
+          path: doc/_build/html
           retention-days: 7
 
       - name: Remove all docker images

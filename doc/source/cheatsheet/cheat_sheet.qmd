@@ -1,0 +1,279 @@
+---
+title: PyFluent-Visualization cheat sheet
+format: cheat_sheet-pdf
+version: 0.1.0
+footer: PyFluent-Visualization
+footerlinks:
+  - urls: 'https://visualization.fluent.docs.pyansys.com/version/stable/'
+    text: Documentation
+  - urls: 'https://visualization.fluent.docs.pyansys.com/version/stable/getting_started/index.html'
+    text: Getting started
+  - urls: 'https://visualization.fluent.docs.pyansys.com/version/stable/examples/index.html'
+    text: Examples
+  - urls: 'https://visualization.fluent.docs.pyansys.com/version/stable/visualization/visualization_contents.html'
+    text: API reference
+  - urls: 'https://github.com/ansys/pyfluent-visualization/discussions'
+    text: Discussions
+  - urls: 'https://github.com/ansys/pyfluent-visualization/issues'
+    text: 'Issues'
+execute:
+  eval: false
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.16.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+### Launch a fluent solver session using PyFluent
+
+```{python}
+import ansys.fluent.core as pyfluent
+solver_session = pyfluent.Solver.from_install()
+```
+
+### Set up PyFluent session
+
+```{python}
+from ansys.fluent.core import examples, SolverEvent
+from ansys.fluent.core.solver import (
+    ReadCaseData,
+    PressureOutlets,
+    VelocityInlets,
+    WallBoundaries,
+    WallBoundary,
+    Initialize,
+    Iterate,
+)
+file_path = examples.download_file(
+    file_name="exhaust_system.cas.h5",
+    directory="pyfluent/exhaust_system",
+    )
+examples.download_file(
+    file_name="exhaust_system.dat.h5",
+    directory="pyfluent/exhaust_system",
+    )
+ReadCaseData(
+        settings_source=solver_session
+    )(file_name=file_path)
+```
+
+### Set-up PyFluent-Visualization for post-processing
+
+```{python}
+from ansys.units import VariableCatalog
+from ansys.fluent.visualization import (
+    Contour,
+    GraphicsWindow,
+    IsoSurface,
+    Mesh,
+    Monitor,
+    Pathline,
+    PlaneSurface,
+    Vector,
+    XYPlot,
+    config,
+)
+config.interactive = False
+config.view = "isometric"
+```
+
+### Display mesh at wall
+
+```{python}
+window = GraphicsWindow()
+mesh = Mesh(
+    solver=solver_session,
+    show_edges=True,
+    surfaces=WallBoundaries(
+        settings_source=solver_session
+        )
+    )
+window.add_graphics(mesh)
+window.show()
+```
+
+![Mesh](../_static/mesh1.png)
+
+### Create XY, YZ and ZX plane-surface objects and display
+
+```{python}
+window = GraphicsWindow()
+xy_plane = PlaneSurface.create_xy_plane(
+    solver=solver_session, z=-0.0441921
+    )
+window.add_graphics(xy_plane, position=(0, 0))
+
+yz_plane = PlaneSurface.create_yz_plane(
+    solver=solver_session, x=-0.174628
+    )
+window.add_graphics(yz_plane, position=(0, 1))
+
+zx_plane = PlaneSurface.create_zx_plane(
+    solver=solver_session, y=-0.0627297
+    )
+window.add_graphics(zx_plane, position=(0, 2))
+window.show()
+```
+
+### Create plane-surface objects from point and normal and display
+
+```{python}
+window = GraphicsWindow()
+xy_plane = PlaneSurface.create_from_point_and_normal(
+    solver=solver_session,
+    point=[0.0, 0.0, -0.0441921],
+    normal=[0.0, 0.0, 1.0],
+    )
+window.add_graphics(xy_plane)
+window.show()
+```
+
+### Create and display an iso-surface
+
+```{python}
+window = GraphicsWindow()
+mid_plane_x = IsoSurface(
+    solver=solver_session,
+    field="x-coordinate",
+    iso_value=-0.174,
+    )
+window.add_graphics(mid_plane_x)
+window.show()
+```
+
+### Display pressure contour at wall
+
+```{python}
+window = GraphicsWindow()
+pressure_contour = Contour(
+    solver=solver_session,
+    field=VariableCatalog.ABSOLUTE_PRESSURE,
+    surfaces=WallBoundaries(
+        settings_source=solver_session
+        )
+    )
+window.add_graphics(pressure_contour)
+window.show()
+```
+
+### Display vector at a wall boundary
+
+```{python}
+window = GraphicsWindow()
+velocity_vector = Vector(
+    solver=solver_session,
+    field=VariableCatalog.VELOCITY_X,
+    surfaces=[WallBoundary(
+        settings_source=solver_session,
+        name="solid_up:1:830")],
+    scale=20,
+    )
+window.add_graphics(velocity_vector)
+window.show()
+```
+
+### Display pathlines
+
+```{python}
+window = GraphicsWindow()
+pathlines = Pathline(
+    solver=solver_session,
+    field=VariableCatalog.VELOCITY_MAGNITUDE,
+    surfaces=VelocityInlets(
+        settings_source=solver_session
+        )
+    )
+window.add_graphics(pathlines)
+window.show()
+```
+
+### Varying opacity
+
+```{python}
+window = GraphicsWindow()
+window.add_graphics(mesh, opacity=0.05)
+window.add_graphics(velocity_vector)
+window.show()
+```
+
+![Varying opacity](../_static/opacity1.png)
+
+### Create and display XY plot
+
+```{python}
+window = GraphicsWindow()
+xy_plot_object = XYPlot(
+    solver=solver_session,
+    surfaces=PressureOutlets(
+        settings_source=solver_session
+        ),
+    y_axis_function=VariableCatalog.TEMPERATURE
+    )
+window.add_plot(xy_plot_object, title="Temperature")
+window.show()
+```
+
+![XY plot](../_static/plot1.png)
+
+### Create and display monitors plot
+
+```{python}
+window = GraphicsWindow()
+residual = Monitor(solver=solver_session,
+    monitor_set_name="residual")
+window.add_plot(residual)
+window.show()
+```
+
+### Change 'renderer' and save plots
+
+```{python}
+window = GraphicsWindow()
+residual = Monitor(solver=solver_session,
+    monitor_set_name="residual")
+window.add_plot(residual)
+window.save_graphics("sample_plot.pdf")
+
+window.renderer = "matplotlib"
+window.save_graphics("sample_plot.png")
+```
+
+### Update graphics in real-time
+
+```{python}
+plot_window = GraphicsWindow()
+residual = Monitor(solver=solver_session,
+    monitor_set_name="residual")
+plot_window.add_plot(residual)
+plot_window.show()
+
+graphics_window = GraphicsWindow()
+pressure_contour = Contour(
+    solver=solver_session,
+    field=VariableCatalog.ABSOLUTE_PRESSURE,
+    surfaces=WallBoundaries(
+        settings_source=solver_session
+        )
+    )
+graphics_window.add_graphics(pressure_contour)
+graphics_window.show()
+
+plot_window.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED,
+        SolverEvent.ITERATION_ENDED]
+)
+graphics_window.real_time_update(
+    events=[SolverEvent.SOLUTION_INITIALIZED,
+        SolverEvent.ITERATION_ENDED]
+)
+
+Initialize(settings_source=solver_session)()
+Iterate(settings_source=solver_session)(iter_count=50)
+```
