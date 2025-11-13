@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_context_aware_exhaust_manifold_example:
+""".. _ref_post_processing_context_manager:
 
-Enhanced Postprocessing
------------------------
+Post-processing context manager
+-------------------------------
 This updated example demonstrates postprocessing capabilities in PyFluent
 using an object-oriented approach, providing a more user-friendly interface
 and improved flexibility.

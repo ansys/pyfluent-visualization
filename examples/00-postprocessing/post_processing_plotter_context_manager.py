@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_enhanced_postprocessing:
+""".. _ref_post_processing_plotter_context_manager.py:
 
-Enhanced Postprocessing
------------------------
+Post-processing with access to plotter and context manager
+----------------------------------------------------------
 This example demonstrates access to the actual renderer from the pyfluent
 renderer layer so that users can perform operations on it.
 """

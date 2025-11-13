@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_script_manifold:
+""".. _ref_post_processing_callbacks_and_animation:
 
 Triggering callbacks and Animation
 ----------------------------------

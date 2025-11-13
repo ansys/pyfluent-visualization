@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_updated_exhaust_manifold_example:
+""".. _ref_post_processing_plotter:
 
-Enhanced Postprocessing with PyVista and Matplotlib
+Post-processing with PyVista and Matplotlib plotter
 ---------------------------------------------------
 This updated example demonstrates postprocessing capabilities in PyFluent
 using an object-oriented approach, providing a more user-friendly interface

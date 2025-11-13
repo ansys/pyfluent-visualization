@@ -24,13 +24,13 @@ pyvista.OFF_SCREEN = True
 pyvista.global_theme.window_size = np.array([1024, 768])
 
 # Save figures in specified directory
-pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
-if not os.path.exists(pyvista.FIGURE_PATH):
-    os.makedirs(pyvista.FIGURE_PATH)
+# pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
+# if not os.path.exists(pyvista.FIGURE_PATH):
+#     os.makedirs(pyvista.FIGURE_PATH)
 
 # necessary when building the sphinx gallery
-pyvista.BUILDING_GALLERY = True
-pyfluent.BUILDING_GALLERY = True
+pyvista.BUILDING_GALLERY = False
+pyfluent.BUILDING_GALLERY = False
 
 # -- Project information -----------------------------------------------------
 
@@ -57,7 +57,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
     "sphinx_copybutton",
-    "sphinx_gallery.gen_gallery",
+    # "sphinx_gallery.gen_gallery",
     "sphinxemoji.sphinxemoji",
     "sphinx_toggleprompt",
     "autodocclass",
@@ -163,8 +163,8 @@ sphinx_gallery_conf = {
     # Pattern to search for example files
     "filename_pattern": r"\.py",
     # Disabled example scripts
-    "ignore_pattern": r"script_manifold\.py|post_processing_exhaust_manifold\.py|"
-    r"updated_script_manifold_example\.py|enhanced_postprocessing\.py",
+    "ignore_pattern": r"post_processing_callbacks_and_animation\.py|post_processing_legacy\.py|"
+    r"post_processing_plotter\.py|*_context_manager\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
@@ -200,12 +200,12 @@ html_theme_options = {
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
-    "cheatsheet": {
-        "file": "cheatsheet/cheat_sheet.qmd",
-        "pages": ["index", "getting_started/index", "user_guide/index"],
-        "title": "PyFluent-Visualization cheat sheet",
-        "version": __version__,
-    },
+    # "cheatsheet": {
+    #     "file": "cheatsheet/cheat_sheet.qmd",
+    #     "pages": ["index", "getting_started/index", "user_guide/index"],
+    #     "title": "PyFluent-Visualization cheat sheet",
+    #     "version": __version__,
+    # },
 }
 
 # -- Options for HTMLHelp output ---------------------------------------------

@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_post_processing_exhaust_manifold:
+""".. _ref_post_processing_legacy:
 
-Postprocessing using PyVista and Matplotlib
--------------------------------------------
+Post-processing using PyVista and Matplotlib legacy
+---------------------------------------------------
 This example uses PyVista and Matplotlib to demonstrate PyFluent
 postprocessing capabilities. The 3D model in this example
 is an exhaust manifold that has high temperature flows passing
