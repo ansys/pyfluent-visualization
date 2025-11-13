@@ -35,19 +35,19 @@ intuitive and flexible interface for post-processing Fluent simulations.
 
 Key features illustrated in this example include:
 
-- **Object-Oriented Design:**  
+- **Object-Oriented Design:**
   The post-processing workflow is modularized into classes and reusable components,
   improving readability, maintainability, and reusability.
 
-- **Enhanced Visualization Control:**  
+- **Enhanced Visualization Control:**
   Demonstrates creation and manipulation of multiple visualization entities such as
   meshes, plane surfaces, iso-surfaces, contours, vectors, and pathlines.
 
-- **Integrated 2D and 3D Visualization:**  
+- **Integrated 2D and 3D Visualization:**
   Combines 3D visualization (PyVista) for spatial data and 2D plots (Matplotlib)
   for analytical results like XY plots and residual monitors.
 
-- **Interactive and Extensible Interface:**  
+- **Interactive and Extensible Interface:**
   Allows easy customization of post-processing parameters, superimposition of plots,
   and dynamic visualization updates.
 

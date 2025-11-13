@@ -80,7 +80,9 @@ def _generate_api_index_rst_files():
         folder_index = _get_file_path(folder, f"{folder}_contents")
         with open(folder_index, "w", encoding="utf8") as index:
             index.write(f".. _ref_{folder}:\n\n")
-            index.write("API reference\n" if folder == "visualization" else f"{folder}\n")
+            index.write(
+                "API reference\n" if folder == "visualization" else f"{folder}\n"
+            )
             index.write(f'{"=" * (len(f"{folder}"))}\n\n')
             index.write(f".. automodule:: ansys.fluent.{folder}\n")
             _write_common_rst_members(rst_file=index)
