@@ -22,13 +22,27 @@
 
 """.. _ref_post_processing_legacy:
 
-Post-processing using PyVista and Matplotlib legacy
----------------------------------------------------
-This example uses PyVista and Matplotlib to demonstrate PyFluent
-postprocessing capabilities. The 3D model in this example
-is an exhaust manifold that has high temperature flows passing
-through it. The flow through the manifold is turbulent and
-involves conjugate heat transfer.
+Post-processing using PyVista and Matplotlib (Legacy)
+-----------------------------------------------------
+Demonstrates legacy post-processing capabilities in PyFluent using
+the PyVista and Matplotlib interfaces.
+
+This example loads an exhaust manifold case and data file and performs a series
+of visualization and analysis tasks. It showcases how to create and display
+various graphical and plot-based outputs including meshes, plane and iso
+surfaces, contours, vectors, pathlines, and XY plots. It also illustrates
+residual and monitor plotting using Matplotlib.
+
+Key aspects illustrated in this example include:
+- Use of the ``Graphics`` and ``Plots`` interfaces for visualization and analysis.
+- Creation of 3D geometric entities such as plane and iso surfaces.
+- Generation of contour and vector plots on selected regions.
+- Setup and display of residual and monitor plots during solver iterations.
+- Execution of solver iterations with hybrid initialization and live plot updates.
+
+This example provides a comprehensive demonstration of traditional
+post-processing workflows available in PyFluent prior to the new
+interactive visualization API.
 
 """
 

@@ -22,29 +22,38 @@
 
 """.. _ref_post_processing_plotter:
 
-Post-processing with PyVista and Matplotlib plotter
----------------------------------------------------
-This updated example demonstrates postprocessing capabilities in PyFluent
-using an object-oriented approach, providing a more user-friendly interface
-and improved flexibility.
-The 3D model used in this example is an exhaust manifold, where high-temperature
-turbulent flows are analyzed in a conjugate heat transfer scenario.
+Advanced post-processing using pyvista and matplotlib plotter apis
+------------------------------------------------------------------
+Demonstrates advanced post-processing capabilities in PyFluent using a modern,
+object-oriented approach that integrates PyVista for 3D visualization and
+Matplotlib for 2D data plotting.
 
-Key Improvements:
+This example analyzes an exhaust manifold model, which involves high-temperature,
+turbulent flow in a conjugate heat transfer scenario. It highlights how users can
+create and manage complex visualization pipelines programmatically, providing an
+intuitive and flexible interface for post-processing Fluent simulations.
 
-Object-Oriented Design: The code has been modularized into classes and methods,
-enhancing maintainability and reusability.
+Key features illustrated in this example include:
 
-Interactive User Interface: The user interface now allows seamless interaction,
-enabling users to control and customize postprocessing parameters.
+- **Object-Oriented Design:**  
+  The post-processing workflow is modularized into classes and reusable components,
+  improving readability, maintainability, and reusability.
 
-Enhanced Plot Interaction: Users have greater freedom to interact with the plots,
-such as adding and super-imposing multiple plots, and toggling data views,
-enhancing the visualization experience.
+- **Enhanced Visualization Control:**  
+  Demonstrates creation and manipulation of multiple visualization entities such as
+  meshes, plane surfaces, iso-surfaces, contours, vectors, and pathlines.
 
-This example utilizes PyVista for 3D visualization and Matplotlib for 2D data plotting.
-The new design provides a streamlined workflow for exploring and analyzing
-the temperature and flow characteristics in the exhaust manifold.
+- **Integrated 2D and 3D Visualization:**  
+  Combines 3D visualization (PyVista) for spatial data and 2D plots (Matplotlib)
+  for analytical results like XY plots and residual monitors.
+
+- **Interactive and Extensible Interface:**  
+  Allows easy customization of post-processing parameters, superimposition of plots,
+  and dynamic visualization updates.
+
+The example provides a comprehensive workflow for visualizing and analyzing
+temperature and velocity distributions in an exhaust manifold using the
+PyFluent Visualization API.
 
 """
 

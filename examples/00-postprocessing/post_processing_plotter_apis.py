@@ -20,12 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_post_processing_plotter_apis_context_manager:
+""".. _ref_post_processing_plotter_apis:
 
-Post-processing with access to plotter and context manager
-----------------------------------------------------------
-This example demonstrates access to the actual renderer from the pyfluent
-renderer layer so that users can perform operations on it.
+Basic Post-Processing Using PyVista and Matplotlib Plotter APIs
+---------------------------------------------------------------
+Demonstrates the use of PyFluent’s post-processing capabilities with PyVista
+and Matplotlib interfaces for 3D and 2D visualization.
+
+This example uses an exhaust manifold model to visualize wall boundaries
+and temperature variations at the outlet surface, showcasing how Fluent’s
+solver data can be accessed and displayed programmatically.
+
+Key features:
+- **Mesh Visualization:** Displays wall boundaries with edge highlighting.
+- **XY and Residual Plots:** Uses PyFluent’s built-in plotting interface
+  for temperature and residual monitoring.
+- **Automated Export:** Saves rendered plots as PDF and PNG files for
+  documentation and reporting.
+
 """
 
 ###############################################################################
@@ -80,34 +92,49 @@ solver_session = pyfluent.launch_fluent(
 solver_session.settings.file.read_case(file_name=import_case)
 solver_session.settings.file.read_data(file_name=import_data)
 
-with using(solver_session):
+###############################################################################
+# Display Mesh
+# ~~~~~~~~~~~~
+# Create and display the mesh for wall boundaries.
 
-    # Create a graphics object for the mesh display.
-    graphics_window = GraphicsWindow()
+graphics_window = GraphicsWindow()
 
-    mesh = Mesh(show_edges=True, surfaces=WallBoundaries())
-    graphics_window.add_graphics(mesh, position=(0, 0))
-    mesh = Mesh(surfaces=WallBoundaries())
-    graphics_window.add_graphics(mesh, position=(0, 1))
+mesh = Mesh(solver=solver_session, show_edges=True, surfaces=WallBoundaries())
+graphics_window.add_graphics(mesh, position=(0, 0))
 
-    graphics_window.renderer.set_background("black", top="white")
-    graphics_window.save_graphics("sample_mesh_image.pdf")
-    graphics_window.renderer.set_background("white")
-    graphics_window.show()
+mesh = Mesh(solver=solver_session, surfaces=WallBoundaries())
+graphics_window.add_graphics(mesh, position=(0, 1))
 
-    # Create and display XY plot, residual plot and solve and plot solution monitors.
-    plot_window = GraphicsWindow()
+graphics_window.renderer.set_background("black", top="white")
+graphics_window.save_graphics("sample_mesh_image.pdf")
+graphics_window.renderer.set_background("white")
+graphics_window.show()
 
-    xy_plot_object = XYPlot(
-        surfaces=PressureOutlets(), y_axis_function=VariableCatalog.TEMPERATURE
-    )
-    plot_window.add_plot(xy_plot_object, position=(0, 0), title="Temperature")
+###############################################################################
+# Create and Display Plots
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Create and display XY and residual plots, and save them as files.
 
-    residual = Monitor(monitor_set_name="residual")
-    plot_window.add_plot(residual, position=(0, 1))
-    plot_window.save_graphics("sample_plot.pdf")
-    plot_window.show()
+plot_window = GraphicsWindow()
 
-    plot_window.renderer = "matplotlib"
-    plot_window.save_graphics("sample_plot.png")
-    plot_window.show()
+xy_plot_object = XYPlot(
+    solver=solver_session,
+    surfaces=PressureOutlets(),
+    y_axis_function=VariableCatalog.TEMPERATURE,
+)
+plot_window.add_plot(xy_plot_object, position=(0, 0), title="Temperature")
+
+residual = Monitor(solver=solver_session, monitor_set_name="residual")
+plot_window.add_plot(residual, position=(0, 1))
+
+plot_window.save_graphics("sample_plot.pdf")
+plot_window.show()
+
+###############################################################################
+# Save Plots with Matplotlib Renderer
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Use the Matplotlib renderer for alternate plot export.
+
+plot_window.renderer = "matplotlib"
+plot_window.save_graphics("sample_plot.png")
+plot_window.show()

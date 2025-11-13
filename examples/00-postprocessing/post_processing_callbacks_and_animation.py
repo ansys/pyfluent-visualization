@@ -24,9 +24,21 @@
 
 Triggering callbacks and Animation
 ----------------------------------
-This example uses PyVista and Matplotlib to demonstrate the use
-of callback mechanisms. The 3D model in this example
-is an exhaust manifold.
+Demonstrates the use of callback mechanisms and real-time visualization updates
+in PyFluent using the exhaust manifold example.
+
+This example launches a Fluent solver session, loads an exhaust manifold case
+and data file, and creates multiple visualization objects such as meshes,
+contours, vectors, pathlines, XY plots, and monitors. It uses solver event
+callbacks to dynamically update these plots and graphics during solver
+iterations, showcasing interactive visualization and live data feedback.
+
+Key aspects illustrated in this example include:
+- Integration of Fluent solver events with visualization callbacks.
+- Real-time updates of contour and monitor plots during iteration.
+- Use of PyVista-based 3D visualization through the PyFluent visualization API.
+- Demonstration of multiple concurrent visualization windows managed via
+  the ``GraphicsWindow`` interface.
 """
 
 ###############################################################################

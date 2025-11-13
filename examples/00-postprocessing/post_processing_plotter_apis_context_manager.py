@@ -22,10 +22,31 @@
 
 """.. _ref_post_processing_plotter_apis_context_manager:
 
-Post-processing with access to plotter and context manager
-----------------------------------------------------------
-This example demonstrates access to the actual renderer from the pyfluent
-renderer layer so that users can perform operations on it.
+Context managed advanced post-processing using pyvista and matplotlib plotter APIs
+----------------------------------------------------------------------------------
+TDemonstrates advanced, context-managed post-processing capabilities in PyFluent
+using both the PyVista and Matplotlib plotter APIs.
+
+This example showcases how users can directly access and manipulate the
+underlying renderer from the PyFluent visualization layer to perform advanced
+customization and export operations. It highlights modern visualization control
+using context management, allowing clean setup and teardown of solver sessions
+and graphic windows.
+
+The workflow loads a 3D exhaust manifold model, initializes Fluent in solver mode,
+and performs post-processing operations such as mesh visualization, background
+customization, image export, and XY plotting with residual monitoring.
+
+Key features illustrated in this example include:
+- Context-managed Fluent session control using ``using()``.
+- Access to renderer properties for direct visualization customization.
+- Creation and export of mesh displays using PyVista.
+- Generation of XY plots and residual plots with Matplotlib integration.
+- Saving graphics outputs to both PDF and PNG formats.
+
+This example demonstrates how PyFluent provides seamless interoperability between
+its internal visualization API and external rendering engines for efficient and
+customizable post-processing workflows.
 """
 
 ###############################################################################
