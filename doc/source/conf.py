@@ -29,8 +29,8 @@ pyvista.global_theme.window_size = np.array([1024, 768])
 #     os.makedirs(pyvista.FIGURE_PATH)
 
 # necessary when building the sphinx gallery
-pyvista.BUILDING_GALLERY = False
-pyfluent.BUILDING_GALLERY = False
+pyvista.BUILDING_GALLERY = True
+pyfluent.BUILDING_GALLERY = True
 
 # -- Project information -----------------------------------------------------
 
@@ -57,7 +57,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
     "sphinx_copybutton",
-    # "sphinx_gallery.gen_gallery",
+    "sphinx_gallery.gen_gallery",
     "sphinxemoji.sphinxemoji",
     "sphinx_toggleprompt",
     "autodocclass",
@@ -164,7 +164,7 @@ sphinx_gallery_conf = {
     "filename_pattern": r"\.py",
     # Disabled example scripts
     "ignore_pattern": r"post_processing_callbacks_and_animation\.py|post_processing_legacy\.py|"
-    r"post_processing_plotter\.py|*_context_manager\.py",
+    r"post_processing_plotter\.py|*_context_manager\.py|post_processing_plotter_apis\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
@@ -200,12 +200,12 @@ html_theme_options = {
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
-    # "cheatsheet": {
-    #     "file": "cheatsheet/cheat_sheet.qmd",
-    #     "pages": ["index", "getting_started/index", "user_guide/index"],
-    #     "title": "PyFluent-Visualization cheat sheet",
-    #     "version": __version__,
-    # },
+    "cheatsheet": {
+        "file": "cheatsheet/cheat_sheet.qmd",
+        "pages": ["index", "getting_started/index", "user_guide/index"],
+        "title": "PyFluent-Visualization cheat sheet",
+        "version": __version__,
+    },
 }
 
 # -- Options for HTMLHelp output ---------------------------------------------
