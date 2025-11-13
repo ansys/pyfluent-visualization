@@ -24,9 +24,9 @@ pyvista.OFF_SCREEN = True
 pyvista.global_theme.window_size = np.array([1024, 768])
 
 # Save figures in specified directory
-# pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
-# if not os.path.exists(pyvista.FIGURE_PATH):
-#     os.makedirs(pyvista.FIGURE_PATH)
+pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
+if not os.path.exists(pyvista.FIGURE_PATH):
+    os.makedirs(pyvista.FIGURE_PATH)
 
 # necessary when building the sphinx gallery
 pyvista.BUILDING_GALLERY = True
