@@ -22,7 +22,7 @@
 
 """.. _ref_post_processing_plotter:
 
-Advanced post-processing using pyvista and matplotlib plotter apis
+Advanced Post-processing using Pyvista and Matplotlib plotter APIs
 ------------------------------------------------------------------
 Demonstrates advanced post-processing capabilities in PyFluent using a modern,
 object-oriented approach that integrates PyVista for 3D visualization and
