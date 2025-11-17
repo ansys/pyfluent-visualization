@@ -24,14 +24,15 @@
 
 Context-managed post-processing workflow using Pyvista and Matplotlib
 ---------------------------------------------------------------------
-This example demonstrates a streamlined, context-managed post-processing workflow in PyFluent,
-using an exhaust manifold case to showcase common 2D and 3D visualization tasks. Context managers
-handle setup and cleanup of solver sessions and graphics windows automatically, making the
-workflow cleaner and easier to follow.
+This example demonstrates a streamlined, context-managed post-processing workflow
+in PyFluent, using an exhaust manifold case to showcase common 2D and 3D visualization
+tasks. Context managers handle setup and cleanup of solver sessions and graphics windows
+automatically, making the workflow cleaner and easier to follow.
 
-Users can explore meshes, contours, slices, iso-surfaces, vectors, and pathlines, as well as
-generate XY and monitor plots. The example also highlights interactive visualization through
-PyVista and high-quality plotting with Matplotlib, giving users a flexible way to analyze and present CFD results.
+Users can explore meshes, contours, slices, iso-surfaces, vectors, and pathlines,
+as well as generate XY and monitor plots. The example also highlights interactive
+visualization through PyVista and high-quality plotting with Matplotlib, giving
+users a flexible way to analyze and present CFD results.
 
 **Key features include:
 
@@ -40,7 +41,8 @@ PyVista and high-quality plotting with Matplotlib, giving users a flexible way t
 -Interactive rendering and analysis with PyVista and Matplotlib.
 -Live plot updates during solver execution.
 
-Overall, this example highlights a concise, reliable, and flexible approach to post-processing CFD results.
+Overall, this example highlights a concise, reliable, and flexible approach
+to post-processing CFD results.
 
 """
 ###############################################################################
