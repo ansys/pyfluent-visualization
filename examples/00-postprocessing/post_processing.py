@@ -24,37 +24,34 @@
 
 Post-processing using Pyvista and Matplotlib
 --------------------------------------------
-Demonstrates advanced post-processing capabilities in PyFluent using a modern,
-object-oriented approach that integrates PyVista for 3D visualization and
-Matplotlib for 2D data plotting.
+This example shows how to use PyFluent’s post-processing tools to visualize Fluent
+results in both 3D and 2D. It demonstrates a typical workflow for exploring simulation
+data—such as temperature and velocity fields—using PyVista for interactive 3D graphics
+and Matplotlib for standard 2D plots.
 
-This example analyzes an exhaust manifold model, which involves high-temperature,
-turbulent flow in a conjugate heat transfer scenario. It highlights how users can
-create and manage complex visualization pipelines programmatically, providing an
-intuitive and flexible interface for post-processing Fluent simulations.
+The model used here is an exhaust manifold, but the techniques apply to
+any Fluent simulation.
 
-Key features illustrated in this example include:
+**What this example demonstrates**
 
-- **Object-Oriented Design:**
-  The post-processing workflow is modularized into classes and reusable components,
-  improving readability, maintainability, and reusability.
+3D Visualization with PyVista
+Display meshes, surfaces, iso-surfaces, contours, vectors, and pathlines
+to understand spatial flow behavior.
 
-- **Enhanced Visualization Control:**
-  Demonstrates creation and manipulation of multiple visualization entities such as
-  meshes, plane surfaces, iso-surfaces, contours, vectors, and pathlines.
+2D Plotting with Matplotlib
+Create XY plots such as temperature or velocity profiles, monitor quantities,
+and compare numerical trends.
 
-- **Integrated 2D and 3D Visualization:**
-  Combines 3D visualization (PyVista) for spatial data and 2D plots (Matplotlib)
-  for analytical results like XY plots and residual monitors.
+Simple, Practical Workflow
+Shows how to load results, create common visualization objects, adjust display settings,
+and interact with the scene — all with clear, straightforward commands.
 
-- **Interactive and Extensible Interface:**
-  Allows easy customization of post-processing parameters, superimposition of plots,
-  and dynamic visualization updates.
+Unified Post-Processing Interface
+Combines 3D and 2D visualization tools so users can inspect their results from
+multiple perspectives within a single, consistent workflow.
 
-The example provides a comprehensive workflow for visualizing and analyzing
-temperature and velocity distributions in an exhaust manifold using the
-PyFluent Visualization API.
-
+This example provides a concise starting point for analyzing Fluent simulations
+visually, without requiring knowledge of internal APIs or implementation details.
 """
 
 ###############################################################################
