@@ -1,6 +1,5 @@
 """Provides a module for generating PyFluent API RST files."""
 
-import os
 from pathlib import Path
 
 from ansys.fluent.core import FluentVersion
@@ -14,11 +13,8 @@ api_contents_path = (
 fluent_version = FluentVersion.current_release()
 
 
-def _write_rst_file(output_path: Path, version: FluentVersion):
-    content = f""".. _ref_api:
-
-API reference
-=============
+def _write_rst_file(file_handle, version: FluentVersion):
+    content = f"""
 
 This API reference corresponds to {version}.
 PyFluent Visualization maintains strong backward compatibility guarantees,
@@ -51,26 +47,9 @@ comprehensive analysis and inspection of simulation results.
 
 * :ref:`Mesh <ref_Mesh>`
 
-
-.. toctree::
-    :maxdepth: 2
-    :hidden:
-    :caption: ansys.fluent.visualization
-
-    GraphicsWindow
-    Mesh
-    Surface
-    Contour
-    Vector
-    Pathline
-    XYPlot
-    Monitor
-
 """
 
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(content)
+    file_handle.write(content)
 
 
 def _get_folder_path(folder_name: str):
@@ -154,16 +133,15 @@ def _generate_api_index_rst_files():
                 "API reference\n" if folder == "visualization" else f"{folder}\n"
             )
             index.write(f'{"=" * (len(f"{folder}"))}\n\n')
-            index.write(f".. automodule:: ansys.fluent.{folder}\n")
-            _write_common_rst_members(rst_file=index)
+            _write_rst_file(index, fluent_version)
             index.write(".. toctree::\n")
             index.write("    :maxdepth: 2\n")
-            index.write("    :hidden:\n\n")
+            index.write("    :hidden:\n")
+            index.write(f"    :caption: ansys.fluent.{folder}\n\n")
             for file in files:
                 index.write(f"    {file}\n")
             index.write("\n")
 
 
 if __name__ == "__main__":
-    _write_rst_file(api_contents_path, fluent_version)
     _generate_api_index_rst_files()
