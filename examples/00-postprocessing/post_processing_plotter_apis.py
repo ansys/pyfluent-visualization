@@ -25,23 +25,20 @@
 Post-processing using Pyvista and Matplotlib plotter APIs
 ---------------------------------------------------------
 
-Demonstrates the use of PyFluent’s post-processing capabilities with PyVista
-and Matplotlib interfaces for 3D and 2D visualization.
+This example demonstrates how to perform straightforward 2D and 3D post-processing in PyFluent 
+using the PyVista and Matplotlib interfaces. It highlights practical tasks such as mesh display, 
+plotting key variables, and exporting graphics for reports.
 
-Key features:
+Using an exhaust manifold case, the example shows how to visualize wall boundaries, examine outlet 
+temperature variations, and generate XY and residual plots—all through simple, scriptable API calls.
 
-- **Mesh Visualization:**
-  Displays wall boundaries with edge highlighting.
+**Key Features
 
-- **XY and Residual Plots:**
-  Uses PyFluent’s built-in plotting interface for temperature and residual monitoring.
+-Mesh Visualization: View wall boundaries with optional edge highlighting for clearer geometry inspection.
+-XY & Residual Plots: Generate temperature and residual plots using PyFluent’s built-in plotting interface.
+-Simple Export: Save visualizations as PNG or PDF for documentation or post-processing workflows.
 
-- **Automated Export:**
-  Saves rendered plots as PDF and PNG files for documentation and reporting.
-
-This example uses an exhaust manifold model to visualize wall boundaries
-and temperature variations at the outlet surface, showcasing how Fluent’s
-solver data can be accessed and displayed programmatically.
+Overall, the example provides a clean, approachable workflow that helps users quickly extract and visualize essential solver data.
 
 """
 
@@ -93,8 +90,7 @@ solver_session = pyfluent.launch_fluent(
     mode=pyfluent.FluentMode.SOLVER,
 )
 
-solver_session.settings.file.read_case(file_name=import_case)
-solver_session.settings.file.read_data(file_name=import_data)
+solver_session.file.read_case_data(file_name=import_case)
 
 ###############################################################################
 # Display Mesh

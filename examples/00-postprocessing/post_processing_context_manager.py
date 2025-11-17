@@ -24,35 +24,23 @@
 
 Context-managed post-processing workflow using Pyvista and Matplotlib
 ---------------------------------------------------------------------
-This example demonstrates a context-managed, object-oriented postprocessing
-workflow in **PyFluent**, showcasing advanced visualization and analysis
-capabilities for CFD simulations.
+This example demonstrates a streamlined, context-managed post-processing workflow in PyFluent, 
+using an exhaust manifold case to showcase common 2D and 3D visualization tasks. Context managers 
+handle setup and cleanup of solver sessions and graphics windows automatically, making the 
+workflow cleaner and easier to follow.
 
-The example uses an exhaust manifold model involving high-temperature
-turbulent flow in a conjugate heat transfer scenario. It highlights how to
-leverage context management, modular design, and a unified visualization API
-to create a flexible, user-friendly postprocessing experience.
+Users can explore meshes, contours, slices, iso-surfaces, vectors, and pathlines, as well as 
+generate XY and monitor plots. The example also highlights interactive visualization through 
+PyVista and high-quality plotting with Matplotlib, giving users a flexible way to analyze and present CFD results.
 
-**Key Features**
-----------------
-- **Object-Oriented Design:** Uses classes and context management to simplify
-  postprocessing and improve code readability and reusability.
-- **Comprehensive Visualization:** Demonstrates meshes, plane surfaces,
-  iso-surfaces, contours, vectors, pathlines, and monitors in both 2D and 3D.
-- **Interactive Workflow:** Supports interactive exploration and customization
-  of visualization parameters using the PyFluent and PyVista backends.
-- **Automated Updates:** Combines Fluent solver execution with live visual
-  feedback through streamlined plotting interfaces.
+**Key features include:
 
-**Workflow Summary**
---------------------
-1. Launches Fluent in solver mode and reads the exhaust manifold case and data.
-2. Creates multiple visualization objects using PyFluent’s
-   `GraphicsWindow` interface.
-3. Displays mesh, contour, and vector plots with adjustable opacity.
-4. Generates XY and monitor plots to track solver progress and flow variables.
-5. Demonstrates integration of Fluent results with PyVista for high-quality
-   visualization and interactive data analysis.
+-Simplified setup through context-managed Fluent sessions and graphics windows.
+-Consistent 2D/3D visualization using PyFluent’s unified API.
+-Interactive rendering and analysis with PyVista and Matplotlib.
+-Live plot updates during solver execution.
+
+Overall, this example highlights a concise, reliable, and flexible approach to post-processing CFD results.
 
 """
 ###############################################################################

@@ -24,29 +24,26 @@
 
 Context managed post-processing using Pyvista and Matplotlib plotter APIs
 -------------------------------------------------------------------------
-TDemonstrates advanced, context-managed post-processing capabilities in PyFluent
-using both the PyVista and Matplotlib plotter APIs.
+This example demonstrates how to perform clean, context-managed post-processing in PyFluent using
+both PyVista and Matplotlib. It highlights how context management simplifies setup and cleanup 
+of solver sessions and graphics windows, making advanced visualization tasks easier and more reliable.
 
-This example showcases how users can directly access and manipulate the
-underlying renderer from the PyFluent visualization layer to perform advanced
-customization and export operations. It highlights modern visualization control
-using context management, allowing clean setup and teardown of solver sessions
-and graphic windows.
+Using a 3D exhaust manifold model, the example walks through mesh visualization, background and display 
+customization, image export, and the creation of XY and residual plots. Users can access visualization 
+properties directly through PyFluent’s interface, enabling flexible control without dealing with 
+low-level renderer details.
 
-The workflow loads a 3D exhaust manifold model, initializes Fluent in solver mode,
-and performs post-processing operations such as mesh visualization, background
-customization, image export, and XY plotting with residual monitoring.
+**Key Features
 
-Key features illustrated in this example include:
-- Context-managed Fluent session control using ``using()``.
-- Access to renderer properties for direct visualization customization.
-- Creation and export of mesh displays using PyVista.
-- Generation of XY plots and residual plots with Matplotlib integration.
-- Saving graphics outputs to both PDF and PNG formats.
+-Context-managed solver and visualization workflow using using().
 
-This example demonstrates how PyFluent provides seamless interoperability between
-its internal visualization API and external rendering engines for efficient and
-customizable post-processing workflows.
+-Customizable 3D mesh displays through PyVista.
+
+-XY and residual plotting with integrated Matplotlib support.
+
+-Simple export of graphics to PNG and PDF formats.
+
+Overall, the example shows how PyFluent integrates smoothly with external rendering tools to provide a clean, efficient, and customizable post-processing experience.
 """
 
 ###############################################################################
