@@ -50,7 +50,6 @@ from ansys.fluent.core import examples
 from ansys.fluent.core.solver import (
     PressureOutlets,
     WallBoundaries,
-    using,
 )
 from ansys.units import VariableCatalog
 
@@ -99,10 +98,16 @@ solver_session.settings.file.read_data(file_name=import_data)
 
 graphics_window = GraphicsWindow()
 
-mesh = Mesh(solver=solver_session, show_edges=True, surfaces=WallBoundaries())
+mesh = Mesh(
+    solver=solver_session,
+    show_edges=True,
+    surfaces=WallBoundaries(settings_source=solver_session),
+)
 graphics_window.add_graphics(mesh, position=(0, 0))
 
-mesh = Mesh(solver=solver_session, surfaces=WallBoundaries())
+mesh = Mesh(
+    solver=solver_session, surfaces=WallBoundaries(settings_source=solver_session)
+)
 graphics_window.add_graphics(mesh, position=(0, 1))
 
 graphics_window.renderer.set_background("black", top="white")
@@ -119,7 +124,7 @@ plot_window = GraphicsWindow()
 
 xy_plot_object = XYPlot(
     solver=solver_session,
-    surfaces=PressureOutlets(),
+    surfaces=PressureOutlets(settings_source=solver_session),
     y_axis_function=VariableCatalog.TEMPERATURE,
 )
 plot_window.add_plot(xy_plot_object, position=(0, 0), title="Temperature")
