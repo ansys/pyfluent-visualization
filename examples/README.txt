@@ -12,4 +12,4 @@ Examples
    :maxdepth: 1
    :hidden:
 
-.. 00-postprocessing/README.txt
+.. 00-post_processing/README.txt

@@ -35,7 +35,7 @@ PyFluent-Visualization
 
 Overview
 --------
-PyFluent-Visualization provides postprocessing and visualization
+PyFluent-Visualization provides post-processing and visualization
 capabilities for `PyFluent <https://github.com/ansys/pyfluent>`_
 using `PyVista <https://docs.pyvista.org/>`_ and
 `Matplotlib <https://matplotlib.org/>`_.

@@ -17,7 +17,7 @@ You can use PyFluent-Visualization to postprocess Fluent results
 to display graphics objects and plot data. With PyFluent-Visualization,
 you can:
 
-- Script postprocessing using Fluent's built-in postprocessing capabilities.
+- Script post-processing using Fluent's built-in post-processing capabilities.
   For more information, see :ref:`ref_visualization`.
 - Plot Fluent geometry and meshes using `PyVista
   <https://docs.pyvista.org>`_ from within a Python script or an
