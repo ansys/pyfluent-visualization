@@ -25,20 +25,27 @@
 Post-processing using Pyvista and Matplotlib plotter APIs
 ---------------------------------------------------------
 
-This example demonstrates how to perform straightforward 2D and 3D post-processing in PyFluent
-using the PyVista and Matplotlib interfaces. It highlights practical tasks such as mesh display,
-plotting key variables, and exporting graphics for reports.
+This example demonstrates how to perform straightforward 2D and 3D post-processing
+in PyFluent using the PyVista and Matplotlib interfaces. It highlights practical
+tasks such as mesh display, plotting key variables, and exporting graphics for reports.
 
-Using an exhaust manifold case, the example shows how to visualize wall boundaries, examine outlet
-temperature variations, and generate XY and residual plots—all through simple, scriptable API calls.
+Using an exhaust manifold case, the example shows how to visualize wall boundaries,
+examine outlet temperature variations, and generate XY and residual plots—all through
+simple, scriptable API calls.
 
-**Key Features
+**Key Features**
 
--Mesh Visualization: View wall boundaries with optional edge highlighting for clearer geometry inspection.
--XY & Residual Plots: Generate temperature and residual plots using PyFluent’s built-in plotting interface.
--Simple Export: Save visualizations as PNG or PDF for documentation or post-processing workflows.
+-Mesh Visualization: View wall boundaries with optional edge highlighting for
+clearer geometry inspection.
 
-Overall, the example provides a clean, approachable workflow that helps users quickly extract and visualize essential solver data.
+-XY & Residual Plots: Generate temperature and residual plots using PyFluent’s
+built-in plotting interface.
+
+-Simple Export: Save visualizations as PNG or PDF for documentation or
+post-processing workflows.
+
+Overall, the example provides a clean, approachable workflow that helps users
+quickly extract and visualize essential solver data.
 
 """
 
