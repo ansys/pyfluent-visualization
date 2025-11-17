@@ -24,13 +24,13 @@
 
 Triggering callbacks and Animation
 ----------------------------------
-This example demonstrates how to use solver callbacks in PyFluent to create real-time, 
-automatically updating visualizations for an exhaust manifold case. By connecting Fluent 
-solver events to plot and graphics updates, the example shows how users can monitor flow 
+This example demonstrates how to use solver callbacks in PyFluent to create real-time,
+automatically updating visualizations for an exhaust manifold case. By connecting Fluent
+solver events to plot and graphics updates, the example shows how users can monitor flow
 evolution interactively as iterations progress.
 
-It creates mesh, contour, vector, pathline, XY, and monitor plots, and updates them live during the solve. 
-The workflow also highlights the use of PyVista for 3D rendering and the GraphicsWindow interface for 
+It creates mesh, contour, vector, pathline, XY, and monitor plots, and updates them live during the solve.
+The workflow also highlights the use of PyVista for 3D rendering and the GraphicsWindow interface for
 managing multiple visualization windows.
 
 **Key Features
