@@ -29,8 +29,9 @@ automatically updating visualizations for an exhaust manifold case. By connectin
 solver events to plot and graphics updates, the example shows how users can monitor flow
 evolution interactively as iterations progress.
 
-It creates mesh, contour, vector, pathline, XY, and monitor plots, and updates them live during the solve.
-The workflow also highlights the use of PyVista for 3D rendering and the GraphicsWindow interface for
+It creates mesh, contour, vector, pathline, XY, and monitor plots,
+and updates them live during the solve. The workflow also highlights
+the use of PyVista for 3D rendering and the GraphicsWindow interface for
 managing multiple visualization windows.
 
 **Key Features
