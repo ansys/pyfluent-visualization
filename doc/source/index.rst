@@ -40,6 +40,12 @@ On the `PyFluent-Visualization Issues <https://github.com/ansys/pyfluent-visuali
 page, you can create issues to submit questions, reports burgs, and request new features. To reach
 the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
+Compatibility
+-------------
+PyFluent supports **Ansys Fluent 2022 R2 and later**.
+
+**Note:** PyFluent is *not supported* when using a **Fluent Pro** license.
+
 License
 -------
 PyFluent-Visualization is licensed under the MIT license.
