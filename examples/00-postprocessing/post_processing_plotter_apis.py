@@ -22,8 +22,9 @@
 
 """.. _ref_post_processing_plotter_apis:
 
-Basic Post-Processing Using PyVista and Matplotlib Plotter APIs
----------------------------------------------------------------
+Post-processing using Pyvista and Matplotlib plotter APIs
+---------------------------------------------------------
+
 Demonstrates the use of PyFluent’s post-processing capabilities with PyVista
 and Matplotlib interfaces for 3D and 2D visualization.
 

@@ -22,8 +22,8 @@
 
 """.. _ref_post_processing_context_manager:
 
-Context-managed post-processing workflow
-----------------------------------------
+Context-managed post-processing workflow using Pyvista and Matplotlib
+---------------------------------------------------------------------
 This example demonstrates a context-managed, object-oriented postprocessing
 workflow in **PyFluent**, showcasing advanced visualization and analysis
 capabilities for CFD simulations.

@@ -164,8 +164,8 @@ sphinx_gallery_conf = {
     "filename_pattern": r"\.py",
     # Disabled example scripts
     "ignore_pattern": r"post_processing_callbacks_and_animation\.py|"
-    r"post_processing_context_manager\.py|post_processing_plotter_apis\.py|"
-    r"post_processing_legacy\.py|post_processing_plotter_apis_context_manager\.py",
+    r"post_processing_context_manager\.py|post_processing_legacy\.py|"
+    r"post_processing_plotter_apis_context_manager\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)

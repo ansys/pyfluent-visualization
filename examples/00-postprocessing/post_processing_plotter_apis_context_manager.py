@@ -22,8 +22,8 @@
 
 """.. _ref_post_processing_plotter_apis_context_manager:
 
-Context managed advanced post-processing using pyvista and matplotlib plotter APIs
-----------------------------------------------------------------------------------
+Context managed post-processing using Pyvista and Matplotlib plotter APIs
+-------------------------------------------------------------------------
 TDemonstrates advanced, context-managed post-processing capabilities in PyFluent
 using both the PyVista and Matplotlib plotter APIs.
 
