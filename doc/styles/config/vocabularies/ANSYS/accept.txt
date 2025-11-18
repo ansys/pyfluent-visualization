@@ -19,8 +19,6 @@ MonitorPlot
 MonitorsManager
 NumPy
 numpy
-Postprocessing
-postprocessing
 postprocess
 Pythonic
 PyVista
