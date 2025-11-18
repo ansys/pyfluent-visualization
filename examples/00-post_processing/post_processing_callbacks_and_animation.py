@@ -20,13 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_script_manifold:
+""".. _ref_post_processing_callbacks_and_animation:
 
 Triggering callbacks and Animation
 ----------------------------------
-This example uses PyVista and Matplotlib to demonstrate the use
-of callback mechanisms. The 3D model in this example
-is an exhaust manifold.
+This example demonstrates how to use solver callbacks in PyFluent to create real-time,
+automatically updating visualizations for an exhaust manifold case. By connecting Fluent
+solver events to plot and graphics updates, the example shows how users can monitor flow
+evolution interactively as iterations progress.
+
+It creates mesh, contour, vector, pathline, XY, and monitor plots,
+and updates them live during the solve. The workflow also highlights
+the use of Pyvista for 3D rendering and the GraphicsWindow interface for
+managing multiple visualization windows.
+
+**Key Features
+
+* Real-time plot and graphics updates driven by solver callbacks.
+* Live contour, XY, and monitor plot animation during iterations.
+* 3D visualization using Pyvista through PyFluent’s unified API.
+* Management of multiple visualizations using the GraphicsWindow interface.
+
+
 """
 
 ###############################################################################

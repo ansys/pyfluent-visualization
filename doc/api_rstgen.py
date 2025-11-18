@@ -2,6 +2,29 @@
 
 from pathlib import Path
 
+from ansys.fluent.core import FluentVersion
+
+api_contents_path = (
+    Path(__file__).parents[0].resolve()
+    / "source"
+    / "visualization"
+    / "visualization_contents.rst"
+)
+fluent_version = FluentVersion.current_release()
+
+
+def _write_rst_file(file_handle, version: FluentVersion):
+    content = f"""
+
+This is PyFluent Visualization's class and function reference.
+Please refer to the :ref:`ref_user_guide` for full guidelines on their use.
+
+All the public APIs for PyFluent Visualization are listed in the left hand margin.
+
+"""
+
+    file_handle.write(content)
+
 
 def _get_folder_path(folder_name: str):
     """Get folder path.
@@ -80,13 +103,15 @@ def _generate_api_index_rst_files():
         folder_index = _get_file_path(folder, f"{folder}_contents")
         with open(folder_index, "w", encoding="utf8") as index:
             index.write(f".. _ref_{folder}:\n\n")
-            index.write(f"{folder}\n")
+            index.write(
+                "API reference\n" if folder == "visualization" else f"{folder}\n"
+            )
             index.write(f'{"=" * (len(f"{folder}"))}\n\n')
-            index.write(f".. automodule:: ansys.fluent.{folder}\n")
-            _write_common_rst_members(rst_file=index)
+            _write_rst_file(index, fluent_version)
             index.write(".. toctree::\n")
             index.write("    :maxdepth: 2\n")
-            index.write("    :hidden:\n\n")
+            index.write("    :hidden:\n")
+            index.write(f"    :caption: ansys.fluent.{folder}\n\n")
             for file in files:
                 index.write(f"    {file}\n")
             index.write("\n")

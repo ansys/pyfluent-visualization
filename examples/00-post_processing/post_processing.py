@@ -20,32 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_updated_exhaust_manifold_example:
+""".. _ref_post_processing:
 
-Enhanced Postprocessing with PyVista and Matplotlib
----------------------------------------------------
-This updated example demonstrates postprocessing capabilities in PyFluent
-using an object-oriented approach, providing a more user-friendly interface
-and improved flexibility.
-The 3D model used in this example is an exhaust manifold, where high-temperature
-turbulent flows are analyzed in a conjugate heat transfer scenario.
+Post-processing using Pyvista and Matplotlib
+--------------------------------------------
+This example shows how to use PyFluent’s post-processing tools to visualize Fluent
+results in both 3D and 2D. It demonstrates a typical workflow for exploring simulation
+data—such as temperature and velocity fields—using Pyvista for interactive 3D graphics
+and Matplotlib for standard 2D plots.
 
-Key Improvements:
+The model used here is an exhaust manifold, but the techniques apply to
+any Fluent simulation.
 
-Object-Oriented Design: The code has been modularized into classes and methods,
-enhancing maintainability and reusability.
+**What this example demonstrates**
 
-Interactive User Interface: The user interface now allows seamless interaction,
-enabling users to control and customize postprocessing parameters.
+* 3D Visualization with Pyvista: Display meshes, surfaces, iso-surfaces, contours,
+  vectors, and pathlines to understand spatial flow behavior.
 
-Enhanced Plot Interaction: Users have greater freedom to interact with the plots,
-such as adding and super-imposing multiple plots, and toggling data views,
-enhancing the visualization experience.
+* 2D Plotting with Matplotlib: Create XY plots such as temperature or velocity
+  profiles, monitor quantities, and compare numerical trends.
 
-This example utilizes PyVista for 3D visualization and Matplotlib for 2D data plotting.
-The new design provides a streamlined workflow for exploring and analyzing
-the temperature and flow characteristics in the exhaust manifold.
+* Simple, Practical Workflow: Shows how to load results, create common visualization
+  objects, adjust display settings, and interact with the scene — all with clear,
+  straightforward commands.
 
+* Unified Post-Processing Interface: Combines 3D and 2D visualization tools so users can
+  inspect their results from multiple perspectives within a single, consistent workflow.
+
+This example provides a concise starting point for analyzing Fluent simulations
+visually, without requiring knowledge of internal APIs or implementation details.
 """
 
 ###############################################################################
