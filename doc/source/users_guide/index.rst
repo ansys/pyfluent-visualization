@@ -269,6 +269,60 @@ stages. Graphics updates occur:
 These updates are implemented using explicit callback registrations.
 Additionally, animations can be created from a graphics window.
 
+Context-managed graphics workflow
+---------------------------------
+PyFluent-Visualization also supports a context-managed workflow with the
+``using()`` interface. A context manager automatically handles setup and
+cleanup of solver sessions and graphics containers, ensuring that resources are
+released cleanly when the block completes.
+
+This approach improves readability, avoids manual window management, and
+prevents graphics objects from remaining open longer than intended. It is
+especially helpful when generating multiple plots or exporting images in a
+scripted workflow.
+
+The following example demonstrates context-managed creation and display of a
+mesh visualization:
+
+.. code-block:: python
+
+    import ansys.fluent.core as pyfluent
+    from ansys.fluent.core import examples
+    from ansys.fluent.core.solver import WallBoundaries, using
+    from ansys.fluent.visualization import Mesh, GraphicsWindow
+
+    # Download input files
+    case = examples.download_file(
+        "exhaust_system.cas.h5", "pyfluent/exhaust_system"
+    )
+    data = examples.download_file(
+        "exhaust_system.dat.h5", "pyfluent/exhaust_system"
+    )
+
+    # Launch Fluent
+    solver = pyfluent.launch_fluent(mode=pyfluent.FluentMode.SOLVER)
+    solver.settings.file.read_case(case)
+    solver.settings.file.read_data(data)
+
+    # Context-managed workflow
+    with using(solver):
+
+        # Create a graphics container
+        container = GraphicsWindow()
+
+        # Add mesh displays
+        container.add_graphics(Mesh(show_edges=True, surfaces=WallBoundaries()), position=(0, 0))
+        container.add_graphics(Mesh(surfaces=WallBoundaries()), position=(0, 1))
+
+        # Export and display
+        container.save_graphics("mesh_view.pdf")
+        container.show()
+
+Using this pattern ensures that both the Fluent session and graphics containers
+are closed safely and consistently when the code block finishes. It also
+helps maintain clean, predictable behavior in larger automated
+post-processing workflows.
+
 This guide provides a structured approach to using PyFluent-Visualization.
 For detailed usage of individual modules,
 refer to the respective module documentation, see :ref:`ref_visualization`.

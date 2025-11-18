@@ -26,7 +26,7 @@ Context-managed post-processing workflow using Pyvista and Matplotlib
 ---------------------------------------------------------------------
 This example demonstrates a streamlined, context-managed post-processing workflow
 in PyFluent, using an exhaust manifold case to showcase common 2D and 3D visualization
-tasks. Context managers handle setup and cleanup of solver sessions and graphics windows
+tasks. Context managers handle setup and cleanup of solver sessions and graphics containers
 automatically, making the workflow cleaner and easier to follow.
 
 Users can explore meshes, contours, slices, iso-surfaces, vectors, and pathlines,
