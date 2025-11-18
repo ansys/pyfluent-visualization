@@ -25,7 +25,6 @@
 from enum import Enum
 import itertools
 import threading
-from typing import Dict, List, Optional
 
 import numpy as np
 import pyvista as pv
@@ -130,7 +129,7 @@ class GraphicsWindow(VisualizationWindow):
             raise KeyError(error_message) from ex
         return renderer(self.id, in_jupyter(), not pyviz.config.interactive, self._grid)
 
-    def set_data(self, data_type: FieldDataType, data: Dict[int, Dict[str, np.array]]):
+    def set_data(self, data_type: FieldDataType, data: dict[int, dict[str, np.array]]):
         """Set data for graphics."""
         self._data[data_type] = data
 
@@ -653,10 +652,10 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 
     def __init__(self):
         """Instantiate ``GraphicsWindow`` for Graphics."""
-        self._post_windows: Dict[str:GraphicsWindow] = {}
+        self._post_windows: dict[str:GraphicsWindow] = {}
         self._plotter_thread: threading.Thread = None
         self._post_object: GraphicsDefn = None
-        self._window_id: Optional[str] = None
+        self._window_id: str | None = None
         self._exit_thread: bool = False
         self._app = None
         self._post_objects_list = []
@@ -753,9 +752,9 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 
     def refresh_windows(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
-        overlay: Optional[bool] = False,
+        overlay: bool | None = False,
     ) -> None:
         """Refresh windows.
 
@@ -784,7 +783,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 
     def animate_windows(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
     ) -> None:
         """Animate windows.
@@ -816,7 +815,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 
     def close_windows(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
     ) -> None:
         """Close windows.
@@ -846,9 +845,9 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 
     def _get_windows_id(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
-    ) -> List[str]:
+    ) -> list[str]:
         if windows_id is None:
             windows_id = []
         with self._condition:
@@ -916,9 +915,9 @@ class NonInteractiveGraphicsManager(
     def plot(
         self,
         graphics_object: GraphicsDefn,
-        window_id: Optional[str] = None,
-        fetch_data: Optional[bool] = False,
-        overlay: Optional[bool] = False,
+        window_id: str | None = None,
+        fetch_data: bool | None = False,
+        overlay: bool | None = False,
     ) -> None:
         """Draw a plot.
 
@@ -1027,9 +1026,9 @@ class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsMan
     def plot(
         self,
         graphics_object: GraphicsDefn,
-        window_id: Optional[str] = None,
-        fetch_data: Optional[bool] = False,
-        overlay: Optional[bool] = False,
+        window_id: str | None = None,
+        fetch_data: bool | None = False,
+        overlay: bool | None = False,
     ) -> None:
         """Draw a plot.
 

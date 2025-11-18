@@ -26,16 +26,16 @@ import warnings
 from ansys.fluent.core import PyFluentDeprecationWarning
 
 
-def in_jupyter():
+def in_jupyter() -> bool:
     """Checks if the library is being used in a Jupyter environment."""
     try:
         from IPython import get_ipython
 
-        return "IPKernelApp" in get_ipython().config
+        return "IPKernelApp" in get_ipython().config  # pyright: ignore[reportOptionalMemberAccess]
     except (ImportError, AttributeError):
         return False
 
 
-def in_notebook():
+def in_notebook() -> bool:
     warnings.warn("Please use 'in_jupyter' instead.", PyFluentDeprecationWarning)
     return in_jupyter()

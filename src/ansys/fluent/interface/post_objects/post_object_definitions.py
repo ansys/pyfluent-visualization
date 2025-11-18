@@ -24,7 +24,7 @@
 
 from abc import abstractmethod
 import logging
-from typing import List, NamedTuple
+from typing import NamedTuple
 
 from ansys.fluent.interface.post_objects.meta import (
     Attribute,
@@ -146,14 +146,14 @@ class XYPlotDefn(PlotDefn):
         value: str = "direction-vector"
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """X axis function allowed values."""
             return ["direction-vector"]
 
     class surfaces(metaclass=PyLocalPropertyMeta):
         """List of surfaces for plotting."""
 
-        value: List[str] = []
+        value: list[str] = []
 
         @Attribute
         def allowed_values(self):
@@ -171,7 +171,7 @@ class MeshDefn(GraphicsDefn):
     class surfaces(metaclass=PyLocalPropertyMeta):
         """List of surfaces for mesh graphics."""
 
-        value: List[str] = []
+        value: list[str] = []
 
         @Attribute
         def allowed_values(self):
@@ -214,7 +214,7 @@ class PathlinesDefn(GraphicsDefn):
     class surfaces(metaclass=PyLocalPropertyMeta):
         """List of surfaces for pathlines."""
 
-        value: List[str] = []
+        value: list[str] = []
 
         @Attribute
         def allowed_values(self):
@@ -474,7 +474,7 @@ class ContourDefn(GraphicsDefn):
     class surfaces(metaclass=PyLocalPropertyMeta):
         """Contour surfaces."""
 
-        value: List[str] = []
+        value: list[str] = []
 
         @Attribute
         def allowed_values(self):
@@ -664,7 +664,7 @@ class VectorDefn(GraphicsDefn):
     class surfaces(metaclass=PyLocalPropertyMeta):
         """List of surfaces for vector graphics."""
 
-        value: List[str] = []
+        value: list[str] = []
 
         @Attribute
         def allowed_values(self):

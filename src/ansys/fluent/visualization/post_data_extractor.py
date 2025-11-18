@@ -23,7 +23,6 @@
 """Module providing data extractor APIs."""
 
 import itertools
-from typing import Dict
 
 from ansys.fluent.core.field_data_interfaces import (
     PathlinesFieldDataRequest,
@@ -267,7 +266,7 @@ class XYPlotDataExtractor:
         """
         self._post_object: PlotDefn = post_object
 
-    def fetch_data(self) -> Dict[str, Dict[str, np.array]]:
+    def fetch_data(self) -> dict[str, dict[str, np.array]]:
         """Fetch data for visualization object.
 
         Parameters

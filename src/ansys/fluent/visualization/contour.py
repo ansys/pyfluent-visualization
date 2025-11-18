@@ -22,7 +22,7 @@
 
 """Contour objects based on field name and surfaces list."""
 
-from typing import List, Optional
+from typing import Optional
 
 
 class Contour:
@@ -57,7 +57,7 @@ class Contour:
                     f"{surface} is not valid surface. Valid surfaces are {allowed_surfaces}"  # noqa: E501
                 )
 
-    def __init__(self, field: str, surfaces: List[str], solver: Optional = None):
+    def __init__(self, field: str, surfaces: list[str], solver: Optional = None):
         """Create contour using field name and surfaces list.
 
         Parameters

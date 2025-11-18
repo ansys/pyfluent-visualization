@@ -23,7 +23,6 @@
 """Module providing visualization objects for Matplotlib."""
 
 import sys
-from typing import Optional
 
 from ansys.fluent.interface.post_objects.meta import Command
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
@@ -77,7 +76,7 @@ class XYPlot(XYPlotDefn):
     """
 
     @Command
-    def plot(self, window_id: Optional[str] = None):
+    def plot(self, window_id: str | None = None):
         """Draw XYPlot.
 
         Parameters
@@ -112,7 +111,7 @@ class MonitorPlot(MonitorDefn):
     """
 
     @Command
-    def plot(self, window_id: Optional[str] = None):
+    def plot(self, window_id: str | None = None):
         """Draw Monitor Plot.
 
         Parameters

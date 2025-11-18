@@ -23,7 +23,6 @@
 """Module providing visualization objects for PyVista."""
 
 import sys
-from typing import Optional
 
 from ansys.fluent.interface.post_objects.meta import Command
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
@@ -80,7 +79,7 @@ class Mesh(MeshDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display mesh graphics.
 
         Parameters
@@ -112,7 +111,7 @@ class Pathlines(PathlinesDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display mesh graphics.
 
         Parameters
@@ -155,7 +154,7 @@ class Surface(SurfaceDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display surface graphics.
 
         Parameters
@@ -196,7 +195,7 @@ class Contour(ContourDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display contour graphics.
 
         Parameters
@@ -238,7 +237,7 @@ class Vector(VectorDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display vector graphics.
 
         Parameters

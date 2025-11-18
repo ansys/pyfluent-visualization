@@ -55,20 +55,20 @@ class PostAPIHelper:
             self._surface_name_on_server = self.surface_name_on_server(obj._name)
 
         @staticmethod
-        def surface_name_on_server(local_surface_name):
+        def surface_name_on_server(local_surface_name: str) -> str:
             """Return the surface name on server."""
             return local_surface_name.lower()
 
         def _get_api_handle(self):
             return self.obj.get_root().session.results.surfaces
 
-        def _delete_if_exists_on_server(self):
+        def _delete_if_exists_on_server(self) -> None:
             field_data = self.obj._api_helper.field_data()
             surfaces_list = list(field_data.surfaces())
             if self._surface_name_on_server in surfaces_list:
                 self.delete_surface_on_server()
 
-        def create_surface_on_server(self):
+        def create_surface_on_server(self) -> None:
             """Create the surface on server.
 
             Raises
@@ -135,21 +135,21 @@ class PostAPIHelper:
             if self._surface_name_on_server not in surfaces_list:
                 raise SurfaceCreationError()
 
-        def delete_surface_on_server(self):
+        def delete_surface_on_server(self) -> None:
             """Deletes the surface on server."""
             if self.obj.definition.type() == "iso-surface":
                 del self._get_api_handle().iso_surface[self._surface_name_on_server]
             elif self.obj.definition.type() == "plane-surface":
                 del self._get_api_handle().plane_surface[self._surface_name_on_server]
 
-    def __init__(self, obj):
+    def __init__(self, obj: Surface):
         """__init__ method of PostAPIHelper class."""
         self.obj = obj
         self.field_data = lambda: obj.get_root().session.fields.field_data
         if obj.__class__.__name__ == "Surface":
             self.surface_api = PostAPIHelper._SurfaceAPI(obj)
 
-    def remote_surface_name(self, local_surface_name):
+    def remote_surface_name(self, local_surface_name: str):
         """Return the surface name."""
 
         local_surfaces_provider = self.obj.get_root()._local_surfaces_provider()
@@ -159,7 +159,7 @@ class PostAPIHelper:
         else:
             return local_surface_name
 
-    def get_field_unit(self, field):
+    def get_field_unit(self, field: str) -> str | None:
         """Return the unit of the field."""
         session = self.obj.get_root().session
         if FluentVersion(session.scheme.version) < FluentVersion.v252:
@@ -172,11 +172,11 @@ class PostAPIHelper:
             fields_info = self.field_data().scalar_fields()
             return get_si_unit_for_fluent_quantity(fields_info[field]["quantity_name"])
 
-    def _field_unit_quantity(self, field):
+    def _field_unit_quantity(self, field: str) -> str:
         scheme_eval_str = f"(cdr (assq 'units (%fill-render-info '{field})))"
         return self._scheme_str_to_py_list(scheme_eval_str)[0]
 
-    def _scheme_str_to_py_list(self, scheme_eval_str):
+    def _scheme_str_to_py_list(self, scheme_eval_str: str) -> list[str]:
         session = self.obj.get_root().session
         if hasattr(session, "scheme_eval"):
             str_val = session.scheme.string_eval(scheme_eval_str)

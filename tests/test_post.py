@@ -23,7 +23,6 @@
 from pathlib import Path
 import pickle
 import sys
-from typing import Dict, List, Optional, Union
 
 from ansys.fluent.core.field_data_interfaces import SurfaceDataType
 import numpy as np
@@ -47,7 +46,7 @@ class MockFieldTransaction:
 
     def add_surfaces_request(
         self,
-        surface_ids: List[int],
+        surface_ids: list[int],
         overset_mesh: bool = False,
         provide_vertices=True,
         provide_faces=True,
@@ -67,10 +66,10 @@ class MockFieldTransaction:
 
     def add_scalar_fields_request(
         self,
-        surface_ids: List[int],
+        surface_ids: list[int],
         field_name: str,
-        node_value: Optional[bool] = True,
-        boundary_value: Optional[bool] = False,
+        node_value: bool | None = True,
+        boundary_value: bool | None = False,
     ) -> None:
         self.fields_request["scalar"].append(
             (surface_ids, field_name, node_value, boundary_value)
@@ -78,12 +77,12 @@ class MockFieldTransaction:
 
     def add_vector_fields_request(
         self,
-        surface_ids: List[int],
+        surface_ids: list[int],
         field_name: str,
     ) -> None:
         self.fields_request["vector"].append((surface_ids, field_name))
 
-    def get_fields(self) -> Dict[int, Dict]:
+    def get_fields(self) -> dict[int, dict]:
         fields = {}
         for request_type, requests in self.fields_request.items():
             for request in requests:
@@ -119,9 +118,9 @@ class MockFieldData:
     def get_surface_data(
         self,
         surface_name: str,
-        data_type: Union[SurfaceDataType, int],
-        overset_mesh: Optional[bool] = False,
-    ) -> Dict:
+        data_type: SurfaceDataType | int,
+        overset_mesh: bool | None = False,
+    ) -> dict:
         surfaces_info = self.surfaces()
         surface_ids = surfaces_info[surface_name]["surface_id"]
         self._request_to_serve["surf"].append(

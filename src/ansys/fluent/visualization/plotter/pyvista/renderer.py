@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Optional
 
 import numpy as np
 import pyvista as pv
@@ -34,11 +33,11 @@ class Plotter(AbstractRenderer):
     def __init__(
         self,
         window_id: str,
-        curves: Optional[List[str]] = None,
-        title: Optional[str] = "XY Plot",
-        xlabel: Optional[str] = "position",
-        ylabel: Optional[str] = "",
-        remote_process: Optional[bool] = False,
+        curves: list[str] | None = None,
+        title: str | None = "XY Plot",
+        xlabel: str | None = "position",
+        ylabel: str | None = "",
+        remote_process: bool | None = False,
         grid: tuple | None = (1, 1),
     ):
         """Instantiate a pyvista chart 2D plotter.

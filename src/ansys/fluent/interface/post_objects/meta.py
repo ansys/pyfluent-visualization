@@ -23,17 +23,23 @@
 """Metaclasses used in various explicit classes in PyFluent."""
 
 from abc import ABCMeta
-from collections.abc import MutableMapping
+from collections.abc import Callable, MutableMapping
 import inspect
-from typing import List
+from typing import TYPE_CHECKING, Any, Concatenate, Generic, Never, Protocol, Self, overload
+from typing_extensions import Self, TypeVar, ParamSpec
 
 from ansys.fluent.core.exceptions import DisallowedValuesError, InvalidArgument
+if TYPE_CHECKING:
+    from ansys.fluent.interface.post_objects.post_objects_container import Container
 
 # pylint: disable=unused-private-member
 # pylint: disable=bad-mcs-classmethod-argument
 
+_SelfT = TypeVar("_SelfT", covariant=True)
+_T_co = TypeVar("_T_co", covariant=True)
 
-class Attribute:
+
+class Attribute(Generic[_SelfT, _T_co]):
     """Attributes."""
 
     VALID_NAMES = [
@@ -61,38 +67,54 @@ class Attribute:
         "extensions",
     ]
 
-    def __init__(self, function):
+    def __init__(self, function: Callable[[_SelfT], _T_co], /):
         self.function = function
+        self.__doc__: str | None = getattr(function, "__doc__", None)
+        self.name: str
 
-    def __set_name__(self, obj, name):
+    def __set_name__(self, owner: type, name: str):
         if name not in self.VALID_NAMES:
             raise DisallowedValuesError("attribute", name, self.VALID_NAMES)
         self.name = name
-        if not hasattr(obj, "attributes"):
-            obj.attributes = set()
-        obj.attributes.add(name)
+        if not hasattr(owner, "attributes"):
+            owner.attributes = set()
+        owner.attributes.add(name)
 
-    def __set__(self, obj, value):
+    def __set__(self, instance: _SelfT, value: _T_co) -> Never:  # pyright: ignore[reportGeneralTypeIssues]
         raise AttributeError("Attributes are read only.")
 
-    def __get__(self, obj, objtype=None):
-        return self.function(obj)
+    @overload
+    def __get__(self, instance: None, _) -> Self: ...
+
+    @overload
+    def __get__(self, instance: _SelfT, _) -> _T_co:  # pyright: ignore[reportGeneralTypeIssues]
+        ...
+
+    def __get__(self, instance: _SelfT | None, _) -> _T_co | Self:
+        if instance is None:
+            return self
+        return self.function(instance)
 
 
-class Command:
+P = ParamSpec("P")
+
+
+class Command(Generic[_SelfT, P]):
     """Executes command."""
 
-    def __init__(self, method):
+    def __init__(self, method: Callable[Concatenate[_SelfT, P], None]):
         self.arguments_attrs = {}
+        self.owner: type
+
         cmd_args = inspect.signature(method).parameters
         for arg_name in cmd_args:
             if arg_name != "self":
                 self.arguments_attrs[arg_name] = {}
 
-        def _init(_self, obj):
+        def _init(_self: _SelfT, obj):
             _self.obj = obj
 
-        def _execute(_self, *args, **kwargs):
+        def _execute(_self: _SelfT, *args: Any, **kwargs: Any):
             for arg, attr_data in self.arguments_attrs.items():
                 arg_value = None
                 if arg in kwargs:
@@ -137,34 +159,37 @@ class Command:
             {
                 "__init__": _init,
                 "__call__": _execute,
-                "argument_attribute": lambda _self, argument_name, attr_name: self.arguments_attrs[  # noqa: E501
+                "argument_attribute": lambda _self,
+                argument_name,
+                attr_name: self.arguments_attrs[  # noqa: E501
                     argument_name
-                ][
-                    attr_name
-                ](
-                    _self.obj
-                ),
+                ][attr_name](_self.obj),
                 "arguments": lambda _self: list(self.arguments_attrs.keys()),
             },
         )
 
-    def __set_name__(self, obj, name):
-        self.obj = obj
-        if not hasattr(obj, "commands"):
-            obj.commands = {}
-        obj.commands[name] = {}
+    def __set_name__(self, owner: type, name: str) -> None:
+        self.owner = owner
+        if not hasattr(owner, "commands"):
+            owner.commands = {}
+        owner.commands[name] = {}
 
-    def __get__(self, obj, obj_type=None):
+    def __get__(self, instance: _SelfT, _):  # pyright: ignore[reportGeneralTypeIssues]
         if hasattr(self, "command"):
             return self.command
         else:
-            return self.command_cls(obj)
+            return self.command_cls(instance)
 
 
-def CommandArgs(command_object, argument_name):
+TT = TypeVar("TT", bound=type)
+
+
+def CommandArgs(
+    command_object: Command[object, ...], argument_name: str
+) -> Callable[[TT], TT]:
     """Command arguments."""
 
-    def wrapper(attribute):
+    def wrapper(attribute: TT) -> TT:
         if argument_name in command_object.arguments_attrs:
             command_object.arguments_attrs[argument_name].update(
                 {attribute.__name__: attribute}
@@ -176,66 +201,70 @@ def CommandArgs(command_object, argument_name):
     return wrapper
 
 
+class _Wrapper(Protocol):
+    def __call__(self, self_: type, instance: Any, owner: type, /) -> Any: ...
+
+
 class PyLocalBaseMeta(type):
     """Local base metaclass."""
 
     @classmethod
-    def __create_get_ancestors_by_type(cls):
-        def wrapper(self, obj_type, obj=None):
-            obj = self if obj is None else obj
+    def __create_get_ancestors_by_type(cls) -> _Wrapper:
+        def wrapper(self: type, instance, owner: type | None = None):
+            owner = self if owner is None else owner
             parent = None
-            if getattr(obj, "_parent", None):
-                if isinstance(obj._parent, obj_type):
-                    return obj._parent
-                parent = self.get_ancestors_by_type(obj_type, obj._parent)
+            if getattr(owner, "_parent", None):
+                if isinstance(owner._parent, instance):
+                    return owner._parent
+                parent = self.get_ancestors_by_type(instance, owner._parent)
             return parent
 
         return wrapper
 
     @classmethod
-    def __create_get_ancestors_by_name(cls):
-        def wrapper(self, obj_type, obj=None):
-            obj = self if obj is None else obj
+    def __create_get_ancestors_by_name(cls) -> _Wrapper:
+        def wrapper(self: type, instance, owner: type | None = None):
+            instance = self if instance is None else instance
             parent = None
-            if getattr(obj, "_parent", None):
-                if obj._parent.__class__.__name__ == obj_type:
-                    return obj._parent
-                if getattr(obj._parent, "PLURAL", None) == obj_type:
-                    return obj._parent._parent
-                parent = self.get_ancestors_by_name(obj_type, obj._parent)
+            if getattr(instance, "_parent", None):
+                if instance._parent.__class__.__name__ == owner:
+                    return instance._parent
+                if getattr(instance._parent, "PLURAL", None) == owner:
+                    return instance._parent._parent
+                parent = self.get_ancestors_by_name(owner, instance._parent)
             return parent
 
         return wrapper
 
     @classmethod
-    def __create_get_root(cls):
-        def wrapper(self, obj=None):
-            obj = self if obj is None else obj
-            parent = obj
-            if getattr(obj, "_parent", None):
-                parent = self.get_root(obj._parent)
+    def __create_get_root(cls) -> _Wrapper:
+        def wrapper(self: type, instance, owner: type | None = None):
+            instance = self if instance is None else instance
+            parent = instance
+            if getattr(instance, "_parent", None):
+                parent = self.get_root(instance._parent)
             return parent
 
         return wrapper
 
     @classmethod
-    def __create_get_session(cls):
-        def wrapper(self, obj=None):
-            root = self.get_root(obj)
+    def __create_get_session(cls) -> _Wrapper:
+        def wrapper(self: type, instance, owner: type | None = None):
+            root = self.get_root(instance)
             return root.session
 
         return wrapper
 
     @classmethod
-    def __create_get_session_handle(cls):
-        def wrapper(self, obj=None):
-            root = self.get_root(obj)
+    def __create_get_session_handle(cls)-> _Wrapper:
+        def wrapper(self: type, instance, owner: type | None = None):
+            root = self.get_root(instance)
             return getattr(root, "session_handle", None)
 
         return wrapper
 
     @classmethod
-    def __create_get_path(cls):
+    def __create_get_path(cls) -> _Wrapper:
         def wrapper(self):
             if getattr(self, "_parent", None):
                 return self._parent.get_path() + "/" + self._name
@@ -243,7 +272,7 @@ class PyLocalBaseMeta(type):
 
         return wrapper
 
-    def __new__(cls, name, bases, attrs):
+    def __new__(cls, name: str, bases: tuple[type, ...], attrs: dict[str, Any]) -> Self:
         attrs["get_ancestors_by_type"] = cls.__create_get_ancestors_by_type()
         attrs["get_ancestors_by_name"] = cls.__create_get_ancestors_by_name()
         attrs["get_root"] = cls.__create_get_root()
@@ -257,7 +286,31 @@ class PyLocalBaseMeta(type):
         attrs["field_data"] = property(lambda self: self.get_session().field_data)
         attrs["monitors"] = property(lambda self: self.get_session().monitors)
         attrs["session_handle"] = property(lambda self: self.get_session_handle())
-        return super(PyLocalBaseMeta, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
+
+    def get_ancestors_by_type(self) -> str: ...
+    def get_ancestors_by_name(self) -> str: ...
+    def get_root(self) -> str: ...
+    def get_session(self) -> str: ...
+    def get_session_handle(self) -> str: ...
+    def get_path(self) -> str: ...
+
+    @property
+    def root(self) -> str: ...
+    @property
+    def path(self) -> str: ...
+    @property
+    def session(self) -> str: ...
+    @property
+    def field_data(self) -> str: ...
+    @property
+    def monitors(self) -> str: ...
+    @property
+    def session_handle(self) -> str: ...
+
+class Foo(metaclass=PyLocalBaseMeta):
+    get_ancestors_by_type = PyLocalBaseMeta.get_ancestors_by_type
+
 
 
 class PyLocalPropertyMeta(PyLocalBaseMeta):
@@ -331,12 +384,12 @@ class PyLocalPropertyMeta(PyLocalBaseMeta):
 
         return wrapper
 
-    def __new__(cls, name, bases, attrs):
+    def __new__(cls, name:str, bases: tuple[type, ...], attrs: dict[str, Any]):
         attrs["__init__"] = cls.__create_init()
         attrs["__call__"] = cls.__create_get_state()
         attrs["_register_on_change_cb"] = cls.__create_register_on_change()
         attrs["set_state"] = cls.__create_set_state()
-        return super(PyLocalPropertyMeta, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class PyReferenceObjectMeta(PyLocalBaseMeta):
@@ -428,7 +481,7 @@ class PyReferenceObjectMeta(PyLocalBaseMeta):
         attrs["__getattr__"] = attrs.get("__getattr__", cls.__create_getattr())
         attrs["reset"] = cls.__create_reset()
         attrs["get_path"] = cls.__create_get_path()
-        return super(PyReferenceObjectMeta, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class PyLocalObjectMeta(PyLocalBaseMeta):
@@ -483,7 +536,7 @@ class PyLocalObjectMeta(PyLocalBaseMeta):
 
     @classmethod
     def __create_getattribute(cls):
-        def wrapper(self, name):
+        def wrapper(self, name: str):
             obj = object.__getattribute__(self, name)
             return obj
 
@@ -588,14 +641,14 @@ class PyLocalObjectMeta(PyLocalBaseMeta):
 
         return wrapper
 
-    def __new__(cls, name, bases, attrs):
+    def __new__(cls, name: str, bases: tuple[type, ...], attrs: dict[str, Any]):
         attrs["__getattribute__"] = cls.__create_getattribute()
         attrs["__init__"] = attrs.get("__init__", cls.__create_init())
         if "__call__" not in attrs:
             attrs["__call__"] = cls.__create_get_state()
         attrs["__setattr__"] = cls.__create_setattr()
         attrs["update"] = cls.__create_updateitem()
-        return super(PyLocalObjectMeta, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class PyLocalCommandMeta(PyLocalObjectMeta):
@@ -648,7 +701,7 @@ class PyLocalCommandMeta(PyLocalObjectMeta):
     def __new__(cls, name, bases, attrs):
         attrs["__init__"] = cls.__create_init()
         attrs["__call__"] = cls.__execute_command()
-        return super(PyLocalCommandMeta, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class PyLocalNamedObjectMeta(PyLocalObjectMeta):
@@ -704,7 +757,7 @@ class PyLocalNamedObjectMeta(PyLocalObjectMeta):
 
     def __new__(cls, name, bases, attrs):
         attrs["__init__"] = cls.__create_init()
-        return super(PyLocalNamedObjectMeta, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class PyLocalNamedObjectMetaAbstract(ABCMeta, PyLocalNamedObjectMeta):
@@ -713,10 +766,13 @@ class PyLocalNamedObjectMetaAbstract(ABCMeta, PyLocalNamedObjectMeta):
     pass
 
 
-class PyLocalContainer(MutableMapping):
+T = TypeVar("T")
+
+
+class PyLocalContainer(MutableMapping[str, T]):
     """Local container for named objects."""
 
-    def __init__(self, parent, object_class, api_helper, name=""):
+    def __init__(self, parent: "Container", object_class: type[T], api_helper, name: str = ""):
         """Initialize the 'PyLocalContainer' object."""
         self._parent = parent
         self._name = name
@@ -766,7 +822,7 @@ class PyLocalContainer(MutableMapping):
                     cls(self, api_helper, name),
                 )
 
-    def update(self, value):
+    def update(self, value) -> None:
         """Updates this object with the provided dictionary."""
         for name, val in value.items():
             o = self[name]
@@ -785,14 +841,14 @@ class PyLocalContainer(MutableMapping):
         root = self.get_root(obj)
         return root.session
 
-    def get_path(self):
+    def get_path(self) -> str:
         """Path to the current object."""
         if getattr(self, "_parent", None):
             return self._parent.get_path() + "/" + self._name
         return self._name
 
     @property
-    def path(self):
+    def path(self) -> str:
         """Path to the current object."""
         return self.get_path()
 
@@ -814,7 +870,7 @@ class PyLocalContainer(MutableMapping):
     def __iter__(self):
         return iter(self._local_collection)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._local_collection)
 
     def __getitem__(self, name):
@@ -828,17 +884,17 @@ class PyLocalContainer(MutableMapping):
                 on_create(self, name)
         return o
 
-    def __setitem__(self, name, value):
+    def __setitem__(self, name, value) -> None:
         o = self[name]
         o.update(value)
 
-    def __delitem__(self, name):
+    def __delitem__(self, name) -> None:
         del self._local_collection[name]
         on_delete = getattr(self._PyLocalContainer__object_class, "on_delete", None)
         if on_delete:
             on_delete(self, name)
 
-    def _get_unique_chid_name(self):
+    def _get_unique_chid_name(self) -> str:
         children = list(self)
         index = 0
         while True:
@@ -853,14 +909,14 @@ class PyLocalContainer(MutableMapping):
     class Delete(metaclass=PyLocalCommandMeta):
         """Local delete command."""
 
-        def _exe_cmd(self, names):
+        def _exe_cmd(self, names) -> None:
             for item in names:
                 self._parent.__delitem__(item)
 
         class names(metaclass=PyLocalPropertyMeta):
             """Local names property."""
 
-            value: List[str] = []
+            value: list[str] = []
 
             @Attribute
             def allowed_values(self):
