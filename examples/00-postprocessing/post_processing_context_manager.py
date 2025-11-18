@@ -35,10 +35,11 @@ PyVista and high-quality plotting with Matplotlib, giving users a flexible way t
 
 **Key features include:
 
--Simplified setup through context-managed Fluent sessions and graphics windows.
+-Simplified setup through context-managed Fluent sessions and graphics containers like Mesh.
+
 -Consistent 2D/3D visualization using PyFluent’s unified API.
+
 -Interactive rendering and analysis with PyVista and Matplotlib.
--Live plot updates during solver execution.
 
 Overall, this example highlights a concise, reliable, and flexible approach to post-processing CFD results.
 
