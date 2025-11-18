@@ -35,17 +35,17 @@ any Fluent simulation.
 **What this example demonstrates**
 
 * 3D Visualization with PyVista: Display meshes, surfaces, iso-surfaces, contours,
-vectors, and pathlines to understand spatial flow behavior.
+  vectors, and pathlines to understand spatial flow behavior.
 
 * 2D Plotting with Matplotlib: Create XY plots such as temperature or velocity
-profiles, monitor quantities, and compare numerical trends.
+  profiles, monitor quantities, and compare numerical trends.
 
 * Simple, Practical Workflow: Shows how to load results, create common visualization
-objects, adjust display settings, and interact with the scene — all with clear,
-straightforward commands.
+  objects, adjust display settings, and interact with the scene — all with clear,
+  straightforward commands.
 
 * Unified Post-Processing Interface: Combines 3D and 2D visualization tools so users can
-inspect their results from multiple perspectives within a single, consistent workflow.
+  inspect their results from multiple perspectives within a single, consistent workflow.
 
 This example provides a concise starting point for analyzing Fluent simulations
 visually, without requiring knowledge of internal APIs or implementation details.
