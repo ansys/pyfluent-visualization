@@ -25,7 +25,7 @@
 Context managed post-processing using Pyvista and Matplotlib plotter APIs
 -------------------------------------------------------------------------
 This example demonstrates how to perform clean, context-managed post-processing
-in PyFluent using both PyVista and Matplotlib. It highlights how context management
+in PyFluent using both Pyvista and Matplotlib. It highlights how context management
 simplifies setup and cleanup of solver sessions and graphics containers, making
 visualization tasks easier and more reliable.
 
@@ -36,13 +36,13 @@ interface, enabling flexible control without dealing with low-level renderer det
 
 **Key Features
 
--Context-managed solver and visualization workflow using using().
+* Context-managed solver and visualization workflow using using().
 
--Customizable 3D mesh displays through PyVista.
+* Customizable 3D mesh displays through Pyvista.
 
--XY and residual plotting with integrated Matplotlib support.
+* XY and residual plotting with integrated Matplotlib support.
 
--Simple export of graphics to PNG and PDF formats.
+* Simple export of graphics to PNG and PDF formats.
 
 Overall, the example shows how PyFluent integrates smoothly with external rendering
 tools to provide a clean, efficient, and customizable post-processing experience.

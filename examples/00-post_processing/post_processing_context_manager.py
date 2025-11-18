@@ -31,17 +31,17 @@ containers automatically, making the workflow cleaner and easier to follow.
 
 Users can explore meshes, contours, slices, iso-surfaces, vectors, and pathlines,
 as well as generate XY and monitor plots. The example also highlights interactive
-visualization through PyVista and high-quality plotting with Matplotlib, giving
+visualization through Pyvista and high-quality plotting with Matplotlib, giving
 users a flexible way to analyze and present CFD results.
 
 **Key features include:
 
--Simplified setup through context-managed Fluent sessions and graphics containers
-like Mesh.
+* Simplified setup through context-managed Fluent sessions and graphics containers
+  like Mesh.
 
--Consistent 2D/3D visualization using PyFluent’s unified API.
+* Consistent 2D/3D visualization using PyFluent’s unified API.
 
--Interactive rendering and analysis with PyVista and Matplotlib.
+* Interactive rendering and analysis with Pyvista and Matplotlib.
 
 Overall, this example highlights a concise, reliable, and flexible approach
 to post-processing CFD results.

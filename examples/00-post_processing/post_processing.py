@@ -26,7 +26,7 @@ Post-processing using Pyvista and Matplotlib
 --------------------------------------------
 This example shows how to use PyFluent’s post-processing tools to visualize Fluent
 results in both 3D and 2D. It demonstrates a typical workflow for exploring simulation
-data—such as temperature and velocity fields—using PyVista for interactive 3D graphics
+data—such as temperature and velocity fields—using Pyvista for interactive 3D graphics
 and Matplotlib for standard 2D plots.
 
 The model used here is an exhaust manifold, but the techniques apply to
@@ -34,7 +34,7 @@ any Fluent simulation.
 
 **What this example demonstrates**
 
-* 3D Visualization with PyVista: Display meshes, surfaces, iso-surfaces, contours,
+* 3D Visualization with Pyvista: Display meshes, surfaces, iso-surfaces, contours,
   vectors, and pathlines to understand spatial flow behavior.
 
 * 2D Plotting with Matplotlib: Create XY plots such as temperature or velocity
