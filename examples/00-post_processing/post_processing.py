@@ -250,11 +250,9 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~
 # Create a pathlines on a predefined surface.
 
-pathlines = Pathline(
-    solver=solver_session,
-    field="velocity-magnitude",
-    surfaces=["inlet", "inlet1", "inlet2"],
-)
+pathlines = Pathline(solver=solver_session)
+pathlines.field = "velocity-magnitude"
+pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
 
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(pathlines)
