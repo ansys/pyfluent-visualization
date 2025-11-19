@@ -381,23 +381,23 @@ class Vector(_GraphicsContainer):
                 "Please use the new signature now onwards."
             )
 
-    @staticmethod
-    def _get_mapped_attrs(attr):
-        _attr_map = {
-            "field": "vectors_of",
-            "color_by": "field",
-        }
-        return _attr_map.get(attr)
-
-    def __getattr__(self, attr):
-        attr = self._get_mapped_attrs(attr) or attr
-        return getattr(self._obj, attr)
-
-    def __setattr__(self, attr, value):
-        attr = self._get_mapped_attrs(attr) or attr
-        if attr == "surfaces":
-            value = list(value)
-        setattr(self._obj, attr, value)
+    # @staticmethod
+    # def _get_mapped_attrs(attr):
+    #     _attr_map = {
+    #         "field": "vectors_of",
+    #         "color_by": "field",
+    #     }
+    #     return _attr_map.get(attr)
+    #
+    # def __getattr__(self, attr):
+    #     attr = self._get_mapped_attrs(attr) or attr
+    #     return getattr(self._obj, attr)
+    #
+    # def __setattr__(self, attr, value):
+    #     attr = self._get_mapped_attrs(attr) or attr
+    #     if attr == "surfaces":
+    #         value = list(value)
+    #     setattr(self._obj, attr, value)
 
 
 class Pathline(_GraphicsContainer):
