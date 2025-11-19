@@ -382,12 +382,12 @@ class Vector(_GraphicsContainer):
         self.__dict__["_obj"] = Graphics(session=self.solver).Vectors.create(
             **self.kwargs
         )
-        if field not in self._obj.vectors_of.allowed_values:
-            warnings.warn(
-                "Please use a 'field' from the allowed values. "
-                "Currently defaulting it to 'velocity'. "
-                "Please use the new signature now onwards."
-            )
+        # if field not in self._obj.vectors_of.allowed_values:
+        #     warnings.warn(
+        #         "Please use a 'field' from the allowed values. "
+        #         "Currently defaulting it to 'velocity'. "
+        #         "Please use the new signature now onwards."
+        #     )
 
     @staticmethod
     def _get_mapped_attrs(attr):
