@@ -99,8 +99,8 @@ solver_session = pyfluent.launch_fluent(
     mode=pyfluent.FluentMode.SOLVER,
 )
 
-solver_session.settings.file.read_case(file_name=import_case)
-solver_session.settings.file.read_data(file_name=import_data)
+# solver_session.settings.file.read_case(file_name=import_case)
+# solver_session.settings.file.read_data(file_name=import_data)
 
 ###############################################################################
 # Create graphics object for mesh display
