@@ -451,10 +451,8 @@ class Vector(_GraphicsContainer):
     Examples
     --------
     >>> from ansys.fluent.visualization import Vector
-
     >>> # `solver_session` is a live Fluent session with a case
     >>> # and data which contains the following surfaces
-
     >>> velocity_vector_object = Vector(
     >>>     solver=solver_session,
     >>>     field="velocity",
