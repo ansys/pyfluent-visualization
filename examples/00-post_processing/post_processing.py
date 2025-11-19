@@ -239,7 +239,7 @@ graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 velocity_vector = Vector(
     solver=solver_session,
     field="velocity",
-    color_by="x-velocity",
+    # color_by="x-velocity",
     surfaces=["solid_up:1:830"],
     scale=20,
 )
@@ -251,15 +251,15 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~
 # Create a pathlines on a predefined surface.
 
-# pathlines = Pathline(
-#     solver=solver_session,
-#     field="velocity-magnitude",
-#     surfaces=["inlet", "inlet1", "inlet2"],
-# )
-#
-# graphics_window = GraphicsWindow()
-# graphics_window.add_graphics(pathlines)
-# graphics_window.show()
+pathlines = Pathline(
+    solver=solver_session,
+    field="velocity-magnitude",
+    surfaces=["inlet", "inlet1", "inlet2"],
+)
+
+graphics_window = GraphicsWindow()
+graphics_window.add_graphics(pathlines)
+graphics_window.show()
 
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(mesh, opacity=0.05)
