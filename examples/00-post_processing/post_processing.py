@@ -60,12 +60,11 @@ import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
 from ansys.units import VariableCatalog
 
-from ansys.fluent.visualization import (
+from ansys.fluent.visualization import (  # Pathline,
     Contour,
     GraphicsWindow,
     Mesh,
     Monitor,
-    Pathline,
     Surface,
     Vector,
     XYPlot,
@@ -252,15 +251,15 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~
 # Create a pathlines on a predefined surface.
 
-pathlines = Pathline(
-    solver=solver_session,
-    field="velocity-magnitude",
-    surfaces=["inlet", "inlet1", "inlet2"],
-)
-
-graphics_window = GraphicsWindow()
-graphics_window.add_graphics(pathlines)
-graphics_window.show()
+# pathlines = Pathline(
+#     solver=solver_session,
+#     field="velocity-magnitude",
+#     surfaces=["inlet", "inlet1", "inlet2"],
+# )
+#
+# graphics_window = GraphicsWindow()
+# graphics_window.add_graphics(pathlines)
+# graphics_window.show()
 
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(mesh, opacity=0.05)
