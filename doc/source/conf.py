@@ -24,13 +24,13 @@ pyvista.OFF_SCREEN = True
 pyvista.global_theme.window_size = np.array([1024, 768])
 
 # Save figures in specified directory
-# pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
-# if not os.path.exists(pyvista.FIGURE_PATH):
-#     os.makedirs(pyvista.FIGURE_PATH)
-#
-# # necessary when building the sphinx gallery
-# pyvista.BUILDING_GALLERY = True
-# pyfluent.BUILDING_GALLERY = True
+pyvista.FIGURE_PATH = os.path.join(os.path.abspath("./images/"), "auto-generated/")
+if not os.path.exists(pyvista.FIGURE_PATH):
+    os.makedirs(pyvista.FIGURE_PATH)
+
+# necessary when building the sphinx gallery
+pyvista.BUILDING_GALLERY = True
+pyfluent.BUILDING_GALLERY = True
 
 # -- Project information -----------------------------------------------------
 
@@ -57,7 +57,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
     "sphinx_copybutton",
-    # "sphinx_gallery.gen_gallery",
+    "sphinx_gallery.gen_gallery",
     "sphinxemoji.sphinxemoji",
     "sphinx_toggleprompt",
     "autodocclass",
@@ -165,7 +165,7 @@ sphinx_gallery_conf = {
     # Disabled example scripts
     "ignore_pattern": r"post_processing_callbacks_and_animation\.py|"
     r"post_processing_context_manager\.py|post_processing_legacy\.py|"
-    r"post_processing_plotter_apis_context_manager\.py|post_processing\.py|"
+    r"post_processing_plotter_apis_context_manager\.py|"
     r"post_processing_plotter_apis\.py",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
