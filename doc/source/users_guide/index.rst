@@ -307,16 +307,16 @@ mesh visualization:
     # Context-managed workflow
     with using(solver):
 
-        # Create a graphics container
-        container = GraphicsWindow()
+        # Create a graphics window
+        window = GraphicsWindow()
 
         # Add mesh displays
-        container.add_graphics(Mesh(show_edges=True, surfaces=WallBoundaries()), position=(0, 0))
-        container.add_graphics(Mesh(surfaces=WallBoundaries()), position=(0, 1))
+        window.add_graphics(Mesh(show_edges=True, surfaces=WallBoundaries()), position=(0, 0))
+        window.add_graphics(Mesh(surfaces=WallBoundaries()), position=(0, 1))
 
         # Export and display
-        container.save_graphics("mesh_view.pdf")
-        container.show()
+        window.save_graphics("mesh_view.pdf")
+        window.show()
 
 Using this pattern ensures that both the Fluent session and graphics containers
 are closed safely and consistently when the code block finishes. It also
