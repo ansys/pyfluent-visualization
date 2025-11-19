@@ -332,9 +332,11 @@ def test_visualization_calls_render_correctly_with_pathlines(
     with patch.object(Renderer, "render") as mock_render:
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
-        pathlines = Pathline(solver=solver)
-        pathlines.field = "velocity-magnitude"
-        pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+        pathlines = Pathline(
+            solver=solver,
+            field="velocity-magnitude",
+            surfaces=["inlet", "inlet1", "inlet2"],
+        )
         graphics_window = GraphicsWindow()
         graphics_window.add_graphics(pathlines)
         graphics_window.show()
