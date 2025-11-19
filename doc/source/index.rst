@@ -8,7 +8,6 @@ PyFluent-Visualization documentation |version|
    getting_started/index
    users_guide/index
    visualization/visualization_contents.rst
-   examples/index
    contributing/index
 
 Introduction
