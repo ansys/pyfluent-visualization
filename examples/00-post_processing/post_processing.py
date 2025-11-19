@@ -60,11 +60,12 @@ import ansys.fluent.core as pyfluent
 from ansys.fluent.core import examples
 from ansys.units import VariableCatalog
 
-from ansys.fluent.visualization import (  # Pathline,
+from ansys.fluent.visualization import (
     Contour,
     GraphicsWindow,
     Mesh,
     Monitor,
+    Pathline,
     Surface,
     Vector,
     XYPlot,
