@@ -89,12 +89,16 @@ class Mesh(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, surfaces: list[str], show_edges:bool = False, solver=None, **kwargs):
+    def __init__(
+        self, surfaces: list[str], show_edges: bool = False, solver=None, **kwargs
+    ):
         """__init__ method of Mesh class."""
-        kwargs.update({
-            "show_edges": show_edges,
-            "surfaces": surfaces,
-        })
+        kwargs.update(
+            {
+                "show_edges": show_edges,
+                "surfaces": surfaces,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Graphics(session=self.solver).Meshes.create(
             **self.kwargs
@@ -155,9 +159,11 @@ class Surface(_GraphicsContainer):
 
     def __init__(self, type: str, solver=None, **kwargs):
         """__init__ method of Surface class."""
-        kwargs.update({
-            "type": type,
-        })
+        kwargs.update(
+            {
+                "type": type,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__.update(
             dict(
@@ -402,12 +408,20 @@ class Contour(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, field: str|VariableDescriptor, surfaces: list[str], solver=None, **kwargs):
+    def __init__(
+        self,
+        field: str | VariableDescriptor,
+        surfaces: list[str],
+        solver=None,
+        **kwargs
+    ):
         """__init__ method of Contour class."""
-        kwargs.update({
-            "field": field,
-            "surfaces": surfaces,
-        })
+        kwargs.update(
+            {
+                "field": field,
+                "surfaces": surfaces,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Graphics(session=self.solver).Contours.create(
             **self.kwargs
@@ -450,23 +464,36 @@ class Vector(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, field: str|VariableDescriptor, surfaces: list[str], color_by: str|VariableDescriptor|None=None, scale: float=1.0, solver=None, **kwargs):
+    def __init__(
+        self,
+        field: str | VariableDescriptor,
+        surfaces: list[str],
+        color_by: str | VariableDescriptor | None = None,
+        scale: float = 1.0,
+        solver=None,
+        **kwargs
+    ):
         """__init__ method of Vector class."""
         if color_by is None:
             color_by = field
-        kwargs.update({
-            "vectors_of": field,
-            "field": color_by,
-            "surfaces": surfaces,
-            "scale": scale,
-        })
+        kwargs.update(
+            {
+                "vectors_of": field,
+                "field": color_by,
+                "surfaces": surfaces,
+                "scale": scale,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Graphics(session=self.solver).Vectors.create(
             **self.kwargs
         )
         if field not in self._obj.vectors_of.allowed_values:
-            warnings.warn("Please use a 'field' from the allowed values. Currently defaulting it to 'velocity'. "
-                          "Please use the new signature now onwards.")
+            warnings.warn(
+                "Please use a 'field' from the allowed values. "
+                "Currently defaulting it to 'velocity'. "
+                "Please use the new signature now onwards."
+            )
 
     @staticmethod
     def _get_mapped_attrs(attr):
@@ -525,12 +552,20 @@ class Pathline(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, field: str|VariableDescriptor, surfaces: list[str], solver=None, **kwargs):
+    def __init__(
+        self,
+        field: str | VariableDescriptor,
+        surfaces: list[str],
+        solver=None,
+        **kwargs
+    ):
         """__init__ method of Pathline class."""
-        kwargs.update({
-            "field": field,
-            "surfaces": surfaces,
-        })
+        kwargs.update(
+            {
+                "field": field,
+                "surfaces": surfaces,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Graphics(session=self.solver).Pathlines.create(
             **self.kwargs
@@ -573,12 +608,21 @@ class XYPlot(_GraphicsContainer):
     >>> )
     """
 
-    def __init__(self, surfaces: list[str], y_axis_function: str|VariableDescriptor, solver=None, local_surfaces_provider=None, **kwargs):
+    def __init__(
+        self,
+        surfaces: list[str],
+        y_axis_function: str | VariableDescriptor,
+        solver=None,
+        local_surfaces_provider=None,
+        **kwargs
+    ):
         """__init__ method of XYPlot class."""
-        kwargs.update({
-            "y_axis_function": y_axis_function,
-            "surfaces": surfaces,
-        })
+        kwargs.update(
+            {
+                "y_axis_function": y_axis_function,
+                "surfaces": surfaces,
+            }
+        )
         super().__init__(solver, **kwargs)
         if "y_axis_function" in self.kwargs:
             self.kwargs["y_axis_function"] = _to_field_name_str(
@@ -618,11 +662,15 @@ class Monitor(_GraphicsContainer):
     >>> residual = Monitor(solver=solver_session, monitor_set_name="residual")
     """
 
-    def __init__(self, monitor_set_name:str, solver=None, local_surfaces_provider=None, **kwargs):
+    def __init__(
+        self, monitor_set_name: str, solver=None, local_surfaces_provider=None, **kwargs
+    ):
         """__init__ method of Monitor class."""
-        kwargs.update({
-            "monitor_set_name": monitor_set_name,
-        })
+        kwargs.update(
+            {
+                "monitor_set_name": monitor_set_name,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Plots(
             session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
