@@ -57,22 +57,46 @@ class _GraphicsContainer:
 
 
 class Mesh(_GraphicsContainer):
-    """Mesh.
+    """Mesh visualization object.
+
+    Creates a Fluent mesh graphic object on the specified surfaces.
+    It is typically used to display the computational mesh with optional
+    edge highlighting.
+
+    Parameters
+    ----------
+    surfaces : list[str]
+        List of Fluent surfaces on which the mesh should be displayed.
+    show_edges : bool, optional
+        If ``True``, mesh edges are drawn. If ``False`` (default), the mesh
+        is shown without explicit edge highlighting.
+    solver : FluentSession, optional
+        Active Fluent session. If ``None``, the parent container determines
+        the session.
+    **kwargs : dict
+        Additional keyword arguments forwarded to
+        ``Graphics(session).Mesh.create()`` or handled by the base class.
 
     Examples
     --------
     >>> from ansys.fluent.visualization import Mesh
-
     >>> # `solver_session` is a live Fluent session with a case
     >>> # and data which contains the following surfaces
-
     >>> mesh = Mesh(
     >>>     solver=solver_session, show_edges=True, surfaces=["in1", "in2", "in3"]
     >>> )
     """
 
-    def __init__(self, solver=None, **kwargs):
+    def __init__(
+        self, surfaces: list[str], show_edges: bool = False, solver=None, **kwargs
+    ):
         """__init__ method of Mesh class."""
+        kwargs.update(
+            {
+                "show_edges": show_edges,
+                "surfaces": surfaces,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Graphics(session=self.solver).Meshes.create(
             **self.kwargs
