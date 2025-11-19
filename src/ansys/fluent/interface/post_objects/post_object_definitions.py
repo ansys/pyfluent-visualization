@@ -649,7 +649,7 @@ class VectorDefn(GraphicsDefn):
         @Attribute
         def allowed_values(self):
             """Vectors of allowed values."""
-            return list(self.field_data.vectors())
+            return list(self.field_data.vector_fields())
 
     class field(metaclass=PyLocalPropertyMeta):
         """Vector color field."""
