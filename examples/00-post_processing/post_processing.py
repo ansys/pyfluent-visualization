@@ -237,7 +237,8 @@ graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
 velocity_vector = Vector(
     solver=solver_session,
-    field="x-velocity",
+    field="velocity",
+    color_by="x-velocity",
     surfaces=["solid_up:1:830"],
     scale=20,
 )

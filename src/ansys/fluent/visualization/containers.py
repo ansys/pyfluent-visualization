@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 """Containers for graphics."""
+import warnings
+
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
 from ansys.units import VariableDescriptor
@@ -39,6 +41,8 @@ class _GraphicsContainer:
             raise RuntimeError("No solver session provided and none found in context.")
         if "field" in self.kwargs:
             self.kwargs["field"] = _to_field_name_str(self.kwargs["field"])
+        if "vectors_of" in self.kwargs:
+            self.kwargs["vectors_of"] = _to_field_name_str(self.kwargs["vectors_of"])
 
     def __getattr__(self, attr):
         return getattr(self._obj, attr)
@@ -313,29 +317,87 @@ class Contour(_GraphicsContainer):
 
 
 class Vector(_GraphicsContainer):
-    """Vector.
+    """Vector visualization object.
+
+    Parameters
+    ----------
+    field : str|VariableDescriptor
+        Name of the variable used for the **vector direction/magnitude**.
+    color_by : str|VariableDescriptor
+        Name of the variable used to **color** the vectors.
+    surfaces : list[str]
+        List of Fluent surfaces on which the vector plot is created.
+    scale : float, optional
+        Scaling factor applied to the vector lengths. Defaults to 1.0.
+    solver : FluentSession, optional
+        Active Fluent session. If ``None``, the parent container determines
+        the session.
+    **kwargs : dict
+        Additional keyword arguments forwarded to
+        ``Graphics(session).Vectors.create()``.
 
     Examples
     --------
     >>> from ansys.fluent.visualization import Vector
-
     >>> # `solver_session` is a live Fluent session with a case
     >>> # and data which contains the following surfaces
-
     >>> velocity_vector_object = Vector(
     >>>     solver=solver_session,
-    >>>     field="x-velocity",
+    >>>     field="velocity",
+    >>>     color_by="pressure",
     >>>     surfaces=["solid_up:1:830"],
     >>>     scale=2,
     >>> )
     """
 
-    def __init__(self, solver=None, **kwargs):
+    def __init__(
+        self,
+        field: str | VariableDescriptor,
+        surfaces: list[str],
+        color_by: str | VariableDescriptor | None = None,
+        scale: float = 1.0,
+        solver=None,
+        **kwargs
+    ):
         """__init__ method of Vector class."""
+        if color_by is None:
+            color_by = field
+        kwargs.update(
+            {
+                "vectors_of": field,
+                "field": color_by,
+                "surfaces": surfaces,
+                "scale": scale,
+            }
+        )
         super().__init__(solver, **kwargs)
         self.__dict__["_obj"] = Graphics(session=self.solver).Vectors.create(
             **self.kwargs
         )
+        if field not in self._obj.vectors_of.allowed_values:
+            warnings.warn(
+                "Please use a 'field' from the allowed values. "
+                "Currently defaulting it to 'velocity'. "
+                "Please use the new signature now onwards."
+            )
+
+    @staticmethod
+    def _get_mapped_attrs(attr):
+        _attr_map = {
+            "field": "vectors_of",
+            "color_by": "field",
+        }
+        return _attr_map.get(attr)
+
+    def __getattr__(self, attr):
+        attr = self._get_mapped_attrs(attr) or attr
+        return getattr(self._obj, attr)
+
+    def __setattr__(self, attr, value):
+        attr = self._get_mapped_attrs(attr) or attr
+        if attr == "surfaces":
+            value = list(value)
+        setattr(self._obj, attr, value)
 
 
 class Pathline(_GraphicsContainer):
