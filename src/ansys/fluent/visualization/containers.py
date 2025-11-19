@@ -352,11 +352,11 @@ class Vector(_GraphicsContainer):
 
     def __init__(
         self,
+        solver,
         field: str | VariableDescriptor,
         surfaces: list[str],
         color_by: str | VariableDescriptor | None = None,
         scale: float = 1.0,
-        solver=None,
         **kwargs
     ):
         """__init__ method of Vector class."""
