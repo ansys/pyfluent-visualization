@@ -213,8 +213,7 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
         TGraphicsWindow.show_graphics = lambda win_id: None
 
         # Plane surface
-        surf_xy_plane = Surface(solver=solver)
-        surf_xy_plane.definition.type = "plane-surface"
+        surf_xy_plane = Surface(solver=solver, type="plane-surface")
         surf_xy_plane.definition.plane_surface.creation_method = "xy-plane"
         plane_surface_xy = surf_xy_plane.definition.plane_surface.xy_plane
         plane_surface_xy.z = -0.0441921
@@ -236,8 +235,7 @@ def test_visualization_calls_render_correctly_with_plane_and_iso_surface(
         assert mesh_dict.get("position") == (0, 0)
 
         # Iso-surface
-        surf_outlet_plane = Surface(solver=solver)
-        surf_outlet_plane.definition.type = "iso-surface"
+        surf_outlet_plane = Surface(solver=solver, type="iso-surface")
         iso_surf1 = surf_outlet_plane.definition.iso_surface
         iso_surf1.field = "y-coordinate"
         iso_surf1.iso_value = -0.125017
@@ -303,7 +301,8 @@ def test_visualization_calls_render_correctly_with_vector(
         TGraphicsWindow.show_graphics = lambda win_id: None
         velocity_vector = Vector(
             solver=solver,
-            field="x-velocity",
+            field="velocity",
+            color_by="x-velocity",
             surfaces=["solid_up:1:830"],
             scale=2,
         )
@@ -333,9 +332,11 @@ def test_visualization_calls_render_correctly_with_pathlines(
     with patch.object(Renderer, "render") as mock_render:
         solver = new_solver_session_with_exhaust_case_and_data
         TGraphicsWindow.show_graphics = lambda win_id: None
-        pathlines = Pathline(solver=solver)
-        pathlines.field = "velocity-magnitude"
-        pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+        pathlines = Pathline(
+            solver=solver,
+            field="velocity-magnitude",
+            surfaces=["inlet", "inlet1", "inlet2"],
+        )
         graphics_window = GraphicsWindow()
         graphics_window.add_graphics(pathlines)
         graphics_window.show()
@@ -422,8 +423,7 @@ def test_visualization_calls_render_correctly_with_monitor_plot(
     with patch.object(Plotter, "render") as mock_render:
         solver = new_solver_session_with_exhaust_case_and_data
         TPlotterWindow._show_plot = lambda win_id: None
-        residual = Monitor(solver=solver)
-        residual.monitor_set_name = "residual"
+        residual = Monitor(solver=solver, monitor_set_name="residual")
         plot_window = GraphicsWindow()
         plot_window.add_plot(residual)
         plot_window.show()
@@ -458,10 +458,14 @@ def test_exception_for_unsupported_argument_combination(
     with pytest.raises(ValueError):
         # if filled is False then node_values cannot be False
         contour = Contour(
-            solver=solver, filled=False, node_values=False, surfaces=["in1"]
+            solver=solver,
+            filled=False,
+            node_values=False,
+            surfaces=["in1"],
+            field="pressure",
         )
 
-    contour = Contour(solver=solver, surfaces=["in1"])
+    contour = Contour(solver=solver, surfaces=["in1"], field="pressure")
     assert contour.filled() is True
     assert contour.node_values() is True
     assert contour.range.auto_range_off.clip_to_range() is False
@@ -488,7 +492,7 @@ def test_attribute_access_behaviour(
     new_solver_session_with_exhaust_case_and_data,
 ):
     solver = new_solver_session_with_exhaust_case_and_data
-    contour = Contour(solver=solver, filled=False, surfaces=["in1"])
+    contour = Contour(solver=solver, filled=False, surfaces=["in1"], field="pressure")
 
     assert isinstance(contour.node_values, ContourDefn.node_values)
     # Accessing attribute value like this is not allowed,
