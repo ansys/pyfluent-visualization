@@ -23,7 +23,6 @@ build-doc:
 	@sudo rm -rf /home/ansys/.local/share/ansys_fluent_core/examples/*
 	@pip install -r requirements/requirements_doc.txt
 	@python doc/api_rstgen.py
-	@xvfb-run make -C doc clean
 	@xvfb-run make -C doc html
 	@touch doc/_build/html/.nojekyll
 	@echo "$(DOCS_CNAME)" >> doc/_build/html/CNAME
