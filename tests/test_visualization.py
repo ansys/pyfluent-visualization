@@ -456,7 +456,11 @@ def test_exception_for_unsupported_argument_combination(
     with pytest.raises(ValueError):
         # if filled is False then node_values cannot be False
         contour = Contour(
-            solver=solver, field="pressure", filled=False, node_values=False, surfaces=["in1"]
+            solver=solver,
+            field="pressure",
+            filled=False,
+            node_values=False,
+            surfaces=["in1"],
         )
 
     contour = Contour(solver=solver, field="pressure", surfaces=["in1"])
