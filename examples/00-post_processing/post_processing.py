@@ -205,12 +205,12 @@ graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a temperature contour on the mid-plane and the outlet.
 
-temperature_contour = Contour(
-    solver=solver_session,
-    field="temperature",
-    surfaces=[surf_mid_plane_x.name, surf_outlet_plane.name],
-)
-graphics_window.add_graphics(temperature_contour, position=(0, 1))
+# temperature_contour = Contour(
+#     solver=solver_session,
+#     field="temperature",
+#     surfaces=[surf_mid_plane_x.name, surf_outlet_plane.name],
+# )
+graphics_window.add_graphics(mesh, position=(0, 1))
 
 ###############################################################################
 # Create contour plot of temperature on manifold
