@@ -167,8 +167,7 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an iso-surface on the outlet plane.
 
-surf_outlet_plane = Surface(solver=solver_session)
-surf_outlet_plane.type = "iso-surface"
+surf_outlet_plane = Surface(solver=solver_session, type="iso-surface")
 surf_outlet_plane.field = "y-coordinate"
 surf_outlet_plane.iso_value = -0.125017
 graphics_window = GraphicsWindow()
@@ -205,9 +204,7 @@ graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a temperature contour on the mid-plane and the outlet.
 
-temperature_contour = Contour(solver=solver_session)
-temperature_contour.field = "temperature"
-temperature_contour.surfaces = [surf_mid_plane_x.name, surf_outlet_plane.name]
+temperature_contour = Contour(solver=solver_session, field="temperature", surfaces=[surf_mid_plane_x.name, surf_outlet_plane.name])
 graphics_window.add_graphics(temperature_contour, position=(0, 1))
 
 ###############################################################################
@@ -237,7 +234,8 @@ graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
 velocity_vector = Vector(
     solver=solver_session,
-    field="x-velocity",
+    field="velocity",
+    color_by="x-velocity",
     surfaces=["solid_up:1:830"],
     scale=20,
 )
@@ -249,9 +247,7 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~
 # Create a pathlines on a predefined surface.
 
-pathlines = Pathline(solver=solver_session)
-pathlines.field = "velocity-magnitude"
-pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+pathlines = Pathline(solver=solver_session, field="velocity-magnitude", surfaces=["inlet", "inlet1", "inlet2"])
 
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(pathlines)
@@ -280,8 +276,7 @@ plot_window.add_plot(xy_plot_object, position=(0, 0), title="Temperature")
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Create and display the residual plot.
 
-residual = Monitor(solver=solver_session)
-residual.monitor_set_name = "residual"
+residual = Monitor(solver=solver_session, monitor_set_name="residual")
 plot_window.add_plot(residual, position=(0, 1))
 
 ###############################################################################
@@ -292,8 +287,7 @@ plot_window.add_plot(residual, position=(0, 1))
 solver_session.solution.initialization.hybrid_initialize()
 solver_session.solution.run_calculation.iterate(iter_count=50)
 
-mass_bal_rplot = Monitor(solver=solver_session)
-mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+mass_bal_rplot = Monitor(solver=solver_session, monitor_set_name="mass-bal-rplot")
 plot_window.add_plot(mass_bal_rplot, position=(1, 0))
 
 point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
