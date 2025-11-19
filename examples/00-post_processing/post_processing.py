@@ -205,9 +205,11 @@ graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a temperature contour on the mid-plane and the outlet.
 
-temperature_contour = Contour(solver=solver_session)
-temperature_contour.field = "temperature"
-temperature_contour.surfaces = [surf_mid_plane_x.name, surf_outlet_plane.name]
+temperature_contour = Contour(
+    solver=solver_session,
+    field="temperature",
+    surfaces=[surf_mid_plane_x.name, surf_outlet_plane.name],
+)
 graphics_window.add_graphics(temperature_contour, position=(0, 1))
 
 ###############################################################################
@@ -237,7 +239,8 @@ graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
 velocity_vector = Vector(
     solver=solver_session,
-    field="x-velocity",
+    field="velocity",
+    color_by="x-velocity",
     surfaces=["solid_up:1:830"],
     scale=20,
 )
@@ -249,9 +252,11 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~
 # Create a pathlines on a predefined surface.
 
-pathlines = Pathline(solver=solver_session)
-pathlines.field = "velocity-magnitude"
-pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+pathlines = Pathline(
+    solver=solver_session,
+    field="velocity-magnitude",
+    surfaces=["inlet", "inlet1", "inlet2"],
+)
 
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(pathlines)
