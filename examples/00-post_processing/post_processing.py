@@ -308,3 +308,4 @@ plot_window.show()
 # Close Fluent.
 
 solver_session.exit()
+del solver_session

@@ -151,3 +151,11 @@ plot_window.show()
 plot_window.renderer = "matplotlib"
 plot_window.save_graphics("sample_plot.png")
 plot_window.show()
+
+###############################################################################
+# Close Fluent
+# ~~~~~~~~~~~~
+# Close Fluent.
+
+solver_session.exit()
+del solver_session
