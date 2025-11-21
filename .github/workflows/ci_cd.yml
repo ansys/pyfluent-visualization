@@ -226,7 +226,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    needs: [docs]
+    env:
+      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
+    needs: [ docs ]
     steps:
       - name: "Deploy the stable documentation"
         uses: ansys/actions/doc-deploy-stable@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
