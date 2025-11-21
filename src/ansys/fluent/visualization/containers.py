@@ -67,7 +67,7 @@ class Mesh(_GraphicsContainer):
     ----------
     surfaces : list[str]
         List of Fluent surfaces on which the mesh should be displayed.
-    show_edges : bool, optional
+    show_edges : ``bool``, optional
         If ``True``, mesh edges are drawn. If ``False`` (default), the mesh
         is shown without explicit edge highlighting.
     solver : FluentSession, optional

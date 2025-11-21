@@ -504,3 +504,36 @@ def test_attribute_access_behaviour(
     assert isinstance(contour.filled, ContourDefn.filled)
     assert not contour.filled is False
     assert contour.filled() is False
+
+
+def test_vector_attributes(new_solver_session_with_exhaust_case_and_data):
+    solver_session = new_solver_session_with_exhaust_case_and_data
+    with pytest.raises(TypeError):
+        # Vector.__init__() missing 2 required positional arguments:
+        # 'field' and 'surfaces'
+        velocity_vector = Vector(solver=solver_session)
+    with pytest.warns(
+        UserWarning,
+        match="Please use a 'field' from the allowed values. "
+        "Currently defaulting it to 'velocity'. "
+        "Please use the new signature now onwards.",
+    ):
+        velocity_vector = Vector(
+            solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
+        )
+
+    """
+    Firstly we should mention that the signature has changed with the meaning.
+    Re-generate the message.
+    """
+
+    velocity_vector = Vector(
+        solver=solver_session,
+        field="velocity",
+        color_by=VariableCatalog.PRESSURE,
+        surfaces=["solid_up:1:830"],
+        scale=20,
+    )
+
+    assert velocity_vector.field.allowed_values == ["velocity", "relative-velocity"]
+    assert len(velocity_vector.surfaces.allowed_values) == 11
