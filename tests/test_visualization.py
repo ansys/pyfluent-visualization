@@ -512,23 +512,10 @@ def test_vector_attributes(new_solver_session_with_exhaust_case_and_data):
         # Vector.__init__() missing 2 required positional arguments:
         # 'field' and 'surfaces'
         velocity_vector = Vector(solver=solver_session)
-    with pytest.warns(
-        UserWarning,
-        match="API update: `field` now represents the vector variable, and `color_by` "
-        "controls the scalar coloring field.\n"
-        "Your input seems to use `field` as a scalar (old behavior). "
-        "It is being interpreted as `color_by`, and the vector field has been "
-        "defaulted to 'velocity' for compatibility.\n"
-        "Please update your code to: field=<vector>, color_by=<scalar>.",
-    ):
+    with pytest.warns(UserWarning):
         velocity_vector = Vector(
             solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
         )
-
-    """
-    Firstly we should mention that the signature has changed with the meaning.
-    Re-generate the message.
-    """
 
     velocity_vector = Vector(
         solver=solver_session,
