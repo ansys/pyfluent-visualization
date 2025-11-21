@@ -239,7 +239,7 @@ jobs:
 
   build:
     name: "Package library"
-    needs: [build-tests, doc-build]
+    needs: [tests, docs]
     runs-on: ubuntu-latest
     steps:
       - name: "Build library source and wheel artifacts"
