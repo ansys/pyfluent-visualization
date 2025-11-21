@@ -146,9 +146,11 @@ Visualize pathlines to analyze flow patterns:
     from ansys.fluent.core.solver import VelocityInlets
     from ansys.units import VariableCatalog
 
-    pathlines = Pathline(solver=solver_session)
-    pathlines.field = VariableCatalog.VELOCITY_MAGNITUDE
-    pathlines.surfaces = VelocityInlets(settings_source=solver_session)
+    pathlines = Pathline(
+        solver=solver_session,
+        field=VariableCatalog.VELOCITY_MAGNITUDE,
+        surfaces=VelocityInlets(settings_source=solver_session,
+        )
 
     window = GraphicsWindow()
     window.add_graphics(pathlines)
@@ -185,8 +187,7 @@ Plot solution residuals:
 
     from ansys.fluent.visualization import Monitor
 
-    residual = Monitor(solver=solver_session)
-    residual.monitor_set_name = "residual"
+    residual = Monitor(solver=solver_session, monitor_set_name="residual")
     window = GraphicsWindow()
     window.add_plot(residual)
     window.show()
@@ -200,8 +201,7 @@ Monitor solution convergence using mass balance and velocity plots:
     solver_session.settings.solution.initialization.hybrid_initialize()
     solver_session.settings.solution.run_calculation.iterate(iter_count=50)
 
-    mass_bal_rplot = Monitor(solver=solver_session)
-    mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+    mass_bal_rplot = Monitor(solver=solver_session, monitor_set_name="mass-bal-rplot")
     window = GraphicsWindow()
     window.add_plot(mass_bal_rplot, position=(0, 0))
 
@@ -232,12 +232,13 @@ stages. Graphics updates occur:
         solver=solver_session, field="velocity-magnitude", surfaces=["symmetry"]
     )
 
-    xy_plot_object = XYPlot(solver=solver_session)
-    xy_plot_object.surfaces = ['symmetry']
-    xy_plot_object.y_axis_function = "temperature"
+    xy_plot_object = XYPlot(
+        solver=solver_session,
+        surfaces=['symmetry'],
+        y_axis_function="temperature",
+    )
 
-    monitor_object = Monitor(solver=solver_session)
-    monitor_object.monitor_set_name = "residual"
+    monitor_object = Monitor(solver=solver_session, monitor_set_name="residual")
 
     contour_window = GraphicsWindow()
     contour_window.add_graphics(contour_object)
