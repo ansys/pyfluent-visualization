@@ -251,7 +251,7 @@ class GraphicsWindow:
            Session ID for refreshing the windows that belong only to this
            session. The default is ``""``, in which case the windows in all
            sessions are refreshed.
-        overlay : bool, Optional
+        overlay : ``bool``, optional
             Overlay graphics over existing graphics.
         """
         if self.window_id:

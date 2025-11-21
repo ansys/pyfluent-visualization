@@ -98,7 +98,12 @@ contour1 = Contour(
 
 # vector
 vector1 = Vector(
-    solver=session, surfaces=["solid_up:1:830"], scale=4.0, skip=0, field="temperature"
+    solver=session,
+    surfaces=["solid_up:1:830"],
+    scale=4.0,
+    skip=0,
+    field="velocity",
+    color_by="temperature",
 )
 p_vect = GraphicsWindow()
 p_vect.add_graphics(vector1)

@@ -187,7 +187,8 @@ with using(solver_session):
     graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
     velocity_vector = Vector(
-        field=VariableCatalog.VELOCITY_X,
+        field="velocity",
+        color_by=VariableCatalog.VELOCITY_X,
         surfaces=[WallBoundary(name="solid_up:1:830")],
         scale=20,
     )
