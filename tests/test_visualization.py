@@ -536,4 +536,4 @@ def test_vector_attributes(new_solver_session_with_exhaust_case_and_data):
     )
 
     assert velocity_vector.field.allowed_values == ["velocity", "relative-velocity"]
-    assert len(velocity_vector.surfaces.allowed_values) == 11
+    assert len(velocity_vector.surfaces.allowed_values) == 13
