@@ -226,6 +226,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
     needs: [ docs ]
     steps:
       - name: "Deploy the stable documentation"
