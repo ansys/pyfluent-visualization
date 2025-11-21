@@ -169,7 +169,8 @@ window.show()
 window = GraphicsWindow()
 velocity_vector = Vector(
     solver=solver_session,
-    field=VariableCatalog.VELOCITY_X,
+    field="velocity",
+    color_by=VariableCatalog.PRESSURE,
     surfaces=[WallBoundary(
         settings_source=solver_session,
         name="solid_up:1:830")],

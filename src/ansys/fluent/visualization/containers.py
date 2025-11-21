@@ -80,10 +80,8 @@ class Mesh(_GraphicsContainer):
     Examples
     --------
     >>> from ansys.fluent.visualization import Mesh
-
     >>> # `solver_session` is a live Fluent session with a case
     >>> # and data which contains the following surfaces
-
     >>> mesh = Mesh(
     >>>     solver=solver_session, show_edges=True, surfaces=["in1", "in2", "in3"]
     >>> )
@@ -140,9 +138,7 @@ class Surface(_GraphicsContainer):
     Examples
     --------
     >>> from ansys.fluent.visualization import Surface
-
     >>> # `solver_session` is a live Fluent session with a case file loaded
-
     >>> # For plane-surface
     >>> surf_xy_plane = Surface(
     >>>     solver=solver_session,
@@ -150,7 +146,6 @@ class Surface(_GraphicsContainer):
     >>>     creation_method="xy-plane",
     >>>     z=-0.0441921
     >>>     )
-
     >>> # For iso-surface
     >>> surf_outlet_plane = Surface(solver=solver_session, type="iso-surface")
     >>> surf_outlet_plane.field = "y-coordinate"
@@ -246,16 +241,14 @@ class PlaneSurface(Surface):
     Examples
     --------
     >>> from ansys.fluent.visualization import PlaneSurface
-
     >>> # `solver_session` is a live Fluent session with a case file loaded
-
+    >>>
     >>> # Creating using point and normal
     >>> surf_xy_plane = PlaneSurface.create_from_point_and_normal(
     >>>     solver=solver_session,
     >>>     point=[0.0, 0.0, -0.0441921],
     >>>     normal=[0.0, 0.0, 1.0],
     >>>     )
-
     >>> # Create same plane using 'create_xy_plane' method
     >>> surf_xy_plane = PlaneSurface.create_xy_plane(
     >>>     solver=solver_session,
@@ -341,9 +334,8 @@ class IsoSurface(Surface):
     Examples
     --------
     >>> from ansys.fluent.visualization import IsoSurface
-
     >>> # `solver_session` is a live Fluent session with a case file loaded
-
+    >>>
     >>> # Creating iso-surface
     >>> surf_outlet_plane = IsoSurface.create(
     >>>     solver=solver_session,
@@ -399,10 +391,8 @@ class Contour(_GraphicsContainer):
     Examples
     --------
     >>> from ansys.fluent.visualization import Contour
-
     >>> # `solver_session` is a live Fluent session with a case
     >>> # and data which contains the following surfaces
-
     >>> temperature_contour_object = Contour(
     >>>     solver=solver_session, field="temperature", surfaces=["in1", "in2", "in3",]
     >>> )
@@ -539,10 +529,8 @@ class Pathline(_GraphicsContainer):
     Examples
     --------
     >>> from ansys.fluent.visualization import Pathline
-
     >>> # `solver_session` is a live Fluent session with a case
     >>> # and data which contains the following surfaces
-
     >>> pathlines = Pathline(
     >>>     solver=solver_session,
     >>>     field="velocity-magnitude",
@@ -598,7 +586,6 @@ class XYPlot(_GraphicsContainer):
     Examples
     --------
     >>> from ansys.fluent.visualization import XYPlot
-
     >>> xy_plot = XYPlot(
     >>>     solver=solver_session,
     >>>     surfaces=["outlet"],
@@ -656,7 +643,6 @@ class Monitor(_GraphicsContainer):
     Examples
     --------
     >>> from ansys.fluent.visualization import Monitor
-
     >>> residual = Monitor(solver=solver_session, monitor_set_name="residual")
     """
 
