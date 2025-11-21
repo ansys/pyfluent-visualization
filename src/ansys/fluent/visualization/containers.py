@@ -478,9 +478,12 @@ class Vector(_GraphicsContainer):
         )
         if field not in self._obj.vectors_of.allowed_values:
             warnings.warn(
-                "Please use a 'field' from the allowed values. "
-                "Currently defaulting it to 'velocity'. "
-                "Please use the new signature now onwards."
+                "API update: `field` now represents the vector variable, and `color_by`"
+                " controls the scalar coloring field.\n"
+                "Your input seems to use `field` as a scalar (old behavior). "
+                "It is being interpreted as `color_by`, and the vector field has been "
+                "defaulted to 'velocity' for compatibility.\n"
+                "Please update your code to: field=<vector>, color_by=<scalar>."
             )
 
     @staticmethod

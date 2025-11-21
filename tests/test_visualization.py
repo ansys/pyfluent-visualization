@@ -514,9 +514,12 @@ def test_vector_attributes(new_solver_session_with_exhaust_case_and_data):
         velocity_vector = Vector(solver=solver_session)
     with pytest.warns(
         UserWarning,
-        match="Please use a 'field' from the allowed values. "
-        "Currently defaulting it to 'velocity'. "
-        "Please use the new signature now onwards.",
+        match="API update: `field` now represents the vector variable, and `color_by` "
+        "controls the scalar coloring field.\n"
+        "Your input seems to use `field` as a scalar (old behavior). "
+        "It is being interpreted as `color_by`, and the vector field has been "
+        "defaulted to 'velocity' for compatibility.\n"
+        "Please update your code to: field=<vector>, color_by=<scalar>.",
     ):
         velocity_vector = Vector(
             solver=solver_session, field="pressure", surfaces=["solid_up:1:830"]
