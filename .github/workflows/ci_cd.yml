@@ -231,7 +231,7 @@ jobs:
       - name: "Deploy the stable documentation"
         uses: ansys/actions/doc-deploy-stable@10
         with:
-          doc-artifact-name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
+          doc-artifact-name: "HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}"
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
