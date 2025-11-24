@@ -231,9 +231,9 @@ jobs:
     needs: [ docs ]
     steps:
       - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@v10.1.0
+        uses: ansys/actions/doc-deploy-stable@v10.1
         with:
-          doc-artifact-name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
+          doc-artifact-name: "HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}"
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -266,7 +266,7 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: PyFluent-packages
+          name: ${{ env.LIBRARY_NAME }}-artifacts
           path: |
             dist/*.whl
             dist/*.tar.gz
