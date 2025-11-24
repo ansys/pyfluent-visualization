@@ -27,6 +27,7 @@ env:
   LIBRARY_NAME: 'ansys-fluent-visualization'
   PYFLUENT_TIMEOUT_FORCE_EXIT: 5
   PYFLUENT_LAUNCH_CONTAINER: 1
+  DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
 
 jobs:
 
@@ -132,7 +133,6 @@ jobs:
       contents: read
       packages: read
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
       DOCUMENTATION_CNAME: "visualization.fluent.docs.pyansys.com"
       XDG_RUNTIME_DIR: /tmp/runtime-${{ github.run_id }}
 
@@ -222,16 +222,14 @@ jobs:
 
   deploy-docs-release:
     name: "Upload release documentation"
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
-    needs: [ docs ]
+    needs: [docs]
     steps:
       - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
+        uses: ansys/actions/doc-deploy-stable@10
         with:
           doc-artifact-name: HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
           cname: ${{ env.DOCUMENTATION_CNAME }}
