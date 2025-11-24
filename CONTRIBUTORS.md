@@ -16,6 +16,7 @@
 * [Jorge Martínez](https://github.com/jorgepiloto)
 * [Kathy Pippert](https://github.com/PipKat)
 * [Mainak Kundu](https://github.com/mkundu1)
+* [mayankansys](https://github.com/mayankansys)
 * [Muhammed Adedigba](https://github.com/moe-ad)
 * [Prithwish Mukherjee](https://github.com/prmukherj)
 * [Raphael Luciano](https://github.com/raph-luc)
