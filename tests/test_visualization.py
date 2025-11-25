@@ -58,6 +58,8 @@ from ansys.fluent.visualization import (
 )
 
 config.interactive = False
+from ansys.fluent.core.docker.utils import get_grpc_launcher_args_for_gh_runs
+
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     GraphicsWindow as TGraphicsWindow,
 )
@@ -71,7 +73,8 @@ from ansys.fluent.visualization.plotter.pyvista.renderer import Plotter
 
 @pytest.fixture(scope="module")
 def new_solver_session():
-    solver = pyfluent.launch_fluent()
+    kwargs = get_grpc_launcher_args_for_gh_runs()
+    solver = pyfluent.launch_fluent(**kwargs)
     yield solver
     solver.exit()
 
