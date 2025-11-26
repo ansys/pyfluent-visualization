@@ -25,8 +25,9 @@ env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   MAIN_PYTHON_VERSION: "3.11"
   LIBRARY_NAME: 'ansys-fluent-visualization'
-  PYFLUENT_TIMEOUT_FORCE_EXIT: 5
+  PYFLUENT_TIMEOUT_FORCE_EXIT: 60
   PYFLUENT_LAUNCH_CONTAINER: 1
+  PYFLUENT_LAUNCH_FLUENT_TIMEOUT: 60
 
 jobs:
 
@@ -104,12 +105,12 @@ jobs:
         if:  matrix.os == 'public-ubuntu-latest-8-cores'
         run: make docker-pull
         env:
-          FLUENT_IMAGE_TAG: v25.2.0
+          FLUENT_IMAGE_TAG: v25.2.3
 
       - name: Test with pytest
         run: make unittest
         env:
-          FLUENT_IMAGE_TAG: v25.2.0
+          FLUENT_IMAGE_TAG: v25.2.3
 
       - name: Upload 25.2 Coverage Artifacts
         if: matrix.os == 'windows-latest' && matrix.python-version == '3.12'
@@ -118,7 +119,7 @@ jobs:
           name: coverage_report
           path: ./htmlcov
         env:
-          FLUENT_IMAGE_TAG: v25.2.0
+          FLUENT_IMAGE_TAG: v25.2.3
 
       - name: Remove all docker images
         if: always()
@@ -132,7 +133,7 @@ jobs:
       contents: read
       packages: read
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
+      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.3
       DOCUMENTATION_CNAME: "visualization.fluent.docs.pyansys.com"
       XDG_RUNTIME_DIR: /tmp/runtime-${{ github.run_id }}
 
@@ -227,7 +228,7 @@ jobs:
     permissions:
       contents: write
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.0
+      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.3
     needs: [ docs ]
     steps:
       - name: "Deploy the stable documentation"
