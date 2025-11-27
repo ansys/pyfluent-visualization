@@ -2,11 +2,14 @@
 
 from datetime import datetime
 import os
+from pathlib import Path
 import platform
+import shutil
 import subprocess
 import sys
 
 import ansys.fluent.core as pyfluent
+from ansys.fluent.core.docker.utils import get_grpc_launcher_args_for_gh_runs
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
 import numpy as np
 import pyvista
@@ -135,21 +138,33 @@ copybutton_prompt_text = r">>> ?|\.\.\. "
 copybutton_prompt_is_regexp = True
 
 
-def _stop_fluent_container(gallery_conf, fname):
-    try:
-        is_linux = platform.system() == "Linux"
-        container_names = (
-            subprocess.check_output(
-                "docker container ls --format {{.Names}}", shell=is_linux
+def _reset_modules_hook(gallery_conf, fname, when):
+    if when == "before":
+        # Absolute path to doc/source/
+        doc_src = Path(gallery_conf["src_dir"])
+        # Project root = parent of the examples_root
+        project_root = doc_src.parent.parent
+        # Source = top-level project directory / certs
+        source = project_root / "certs"
+        # Destination = directory of the example file / certs
+        destination = project_root / "examples" / "00-post_processing" / "certs"
+        print(f"Copying certs from {source} to {destination}")
+        shutil.copytree(source, destination, dirs_exist_ok=True)
+    elif when == "after":
+        try:
+            is_linux = platform.system() == "Linux"
+            container_names = (
+                subprocess.check_output(
+                    "docker container ls --format {{.Names}}", shell=is_linux
+                )
+                .decode("utf-8")
+                .strip()
+                .split()
             )
-            .decode("utf-8")
-            .strip()
-            .split()
-        )
-        for container_name in container_names:
-            subprocess.run(f"docker stop {container_name}", shell=is_linux)
-    except Exception:
-        pass
+            for container_name in container_names:
+                subprocess.run(f"docker stop {container_name}", shell=is_linux)
+        except Exception:
+            pass
 
 
 # -- Sphinx Gallery Options ---------------------------------------------------
@@ -176,8 +191,8 @@ sphinx_gallery_conf = {
     "doc_module": "ansys-fluent-core",
     "image_scrapers": ("pyvista", "matplotlib"),
     "thumbnail_size": (350, 350),
-    "reset_modules_order": "after",
-    "reset_modules": (_stop_fluent_container,),
+    "reset_modules_order": "both",
+    "reset_modules": (_reset_modules_hook,),
 }
 
 
@@ -288,3 +303,19 @@ autosectionlabel_maxdepth = 4
 
 # PyAnsys tags configuration
 html_context = {"pyansys_tags": ["Fluids"]}
+
+
+# TODO: Remove this workaround when a cleaner solution to override
+# pyfluent launch args is available.
+
+launch_fluent_original = pyfluent.launch_fluent
+
+
+def launch_fluent_secure(*args, **kwargs):
+    """Launch Fluent in secure mode for documentation generation."""
+    kwargs.update(get_grpc_launcher_args_for_gh_runs())
+    return launch_fluent_original(*args, **kwargs)
+
+
+if "FLUENT_IMAGE_TAG" in os.environ:
+    pyfluent.launch_fluent = launch_fluent_secure
