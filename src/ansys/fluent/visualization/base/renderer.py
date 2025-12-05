@@ -23,13 +23,24 @@
 """Abstract module providing rendering functionality."""
 
 from abc import ABC, abstractmethod
+from typing import Any, TypedDict
 
+class SurfaceToRender(TypedDict):
+    """TypedDict for mesh surface definition."""
+
+    data: object
+    position: tuple[int, int]
+    opacity: float
+    title: str
+    kwargs: dict[str, Any]
+
+SubPlot = list[SurfaceToRender]
 
 class AbstractRenderer(ABC):
     """Abstract class for rendering graphics and plots."""
 
     @abstractmethod
-    def render(self, meshes: list[list[dict]]) -> None:
+    def render(self, meshes: list[SubPlot]) -> None:
         """Render graphics and plots in a window.
 
         Parameters
@@ -49,7 +60,7 @@ class AbstractRenderer(ABC):
 
                 - 'data': The mesh or 2d plot object to be plotted.
                 - 'position': tuple(int, int),  Location of subplot. Defaults to (0, 0).
-                - 'opacity': int, Sets the transparency of the subplot. Defaults to 1,
+                - 'opacity': float, Sets the transparency of the subplot. Defaults to 1,
                 meaning fully opaque.
                 - 'title': str, Title of the subplot.
                 - 'kwargs': A dictionary of additional keyword arguments passed

@@ -24,7 +24,11 @@
 
 import inspect
 
+from ansys.fluent.core.session import BaseSession
+
 from ansys.fluent.interface.post_objects.meta import PyLocalContainer
+from ansys.fluent.visualization import Contour, Plots, Graphics, Surface, Vector
+from ansys.fluent.visualization.graphics.graphics_objects import Mesh
 
 
 class Container:
@@ -48,8 +52,8 @@ class Container:
 
     def __init__(
         self,
-        session,
-        container_type,
+        session: BaseSession,
+        container_type: type[Plots | Graphics],
         module,
         post_api_helper,
         local_surfaces_provider=None,
@@ -218,6 +222,10 @@ class Graphics(Container):
     """
 
     _sessions_state = {}
+    Meshes: PyLocalContainer[Mesh]
+    Surfaces: PyLocalContainer[Surface]
+    Contours: PyLocalContainer[Contour]
+    Vectors: PyLocalContainer[Vector]
 
     def __init__(self, session, module, post_api_helper, local_surfaces_provider=None):
         """__init__ method of Graphics class."""
@@ -225,19 +233,19 @@ class Graphics(Container):
             session, self.__class__, module, post_api_helper, local_surfaces_provider
         )
 
-    def add_outline_mesh(self):
+    def add_outline_mesh(self) -> Mesh | None:
         """Add a mesh outline.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        None
+        Mesh | None
+            The outline mesh object if it exists, otherwise ``None``.
         """
-        meshes = getattr(self, "Meshes", None)
-        if meshes is not None:
+        try:
+            meshes = self.Meshes
+        except AttributeError:
+            return
+        else:
             outline_mesh_id = "mesh-outline"
             outline_mesh = meshes[outline_mesh_id]
             outline_mesh.surfaces = [

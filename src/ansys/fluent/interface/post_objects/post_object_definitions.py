@@ -22,22 +22,35 @@
 
 """Module providing visualization objects definition."""
 
-from abc import abstractmethod
+import abc
 import logging
-from typing import NamedTuple
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 from ansys.fluent.interface.post_objects.meta import (
     Attribute,
-    PyLocalNamedObjectMetaAbstract,
+    PyLocalNamedObjectAbstract,
     PyLocalObjectMeta,
+    PyLocalProperty,
     PyLocalPropertyMeta,
 )
+
+if TYPE_CHECKING:
+    from ansys.fluent.interface.post_objects.post_objects_container import Container
 
 logger = logging.getLogger("pyfluent.post_objects")
 
 
-class BasePostObjectDefn:
+class BasePostObjectDefn(abc.ABC):
     """Base class for visualization objects."""
+
+    @abc.abstractmethod
+    def get_root(self) -> Container:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def surfaces(self) -> list[str]:
+        raise NotImplementedError
 
     def _pre_display(self):
         local_surfaces_provider = self.get_root()._local_surfaces_provider()
@@ -56,7 +69,7 @@ class BasePostObjectDefn:
                 surf_api.delete_surface_on_server()
 
 
-class GraphicsDefn(BasePostObjectDefn, metaclass=PyLocalNamedObjectMetaAbstract):
+class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObjectAbstract):
     """Abstract base class for graphics objects."""
 
     @abstractmethod
@@ -71,7 +84,7 @@ class GraphicsDefn(BasePostObjectDefn, metaclass=PyLocalNamedObjectMetaAbstract)
         pass
 
 
-class PlotDefn(BasePostObjectDefn, metaclass=PyLocalNamedObjectMetaAbstract):
+class PlotDefn(BasePostObjectDefn, metaclass=PyLocalNamedObjectAbstract):
     """Abstract base class for plot objects."""
 
     @abstractmethod
@@ -99,7 +112,7 @@ class MonitorDefn(PlotDefn):
 
     PLURAL = "Monitors"
 
-    class monitor_set_name(metaclass=PyLocalPropertyMeta):
+    class monitor_set_name(PyLocalProperty):
         """Monitor set name."""
 
         value: str = None
@@ -115,22 +128,22 @@ class XYPlotDefn(PlotDefn):
 
     PLURAL = "XYPlots"
 
-    class node_values(metaclass=PyLocalPropertyMeta):
+    class node_values(PyLocalProperty):
         """Plot nodal values."""
 
         value: bool = True
 
-    class boundary_values(metaclass=PyLocalPropertyMeta):
+    class boundary_values(PyLocalProperty):
         """Plot Boundary values."""
 
         value: bool = True
 
-    class direction_vector(metaclass=PyLocalPropertyMeta):
+    class direction_vector(PyLocalProperty):
         """Direction Vector."""
 
         value: Vector = [1, 0, 0]
 
-    class y_axis_function(metaclass=PyLocalPropertyMeta):
+    class y_axis_function(PyLocalProperty):
         """Y Axis Function."""
 
         value: str = None
@@ -140,7 +153,7 @@ class XYPlotDefn(PlotDefn):
             """Y axis function allowed values."""
             return list(self.field_data.scalar_fields())
 
-    class x_axis_function(metaclass=PyLocalPropertyMeta):
+    class x_axis_function(PyLocalProperty):
         """X Axis Function."""
 
         value: str = "direction-vector"
@@ -150,7 +163,7 @@ class XYPlotDefn(PlotDefn):
             """X axis function allowed values."""
             return ["direction-vector"]
 
-    class surfaces(metaclass=PyLocalPropertyMeta):
+    class surfaces(PyLocalProperty):
         """List of surfaces for plotting."""
 
         value: list[str] = []
@@ -168,7 +181,7 @@ class MeshDefn(GraphicsDefn):
 
     PLURAL = "Meshes"
 
-    class surfaces(metaclass=PyLocalPropertyMeta):
+    class surfaces(PyLocalProperty):
         """List of surfaces for mesh graphics."""
 
         value: list[str] = []
@@ -180,17 +193,17 @@ class MeshDefn(GraphicsDefn):
                 self.get_root()._local_surfaces_provider()
             )
 
-    class show_edges(metaclass=PyLocalPropertyMeta):
+    class show_edges(PyLocalProperty):
         """Show edges for mesh."""
 
         value: bool = False
 
-    class show_nodes(metaclass=PyLocalPropertyMeta):
+    class show_nodes(PyLocalProperty):
         """Show nodes for mesh."""
 
         value: bool = False
 
-    class show_faces(metaclass=PyLocalPropertyMeta):
+    class show_faces(PyLocalProperty):
         """Show faces for mesh."""
 
         value: bool = True
@@ -201,7 +214,7 @@ class PathlinesDefn(GraphicsDefn):
 
     PLURAL = "Pathlines"
 
-    class field(metaclass=PyLocalPropertyMeta):
+    class field(PyLocalProperty):
         """Pathlines field."""
 
         value: str = None
@@ -211,7 +224,7 @@ class PathlinesDefn(GraphicsDefn):
             """Field allowed values."""
             return list(self.field_data.scalar_fields())
 
-    class surfaces(metaclass=PyLocalPropertyMeta):
+    class surfaces(PyLocalProperty):
         """List of surfaces for pathlines."""
 
         value: list[str] = []
@@ -234,7 +247,7 @@ class SurfaceDefn(GraphicsDefn):
         """Return name of the surface."""
         return self._name
 
-    class show_edges(metaclass=PyLocalPropertyMeta):
+    class show_edges(PyLocalProperty[bool]):
         """Show edges for surface."""
 
         value: bool = True
@@ -242,10 +255,10 @@ class SurfaceDefn(GraphicsDefn):
     class definition(metaclass=PyLocalObjectMeta):
         """Specify surface definition type."""
 
-        class type(metaclass=PyLocalPropertyMeta):
+        class type(PyLocalProperty[Literal["plane-surface", "iso-surface"]]):
             """Surface type."""
 
-            value: str = "iso-surface"
+            value = "iso-surface"
 
             @Attribute
             def allowed_values(self):
@@ -260,7 +273,7 @@ class SurfaceDefn(GraphicsDefn):
                 """Check whether current object is active or not."""
                 return self._parent.type() == "plane-surface"
 
-            class creation_method(metaclass=PyLocalPropertyMeta):
+            class creation_method(PyLocalProperty):
                 """Creation Method."""
 
                 value: str = "xy-plane"
@@ -278,7 +291,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "point-and-normal"
 
-                class x(metaclass=PyLocalPropertyMeta):
+                class x(PyLocalProperty):
                     """X value."""
 
                     value: float = 0
@@ -288,7 +301,7 @@ class SurfaceDefn(GraphicsDefn):
                         """X value range."""
                         return self.field_data.scalar_fields.range("x-coordinate", True)
 
-                class y(metaclass=PyLocalPropertyMeta):
+                class y(PyLocalProperty):
                     """Y value."""
 
                     value: float = 0
@@ -298,7 +311,7 @@ class SurfaceDefn(GraphicsDefn):
                         """Y value range."""
                         return self.field_data.scalar_fields.range("y-coordinate", True)
 
-                class z(metaclass=PyLocalPropertyMeta):
+                class z(PyLocalProperty):
                     """Z value."""
 
                     value: float = 0
@@ -316,7 +329,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "point-and-normal"
 
-                class x(metaclass=PyLocalPropertyMeta):
+                class x(PyLocalProperty):
                     """X value."""
 
                     value: float = 0
@@ -326,7 +339,7 @@ class SurfaceDefn(GraphicsDefn):
                         """X value range."""
                         return [-1, 1]
 
-                class y(metaclass=PyLocalPropertyMeta):
+                class y(PyLocalProperty):
                     """Y value."""
 
                     value: float = 0
@@ -336,7 +349,7 @@ class SurfaceDefn(GraphicsDefn):
                         """Y value range."""
                         return [-1, 1]
 
-                class z(metaclass=PyLocalPropertyMeta):
+                class z(PyLocalProperty):
                     """Z value."""
 
                     value: float = 0
@@ -354,7 +367,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "xy-plane"
 
-                class z(metaclass=PyLocalPropertyMeta):
+                class z(PyLocalProperty):
                     """Z value."""
 
                     value: float = 0
@@ -372,7 +385,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "yz-plane"
 
-                class x(metaclass=PyLocalPropertyMeta):
+                class x(PyLocalProperty):
                     """X value."""
 
                     value: float = 0
@@ -390,7 +403,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "zx-plane"
 
-                class y(metaclass=PyLocalPropertyMeta):
+                class y(PyLocalProperty):
                     """Y value."""
 
                     value: float = 0
@@ -408,7 +421,7 @@ class SurfaceDefn(GraphicsDefn):
                 """Check whether current object is active or not."""
                 return self._parent.type() == "iso-surface"
 
-            class field(metaclass=PyLocalPropertyMeta):
+            class field(PyLocalProperty):
                 """Iso surface field."""
 
                 value: str = None
@@ -418,7 +431,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Field allowed values."""
                     return list(self.field_data.scalar_fields())
 
-            class rendering(metaclass=PyLocalPropertyMeta):
+            class rendering(PyLocalProperty):
                 """Iso surface rendering."""
 
                 value: str = "mesh"
@@ -428,7 +441,7 @@ class SurfaceDefn(GraphicsDefn):
                     """Surface rendering allowed values."""
                     return ["mesh", "contour"]
 
-            class iso_value(metaclass=PyLocalPropertyMeta):
+            class iso_value(PyLocalProperty):
                 """Iso value for field."""
 
                 _value: float = None
@@ -461,7 +474,7 @@ class ContourDefn(GraphicsDefn):
 
     PLURAL = "Contours"
 
-    class field(metaclass=PyLocalPropertyMeta):
+    class field(PyLocalProperty):
         """Contour field."""
 
         value: str = None
@@ -471,7 +484,7 @@ class ContourDefn(GraphicsDefn):
             """Field allowed values."""
             return list(self.field_data.scalar_fields())
 
-    class surfaces(metaclass=PyLocalPropertyMeta):
+    class surfaces(PyLocalProperty):
         """Contour surfaces."""
 
         value: list[str] = []
@@ -483,12 +496,12 @@ class ContourDefn(GraphicsDefn):
                 self.get_root()._local_surfaces_provider()
             )
 
-    class filled(metaclass=PyLocalPropertyMeta):
+    class filled(PyLocalProperty):
         """Draw filled contour."""
 
         value: bool = True
 
-    class node_values(metaclass=PyLocalPropertyMeta):
+    class node_values(PyLocalProperty):
         """Draw nodal data."""
 
         _value: bool = True
@@ -522,17 +535,17 @@ class ContourDefn(GraphicsDefn):
                 )
             self._value = value
 
-    class boundary_values(metaclass=PyLocalPropertyMeta):
+    class boundary_values(PyLocalProperty):
         """Draw boundary values."""
 
         value: bool = False
 
-    class contour_lines(metaclass=PyLocalPropertyMeta):
+    class contour_lines(PyLocalProperty):
         """Draw contour lines."""
 
         value: bool = False
 
-    class show_edges(metaclass=PyLocalPropertyMeta):
+    class show_edges(PyLocalProperty):
         """Show edges."""
 
         value: bool = False
@@ -540,7 +553,7 @@ class ContourDefn(GraphicsDefn):
     class range(metaclass=PyLocalObjectMeta):
         """Range definition."""
 
-        class option(metaclass=PyLocalPropertyMeta):
+        class option(PyLocalProperty):
             """Range option."""
 
             value: str = "auto-range-on"
@@ -558,7 +571,7 @@ class ContourDefn(GraphicsDefn):
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-on"
 
-            class global_range(metaclass=PyLocalPropertyMeta):
+            class global_range(PyLocalProperty):
                 """Show global range."""
 
                 value: bool = False
@@ -571,12 +584,12 @@ class ContourDefn(GraphicsDefn):
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-off"
 
-            class clip_to_range(metaclass=PyLocalPropertyMeta):
+            class clip_to_range(PyLocalProperty):
                 """Clip contour within range."""
 
                 value: bool = False
 
-            class minimum(metaclass=PyLocalPropertyMeta):
+            class minimum(PyLocalProperty):
                 """Range minimum."""
 
                 _value: float = None
@@ -605,7 +618,7 @@ class ContourDefn(GraphicsDefn):
                 def value(self, value):
                     self._value = value
 
-            class maximum(metaclass=PyLocalPropertyMeta):
+            class maximum(PyLocalProperty):
                 """Range maximum."""
 
                 _value: float = None
@@ -641,7 +654,7 @@ class VectorDefn(GraphicsDefn):
 
     PLURAL = "Vectors"
 
-    class vectors_of(metaclass=PyLocalPropertyMeta):
+    class vectors_of(PyLocalProperty):
         """Vector type."""
 
         value: str = "velocity"
@@ -651,7 +664,7 @@ class VectorDefn(GraphicsDefn):
             """Vectors of allowed values."""
             return list(self.field_data.vectors())
 
-    class field(metaclass=PyLocalPropertyMeta):
+    class field(PyLocalProperty):
         """Vector color field."""
 
         value: str = None
@@ -661,7 +674,7 @@ class VectorDefn(GraphicsDefn):
             """Field allowed values."""
             return list(self.field_data.scalar_fields())
 
-    class surfaces(metaclass=PyLocalPropertyMeta):
+    class surfaces(PyLocalProperty):
         """List of surfaces for vector graphics."""
 
         value: list[str] = []
@@ -673,17 +686,17 @@ class VectorDefn(GraphicsDefn):
                 self.get_root()._local_surfaces_provider()
             )
 
-    class scale(metaclass=PyLocalPropertyMeta):
+    class scale(PyLocalProperty):
         """Vector scale."""
 
         value: float = 1.0
 
-    class skip(metaclass=PyLocalPropertyMeta):
+    class skip(PyLocalProperty):
         """Vector skip."""
 
         value: int = 0
 
-    class show_edges(metaclass=PyLocalPropertyMeta):
+    class show_edges(PyLocalProperty):
         """Show edges."""
 
         value: bool = False
@@ -691,7 +704,7 @@ class VectorDefn(GraphicsDefn):
     class range(metaclass=PyLocalObjectMeta):
         """Range definition."""
 
-        class option(metaclass=PyLocalPropertyMeta):
+        class option(PyLocalProperty):
             """Range option."""
 
             value: str = "auto-range-on"
@@ -709,7 +722,7 @@ class VectorDefn(GraphicsDefn):
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-on"
 
-            class global_range(metaclass=PyLocalPropertyMeta):
+            class global_range(PyLocalProperty):
                 """Show global range."""
 
                 value: bool = False
@@ -722,12 +735,12 @@ class VectorDefn(GraphicsDefn):
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-off"
 
-            class clip_to_range(metaclass=PyLocalPropertyMeta):
+            class clip_to_range(PyLocalProperty):
                 """Clip vector within range."""
 
                 value: bool = False
 
-            class minimum(metaclass=PyLocalPropertyMeta):
+            class minimum(PyLocalProperty):
                 """Range minimum."""
 
                 _value: float = None
@@ -748,7 +761,7 @@ class VectorDefn(GraphicsDefn):
                 def value(self, value):
                     self._value = value
 
-            class maximum(metaclass=PyLocalPropertyMeta):
+            class maximum(PyLocalProperty):
                 """Range maximum."""
 
                 _value: float = None
