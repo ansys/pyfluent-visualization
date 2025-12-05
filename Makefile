@@ -17,16 +17,14 @@ docker-pull:
 
 unittest:
 	@pip install -r requirements/requirements_tests.txt
-	@pip install cryptography==45.0.7
-	@python tests/generate_certs.py
+	@bash .ci/generate_certs.sh
 	@pytest -v --cov=ansys.fluent --cov-report=xml:cov_xml.xml --cov-report=html
 
 build-doc:
 	@sudo rm -rf /home/ansys/.local/share/ansys_fluent_core/examples/*
 	@pip install -r requirements/requirements_doc.txt
-	@pip install cryptography==45.0.7
 	@python doc/api_rstgen.py
-	@python tests/generate_certs.py
+	@bash .ci/generate_certs.sh
 	@xvfb-run make -C doc html
 	@touch doc/_build/html/.nojekyll
 	@echo "$(DOCS_CNAME)" >> doc/_build/html/CNAME
