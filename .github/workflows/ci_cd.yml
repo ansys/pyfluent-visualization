@@ -108,7 +108,14 @@ jobs:
           FLUENT_IMAGE_TAG: v25.2.3
 
       - name: Test with pytest
-        run: make unittest
+        run: make unittest-windows
+        if:  matrix.os == 'windows-latest'
+        env:
+          FLUENT_IMAGE_TAG: v25.2.3
+
+      - name: Test with pytest
+        run: make unittest-linux
+        if:  matrix.os == 'public-ubuntu-latest-8-cores'
         env:
           FLUENT_IMAGE_TAG: v25.2.3
 
@@ -206,7 +213,7 @@ jobs:
           lookup-only: false # zizmor: ignore[cache-poisoning]
 
       - name: Generate the documentation
-        run: make build-doc
+        run: make build-doc-linux
         env:
           FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 

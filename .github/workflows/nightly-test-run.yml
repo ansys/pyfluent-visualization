@@ -57,7 +57,14 @@ jobs:
           FLUENT_IMAGE_TAG: v25.2.3
 
       - name: Test with pytest
-        run: make unittest
+        run: make unittest-windows
+        if:  matrix.os == 'windows-latest'
+        env:
+          FLUENT_IMAGE_TAG: v25.2.3
+
+      - name: Test with pytest
+        run: make unittest-linux
+        if:  matrix.os == 'public-ubuntu-latest-8-cores'
         env:
           FLUENT_IMAGE_TAG: v25.2.3
 

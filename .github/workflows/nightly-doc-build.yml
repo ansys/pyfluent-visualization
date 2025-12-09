@@ -68,7 +68,7 @@ jobs:
           FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
       - name: Generate the documentation
-        run: make build-doc
+        run: make build-doc-linux
         env:
           FLUENT_IMAGE_TAG: ${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}
 
