@@ -45,7 +45,4 @@ the Python kernel.
 
 .. note::
     PyFluent-Visualization seamlessly integrates with
-    `PyVista <https://www.pyvista.org/>`_, `Matplotlib <https://matplotlib.org/>`_
-    and `Plotly <https://plotly.com/python/>`_.
-    Additionally, it offers flexibility to `integrate other data visualization
-    tools <ref_integration>`_.
+    `PyVista <https://www.pyvista.org/>`_ and `Matplotlib <https://matplotlib.org/>`_.

@@ -1,15 +1,15 @@
 .. _ref_contributing:
 
-==========
-Contribute
-==========
+======================================
+Contributing to PyFluent-Visualization
+======================================
 Overall guidance on contributing to a PyAnsys library appears in
 `Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_
 in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly
 familiar with this guide, paying particular attention to `Coding Style
 <https://dev.docs.pyansys.com/coding-style/index.html#coding-style>`_,
 before attempting to contribute to PyFluent-Visualization.
- 
+
 The following contribution information is specific to PyFluent-Visualization.
 
 Clone the repository
@@ -29,7 +29,7 @@ Build documentation
 To build the PyFluent-Visualization documentation locally, in the root
 directory of the repository, run:
 
-.. code:: 
+.. code::
 
     pip install -r requirements/requirements_doc.txt
     cd doc

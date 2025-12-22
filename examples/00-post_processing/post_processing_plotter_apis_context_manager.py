@@ -20,12 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_enhanced_postprocessing:
+""".. _ref_post_processing_plotter_apis_context_manager:
 
-Enhanced Postprocessing
------------------------
-This example demonstrates access to the actual renderer from the pyfluent
-renderer layer so that users can perform operations on it.
+Context managed post-processing using Pyvista and Matplotlib plotter APIs
+-------------------------------------------------------------------------
+This example demonstrates how to perform clean, context-managed post-processing
+in PyFluent using both Pyvista and Matplotlib. It highlights how context management
+simplifies setup and cleanup of solver sessions and graphics containers, making
+visualization tasks easier and more reliable.
+
+Using a 3D exhaust manifold model, the example walks through mesh visualization,
+background and display customization, image export, and the creation of XY and
+residual plots. Users can access visualization properties directly through PyFluent’s
+interface, enabling flexible control without dealing with low-level renderer details.
+
+**Key Features
+
+* Context-managed solver and visualization workflow using using().
+
+* Customizable 3D mesh displays through Pyvista.
+
+* XY and residual plotting with integrated Matplotlib support.
+
+* Simple export of graphics to PNG and PDF formats.
+
+Overall, the example shows how PyFluent integrates smoothly with external rendering
+tools to provide a clean, efficient, and customizable post-processing experience.
 """
 
 ###############################################################################

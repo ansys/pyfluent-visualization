@@ -20,32 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_updated_exhaust_manifold_example:
+""".. _ref_post_processing:
 
-Enhanced Postprocessing with PyVista and Matplotlib
----------------------------------------------------
-This updated example demonstrates postprocessing capabilities in PyFluent
-using an object-oriented approach, providing a more user-friendly interface
-and improved flexibility.
-The 3D model used in this example is an exhaust manifold, where high-temperature
-turbulent flows are analyzed in a conjugate heat transfer scenario.
+Post-processing using Pyvista and Matplotlib
+--------------------------------------------
+This example shows how to use PyFluent’s post-processing tools to visualize Fluent
+results in both 3D and 2D. It demonstrates a typical workflow for exploring simulation
+data—such as temperature and velocity fields—using Pyvista for interactive 3D graphics
+and Matplotlib for standard 2D plots.
 
-Key Improvements:
+The model used here is an exhaust manifold, but the techniques apply to
+any Fluent simulation.
 
-Object-Oriented Design: The code has been modularized into classes and methods,
-enhancing maintainability and reusability.
+**What this example demonstrates**
 
-Interactive User Interface: The user interface now allows seamless interaction,
-enabling users to control and customize postprocessing parameters.
+* 3D Visualization with Pyvista: Display meshes, surfaces, iso-surfaces, contours,
+  vectors, and pathlines to understand spatial flow behavior.
 
-Enhanced Plot Interaction: Users have greater freedom to interact with the plots,
-such as adding and super-imposing multiple plots, and toggling data views,
-enhancing the visualization experience.
+* 2D Plotting with Matplotlib: Create XY plots such as temperature or velocity
+  profiles, monitor quantities, and compare numerical trends.
 
-This example utilizes PyVista for 3D visualization and Matplotlib for 2D data plotting.
-The new design provides a streamlined workflow for exploring and analyzing
-the temperature and flow characteristics in the exhaust manifold.
+* Simple, Practical Workflow: Shows how to load results, create common visualization
+  objects, adjust display settings, and interact with the scene — all with clear,
+  straightforward commands.
 
+* Unified Post-Processing Interface: Combines 3D and 2D visualization tools so users can
+  inspect their results from multiple perspectives within a single, consistent workflow.
+
+This example provides a concise starting point for analyzing Fluent simulations
+visually, without requiring knowledge of internal APIs or implementation details.
 """
 
 ###############################################################################
@@ -164,8 +167,7 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an iso-surface on the outlet plane.
 
-surf_outlet_plane = Surface(solver=solver_session)
-surf_outlet_plane.type = "iso-surface"
+surf_outlet_plane = Surface(solver=solver_session, type="iso-surface")
 surf_outlet_plane.field = "y-coordinate"
 surf_outlet_plane.iso_value = -0.125017
 graphics_window = GraphicsWindow()
@@ -202,9 +204,11 @@ graphics_window.add_graphics(surf_vel_contour, position=(0, 0))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create a temperature contour on the mid-plane and the outlet.
 
-temperature_contour = Contour(solver=solver_session)
-temperature_contour.field = "temperature"
-temperature_contour.surfaces = [surf_mid_plane_x.name, surf_outlet_plane.name]
+temperature_contour = Contour(
+    solver=solver_session,
+    field="temperature",
+    surfaces=[surf_mid_plane_x.name, surf_outlet_plane.name],
+)
 graphics_window.add_graphics(temperature_contour, position=(0, 1))
 
 ###############################################################################
@@ -234,7 +238,8 @@ graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
 velocity_vector = Vector(
     solver=solver_session,
-    field="x-velocity",
+    field="velocity",
+    color_by="x-velocity",
     surfaces=["solid_up:1:830"],
     scale=20,
 )
@@ -246,9 +251,11 @@ graphics_window.show()
 # ~~~~~~~~~~~~~~~~
 # Create a pathlines on a predefined surface.
 
-pathlines = Pathline(solver=solver_session)
-pathlines.field = "velocity-magnitude"
-pathlines.surfaces = ["inlet", "inlet1", "inlet2"]
+pathlines = Pathline(
+    solver=solver_session,
+    field="velocity-magnitude",
+    surfaces=["inlet", "inlet1", "inlet2"],
+)
 
 graphics_window = GraphicsWindow()
 graphics_window.add_graphics(pathlines)
@@ -277,8 +284,7 @@ plot_window.add_plot(xy_plot_object, position=(0, 0), title="Temperature")
 # ~~~~~~~~~~~~~~~~~~~~~~
 # Create and display the residual plot.
 
-residual = Monitor(solver=solver_session)
-residual.monitor_set_name = "residual"
+residual = Monitor(solver=solver_session, monitor_set_name="residual")
 plot_window.add_plot(residual, position=(0, 1))
 
 ###############################################################################
@@ -289,8 +295,7 @@ plot_window.add_plot(residual, position=(0, 1))
 solver_session.solution.initialization.hybrid_initialize()
 solver_session.solution.run_calculation.iterate(iter_count=50)
 
-mass_bal_rplot = Monitor(solver=solver_session)
-mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+mass_bal_rplot = Monitor(solver=solver_session, monitor_set_name="mass-bal-rplot")
 plot_window.add_plot(mass_bal_rplot, position=(1, 0))
 
 point_vel_rplot = Monitor(solver=solver_session, monitor_set_name="point-vel-rplot")
@@ -303,3 +308,4 @@ plot_window.show()
 # Close Fluent.
 
 solver_session.exit()
+del solver_session

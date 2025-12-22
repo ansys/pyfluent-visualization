@@ -20,31 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""".. _ref_context_aware_exhaust_manifold_example:
+""".. _ref_post_processing_context_manager:
 
-Enhanced Postprocessing
------------------------
-This updated example demonstrates postprocessing capabilities in PyFluent
-using an object-oriented approach, providing a more user-friendly interface
-and improved flexibility.
-The 3D model used in this example is an exhaust manifold, where high-temperature
-turbulent flows are analyzed in a conjugate heat transfer scenario.
+Context-managed post-processing workflow using Pyvista and Matplotlib
+---------------------------------------------------------------------
+This example demonstrates a streamlined, context-managed post-processing workflow
+in PyFluent, using an exhaust manifold case to showcase common 2D and 3D visualization
+tasks. Context managers handle setup and cleanup of solver sessions and graphics
+containers automatically, making the workflow cleaner and easier to follow.
 
-Key Improvements:
+Users can explore meshes, contours, slices, iso-surfaces, vectors, and pathlines,
+as well as generate XY and monitor plots. The example also highlights interactive
+visualization through Pyvista and high-quality plotting with Matplotlib, giving
+users a flexible way to analyze and present CFD results.
 
-Object-Oriented Design: The code has been modularized into classes and methods,
-enhancing maintainability and reusability.
+**Key features include:
 
-Interactive User Interface: The user interface now allows seamless interaction,
-enabling users to control and customize postprocessing parameters.
+* Simplified setup through context-managed Fluent sessions and graphics containers
+  like Mesh.
 
-Enhanced Plot Interaction: Users have greater freedom to interact with the plots,
-such as adding and super-imposing multiple plots, and toggling data views,
-enhancing the visualization experience.
+* Consistent 2D/3D visualization using PyFluent’s unified API.
 
-This example utilizes PyVista for 3D visualization and for 2D data plotting.
-The new design provides a streamlined workflow for exploring and analyzing
-the temperature and flow characteristics in the exhaust manifold.
+* Interactive rendering and analysis with Pyvista and Matplotlib.
+
+Overall, this example highlights a concise, reliable, and flexible approach
+to post-processing CFD results.
 
 """
 ###############################################################################
@@ -187,7 +187,8 @@ with using(solver_session):
     graphics_window.add_graphics(temperature_contour_manifold, position=(1, 0))
 
     velocity_vector = Vector(
-        field=VariableCatalog.VELOCITY_X,
+        field="velocity",
+        color_by=VariableCatalog.VELOCITY_X,
         surfaces=[WallBoundary(name="solid_up:1:830")],
         scale=20,
     )

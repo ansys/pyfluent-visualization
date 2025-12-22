@@ -146,9 +146,11 @@ Visualize pathlines to analyze flow patterns:
     from ansys.fluent.core.solver import VelocityInlets
     from ansys.units import VariableCatalog
 
-    pathlines = Pathline(solver=solver_session)
-    pathlines.field = VariableCatalog.VELOCITY_MAGNITUDE
-    pathlines.surfaces = VelocityInlets(settings_source=solver_session)
+    pathlines = Pathline(
+        solver=solver_session,
+        field=VariableCatalog.VELOCITY_MAGNITUDE,
+        surfaces=VelocityInlets(settings_source=solver_session,
+        )
 
     window = GraphicsWindow()
     window.add_graphics(pathlines)
@@ -185,8 +187,7 @@ Plot solution residuals:
 
     from ansys.fluent.visualization import Monitor
 
-    residual = Monitor(solver=solver_session)
-    residual.monitor_set_name = "residual"
+    residual = Monitor(solver=solver_session, monitor_set_name="residual")
     window = GraphicsWindow()
     window.add_plot(residual)
     window.show()
@@ -200,8 +201,7 @@ Monitor solution convergence using mass balance and velocity plots:
     solver_session.settings.solution.initialization.hybrid_initialize()
     solver_session.settings.solution.run_calculation.iterate(iter_count=50)
 
-    mass_bal_rplot = Monitor(solver=solver_session)
-    mass_bal_rplot.monitor_set_name = "mass-bal-rplot"
+    mass_bal_rplot = Monitor(solver=solver_session, monitor_set_name="mass-bal-rplot")
     window = GraphicsWindow()
     window.add_plot(mass_bal_rplot, position=(0, 0))
 
@@ -232,12 +232,13 @@ stages. Graphics updates occur:
         solver=solver_session, field="velocity-magnitude", surfaces=["symmetry"]
     )
 
-    xy_plot_object = XYPlot(solver=solver_session)
-    xy_plot_object.surfaces = ['symmetry']
-    xy_plot_object.y_axis_function = "temperature"
+    xy_plot_object = XYPlot(
+        solver=solver_session,
+        surfaces=['symmetry'],
+        y_axis_function="temperature",
+    )
 
-    monitor_object = Monitor(solver=solver_session)
-    monitor_object.monitor_set_name = "residual"
+    monitor_object = Monitor(solver=solver_session, monitor_set_name="residual")
 
     contour_window = GraphicsWindow()
     contour_window.add_graphics(contour_object)
@@ -268,6 +269,60 @@ stages. Graphics updates occur:
 
 These updates are implemented using explicit callback registrations.
 Additionally, animations can be created from a graphics window.
+
+Context-managed graphics workflow
+---------------------------------
+PyFluent-Visualization also supports a context-managed workflow with the
+``using()`` interface. A context manager automatically handles setup and
+cleanup of solver sessions and graphics containers, ensuring that resources are
+released cleanly when the block completes.
+
+This approach improves readability, avoids manual window management, and
+prevents graphics objects from remaining open longer than intended. It is
+especially helpful when generating multiple plots or exporting images in a
+scripted workflow.
+
+The following example demonstrates context-managed creation and display of a
+mesh visualization:
+
+.. code-block:: python
+
+    import ansys.fluent.core as pyfluent
+    from ansys.fluent.core import examples
+    from ansys.fluent.core.solver import WallBoundaries, using
+    from ansys.fluent.visualization import Mesh, GraphicsWindow
+
+    # Download input files
+    case = examples.download_file(
+        "exhaust_system.cas.h5", "pyfluent/exhaust_system"
+    )
+    data = examples.download_file(
+        "exhaust_system.dat.h5", "pyfluent/exhaust_system"
+    )
+
+    # Launch Fluent
+    solver = pyfluent.launch_fluent(mode=pyfluent.FluentMode.SOLVER)
+    solver.settings.file.read_case(case)
+    solver.settings.file.read_data(data)
+
+    # Context-managed workflow
+    with using(solver):
+
+        # Create a graphics window
+        window = GraphicsWindow()
+
+        # Add mesh displays
+        window.add_graphics(Mesh(show_edges=True, surfaces=WallBoundaries()), position=(0, 0))
+        window.add_graphics(Mesh(surfaces=WallBoundaries()), position=(0, 1))
+
+        # Export and display
+        window.save_graphics("mesh_view.pdf")
+        window.show()
+
+Using this pattern ensures that both the Fluent session and graphics containers
+are closed safely and consistently when the code block finishes. It also
+helps maintain clean, predictable behavior in larger automated
+post-processing workflows.
 
 This guide provides a structured approach to using PyFluent-Visualization.
 For detailed usage of individual modules,

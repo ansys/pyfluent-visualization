@@ -15,14 +15,29 @@ docker-pull:
 	@pip install docker
 	@bash .ci/pull_fluent_image.sh
 
-unittest:
+unittest-windows:
 	@pip install -r requirements/requirements_tests.txt
+	@.ci\generate_certs.bat
 	@pytest -v --cov=ansys.fluent --cov-report=xml:cov_xml.xml --cov-report=html
 
-build-doc:
+unittest-linux:
+	@pip install -r requirements/requirements_tests.txt
+	@bash .ci/generate_certs.sh
+	@pytest -v --cov=ansys.fluent --cov-report=xml:cov_xml.xml --cov-report=html
+
+build-doc-windows:
+	@pip install -r requirements/requirements_doc.txt
+	@python doc/api_rstgen.py
+	@.ci\generate_certs.bat
+	@make -C doc html
+	@touch doc\_build\html\.nojekyll
+	@echo "$(DOCS_CNAME)" >> doc\_build\html\CNAME
+
+build-doc-linux:
 	@sudo rm -rf /home/ansys/.local/share/ansys_fluent_core/examples/*
 	@pip install -r requirements/requirements_doc.txt
 	@python doc/api_rstgen.py
+	@bash .ci/generate_certs.sh
 	@xvfb-run make -C doc html
 	@touch doc/_build/html/.nojekyll
 	@echo "$(DOCS_CNAME)" >> doc/_build/html/CNAME
