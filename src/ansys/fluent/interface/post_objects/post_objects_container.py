@@ -27,7 +27,7 @@ import inspect
 from ansys.fluent.core.session import BaseSession
 
 from ansys.fluent.interface.post_objects.meta import PyLocalContainer
-from ansys.fluent.visualization import Contour, Plots, Graphics, Surface, Vector
+from ansys.fluent.visualization import Contour, Graphics, Plots, Surface, Vector
 from ansys.fluent.visualization.graphics.graphics_objects import Mesh
 
 

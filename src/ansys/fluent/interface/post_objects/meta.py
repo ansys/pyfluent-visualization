@@ -23,7 +23,7 @@
 """Metaclasses used in various explicit classes in PyFluent."""
 
 from abc import ABC
-from collections.abc import Callable, MutableMapping, Iterator
+from collections.abc import Callable, Iterator, MutableMapping
 import inspect
 from typing import (
     TYPE_CHECKING,
@@ -37,20 +37,23 @@ from typing import (
     overload,
     override,
 )
-from ansys.fluent.core.session_solver import Solver
-from typing_extensions import TypeVar, ParamSpec, get_args, get_original_bases
 
 from ansys.fluent.core.exceptions import DisallowedValuesError, InvalidArgument
+from ansys.fluent.core.session_solver import Solver
+from typing_extensions import ParamSpec, TypeVar, get_args, get_original_bases
 
-from ansys.fluent.interface.post_objects.post_object_definitions import BasePostObjectDefn
+from ansys.fluent.interface.post_objects.post_object_definitions import (
+    BasePostObjectDefn,
+)
 
 if TYPE_CHECKING:
     from ansys.fluent.core.services.field_data import LiveFieldData
+    from ansys.fluent.core.streaming_services.monitor_streaming import MonitorsManager
+
     from ansys.fluent.interface.post_objects.post_object_definitions import (
         GraphicsDefn,
         PlotDefn,
     )
-    from ansys.fluent.core.streaming_services.monitor_streaming import MonitorsManager
     from ansys.fluent.interface.post_objects.post_objects_container import Container
 
 # pylint: disable=unused-private-member
@@ -101,14 +104,18 @@ class Attribute(Generic[_SelfT, _T_co]):
             owner.attributes = set()
         owner.attributes.add(name)
 
-    def __set__(self, instance: _SelfT, value: _T_co) -> Never:  # pyright: ignore[reportGeneralTypeIssues]
+    def __set__(
+        self, instance: _SelfT, value: _T_co
+    ) -> Never:  # pyright: ignore[reportGeneralTypeIssues]
         raise AttributeError("Attributes are read only.")
 
     @overload
     def __get__(self, instance: None, _) -> Self: ...
 
     @overload
-    def __get__(self, instance: _SelfT, _) -> _T_co:  # pyright: ignore[reportGeneralTypeIssues]
+    def __get__(
+        self, instance: _SelfT, _
+    ) -> _T_co:  # pyright: ignore[reportGeneralTypeIssues]
         ...
 
     def __get__(self, instance: _SelfT | None, _) -> _T_co | Self:
@@ -180,11 +187,13 @@ class Command(Generic[_SelfT, P]):
             {
                 "__init__": _init,
                 "__call__": _execute,
-                "argument_attribute": lambda _self,
-                argument_name,
-                attr_name: self.arguments_attrs[  # noqa: E501
+                "argument_attribute": lambda _self, argument_name, attr_name: self.arguments_attrs[  # noqa: E501
                     argument_name
-                ][attr_name](_self.obj),
+                ][
+                    attr_name
+                ](
+                    _self.obj
+                ),
                 "arguments": lambda _self: list(self.arguments_attrs.keys()),
             },
         )
@@ -235,7 +244,9 @@ T = TypeVar("T")
 class PyLocalBase:
     """Local base."""
 
-    def get_ancestors_by_type(self, instance: BasePostObjectDefn, owner: "PyLocalBase | None" = None):
+    def get_ancestors_by_type(
+        self, instance: BasePostObjectDefn, owner: "PyLocalBase | None" = None
+    ):
         owner = self if owner is None else owner
         parent = None
         if getattr(owner, "_parent", None):

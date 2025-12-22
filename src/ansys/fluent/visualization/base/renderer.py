@@ -25,6 +25,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, TypedDict
 
+
 class SurfaceToRender(TypedDict):
     """TypedDict for mesh surface definition."""
 
@@ -34,7 +35,9 @@ class SurfaceToRender(TypedDict):
     title: str
     kwargs: dict[str, Any]
 
+
 SubPlot = list[SurfaceToRender]
+
 
 class AbstractRenderer(ABC):
     """Abstract class for rendering graphics and plots."""

@@ -23,8 +23,8 @@
 """Module providing visualization objects definition."""
 
 import abc
-import logging
 from abc import abstractmethod
+import logging
 from typing import TYPE_CHECKING, Literal, NamedTuple
 
 from ansys.fluent.interface.post_objects.meta import (

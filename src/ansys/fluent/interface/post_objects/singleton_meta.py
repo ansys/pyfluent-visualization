@@ -29,9 +29,12 @@ from typing import TYPE_CHECKING, Any, Self
 class SingletonMeta(type):
     """Provides the metaclass for the singleton type."""
 
-    _single_instance: Self | None = None    # pyright: ignore[reportGeneralTypeIssues]
+    _single_instance: Self | None = None  # pyright: ignore[reportGeneralTypeIssues]
 
-    if not TYPE_CHECKING:  # some type checkers may see this and erase the type otherwise
+    if (
+        not TYPE_CHECKING
+    ):  # some type checkers may see this and erase the type otherwise
+
         def __call__(cls, *args: Any, **kwargs: Any) -> Self:
             if not cls._single_instance:
                 cls._single_instance = super().__call__(*args, **kwargs)

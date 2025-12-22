@@ -23,12 +23,12 @@
 """Containers for graphics."""
 
 from typing import TYPE_CHECKING, Any, Self, TypedDict, Unpack
-from typing_extensions import override
 import warnings
 
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
 from ansys.units import VariableDescriptor
+from typing_extensions import override
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
