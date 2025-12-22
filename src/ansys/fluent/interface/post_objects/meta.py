@@ -23,7 +23,7 @@
 """Metaclasses used in various explicit classes in PyFluent."""
 
 from abc import ABC
-from collections.abc import Callable, Iterator, MutableMapping
+from collections.abc import Callable, Iterator, MutableMapping, Mapping, Sequence
 import inspect
 from typing import (
     TYPE_CHECKING,
@@ -34,13 +34,14 @@ from typing import (
     Protocol,
     Self,
     cast,
+    dataclass_transform,
     overload,
-    override,
+    override, Unpack,
 )
 
-from ansys.fluent.core.exceptions import DisallowedValuesError, InvalidArgument
+from ansys.fluent.core.exceptions import DisallowedValuesError
 from ansys.fluent.core.session_solver import Solver
-from typing_extensions import ParamSpec, TypeVar, get_args, get_original_bases
+from typing_extensions import ParamSpec, TypeVar, get_args, get_original_bases, NotRequired, TypedDict
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     BasePostObjectDefn,
@@ -63,10 +64,15 @@ _SelfT = TypeVar("_SelfT", covariant=True)
 _T_co = TypeVar("_T_co", covariant=True)
 
 
+class HasAttributes(Protocol):
+    # attributes: NotRequired[set[str]]  # technically this but this is just object
+    attributes: set[str]
+
+
 class Attribute(Generic[_SelfT, _T_co]):
     """Attributes."""
 
-    VALID_NAMES = [
+    VALID_NAMES = (
         "range",
         "allowed_values",
         "display_name_allowed_values",
@@ -89,24 +95,25 @@ class Attribute(Generic[_SelfT, _T_co]):
         "widget",
         "dir_info",
         "extensions",
-    ]
+    )
 
     def __init__(self, function: Callable[[_SelfT], _T_co], /):
         self.function = function
         self.__doc__: str | None = getattr(function, "__doc__", None)
         self.name: str
 
-    def __set_name__(self, owner: type, name: str):
+    def __set_name__(self, owner: HasAttributes, name: str):
         if name not in self.VALID_NAMES:
             raise DisallowedValuesError("attribute", name, self.VALID_NAMES)
         self.name = name
         if not hasattr(owner, "attributes"):
-            owner.attributes = set()
+            owner.attributes = set[str]()
+        assert isinstance(owner.attributes, set)
         owner.attributes.add(name)
 
     def __set__(
-        self, instance: _SelfT, value: _T_co
-    ) -> Never:  # pyright: ignore[reportGeneralTypeIssues]
+        self, instance: _SelfT, value: _T_co  # pyright: ignore[reportGeneralTypeIssues]
+    ) -> Never:
         raise AttributeError("Attributes are read only.")
 
     @overload
@@ -114,8 +121,8 @@ class Attribute(Generic[_SelfT, _T_co]):
 
     @overload
     def __get__(
-        self, instance: _SelfT, _
-    ) -> _T_co:  # pyright: ignore[reportGeneralTypeIssues]
+        self, instance: _SelfT, _  # pyright: ignore[reportGeneralTypeIssues]
+    ) -> _T_co:
         ...
 
     def __get__(self, instance: _SelfT | None, _) -> _T_co | Self:
@@ -187,12 +194,10 @@ class Command(Generic[_SelfT, P]):
             {
                 "__init__": _init,
                 "__call__": _execute,
-                "argument_attribute": lambda _self, argument_name, attr_name: self.arguments_attrs[  # noqa: E501
-                    argument_name
-                ][
-                    attr_name
-                ](
-                    _self.obj
+                "argument_attribute": (
+                    lambda _self, argument_name, attr_name: self.arguments_attrs[
+                        argument_name
+                    ][attr_name](_self.obj)
                 ),
                 "arguments": lambda _self: list(self.arguments_attrs.keys()),
             },
@@ -205,40 +210,12 @@ class Command(Generic[_SelfT, P]):
         owner.commands[name] = {}
 
     def __get__(self, instance: _SelfT, _):  # pyright: ignore[reportGeneralTypeIssues]
-        if hasattr(self, "command"):
-            return self.command
-        else:
-            return self.command_cls(instance)
+        return self.command_cls(instance)
 
 
 TT = TypeVar("TT", bound=type)
-
-
-def CommandArgs(
-    command_object: Command[object, ...], argument_name: str
-) -> Callable[[TT], TT]:
-    """Command arguments."""
-
-    def wrapper(attribute: TT) -> TT:
-        if argument_name in command_object.arguments_attrs:
-            command_object.arguments_attrs[argument_name].update(
-                {attribute.__name__: attribute}
-            )
-        else:
-            raise InvalidArgument(f"{argument_name} not a valid argument.")
-        return attribute
-
-    return wrapper
-
-
-class _Wrapper(Protocol):
-    def __call__(self, self_: type, instance: Any, owner: type, /) -> Any: ...
-
-
-class PyLocalBase: ...
-
-
 T = TypeVar("T")
+T2 = TypeVar("T2")
 
 
 class PyLocalBase:
@@ -266,7 +243,7 @@ class PyLocalBase:
             parent = self.get_ancestors_by_name(owner, instance._parent)
         return parent
 
-    def get_root(self, instance) -> "PyLocalBase":
+    def get_root(self, instance = None) -> "PyLocalBase":
         instance = self if instance is None else instance
         parent = instance
         if getattr(instance, "_parent", None):
@@ -277,19 +254,10 @@ class PyLocalBase:
         root = self.get_root(instance)
         return root.session
 
-    def get_session_handle(self, instance):
-        root = self.get_root(instance)
-        return getattr(root, "session_handle", None)
-
     def get_path(self) -> str:
         if getattr(self, "_parent", None):
             return self._parent.get_path() + "/" + self._name
         return self._name
-
-    def __init_subclass__(cls) -> None:
-        if "get_path" not in attrs:
-            attrs["get_path"] = cls.__create_get_path()
-        return super().__init_subclass__()
 
     @property
     def root(self) -> "PyLocalBase":
@@ -315,11 +283,6 @@ class PyLocalBase:
     def monitors(self) -> "MonitorsManager":
         """Monitors associated with the current object."""
         return self.session.monitors
-
-    @property
-    def session_handle(self):
-        """Session handle associated with the current object."""
-        return self.get_session_handle(self)
 
 
 class PyLocalProperty(PyLocalBase, Generic[T]):
@@ -355,12 +318,14 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
 
                 obj._register_on_change_cb(reset)
 
-    def __call__(self) -> T | None:
+    def __call__(self) -> T:
         rv = self.value
 
-        if allowed_values := cast(
-            list[T] | None, getattr(self, "allowed_values", None)
-        ):
+        try:
+            allowed_values = self.allowed_values
+        except AttributeError:
+            return rv
+        else:
             if len(allowed_values) > 0 and (
                 rv is None or (not isinstance(rv, list) and rv not in allowed_values)
             ):
@@ -368,6 +333,9 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
                 rv = self.value
 
         return rv
+
+    if TYPE_CHECKING:  # TODO double check this is on the right thing
+        def __set__(self, instance: object, value: T) -> None: ...
 
     def set_state(self, value: T):
         self.value = value
@@ -378,7 +346,13 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
         self._on_change_cbs.append(on_change_cb)
 
     @Attribute
-    def allowed_values(self) -> list[T]:
+    @overload
+    def allowed_values(self: "PyLocalProperty[Sequence[T2]]") -> Sequence[T2]:...
+    @Attribute
+    @overload
+    def allowed_values(self: "PyLocalProperty[T2]") -> Sequence[T2]:...
+    @Attribute
+    def allowed_values(self) -> Sequence[object]:
         """Get allowed values."""
         raise NotImplementedError("allowed_values not implemented.")
 
@@ -430,10 +404,14 @@ class PyReferenceObject:
             delattr(self, "_object")
 
 
-class PyLocalObject(PyLocalBase):
+ParentT = TypeVar("ParentT")
+
+# TODO try poking around this more cause it is kinda what we are doing?
+# @dataclass_transform(field_specifiers=(type,))
+class PyLocalObject(PyLocalBase, Generic[ParentT]):
     """Local object classes."""
 
-    def __init__(self, parent, api_helper: Callable[[Self], APIHelper], name: str = ""):
+    def __init__(self, parent: ParentT, api_helper: Callable[[Self], APIHelper], name: str = ""):
         """Create the initialization method for 'PyLocalObjectMeta'."""
         self._parent = parent
         self._name = name
@@ -443,29 +421,29 @@ class PyLocalObject(PyLocalBase):
 
         def update(clss: type[PyLocalBase]):
             for name, cls in clss.__dict__.items():
-                if cls.__class__.__name__ in {"PyLocalCommandMeta"}:
+                if cls.__name__ in {"PyLocalCommand"}:
                     self._command_names.append(name)
 
-                if cls.__class__.__name__ in {
-                    "PyLocalPropertyMeta",
-                    "PyLocalObjectMeta",
-                    "PyLocalCommandMeta",
+                if cls.__name__ in {
+                    "PyLocalProperty",
+                    "PyLocalObject",
+                    "PyLocalCommand",
                 }:
                     setattr(
                         self,
                         name,
                         cls(self, api_helper, name),
                     )
-                if cls.__class__.__name__ in {
-                    "PyLocalNamedObjectMeta",
-                    "PyLocalNamedObjectMetaAbstract",
+                if cls.__name__ in {
+                    "PyLocalNamedObject",
+                    "PyLocalNamedObjectAbstract",
                 }:
                     setattr(
                         self,
                         cls.PLURAL,
                         PyLocalContainer(self, cls, api_helper, cls.PLURAL),
                     )
-                if cls.__class__.__name__ == "PyReferenceObjectMeta":
+                if cls.__class__.__name__ == "PyReferenceObject":
                     setattr(
                         self,
                         name,
@@ -476,9 +454,7 @@ class PyLocalObject(PyLocalBase):
 
         update(self.__class__)
 
-    __getattribute__ = object.__getattribute__
-
-    def update(self, value):
+    def update(self, value: dict[str, Any]):
         """Update object."""
         properties = value
         sort_by = None
@@ -497,10 +473,10 @@ class PyLocalObject(PyLocalBase):
             properties.update(sorted_properties)
         for name, val in properties.items():
             obj = getattr(self, name)
-            if obj.__class__.__class__.__name__ == "PyLocalPropertyMeta":
+            if obj.__class__.__name__ == "PyLocalProperty":
                 obj.set_state(val)
             else:
-                if obj.__class__.__class__.__name__ == "PyReferenceObjectMeta":
+                if obj.__class__.__name__ == "PyReferenceObject":
                     obj = obj.ref
                 obj.update(val)
 
@@ -516,25 +492,25 @@ class PyLocalObject(PyLocalBase):
                 if o is None or name.startswith("_") or name.startswith("__"):
                     continue
 
-                if cls.__class__.__name__ == "PyReferenceObjectMeta":
+                if cls.__name__ == "PyReferenceObject":
                     if o.LOCATION == "local":
                         o = o.ref
                     else:
                         continue
-                elif cls.__class__.__name__ == "PyLocalCommandMeta":
+                elif cls.__name__ == "PyLocalCommand":
                     args = {}
                     for arg in o._args:
                         args[arg] = getattr(o, arg)()
                     state[name] = args
                 if (
-                    cls.__class__.__name__ == "PyLocalObjectMeta"
-                    or cls.__class__.__name__ == "PyReferenceObjectMeta"
+                    cls.__name__ == "PyLocalObject"
+                    or cls.__name__ == "PyReferenceObject"
                 ):
                     if getattr(o, "is_active", True):
                         state[name] = o(show_attributes)
                 elif (
-                    cls.__class__.__name__ == "PyLocalNamedObjectMeta"
-                    or cls.__class__.__name__ == "PyLocalNamedObjectMetaAbstract"
+                    cls.__name__ == "PyLocalNamedObject"
+                    or cls.__name__ == "PyLocalNamedObjectAbstract"
                 ):
                     container = getattr(self, cls.PLURAL)
                     if getattr(container, "is_active", True):
@@ -544,7 +520,7 @@ class PyLocalObject(PyLocalBase):
                             if getattr(o, "is_active", True):
                                 state[cls.PLURAL][child_name] = o()
 
-                elif cls.__class__.__name__ == "PyLocalPropertyMeta":
+                elif cls.__name__ == "PyLocalProperty":
                     if getattr(o, "is_active", True):
                         state[name] = o()
                         attrs = show_attributes and getattr(o, "attributes", None)
@@ -562,13 +538,15 @@ class PyLocalObject(PyLocalBase):
 
     def __setattr__(self, name: str, value: Any):
         attr = getattr(self, name, None)
-        if attr and attr.__class__.__class__.__name__ == "PyLocalPropertyMeta":
+        if attr and attr.__class__.__name__ == "PyLocalProperty":
             attr.set_state(value)
         else:
             object.__setattr__(self, name, value)
 
 
-class PyLocalCommand(PyLocalObject):
+CallKwargs = TypeVar("CallKwargs", bound=TypedDict)
+
+class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
     """Local object metaclass."""
 
     def __init__(self, parent, api_helper: Callable[[Self], APIHelper], name=""):
@@ -597,7 +575,7 @@ class PyLocalCommand(PyLocalObject):
 
         update(self.__class__)
 
-    def __call__(self, **kwargs):
+    def __call__(self, **kwargs: Unpack[CallKwargs]):
         for arg_name, arg_value in kwargs.items():
             getattr(self, arg_name).set_state(arg_value)
         cmd_args = {}
@@ -605,14 +583,9 @@ class PyLocalCommand(PyLocalObject):
             cmd_args[arg_name] = getattr(self, arg_name)()
         return self._exe_cmd(**cmd_args)
 
-    def __new__(cls, name, bases, attrs):
-        attrs["__init__"] = cls.__create_init()
-        attrs["__call__"] = cls.__execute_command()
-        return super().__new__(cls, name, bases, attrs)
-
 
 class PyLocalNamedObject(PyLocalObject):
-    """Metaclass for local named object classes."""
+    """Base class for local named object classes."""
 
     def __init__(self, name: str, parent, api_helper: Callable[[Self], APIHelper]):
         self._name = name
@@ -623,32 +596,32 @@ class PyLocalNamedObject(PyLocalObject):
 
         def update(clss):
             for name, cls in clss.__dict__.items():
-                if cls.__class__.__name__ in ("PyLocalCommandMeta"):
+                if cls.__name__ in ("PyLocalCommand"):
                     self._command_names.append(name)
 
-                if cls.__class__.__name__ in (
-                    "PyLocalPropertyMeta",
-                    "PyLocalObjectMeta",
-                    "PyLocalCommandMeta",
+                if cls.__name__ in (
+                    "PyLocalProperty",
+                    "PyLocalObject",
+                    "PyLocalCommand",
                 ):
                     # delete old property if overridden
-                    if getattr(self, name).__class__.__name__ == name:
+                    if getattr(self, name).__name__ == name:
                         delattr(self, name)
                     setattr(
                         self,
                         name,
                         cls(self, api_helper, name),
                     )
-                elif (
-                    cls.__class__.__name__ == "PyLocalNamedObjectMeta"
-                    or cls.__class__.__name__ == "PyLocalNamedObjectMetaAbstract"
+                elif (  # TODO these are gone, can we not use instance checks here?
+                    cls.__name__ == "PyLocalNamedObject"
+                    or cls.__name__ == "PyLocalNamedObjectAbstract"
                 ):
                     setattr(
                         self,
                         cls.PLURAL,
                         PyLocalContainer(self, cls, api_helper, cls.PLURAL),
                     )
-                elif cls.__class__.__name__ == "PyReferenceObjectMeta":
+                elif cls.__name__ == "PyReferenceObject":
                     setattr(self, name, cls(self, cls.PATH, cls.LOCATION, cls.SESSION))
             for base_class in clss.__bases__:
                 update(base_class)
@@ -666,7 +639,18 @@ class PyLocalNamedObjectAbstract(ABC, PyLocalNamedObject):
     pass
 
 
-DefnT = TypeVar("T", bound=GraphicsDefn | PlotDefn, default=GraphicsDefn | PlotDefn)
+DefnT = TypeVar("DefnT", bound=GraphicsDefn | PlotDefn, default=GraphicsDefn | PlotDefn)
+
+def if_type_checking_instantiate(type: type[T]) -> T:
+    return cast(T, type)  # this is hopefully obviously unsafe
+
+
+class _DeleteKwargs(TypedDict, total=False):
+    names: list[str]
+
+class _CreateKwargs(TypedDict, total=False):
+    name: str | None
+
 
 
 class PyLocalContainer(MutableMapping[str, DefnT]):
@@ -696,7 +680,7 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
             PyLocalContainer.exclude = property(
                 lambda self: self.__object_class.EXCLUDE(self)
             )
-        if hasattr(object_class, "INCLUDE"):
+        if hasattr(object_class, "INCLUDE"):  # TODO sort_by?
             PyLocalContainer.include = property(
                 lambda self: self.__object_class.INCLUDE(self)
             )
@@ -757,16 +741,6 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
         """Returns the session object."""
         return self.get_session()
 
-    def get_session_handle(self, obj=None):
-        """Returns the session-handle object."""
-        root = self.get_root(obj)
-        return getattr(root, "session_handle", None)
-
-    @property
-    def session_handle(self):
-        """Returns the session-handle object."""
-        return self.get_session_handle()
-
     @override
     def __iter__(self) -> Iterator[str]:
         return iter(self._local_collection)
@@ -809,32 +783,34 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
             index += 1
         return unique_name
 
-    class Delete(PyLocalCommand):
+    class Delete(PyLocalCommand[Self, _DeleteKwargs]):
         """Local delete command."""
 
         def _exe_cmd(self, names: list[str]) -> None:
             for item in names:
                 self._parent.__delitem__(item)
 
+        @if_type_checking_instantiate
         class names(PyLocalProperty[list[str]]):
             """Local names property."""
 
-            value: list[str] = []
+            value = []
 
             @Attribute
             def allowed_values(self):
                 """Get allowed values."""
                 return list(self._parent._parent)
 
-    class Create(PyLocalCommand):
+    class Create(PyLocalCommand[Self, _CreateKwargs]):
         """Local create command."""
 
-        def _exe_cmd(self, name=None):
+        def _exe_cmd(self, name: str | None = None):
             if name is None:
                 name = self._parent._get_unique_chid_name()
             new_object = self._parent.__getitem__(name)
             return new_object._name
 
+        @if_type_checking_instantiate
         class name(PyLocalProperty[str | None]):
             """Local name property."""
 
@@ -843,3 +819,4 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
     # added by __init__
     delete: Delete
     create: Create
+

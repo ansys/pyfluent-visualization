@@ -24,15 +24,16 @@
 
 import abc
 from abc import abstractmethod
+from collections.abc import Callable, Sequence
 import logging
-from typing import TYPE_CHECKING, Literal, NamedTuple
+from typing import TYPE_CHECKING, Literal, NamedTuple, Protocol, Self, cast, final
 
 from ansys.fluent.interface.post_objects.meta import (
     Attribute,
-    PyLocalNamedObjectAbstract,
-    PyLocalObjectMeta,
+    PyLocalNamedObject,
+    PyLocalObject,
     PyLocalProperty,
-    PyLocalPropertyMeta,
+    if_type_checking_instantiate,
 )
 
 if TYPE_CHECKING:
@@ -41,18 +42,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger("pyfluent.post_objects")
 
 
-class BasePostObjectDefn(abc.ABC):
+
+class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
     """Base class for visualization objects."""
 
-    @abc.abstractmethod
-    def get_root(self) -> Container:
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def get_root(self) -> Container:
+    #     raise NotImplementedError
 
-    @abc.abstractmethod
-    def surfaces(self) -> list[str]:
-        raise NotImplementedError
+    surfaces: Callable[[], Sequence[str]]
 
-    def _pre_display(self):
+    def _pre_display(self) -> None:
         local_surfaces_provider = self.get_root()._local_surfaces_provider()
         for surf_name in self.surfaces():
             if surf_name in list(local_surfaces_provider):
@@ -60,7 +60,7 @@ class BasePostObjectDefn(abc.ABC):
                 surf_api = surf_obj._api_helper.surface_api
                 surf_api.create_surface_on_server()
 
-    def _post_display(self):
+    def _post_display(self) -> None:
         local_surfaces_provider = self.get_root()._local_surfaces_provider()
         for surf_name in self.surfaces():
             if surf_name in list(local_surfaces_provider):
@@ -69,11 +69,11 @@ class BasePostObjectDefn(abc.ABC):
                 surf_api.delete_surface_on_server()
 
 
-class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObjectAbstract):
+class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObject, abc.ABC):
     """Abstract base class for graphics objects."""
 
     @abstractmethod
-    def display(self, window_id: str | None = None):
+    def display(self, window_id: str | None = None) -> None:
         """Display graphics.
 
         Parameters
@@ -84,11 +84,11 @@ class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObjectAbstract):
         pass
 
 
-class PlotDefn(BasePostObjectDefn, metaclass=PyLocalNamedObjectAbstract):
+class PlotDefn(BasePostObjectDefn, PyLocalNamedObject, abc.ABC):
     """Abstract base class for plot objects."""
 
     @abstractmethod
-    def plot(self, window_id: str | None = None):
+    def plot(self, window_id: str | None = None) -> None:
         """Draw plot.
 
         Parameters
@@ -99,77 +99,82 @@ class PlotDefn(BasePostObjectDefn, metaclass=PyLocalNamedObjectAbstract):
         pass
 
 
-class Vector(NamedTuple):
-    """Class for vector definition."""
-
-    x: float
-    y: float
-    z: float
-
-
-class MonitorDefn(PlotDefn):
+class MonitorDefn(PlotDefn, abc.ABC):
     """Monitor Definition."""
 
     PLURAL = "Monitors"
 
-    class monitor_set_name(PyLocalProperty):
+    @final
+    @if_type_checking_instantiate
+    class monitor_set_name(PyLocalProperty[str | None]):
         """Monitor set name."""
 
-        value: str = None
+        value = None
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Monitor set allowed values."""
             return self.monitors.get_monitor_set_names()
 
 
-class XYPlotDefn(PlotDefn):
+class XYPlotDefn(PlotDefn, abc.ABC):
     """XYPlot Definition."""
 
     PLURAL = "XYPlots"
 
-    class node_values(PyLocalProperty):
+    @final
+    @if_type_checking_instantiate
+    class node_values(PyLocalProperty[bool]):
         """Plot nodal values."""
 
-        value: bool = True
+        value = True
 
-    class boundary_values(PyLocalProperty):
+    @final
+    @if_type_checking_instantiate
+    class boundary_values(PyLocalProperty[bool]):
         """Plot Boundary values."""
 
-        value: bool = True
+        value = True
 
-    class direction_vector(PyLocalProperty):
+    @final
+    @if_type_checking_instantiate
+    class direction_vector(PyLocalProperty[tuple[int, int, int]]):
         """Direction Vector."""
 
-        value: Vector = [1, 0, 0]
+        value = (1, 0, 0)
 
-    class y_axis_function(PyLocalProperty):
+    @final
+    @if_type_checking_instantiate
+    class y_axis_function(PyLocalProperty[str | None]):
         """Y Axis Function."""
 
-        value: str = None
-
-        @Attribute
-        def allowed_values(self):
-            """Y axis function allowed values."""
-            return list(self.field_data.scalar_fields())
-
-    class x_axis_function(PyLocalProperty):
-        """X Axis Function."""
-
-        value: str = "direction-vector"
+        value = None
 
         @Attribute
         def allowed_values(self) -> list[str]:
+            """Y axis function allowed values."""
+            return list(self.field_data.scalar_fields())
+
+    @final
+    @if_type_checking_instantiate
+    class x_axis_function(PyLocalProperty[Literal["direction-vector"]]):
+        """X Axis Function."""
+
+        value = "direction-vector"
+
+        @Attribute
+        def allowed_values(self) -> Sequence[Literal["direction-vector"]]:
             """X axis function allowed values."""
             return ["direction-vector"]
 
-    class surfaces(PyLocalProperty):
+    @if_type_checking_instantiate
+    class surfaces(PyLocalProperty[list[str]]):
         """List of surfaces for plotting."""
 
-        value: list[str] = []
+        value = []
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Surface list allowed values."""
             return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
@@ -181,32 +186,36 @@ class MeshDefn(GraphicsDefn):
 
     PLURAL = "Meshes"
 
-    class surfaces(PyLocalProperty):
+    @if_type_checking_instantiate
+    class surfaces(PyLocalProperty[list[str]]):
         """List of surfaces for mesh graphics."""
 
-        value: list[str] = []
+        value = []
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Surface list allowed values."""
             return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
-    class show_edges(PyLocalProperty):
+    @if_type_checking_instantiate
+    class show_edges(PyLocalProperty[bool]):
         """Show edges for mesh."""
 
-        value: bool = False
+        value = False
 
-    class show_nodes(PyLocalProperty):
+    @if_type_checking_instantiate
+    class show_nodes(PyLocalProperty[bool]):
         """Show nodes for mesh."""
 
-        value: bool = False
+        value = False
 
-    class show_faces(PyLocalProperty):
+    @if_type_checking_instantiate
+    class show_faces(PyLocalProperty[bool]):
         """Show faces for mesh."""
 
-        value: bool = True
+        value = True
 
 
 class PathlinesDefn(GraphicsDefn):
@@ -214,23 +223,25 @@ class PathlinesDefn(GraphicsDefn):
 
     PLURAL = "Pathlines"
 
-    class field(PyLocalProperty):
+    @if_type_checking_instantiate
+    class field(PyLocalProperty[str | None]):
         """Pathlines field."""
 
-        value: str = None
+        value = None
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Field allowed values."""
             return list(self.field_data.scalar_fields())
 
-    class surfaces(PyLocalProperty):
+    @if_type_checking_instantiate
+    class surfaces(PyLocalProperty[list[str]]):
         """List of surfaces for pathlines."""
 
-        value: list[str] = []
+        value = []
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Surface list allowed values."""
             return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
@@ -247,222 +258,251 @@ class SurfaceDefn(GraphicsDefn):
         """Return name of the surface."""
         return self._name
 
+    @if_type_checking_instantiate
     class show_edges(PyLocalProperty[bool]):
         """Show edges for surface."""
 
-        value: bool = True
+        value = True
 
-    class definition(metaclass=PyLocalObjectMeta):
+    class definition(PyLocalObject[Self]):
         """Specify surface definition type."""
 
+        @final
+        @if_type_checking_instantiate
         class type(PyLocalProperty[Literal["plane-surface", "iso-surface"]]):
             """Surface type."""
 
             value = "iso-surface"
 
             @Attribute
-            def allowed_values(self):
+            def allowed_values(self) -> Sequence[Literal["plane-surface", "iso-surface"]]:
                 """Surface type allowed values."""
                 return ["plane-surface", "iso-surface"]
 
-        class plane_surface(metaclass=PyLocalObjectMeta):
+        @if_type_checking_instantiate
+        class plane_surface(PyLocalObject[Self]):
             """Plane surface definition."""
 
             @Attribute
-            def is_active(self):
+            def is_active(self) -> bool:
                 """Check whether current object is active or not."""
                 return self._parent.type() == "plane-surface"
 
-            class creation_method(PyLocalProperty):
+            @final
+            @if_type_checking_instantiate
+            class creation_method(
+                PyLocalProperty[
+                    Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
+                ]
+            ):
                 """Creation Method."""
 
-                value: str = "xy-plane"
+                value = "xy-plane"
 
                 @Attribute
-                def allowed_values(self):
+                def allowed_values(self) -> Sequence[Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]]:
                     """Surface type allowed values."""
                     return ["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
 
-            class point(metaclass=PyLocalObjectMeta):
+            @if_type_checking_instantiate
+            class point(PyLocalObject[Self]):
                 """Point entry for point-and-normal surface."""
 
                 @Attribute
-                def is_active(self):
+                def is_active(self) -> bool:
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "point-and-normal"
 
-                class x(PyLocalProperty):
+                @if_type_checking_instantiate
+                class x(PyLocalProperty[float]):
                     """X value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> tuple[float, float]:
                         """X value range."""
-                        return self.field_data.scalar_fields.range("x-coordinate", True)
+                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range("x-coordinate", True)))
 
-                class y(PyLocalProperty):
+                @if_type_checking_instantiate
+                class y(PyLocalProperty[float]):
                     """Y value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> tuple[float, float]:
                         """Y value range."""
-                        return self.field_data.scalar_fields.range("y-coordinate", True)
+                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range("y-coordinate", True)))
 
-                class z(PyLocalProperty):
+                @if_type_checking_instantiate
+                class z(PyLocalProperty[float]):
                     """Z value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> tuple[float, float]:
                         """Z value range."""
-                        return self.field_data.scalar_fields.range("z-coordinate", True)
+                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range("z-coordinate", True)))
 
-            class normal(metaclass=PyLocalObjectMeta):
+            @if_type_checking_instantiate
+            class normal(PyLocalObject[Self]):
                 """Normal entry for point-and-normal surface."""
 
                 @Attribute
-                def is_active(self):
+                def is_active(self) -> bool:
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "point-and-normal"
 
-                class x(PyLocalProperty):
+                @if_type_checking_instantiate
+                class x(PyLocalProperty[float]):
                     """X value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> list[int]:
                         """X value range."""
                         return [-1, 1]
 
-                class y(PyLocalProperty):
+                @if_type_checking_instantiate
+                class y(PyLocalProperty[float]):
                     """Y value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> list[int]:
                         """Y value range."""
                         return [-1, 1]
 
-                class z(PyLocalProperty):
+                @if_type_checking_instantiate
+                class z(PyLocalProperty[float]):
                     """Z value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> list[int]:
                         """Z value range."""
                         return [-1, 1]
 
-            class xy_plane(metaclass=PyLocalObjectMeta):
+            @if_type_checking_instantiate
+            class xy_plane(PyLocalObject[Self]):
                 """XY Plane definition."""
 
                 @Attribute
-                def is_active(self):
+                def is_active(self) -> bool:
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "xy-plane"
 
-                class z(PyLocalProperty):
+                @if_type_checking_instantiate
+                class z(PyLocalProperty[float]):
                     """Z value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> tuple[float, float]:
                         """Z value range."""
                         return self.field_data.scalar_fields.range("z-coordinate", True)
 
-            class yz_plane(metaclass=PyLocalObjectMeta):
+            @if_type_checking_instantiate
+            class yz_plane(PyLocalObject[Self]):
                 """YZ Plane definition."""
 
                 @Attribute
-                def is_active(self):
+                def is_active(self) -> bool:
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "yz-plane"
 
-                class x(PyLocalProperty):
+                @if_type_checking_instantiate
+                class x(PyLocalProperty[float]):
                     """X value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> tuple[float, float]:
                         """X value range."""
                         return self.field_data.scalar_fields.range("x-coordinate", True)
 
-            class zx_plane(metaclass=PyLocalObjectMeta):
+            @if_type_checking_instantiate
+            class zx_plane(PyLocalObject[Self]):
                 """ZX Plane definition."""
 
                 @Attribute
-                def is_active(self):
+                def is_active(self) -> bool:
                     """Check whether current object is active or not."""
                     return self._parent.creation_method() == "zx-plane"
 
-                class y(PyLocalProperty):
+                @if_type_checking_instantiate
+                class y(PyLocalProperty[float]):
                     """Y value."""
 
-                    value: float = 0
+                    value = 0
 
                     @Attribute
-                    def range(self):
+                    def range(self) -> tuple[float, float]:
                         """Y value range."""
                         return self.field_data.scalar_fields.range("y-coordinate", True)
 
-        class iso_surface(metaclass=PyLocalObjectMeta):
+        @if_type_checking_instantiate
+        class iso_surface(PyLocalObject[Self]):
             """Iso surface definition."""
 
             @Attribute
-            def is_active(self):
+            def is_active(self) -> bool:
                 """Check whether current object is active or not."""
                 return self._parent.type() == "iso-surface"
 
-            class field(PyLocalProperty):
+            @if_type_checking_instantiate
+            class field(PyLocalProperty[str | None]):
                 """Iso surface field."""
 
-                value: str = None
+                value = None
 
                 @Attribute
-                def allowed_values(self):
+                def allowed_values(self) -> list[str]:
                     """Field allowed values."""
                     return list(self.field_data.scalar_fields())
 
-            class rendering(PyLocalProperty):
+            @final
+            @if_type_checking_instantiate
+            class rendering(PyLocalProperty[Literal["mesh", "contour"]]):
                 """Iso surface rendering."""
 
-                value: str = "mesh"
+                value = "mesh"
 
                 @Attribute
-                def allowed_values(self):
+                def allowed_values(self) -> Sequence[Literal["mesh", "contour"]]:
                     """Surface rendering allowed values."""
                     return ["mesh", "contour"]
 
-            class iso_value(PyLocalProperty):
+            @if_type_checking_instantiate
+            class iso_value(PyLocalProperty[float | None]):
                 """Iso value for field."""
 
-                _value: float = None
+                _value = None
 
-                def _reset_on_change(self):
+                def _reset_on_change(self) -> list:
                     return [self._parent.field]
 
                 @property
-                def value(self):
-                    """Iso value property setter."""
+                def value(self) -> float | None:
+                    """Iso value property."""
                     if getattr(self, "_value", None) is None:
                         rnge = self.range
                         self._value = (rnge[0] + rnge[1]) / 2.0 if rnge else None
                     return self._value
 
                 @value.setter
-                def value(self, value):
+                def value(self, value: float | None) -> None:
                     self._value = value
 
                 @Attribute
-                def range(self):
+                def range(self) -> tuple[float, float] | None:
                     """Iso value range."""
                     field = self._parent.field()
                     if field:
@@ -474,40 +514,44 @@ class ContourDefn(GraphicsDefn):
 
     PLURAL = "Contours"
 
-    class field(PyLocalProperty):
+    @if_type_checking_instantiate
+    class field(PyLocalProperty[str | None]):
         """Contour field."""
 
-        value: str = None
+        value = None
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Field allowed values."""
             return list(self.field_data.scalar_fields())
 
-    class surfaces(PyLocalProperty):
+    @if_type_checking_instantiate
+    class surfaces(PyLocalProperty[list[str]]):
         """Contour surfaces."""
 
-        value: list[str] = []
+        value = []
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Surfaces list allowed values."""
             return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
-    class filled(PyLocalProperty):
+    @if_type_checking_instantiate
+    class filled(PyLocalProperty[bool]):
         """Draw filled contour."""
 
-        value: bool = True
+        value = True
 
-    class node_values(PyLocalProperty):
+    @if_type_checking_instantiate
+    class node_values(PyLocalProperty[bool]):
         """Draw nodal data."""
 
-        _value: bool = True
+        _value = True
 
         @Attribute
-        def is_active(self):
+        def is_active(self) -> bool:
             """Check whether current object is active or not."""
             filled = self.get_ancestors_by_type(ContourDefn).filled()
             auto_range_off = self.get_ancestors_by_type(
@@ -521,87 +565,97 @@ class ContourDefn(GraphicsDefn):
             return True
 
         @property
-        def value(self):
+        def value(self) -> bool:
             """Node value property setter."""
             if self.is_active is False:
                 return True
             return self._value
 
         @value.setter
-        def value(self, value):
+        def value(self, value: bool) -> None:
             if value is False and self.is_active is False:
                 raise ValueError(
                     "For unfilled and clipped contours, node values must be displayed. "
                 )
             self._value = value
 
-    class boundary_values(PyLocalProperty):
+    @if_type_checking_instantiate
+    class boundary_values(PyLocalProperty[bool]):
         """Draw boundary values."""
 
-        value: bool = False
+        value = False
 
-    class contour_lines(PyLocalProperty):
+    @if_type_checking_instantiate
+    class contour_lines(PyLocalProperty[bool]):
         """Draw contour lines."""
 
-        value: bool = False
+        value = False
 
-    class show_edges(PyLocalProperty):
+    @if_type_checking_instantiate
+    class show_edges(PyLocalProperty[bool]):
         """Show edges."""
 
-        value: bool = False
+        value = False
 
-    class range(metaclass=PyLocalObjectMeta):
+    class range(PyLocalObject[Self]):
         """Range definition."""
 
-        class option(PyLocalProperty):
+        @final
+        @if_type_checking_instantiate
+        class option(PyLocalProperty[Literal["auto-range-on", "auto-range-off"]]):
             """Range option."""
 
-            value: str = "auto-range-on"
+            value = "auto-range-on"
 
             @Attribute
-            def allowed_values(self):
+            def allowed_values(self) -> Sequence[Literal["auto-range-on", "auto-range-off"]]:
                 """Range option allowed values."""
                 return ["auto-range-on", "auto-range-off"]
 
-        class auto_range_on(metaclass=PyLocalObjectMeta):
+        @if_type_checking_instantiate
+        class auto_range_on(PyLocalObject[Self]):
             """Auto range on definition."""
 
             @Attribute
-            def is_active(self):
+            def is_active(self) -> bool:
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-on"
 
-            class global_range(PyLocalProperty):
+            @if_type_checking_instantiate
+            class global_range(PyLocalProperty[bool]):
                 """Show global range."""
 
-                value: bool = False
+                value = False
 
-        class auto_range_off(metaclass=PyLocalObjectMeta):
+        @if_type_checking_instantiate
+        class auto_range_off(PyLocalObject[Self]):
             """Auto range off definition."""
 
             @Attribute
-            def is_active(self):
+            def is_active(self) -> bool:
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-off"
 
-            class clip_to_range(PyLocalProperty):
+            @if_type_checking_instantiate
+            class clip_to_range(PyLocalProperty[bool]):
                 """Clip contour within range."""
 
-                value: bool = False
+                value = False
 
-            class minimum(PyLocalProperty):
+            @if_type_checking_instantiate
+            class minimum(PyLocalProperty[float | None]):
                 """Range minimum."""
 
-                _value: float = None
+                _value = None
 
-                def _reset_on_change(self):
+                def _reset_on_change(self) -> list:
                     return [
                         self.get_ancestors_by_type(ContourDefn).field,
                         self.get_ancestors_by_type(ContourDefn).node_values,
                     ]
 
                 @property
-                def value(self):
+                def value(self) -> float | None:
                     """Range minimum property setter."""
                     if getattr(self, "_value", None) is None:
                         field = self.get_ancestors_by_type(ContourDefn).field()
@@ -615,22 +669,23 @@ class ContourDefn(GraphicsDefn):
                     return self._value
 
                 @value.setter
-                def value(self, value):
+                def value(self, value: float | None) -> None:
                     self._value = value
 
-            class maximum(PyLocalProperty):
+            @if_type_checking_instantiate
+            class maximum(PyLocalProperty[float | None]):
                 """Range maximum."""
 
-                _value: float = None
+                _value = None
 
-                def _reset_on_change(self):
+                def _reset_on_change(self) -> list:
                     return [
                         self.get_ancestors_by_type(ContourDefn).field,
                         self.get_ancestors_by_type(ContourDefn).node_values,
                     ]
 
                 @property
-                def value(self):
+                def value(self) -> float | None:
                     """Range maximum property setter."""
                     if getattr(self, "_value", None) is None:
                         field = self.get_ancestors_by_type(ContourDefn).field()
@@ -645,7 +700,7 @@ class ContourDefn(GraphicsDefn):
                     return self._value
 
                 @value.setter
-                def value(self, value):
+                def value(self, value: float | None) -> None:
                     self._value = value
 
 
@@ -654,99 +709,113 @@ class VectorDefn(GraphicsDefn):
 
     PLURAL = "Vectors"
 
-    class vectors_of(PyLocalProperty):
+    @if_type_checking_instantiate
+    class vectors_of(PyLocalProperty[str | None]):
         """Vector type."""
 
-        value: str = None
+        value = None
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Vectors of allowed values."""
             return list(self.field_data.vector_fields())
 
-    class field(PyLocalProperty):
+    @if_type_checking_instantiate
+    class field(PyLocalProperty[str | None]):
         """Vector color field."""
 
-        value: str = None
+        value = None
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Field allowed values."""
             return list(self.field_data.scalar_fields())
 
-    class surfaces(PyLocalProperty):
+    @if_type_checking_instantiate
+    class surfaces(PyLocalProperty[list[str]]):
         """List of surfaces for vector graphics."""
 
-        value: list[str] = []
+        value = []
 
         @Attribute
-        def allowed_values(self):
+        def allowed_values(self) -> list[str]:
             """Surface list allowed values."""
             return list(self.field_data.surfaces()) + list(
                 self.get_root()._local_surfaces_provider()
             )
 
-    class scale(PyLocalProperty):
+    @if_type_checking_instantiate
+    class scale(PyLocalProperty[float]):
         """Vector scale."""
 
-        value: float = 1.0
+        value = 1.0
 
-    class skip(PyLocalProperty):
+    @if_type_checking_instantiate
+    class skip(PyLocalProperty[int]):
         """Vector skip."""
 
-        value: int = 0
+        value = 0
 
-    class show_edges(PyLocalProperty):
+    @if_type_checking_instantiate
+    class show_edges(PyLocalProperty[bool]):
         """Show edges."""
 
-        value: bool = False
+        value = False
 
-    class range(metaclass=PyLocalObjectMeta):
+    @if_type_checking_instantiate
+    class range(PyLocalObject[Self]):
         """Range definition."""
 
-        class option(PyLocalProperty):
+        @final
+        @if_type_checking_instantiate
+        class option(PyLocalProperty[Literal["auto-range-on", "auto-range-off"]]):
             """Range option."""
 
-            value: str = "auto-range-on"
+            value = "auto-range-on"
 
             @Attribute
-            def allowed_values(self):
+            def allowed_values(self) -> Sequence[Literal["auto-range-on", "auto-range-off"]]:
                 """Range option allowed values."""
                 return ["auto-range-on", "auto-range-off"]
 
-        class auto_range_on(metaclass=PyLocalObjectMeta):
+        @if_type_checking_instantiate
+        class auto_range_on(PyLocalObject[Self]):
             """Auto range on definition."""
 
             @Attribute
-            def is_active(self):
+            def is_active(self) -> bool:
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-on"
 
-            class global_range(PyLocalProperty):
+            @if_type_checking_instantiate
+            class global_range(PyLocalProperty[bool]):
                 """Show global range."""
 
-                value: bool = False
+                value = False
 
-        class auto_range_off(metaclass=PyLocalObjectMeta):
+        @if_type_checking_instantiate
+        class auto_range_off(PyLocalObject[Self]):
             """Auto range off definition."""
 
             @Attribute
-            def is_active(self):
+            def is_active(self) -> bool:
                 """Check whether current object is active or not."""
                 return self._parent.option() == "auto-range-off"
 
-            class clip_to_range(PyLocalProperty):
+            @if_type_checking_instantiate
+            class clip_to_range(PyLocalProperty[bool]):
                 """Clip vector within range."""
 
-                value: bool = False
+                value = False
 
-            class minimum(PyLocalProperty):
+            @if_type_checking_instantiate
+            class minimum(PyLocalProperty[float | None]):
                 """Range minimum."""
 
-                _value: float = None
+                _value = None
 
                 @property
-                def value(self):
+                def value(self) -> float | None:
                     """Range minimum property setter."""
                     if getattr(self, "_value", None) is None:
                         field_data = self.field_data
@@ -758,16 +827,17 @@ class VectorDefn(GraphicsDefn):
                     return self._value
 
                 @value.setter
-                def value(self, value):
+                def value(self, value: float | None) -> None:
                     self._value = value
 
-            class maximum(PyLocalProperty):
+            @if_type_checking_instantiate
+            class maximum(PyLocalProperty[float | None]):
                 """Range maximum."""
 
-                _value: float = None
+                _value = None
 
                 @property
-                def value(self):
+                def value(self) -> float | None:
                     """Range maximum property setter."""
                     if getattr(self, "_value", None) is None:
                         field_data = self.field_data
@@ -779,5 +849,5 @@ class VectorDefn(GraphicsDefn):
                     return self._value
 
                 @value.setter
-                def value(self, value):
+                def value(self, value: float | None) -> None:
                     self._value = value

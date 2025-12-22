@@ -28,6 +28,7 @@ from ansys.fluent.interface.post_objects.meta import Command
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     MonitorDefn,
+    SurfaceDefn,
     XYPlotDefn,
 )
 from ansys.fluent.interface.post_objects.post_objects_container import (
@@ -45,7 +46,7 @@ class Plots(PlotsContainer):
     """
 
     def __init__(
-        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider=None
+        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider: SurfaceDefn | None=None
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider

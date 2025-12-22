@@ -22,7 +22,7 @@
 
 """Containers for graphics."""
 
-from typing import TYPE_CHECKING, Any, Self, TypedDict, Unpack
+from typing import TYPE_CHECKING, Any, Literal, Self, TypedDict, Unpack
 import warnings
 
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
@@ -33,12 +33,18 @@ from typing_extensions import override
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
 
+
 if TYPE_CHECKING:
     from ansys.fluent.core.session import BaseSession
+
+    from ansys.fluent.interface.post_objects.post_object_definitions import BasePostObjectDefn, SurfaceDefn, ContourDefn, GraphicsDefn, MonitorDefn, VectorDefn
+    from ansys.fluent.interface.post_objects.meta import _DeleteKwargs
 
 
 class _GraphicsContainer:
     """Base class for graphics containers."""
+    solver: BaseSession
+    _obj: BasePostObjectDefn
 
     def __init__(self, solver: BaseSession | None, **kwargs: Any):
         self.__dict__["solver"] = solver or _get_active_session()
@@ -50,14 +56,15 @@ class _GraphicsContainer:
         if "vectors_of" in self.kwargs:
             self.kwargs["vectors_of"] = kwargs["vectors_of"] = _to_field_name_str(self.kwargs["vectors_of"])
 
-    def __getattr__(self, attr):
-        return getattr(self._obj, attr)
+    if not TYPE_CHECKING:
+        def __getattr__(self, attr):
+            return getattr(self._obj, attr)
 
-    @override
-    def __setattr__(self, attr, value):
-        if attr == "surfaces":
-            value = list(value)
-        setattr(self._obj, attr, value)
+        @override
+        def __setattr__(self, attr, value):
+            if attr == "surfaces":  # TODO typing?
+                value = list(value)
+            setattr(self._obj, attr, value)
 
     @override
     def __dir__(self) -> list[str]:
@@ -95,8 +102,10 @@ class Mesh(_GraphicsContainer):
     >>> )
     """
 
+    _obj: GraphicsDefn
+
     def __init__(
-        self, surfaces: list[str], show_edges: bool = False, solver: BaseSession | None = None, **kwargs: Any
+        self, surfaces: list[str], show_edges: bool = False, solver: BaseSession | None = None, **kwargs: Unpack[_DeleteKwargs]
     ):
         """__init__ method of Mesh class."""
         kwargs.update(
@@ -123,7 +132,7 @@ class SurfaceKwargs(TypedDict, total=False):
     normal: tuple[float, float, float] | None
 
 
-class Surface(_GraphicsContainer):
+class Surface(_GraphicsContainer, SurfaceDefn if TYPE_CHECKING else object):
     """Surface definition for Fluent post-processing.
 
     The ``Surface`` class represents any Fluent surface generated for
@@ -171,89 +180,129 @@ class Surface(_GraphicsContainer):
     >>> surf_outlet_plane.field = "y-coordinate"
     >>> surf_outlet_plane.iso_value = -0.125017
     """
-    _obj: Any
+    _obj: SurfaceDefn
 
     def __init__(
         self, type: str, solver: BaseSession | None = None, **kwargs: Unpack[SurfaceKwargs]
     ):
         """__init__ method of Surface class."""
-        kwargs.update(
-            {
-                "type": type,
-            }
-        )
+        kwargs.update({"type": type})
         super().__init__(solver, **kwargs)
-        self.__dict__.update(
-            type=kwargs.pop("type", None),
-            creation_method=kwargs.pop("creation_method", None),
-            x=kwargs.pop("x", None),
-            y=kwargs.pop("y", None),
-            z=kwargs.pop("z", None),
-            field=kwargs.pop("field", None),
-            iso_value=kwargs.pop("iso_value", None),
-            rendering=kwargs.pop("rendering", None),
-            point=kwargs.pop("point", None),
-            normal=kwargs.pop("normal", None),
-            _obj=Graphics(session=self.solver).Surfaces.create(**kwargs),
-        )
-        for attr in [
-            "type",
-            "creation_method",
-            "x",
-            "y",
-            "z",
-            "field",
-            "iso_value",
-            "rendering",
-            "point",
-            "normal",
-        ]:
-            val = getattr(self, attr)
-            if val is not None:
-                setattr(self, attr, val)
+        super().__setattr__("_obj", Graphics(session=self.solver).Surfaces.create(**kwargs))
+        self.type = kwargs.get("type")
+        self.creation_method = kwargs.get("creation_method")
+        self.x = kwargs.get("x")
+        self.y = kwargs.get("y")
+        self.z = kwargs.get("z")
+        self.field = kwargs.get("field")
+        self.iso_value = kwargs.get("iso_value")
+        self.rendering = kwargs.get("rendering")
+        self.point = kwargs.get("point")
+        self.normal = kwargs.get("normal")
 
-    type: 
+    @property
+    def type(self) -> Literal["plane-surface", "iso-surface"]:
+        """Surface definition type."""
+        return self._obj.definition.type()
 
-    def __setattr__(self, attr, value):
-        if attr == "type":
-            self._obj.definition.type = value
-        elif attr == "creation_method":
-            self._obj.definition.plane_surface.creation_method = value
-        elif attr == "z":
-            if self._obj.definition.plane_surface.creation_method() != "xy-plane":
-                raise ValueError("Expected plane creation method to be 'xy-plane'")
-            self._obj.definition.plane_surface.xy_plane.z = value
-        elif attr == "y":
-            if self._obj.definition.plane_surface.creation_method() != "zx-plane":
-                raise ValueError("Expected plane creation method to be 'zx-plane'")
-            self._obj.definition.plane_surface.zx_plane.y = value
-        elif attr == "x":
-            if self._obj.definition.plane_surface.creation_method() != "yz-plane":
-                raise ValueError("Expected plane creation method to be 'yz-plane'")
-            self._obj.definition.plane_surface.yz_plane.x = value
-        elif attr == "field":
-            self._obj.definition.iso_surface.field = _to_field_name_str(value)
-        elif attr == "iso_value":
-            self._obj.definition.iso_surface.iso_value = value
-        elif attr == "rendering":
-            self._obj.definition.iso_surface.rendering = value
-        elif attr in ["point", "normal"]:
-            if (
-                self._obj.definition.plane_surface.creation_method()
-                != "point-and-normal"
-            ):
-                raise ValueError(
-                    "Expected plane creation method to be 'point-and-normal'"
-                )
-            if attr == "point":
-                self._obj.definition.plane_surface.point.x = value[0]
-                self._obj.definition.plane_surface.point.y = value[1]
-                self._obj.definition.plane_surface.point.z = value[2]
-            elif attr == "normal":
-                norm = self._obj.definition.plane_surface.normal
-                norm.x, norm.y, norm.z = value
-        else:
-            setattr(self._obj, attr, value)
+    @type.setter
+    def type(self, value: Literal["plane-surface", "iso-surface"]) -> None:
+        self._obj.definition.type = value
+
+    @property
+    def creation_method(self) -> Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]:
+        """Plane surface creation method."""
+        return self._obj.definition.plane_surface.creation_method()
+
+    @creation_method.setter
+    def creation_method(self, value: Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]) -> None:
+        self._obj.definition.plane_surface.creation_method = value
+
+    @property
+    def x(self) -> float:
+        """X coordinate for yz-plane."""
+        return self._obj.definition.plane_surface.yz_plane.x()
+
+    @x.setter
+    def x(self, value: float) -> None:
+        if self._obj.definition.plane_surface.creation_method() != "yz-plane":
+            raise ValueError("Expected plane creation method to be 'yz-plane'")
+        self._obj.definition.plane_surface.yz_plane.x = value
+
+    @property
+    def y(self) -> float:
+        """Y coordinate for zx-plane."""
+        return self._obj.definition.plane_surface.zx_plane.y()
+
+    @y.setter
+    def y(self, value: float) -> None:
+        if self._obj.definition.plane_surface.creation_method() != "zx-plane":
+            raise ValueError("Expected plane creation method to be 'zx-plane'")
+        self._obj.definition.plane_surface.zx_plane.y = value
+
+    @property
+    def z(self) -> float:
+        """Z coordinate for xy-plane."""
+        return self._obj.definition.plane_surface.xy_plane.z()
+
+    @z.setter
+    def z(self, value: float) -> None:
+        if self._obj.definition.plane_surface.creation_method() != "xy-plane":
+            raise ValueError("Expected plane creation method to be 'xy-plane'")
+        self._obj.definition.plane_surface.xy_plane.z = value
+
+    @property
+    def field(self) -> str | None:
+        """Iso-surface field."""
+        return self._obj.definition.iso_surface.field()
+
+    @field.setter
+    def field(self, value: str | VariableDescriptor | None) -> None:
+        self._obj.definition.iso_surface.field = _to_field_name_str(value)
+
+    @property
+    def iso_value(self) -> float | None:
+        """Iso-surface value."""
+        return self._obj.definition.iso_surface.iso_value()
+
+    @iso_value.setter
+    def iso_value(self, value: float | None) -> None:
+        self._obj.definition.iso_surface.iso_value = value
+
+    @property
+    def rendering(self) -> Literal["mesh", "contour"]:
+        """Iso-surface rendering method."""
+        return self._obj.definition.iso_surface.rendering()
+
+    @rendering.setter
+    def rendering(self, value: Literal["mesh", "contour"]) -> None:
+        self._obj.definition.iso_surface.rendering = value
+
+    @property
+    def point(self) -> tuple[float, float, float]:
+        """Point for point-and-normal surface."""
+        pt = self._obj.definition.plane_surface.point
+        return (pt.x(), pt.y(), pt.z())
+
+    @point.setter
+    def point(self, value: tuple[float, float, float]) -> None:
+        if self._obj.definition.plane_surface.creation_method() != "point-and-normal":
+            raise ValueError("Expected plane creation method to be 'point-and-normal'")
+        pt = self._obj.definition.plane_surface.point
+        pt.x, pt.y, pt.z = value
+
+    @property
+    def normal(self) -> tuple[float, float, float]:
+        """Normal vector for point-and-normal surface."""
+        norm = self._obj.definition.plane_surface.normal
+        return (norm.x(), norm.y(), norm.z())
+
+    @normal.setter
+    def normal(self, value: tuple[float, float, float]) -> None:
+        if self._obj.definition.plane_surface.creation_method() != "point-and-normal":
+            raise ValueError("Expected plane creation method to be 'point-and-normal'")
+        norm = self._obj.definition.plane_surface.normal
+        norm.x, norm.y, norm.z = value
 
 
 class PlaneSurface(Surface):
@@ -271,7 +320,7 @@ class PlaneSurface(Surface):
     >>>     point=[0.0, 0.0, -0.0441921],
     >>>     normal=[0.0, 0.0, 1.0],
     >>> )
-
+    >>>
     >>> # Create same plane using 'create_xy_plane' method
     >>> surf_xy_plane = PlaneSurface.create_xy_plane(
     >>>     solver=solver_session,
@@ -427,6 +476,8 @@ class Contour(_GraphicsContainer):
     >>> )
     """
 
+    _obj: ContourDefn
+
     def __init__(
         self,
         field: str | VariableDescriptor,
@@ -480,6 +531,8 @@ class Vector(_GraphicsContainer):
     >>>     scale=2,
     >>> )
     """
+
+    _obj: VectorDefn
 
     def __init__(
         self,
@@ -569,6 +622,7 @@ class Pathline(_GraphicsContainer):
     >>>     surfaces = ["inlet", "inlet1", "inlet2"],
     >>> )
     """
+    _obj: GraphicsDefn
 
     def __init__(
         self,
@@ -624,12 +678,13 @@ class XYPlot(_GraphicsContainer):
     >>>     y_axis_function="temperature",
     >>> )
     """
+    _obj: GraphicsDefn
 
     def __init__(
         self,
         surfaces: list[str],
         y_axis_function: str | VariableDescriptor,
-        solver=None,
+        solver: BaseSession | None=None,
         local_surfaces_provider=None,
         **kwargs
     ):
@@ -677,6 +732,7 @@ class Monitor(_GraphicsContainer):
     >>> from ansys.fluent.visualization import Monitor
     >>> residual = Monitor(solver=solver_session, monitor_set_name="residual")
     """
+    _obj: MonitorDefn
 
     def __init__(
         self, monitor_set_name: str, solver=None, local_surfaces_provider=None, **kwargs
