@@ -42,7 +42,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger("pyfluent.post_objects")
 
 
-
 class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
     """Base class for visualization objects."""
 
@@ -275,7 +274,9 @@ class SurfaceDefn(GraphicsDefn):
             value = "iso-surface"
 
             @Attribute
-            def allowed_values(self) -> Sequence[Literal["plane-surface", "iso-surface"]]:
+            def allowed_values(
+                self,
+            ) -> Sequence[Literal["plane-surface", "iso-surface"]]:
                 """Surface type allowed values."""
                 return ["plane-surface", "iso-surface"]
 
@@ -300,7 +301,11 @@ class SurfaceDefn(GraphicsDefn):
                 value = "xy-plane"
 
                 @Attribute
-                def allowed_values(self) -> Sequence[Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]]:
+                def allowed_values(
+                    self,
+                ) -> Sequence[
+                    Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
+                ]:
                     """Surface type allowed values."""
                     return ["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
 
@@ -322,7 +327,15 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self) -> tuple[float, float]:
                         """X value range."""
-                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range("x-coordinate", True)))
+                        return cast(
+                            tuple[float, float],
+                            cast(
+                                object,
+                                self.field_data.scalar_fields.range(
+                                    "x-coordinate", True
+                                ),
+                            ),
+                        )
 
                 @if_type_checking_instantiate
                 class y(PyLocalProperty[float]):
@@ -333,7 +346,15 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self) -> tuple[float, float]:
                         """Y value range."""
-                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range("y-coordinate", True)))
+                        return cast(
+                            tuple[float, float],
+                            cast(
+                                object,
+                                self.field_data.scalar_fields.range(
+                                    "y-coordinate", True
+                                ),
+                            ),
+                        )
 
                 @if_type_checking_instantiate
                 class z(PyLocalProperty[float]):
@@ -344,7 +365,15 @@ class SurfaceDefn(GraphicsDefn):
                     @Attribute
                     def range(self) -> tuple[float, float]:
                         """Z value range."""
-                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range("z-coordinate", True)))
+                        return cast(
+                            tuple[float, float],
+                            cast(
+                                object,
+                                self.field_data.scalar_fields.range(
+                                    "z-coordinate", True
+                                ),
+                            ),
+                        )
 
             @if_type_checking_instantiate
             class normal(PyLocalObject[Self]):
@@ -608,7 +637,9 @@ class ContourDefn(GraphicsDefn):
             value = "auto-range-on"
 
             @Attribute
-            def allowed_values(self) -> Sequence[Literal["auto-range-on", "auto-range-off"]]:
+            def allowed_values(
+                self,
+            ) -> Sequence[Literal["auto-range-on", "auto-range-off"]]:
                 """Range option allowed values."""
                 return ["auto-range-on", "auto-range-off"]
 
@@ -774,7 +805,9 @@ class VectorDefn(GraphicsDefn):
             value = "auto-range-on"
 
             @Attribute
-            def allowed_values(self) -> Sequence[Literal["auto-range-on", "auto-range-off"]]:
+            def allowed_values(
+                self,
+            ) -> Sequence[Literal["auto-range-on", "auto-range-off"]]:
                 """Range option allowed values."""
                 return ["auto-range-on", "auto-range-off"]
 

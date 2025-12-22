@@ -33,16 +33,23 @@ from typing_extensions import override
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
 
-
 if TYPE_CHECKING:
     from ansys.fluent.core.session import BaseSession
 
-    from ansys.fluent.interface.post_objects.post_object_definitions import BasePostObjectDefn, SurfaceDefn, ContourDefn, GraphicsDefn, MonitorDefn, VectorDefn
     from ansys.fluent.interface.post_objects.meta import _DeleteKwargs
+    from ansys.fluent.interface.post_objects.post_object_definitions import (
+        BasePostObjectDefn,
+        ContourDefn,
+        GraphicsDefn,
+        MonitorDefn,
+        SurfaceDefn,
+        VectorDefn,
+    )
 
 
 class _GraphicsContainer:
     """Base class for graphics containers."""
+
     solver: BaseSession
     _obj: BasePostObjectDefn
 
@@ -52,11 +59,16 @@ class _GraphicsContainer:
         if self.solver is None:
             raise RuntimeError("No solver session provided and none found in context.")
         if "field" in self.kwargs:
-            self.kwargs["field"] = kwargs["field"] = _to_field_name_str(self.kwargs["field"])
+            self.kwargs["field"] = kwargs["field"] = _to_field_name_str(
+                self.kwargs["field"]
+            )
         if "vectors_of" in self.kwargs:
-            self.kwargs["vectors_of"] = kwargs["vectors_of"] = _to_field_name_str(self.kwargs["vectors_of"])
+            self.kwargs["vectors_of"] = kwargs["vectors_of"] = _to_field_name_str(
+                self.kwargs["vectors_of"]
+            )
 
     if not TYPE_CHECKING:
+
         def __getattr__(self, attr):
             return getattr(self._obj, attr)
 
@@ -105,7 +117,11 @@ class Mesh(_GraphicsContainer):
     _obj: GraphicsDefn
 
     def __init__(
-        self, surfaces: list[str], show_edges: bool = False, solver: BaseSession | None = None, **kwargs: Unpack[_DeleteKwargs]
+        self,
+        surfaces: list[str],
+        show_edges: bool = False,
+        solver: BaseSession | None = None,
+        **kwargs: Unpack[_DeleteKwargs],
     ):
         """__init__ method of Mesh class."""
         kwargs.update(
@@ -118,6 +134,7 @@ class Mesh(_GraphicsContainer):
         self.__dict__["_obj"] = Graphics(session=self.solver).Meshes.create(
             **self.kwargs
         )
+
 
 class SurfaceKwargs(TypedDict, total=False):
     type: str | None
@@ -180,15 +197,21 @@ class Surface(_GraphicsContainer, SurfaceDefn if TYPE_CHECKING else object):
     >>> surf_outlet_plane.field = "y-coordinate"
     >>> surf_outlet_plane.iso_value = -0.125017
     """
+
     _obj: SurfaceDefn
 
     def __init__(
-        self, type: str, solver: BaseSession | None = None, **kwargs: Unpack[SurfaceKwargs]
+        self,
+        type: str,
+        solver: BaseSession | None = None,
+        **kwargs: Unpack[SurfaceKwargs],
     ):
         """__init__ method of Surface class."""
         kwargs.update({"type": type})
         super().__init__(solver, **kwargs)
-        super().__setattr__("_obj", Graphics(session=self.solver).Surfaces.create(**kwargs))
+        super().__setattr__(
+            "_obj", Graphics(session=self.solver).Surfaces.create(**kwargs)
+        )
         self.type = kwargs.get("type")
         self.creation_method = kwargs.get("creation_method")
         self.x = kwargs.get("x")
@@ -210,12 +233,16 @@ class Surface(_GraphicsContainer, SurfaceDefn if TYPE_CHECKING else object):
         self._obj.definition.type = value
 
     @property
-    def creation_method(self) -> Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]:
+    def creation_method(
+        self,
+    ) -> Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]:
         """Plane surface creation method."""
         return self._obj.definition.plane_surface.creation_method()
 
     @creation_method.setter
-    def creation_method(self, value: Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]) -> None:
+    def creation_method(
+        self, value: Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
+    ) -> None:
         self._obj.definition.plane_surface.creation_method = value
 
     @property
@@ -424,11 +451,11 @@ class IsoSurface(Surface):
 
     def __init__(
         self,
-        solver: BaseSession| None=None,
+        solver: BaseSession | None = None,
         field: str | VariableDescriptor | None = None,
         rendering: str | None = None,
         iso_value: float | None = None,
-        **kwargs:Any,
+        **kwargs: Any,
     ):
         """Create an iso-surface."""
         super().__init__(
@@ -483,7 +510,7 @@ class Contour(_GraphicsContainer):
         field: str | VariableDescriptor,
         surfaces: list[str],
         solver=None,
-        **kwargs
+        **kwargs,
     ):
         """__init__ method of Contour class."""
         kwargs.update(
@@ -541,7 +568,7 @@ class Vector(_GraphicsContainer):
         color_by: str | VariableDescriptor | None = None,
         scale: float = 1.0,
         solver=None,
-        **kwargs
+        **kwargs,
     ):
         """__init__ method of Vector class."""
         if color_by is None:
@@ -622,6 +649,7 @@ class Pathline(_GraphicsContainer):
     >>>     surfaces = ["inlet", "inlet1", "inlet2"],
     >>> )
     """
+
     _obj: GraphicsDefn
 
     def __init__(
@@ -629,7 +657,7 @@ class Pathline(_GraphicsContainer):
         field: str | VariableDescriptor,
         surfaces: list[str],
         solver=None,
-        **kwargs
+        **kwargs,
     ):
         """__init__ method of Pathline class."""
         kwargs.update(
@@ -678,15 +706,16 @@ class XYPlot(_GraphicsContainer):
     >>>     y_axis_function="temperature",
     >>> )
     """
+
     _obj: GraphicsDefn
 
     def __init__(
         self,
         surfaces: list[str],
         y_axis_function: str | VariableDescriptor,
-        solver: BaseSession | None=None,
+        solver: BaseSession | None = None,
         local_surfaces_provider=None,
-        **kwargs
+        **kwargs,
     ):
         """__init__ method of XYPlot class."""
         kwargs.update(
@@ -732,6 +761,7 @@ class Monitor(_GraphicsContainer):
     >>> from ansys.fluent.visualization import Monitor
     >>> residual = Monitor(solver=solver_session, monitor_set_name="residual")
     """
+
     _obj: MonitorDefn
 
     def __init__(

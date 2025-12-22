@@ -154,7 +154,9 @@ class Surface(SurfaceDefn):
     """
 
     @Command
-    def display(self, window_id: str | None = None, overlay: bool | None = False) -> None:
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display surface graphics.
 
         Parameters
@@ -195,7 +197,9 @@ class Contour(ContourDefn):
     """
 
     @Command
-    def display(self, window_id: str | None = None, overlay: bool | None = False) -> None:
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display contour graphics.
 
         Parameters
@@ -237,7 +241,9 @@ class Vector(VectorDefn):
     """
 
     @Command
-    def display(self, window_id: str | None = None, overlay: bool | None = False) -> None:
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display vector graphics.
 
         Parameters

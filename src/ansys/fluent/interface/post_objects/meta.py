@@ -23,7 +23,7 @@
 """Metaclasses used in various explicit classes in PyFluent."""
 
 from abc import ABC
-from collections.abc import Callable, Iterator, MutableMapping, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 import inspect
 from typing import (
     TYPE_CHECKING,
@@ -33,15 +33,23 @@ from typing import (
     Never,
     Protocol,
     Self,
+    Unpack,
     cast,
     dataclass_transform,
     overload,
-    override, Unpack,
+    override,
 )
 
 from ansys.fluent.core.exceptions import DisallowedValuesError
 from ansys.fluent.core.session_solver import Solver
-from typing_extensions import ParamSpec, TypeVar, get_args, get_original_bases, NotRequired, TypedDict
+from typing_extensions import (
+    NotRequired,
+    ParamSpec,
+    TypedDict,
+    TypeVar,
+    get_args,
+    get_original_bases,
+)
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     BasePostObjectDefn,
@@ -122,8 +130,7 @@ class Attribute(Generic[_SelfT, _T_co]):
     @overload
     def __get__(
         self, instance: _SelfT, _  # pyright: ignore[reportGeneralTypeIssues]
-    ) -> _T_co:
-        ...
+    ) -> _T_co: ...
 
     def __get__(self, instance: _SelfT | None, _) -> _T_co | Self:
         if instance is None:
@@ -243,7 +250,7 @@ class PyLocalBase:
             parent = self.get_ancestors_by_name(owner, instance._parent)
         return parent
 
-    def get_root(self, instance = None) -> "PyLocalBase":
+    def get_root(self, instance=None) -> "PyLocalBase":
         instance = self if instance is None else instance
         parent = instance
         if getattr(instance, "_parent", None):
@@ -335,6 +342,7 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
         return rv
 
     if TYPE_CHECKING:  # TODO double check this is on the right thing
+
         def __set__(self, instance: object, value: T) -> None: ...
 
     def set_state(self, value: T):
@@ -347,10 +355,10 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
 
     @Attribute
     @overload
-    def allowed_values(self: "PyLocalProperty[Sequence[T2]]") -> Sequence[T2]:...
+    def allowed_values(self: "PyLocalProperty[Sequence[T2]]") -> Sequence[T2]: ...
     @Attribute
     @overload
-    def allowed_values(self: "PyLocalProperty[T2]") -> Sequence[T2]:...
+    def allowed_values(self: "PyLocalProperty[T2]") -> Sequence[T2]: ...
     @Attribute
     def allowed_values(self) -> Sequence[object]:
         """Get allowed values."""
@@ -406,12 +414,15 @@ class PyReferenceObject:
 
 ParentT = TypeVar("ParentT")
 
+
 # TODO try poking around this more cause it is kinda what we are doing?
 # @dataclass_transform(field_specifiers=(type,))
 class PyLocalObject(PyLocalBase, Generic[ParentT]):
     """Local object classes."""
 
-    def __init__(self, parent: ParentT, api_helper: Callable[[Self], APIHelper], name: str = ""):
+    def __init__(
+        self, parent: ParentT, api_helper: Callable[[Self], APIHelper], name: str = ""
+    ):
         """Create the initialization method for 'PyLocalObjectMeta'."""
         self._parent = parent
         self._name = name
@@ -546,6 +557,7 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
 
 CallKwargs = TypeVar("CallKwargs", bound=TypedDict)
 
+
 class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
     """Local object metaclass."""
 
@@ -641,6 +653,7 @@ class PyLocalNamedObjectAbstract(ABC, PyLocalNamedObject):
 
 DefnT = TypeVar("DefnT", bound=GraphicsDefn | PlotDefn, default=GraphicsDefn | PlotDefn)
 
+
 def if_type_checking_instantiate(type: type[T]) -> T:
     return cast(T, type)  # this is hopefully obviously unsafe
 
@@ -648,9 +661,9 @@ def if_type_checking_instantiate(type: type[T]) -> T:
 class _DeleteKwargs(TypedDict, total=False):
     names: list[str]
 
+
 class _CreateKwargs(TypedDict, total=False):
     name: str | None
-
 
 
 class PyLocalContainer(MutableMapping[str, DefnT]):
@@ -819,4 +832,3 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
     # added by __init__
     delete: Delete
     create: Create
-
