@@ -23,7 +23,7 @@
 """Metaclasses used in various explicit classes in PyFluent."""
 
 from abc import ABC
-from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
+from collections.abc import Callable, Iterator, MutableMapping, Sequence
 import inspect
 from typing import (
     TYPE_CHECKING,
@@ -35,7 +35,6 @@ from typing import (
     Self,
     Unpack,
     cast,
-    dataclass_transform,
     overload,
     override,
 )
@@ -51,8 +50,13 @@ from typing_extensions import (
     get_original_bases,
 )
 
+from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     BasePostObjectDefn,
+    ContourDefn,
+    Defns,
+    MonitorDefn,
+    VectorDefn,
 )
 
 if TYPE_CHECKING:
@@ -130,7 +134,8 @@ class Attribute(Generic[_SelfT, _T_co]):
     @overload
     def __get__(
         self, instance: _SelfT, _  # pyright: ignore[reportGeneralTypeIssues]
-    ) -> _T_co: ...
+    ) -> _T_co:
+        ...
 
     def __get__(self, instance: _SelfT | None, _) -> _T_co | Self:
         if instance is None:
@@ -224,13 +229,14 @@ TT = TypeVar("TT", bound=type)
 T = TypeVar("T")
 T2 = TypeVar("T2")
 
+AccessorT = TypeVar("AccessorT", bound=BasePostObjectDefn)
 
 class PyLocalBase:
     """Local base."""
 
     def get_ancestors_by_type(
-        self, instance: BasePostObjectDefn, owner: "PyLocalBase | None" = None
-    ):
+        self, instance: type[AccessorT], owner: "PyLocalBase | None" = None
+    ) -> AccessorT:
         owner = self if owner is None else owner
         parent = None
         if getattr(owner, "_parent", None):
@@ -239,18 +245,7 @@ class PyLocalBase:
             parent = self.get_ancestors_by_type(instance, owner._parent)
         return parent
 
-    def get_ancestors_by_name(self, instance, owner: type | None = None):
-        instance = self if instance is None else instance
-        parent = None
-        if getattr(instance, "_parent", None):
-            if instance._parent.__class__.__name__ == owner:
-                return instance._parent
-            if getattr(instance._parent, "PLURAL", None) == owner:
-                return instance._parent._parent
-            parent = self.get_ancestors_by_name(owner, instance._parent)
-        return parent
-
-    def get_root(self, instance=None) -> "PyLocalBase":
+    def get_root(self, instance = None) -> Container:
         instance = self if instance is None else instance
         parent = instance
         if getattr(instance, "_parent", None):
@@ -297,7 +292,7 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
 
     value: T  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    def __init__(self, parent, api_helper: Callable[[Self], APIHelper], name: str = ""):
+    def __init__(self, parent, api_helper: type[PostAPIHelper], name: str = ""):
         self._name = name
         self._api_helper = api_helper(self)
         self._parent = parent
@@ -341,8 +336,7 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
 
         return rv
 
-    if TYPE_CHECKING:  # TODO double check this is on the right thing
-
+    if TYPE_CHECKING:
         def __set__(self, instance: object, value: T) -> None: ...
 
     def set_state(self, value: T):
@@ -355,74 +349,65 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
 
     @Attribute
     @overload
-    def allowed_values(self: "PyLocalProperty[Sequence[T2]]") -> Sequence[T2]: ...
+    def allowed_values(self: "PyLocalProperty[Sequence[T2]]") -> Sequence[T2]:...
     @Attribute
     @overload
-    def allowed_values(self: "PyLocalProperty[T2]") -> Sequence[T2]: ...
+    def allowed_values(self: "PyLocalProperty[T2]") -> Sequence[T2]:...
     @Attribute
     def allowed_values(self) -> Sequence[object]:
         """Get allowed values."""
         raise NotImplementedError("allowed_values not implemented.")
 
 
-class PyReferenceObject:
-    """Local object classes."""
+# class PyReferenceObject:
+#     """Local object classes."""
 
-    def __init__(self, parent, path, location, session_id, name=""):
-        self._parent = parent
-        self.type = "object"
-        self.parent = parent
-        self._path = path
-        self.location = location
-        self.session_id = session_id
+#     def __init__(self, parent, path, location, session_id, name: str = ""):
+#         self._parent = parent
+#         self.type = "object"
+#         self.parent = parent
+#         self._path = path
+#         self.location = location
+#         self.session_id = session_id
 
-        def update(clss):
-            for name, cls in clss.__dict__.items():
-                if cls.__class__.__name__ in (
-                    "PyLocalPropertyMeta",
-                    "PyLocalObjectMeta",
-                ):
-                    setattr(
-                        self,
-                        name,
-                        cls(self, lambda arg: None, name),
-                    )
-                if cls.__class__.__name__ in {
-                    "PyLocalNamedObjectMeta",
-                    "PyLocalNamedObjectMetaAbstract",
-                }:
-                    setattr(
-                        self,
-                        cls.PLURAL,
-                        PyLocalContainer(self, cls, lambda arg: None, cls.PLURAL),
-                    )
-            for base_class in clss.__bases__:
-                update(base_class)
+#         def update(clss):
+#             for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
+#                 if issubclass(cls, (PyLocalProperty, PyLocalObject)):
+#                     setattr(
+#                         self,
+#                         name,
+#                         cls(self, lambda arg: None, name),
+#                     )
+#                 if issubclass(cls, (PyLocalNamedObject, PyLocalNamedObjectAbstract)):
+#                     setattr(
+#                         self,
+#                         cls.PLURAL,
+#                         PyLocalContainer(self, cls, lambda arg: None, cls.PLURAL),
+#                     )
+#             for base_class in clss.__bases__:
+#                 update(base_class)
 
-        update(self.__class__)
+#         update(self.__class__)
 
-    def get_path(self):
-        return self._path
+#     def get_path(self):
+#         return self._path
 
-    def reset(self, path: str, location: str, session_id: str) -> None:
-        self._path = path
-        self.location = location
-        self.session_id = session_id
-        if hasattr(self, "_object"):
-            delattr(self, "_object")
+#     def reset(self, path: str, location: str, session_id: str) -> None:
+#         self._path = path
+#         self.location = location
+#         self.session_id = session_id
+#         if hasattr(self, "_object"):
+#             delattr(self, "_object")
 
 
 ParentT = TypeVar("ParentT")
-
 
 # TODO try poking around this more cause it is kinda what we are doing?
 # @dataclass_transform(field_specifiers=(type,))
 class PyLocalObject(PyLocalBase, Generic[ParentT]):
     """Local object classes."""
 
-    def __init__(
-        self, parent: ParentT, api_helper: Callable[[Self], APIHelper], name: str = ""
-    ):
+    def __init__(self, parent: ParentT, api_helper: type[PostAPIHelper], name: str = ""):
         """Create the initialization method for 'PyLocalObjectMeta'."""
         self._parent = parent
         self._name = name
@@ -431,35 +416,28 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
         self.type = "object"
 
         def update(clss: type[PyLocalBase]):
-            for name, cls in clss.__dict__.items():
-                if cls.__name__ in {"PyLocalCommand"}:
+            for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
+                if issubclass(cls, PyLocalCommand):
                     self._command_names.append(name)
 
-                if cls.__name__ in {
-                    "PyLocalProperty",
-                    "PyLocalObject",
-                    "PyLocalCommand",
-                }:
+                if issubclass(cls, (PyLocalProperty, PyLocalObject, PyLocalCommand)):
                     setattr(
                         self,
                         name,
                         cls(self, api_helper, name),
                     )
-                if cls.__name__ in {
-                    "PyLocalNamedObject",
-                    "PyLocalNamedObjectAbstract",
-                }:
+                if issubclass(cls, (PyLocalNamedObject, PyLocalNamedObjectAbstract)):
                     setattr(
                         self,
                         cls.PLURAL,
                         PyLocalContainer(self, cls, api_helper, cls.PLURAL),
                     )
-                if cls.__class__.__name__ == "PyReferenceObject":
-                    setattr(
-                        self,
-                        name,
-                        cls(self, cls.PATH, cls.LOCATION, cls.SESSION, name),
-                    )
+                # if issubclass(cls, PyReferenceObject):
+                #     setattr(
+                #         self,
+                #         name,
+                #         cls(self, cls.PATH, cls.LOCATION, cls.SESSION, name),
+                #     )
             for base_class in clss.__bases__:
                 update(base_class)
 
@@ -484,11 +462,11 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
             properties.update(sorted_properties)
         for name, val in properties.items():
             obj = getattr(self, name)
-            if obj.__class__.__name__ == "PyLocalProperty":
+            if isinstance(obj, PyLocalProperty):
                 obj.set_state(val)
             else:
-                if obj.__class__.__name__ == "PyReferenceObject":
-                    obj = obj.ref
+                # if isinstance(obj, PyReferenceObject):
+                #     obj = obj.ref
                 obj.update(val)
 
     def get_state(self, show_attributes: bool = False) -> dict[str, Any] | None:
@@ -498,31 +476,25 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
             return
 
         def update_state(clss):
-            for name, cls in clss.__dict__.items():
+            for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
                 o = getattr(self, name)
                 if o is None or name.startswith("_") or name.startswith("__"):
                     continue
 
-                if cls.__name__ == "PyReferenceObject":
-                    if o.LOCATION == "local":
-                        o = o.ref
-                    else:
-                        continue
-                elif cls.__name__ == "PyLocalCommand":
+                # if issubclass(cls, PyReferenceObject):
+                #     if o.LOCATION == "local":
+                #         o = o.ref
+                #     else:
+                #         continue
+                if issubclass(cls, PyLocalCommand):
                     args = {}
                     for arg in o._args:
                         args[arg] = getattr(o, arg)()
                     state[name] = args
-                if (
-                    cls.__name__ == "PyLocalObject"
-                    or cls.__name__ == "PyReferenceObject"
-                ):
+                if issubclass(cls, PyLocalObject):
                     if getattr(o, "is_active", True):
                         state[name] = o(show_attributes)
-                elif (
-                    cls.__name__ == "PyLocalNamedObject"
-                    or cls.__name__ == "PyLocalNamedObjectAbstract"
-                ):
+                elif issubclass(cls, (PyLocalNamedObject, PyLocalNamedObjectAbstract)):
                     container = getattr(self, cls.PLURAL)
                     if getattr(container, "is_active", True):
                         state[cls.PLURAL] = {}
@@ -531,7 +503,7 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
                             if getattr(o, "is_active", True):
                                 state[cls.PLURAL][child_name] = o()
 
-                elif cls.__name__ == "PyLocalProperty":
+                elif issubclass(cls, PyLocalProperty):
                     if getattr(o, "is_active", True):
                         state[name] = o()
                         attrs = show_attributes and getattr(o, "attributes", None)
@@ -549,7 +521,7 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
 
     def __setattr__(self, name: str, value: Any):
         attr = getattr(self, name, None)
-        if attr and attr.__class__.__name__ == "PyLocalProperty":
+        if attr and isinstance(attr, PyLocalProperty):
             attr.set_state(value)
         else:
             object.__setattr__(self, name, value)
@@ -557,11 +529,10 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
 
 CallKwargs = TypeVar("CallKwargs", bound=TypedDict)
 
-
 class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
     """Local object metaclass."""
 
-    def __init__(self, parent, api_helper: Callable[[Self], APIHelper], name=""):
+    def __init__(self, parent: ParentT, api_helper: type[PostAPIHelper], name=""):
         self._parent = parent
         self._name = name
         self._api_helper = api_helper(self)
@@ -571,11 +542,8 @@ class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
         self._exe_cmd = getattr(self, "_exe_cmd")
 
         def update(clss):
-            for name, cls in clss.__dict__.items():
-                if cls.__class__.__name__ in (
-                    "PyLocalCommandArgMeta",
-                    "PyLocalPropertyMeta",
-                ):
+            for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
+                if issubclass(cls, PyLocalProperty):
                     self._args.append(name)
                     setattr(
                         self,
@@ -596,10 +564,10 @@ class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
         return self._exe_cmd(**cmd_args)
 
 
-class PyLocalNamedObject(PyLocalObject):
+class PyLocalNamedObject(PyLocalObject[ParentT]):
     """Base class for local named object classes."""
 
-    def __init__(self, name: str, parent, api_helper: Callable[[Self], APIHelper]):
+    def __init__(self, name: str, parent: ParentT, api_helper: type[PostAPIHelper]):
         self._name = name
         self._api_helper = api_helper(self)
         self._parent = parent
@@ -607,15 +575,11 @@ class PyLocalNamedObject(PyLocalObject):
         self.type = "object"
 
         def update(clss):
-            for name, cls in clss.__dict__.items():
-                if cls.__name__ in ("PyLocalCommand"):
+            for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
+                if issubclass(cls, PyLocalCommand):
                     self._command_names.append(name)
 
-                if cls.__name__ in (
-                    "PyLocalProperty",
-                    "PyLocalObject",
-                    "PyLocalCommand",
-                ):
+                if issubclass(cls, (PyLocalProperty, PyLocalObject, PyLocalCommand)):
                     # delete old property if overridden
                     if getattr(self, name).__name__ == name:
                         delattr(self, name)
@@ -624,17 +588,14 @@ class PyLocalNamedObject(PyLocalObject):
                         name,
                         cls(self, api_helper, name),
                     )
-                elif (  # TODO these are gone, can we not use instance checks here?
-                    cls.__name__ == "PyLocalNamedObject"
-                    or cls.__name__ == "PyLocalNamedObjectAbstract"
-                ):
+                elif issubclass(cls, (PyLocalNamedObject, PyLocalNamedObjectAbstract)):
                     setattr(
                         self,
                         cls.PLURAL,
                         PyLocalContainer(self, cls, api_helper, cls.PLURAL),
                     )
-                elif cls.__name__ == "PyReferenceObject":
-                    setattr(self, name, cls(self, cls.PATH, cls.LOCATION, cls.SESSION))
+                # elif issubclass(cls, PyReferenceObject):
+                #     setattr(self, name, cls(self, cls.PATH, cls.LOCATION, cls.SESSION))
             for base_class in clss.__bases__:
                 update(base_class)
 
@@ -642,7 +603,7 @@ class PyLocalNamedObject(PyLocalObject):
 
     if TYPE_CHECKING:
 
-        def create(cls) -> Self: ...
+        def create(self) -> Self: ...
 
 
 class PyLocalNamedObjectAbstract(ABC, PyLocalNamedObject):
@@ -651,19 +612,18 @@ class PyLocalNamedObjectAbstract(ABC, PyLocalNamedObject):
     pass
 
 
-DefnT = TypeVar("DefnT", bound=GraphicsDefn | PlotDefn, default=GraphicsDefn | PlotDefn)
+DefnT = TypeVar("DefnT", bound=Defns, default=Defns)
 
-
-def if_type_checking_instantiate(type: type[T]) -> T:
+def if_type_checking_instantiate(type: type[T]) -> T:  # the current behaviour has all of the classes that use this initialised in the XXX class
     return cast(T, type)  # this is hopefully obviously unsafe
 
 
 class _DeleteKwargs(TypedDict, total=False):
     names: list[str]
 
-
 class _CreateKwargs(TypedDict, total=False):
     name: str | None
+
 
 
 class PyLocalContainer(MutableMapping[str, DefnT]):
@@ -672,8 +632,8 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
     def __init__(
         self,
         parent: "Container",
-        object_class: type[DefnT],
-        api_helper: Callable[[Self], APIHelper],
+        object_class: type[PyLocalNamedObject[object]],
+        api_helper: type[PostAPIHelper],
         name: str = "",
     ):
         """Initialize the 'PyLocalContainer' object."""
@@ -684,6 +644,7 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
         self.__api_helper = api_helper
         self.type = "named-object"
         self._command_names = []
+
 
         if hasattr(object_class, "SHOW_AS_SEPARATE_OBJECT"):
             PyLocalContainer.show_as_separate_object = property(
@@ -714,11 +675,9 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
                 lambda self: self.__object_class.IS_ACTIVE(self)
             )
 
-        for name, cls in self.__class__.__dict__.items():
-            if cls.__class__.__name__ in ("PyLocalCommandMeta"):
+        for name, cls in inspect.getmembers(self.__class__, predicate=inspect.isclass):
+            if issubclass(cls, PyLocalCommand):
                 self._command_names.append(name)
-
-            if cls.__class__.__name__ in ("PyLocalCommandMeta"):
                 setattr(
                     self,
                     name,
@@ -796,7 +755,7 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
             index += 1
         return unique_name
 
-    class Delete(PyLocalCommand[Self, _DeleteKwargs]):
+    class Delete(PyLocalCommand["PyLocalContainer", _DeleteKwargs]):
         """Local delete command."""
 
         def _exe_cmd(self, names: list[str]) -> None:
@@ -814,7 +773,7 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
                 """Get allowed values."""
                 return list(self._parent._parent)
 
-    class Create(PyLocalCommand[Self, _CreateKwargs]):
+    class Create(PyLocalCommand["PyLocalContainer", _CreateKwargs]):
         """Local create command."""
 
         def _exe_cmd(self, name: str | None = None):
@@ -832,3 +791,4 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
     # added by __init__
     delete: Delete
     create: Create
+

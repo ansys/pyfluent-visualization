@@ -22,13 +22,19 @@
 
 """Module providing visualization objects."""
 
+import builtins
 import inspect
+import types
+from typing import Any, ClassVar
 
 from ansys.fluent.core.session import BaseSession
 
-from ansys.fluent.interface.post_objects.meta import PyLocalContainer
-from ansys.fluent.visualization import Contour, Graphics, Plots, Surface, Vector
+from ansys.fluent.interface.post_objects.meta import PyLocalContainer, PyLocalNamedObject
+from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
+from ansys.fluent.visualization import Contour, Surface, Vector
+from ansys.fluent.visualization.containers import Pathline
 from ansys.fluent.visualization.graphics.graphics_objects import Mesh
+from ansys.fluent.visualization.plotter.plotter_objects import MonitorPlot, XYPlot
 
 
 class Container:
@@ -49,21 +55,21 @@ class Container:
         Provider of local surfaces, allowing access to surfaces created in
         external modules (e.g., PyVista). Defaults to ``None``.
     """
+    _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]]
 
     def __init__(
         self,
         session: BaseSession,
-        container_type: type[Plots | Graphics],
-        module,
-        post_api_helper,
+        module: types.ModuleType,
+        post_api_helper: type[PostAPIHelper],
         local_surfaces_provider=None,
     ):
         """__init__ method of Container class."""
-        session_state = container_type._sessions_state.get(session)
-        self._path = container_type.__name__
+        session_state = self.__class__._sessions_state.get(session)
+        self._path = self.__class__.__name__
         if not session_state:
             session_state = self.__dict__
-            container_type._sessions_state[session] = session_state
+            self.__class__._sessions_state[session] = session_state
             self.session = session
             self._init_module(self, module, post_api_helper)
         else:
@@ -72,7 +78,7 @@ class Container:
             self, "Surfaces", []
         )
 
-    def get_path(self):
+    def get_path(self) -> str:
         """Get container path."""
         return self._path
 
@@ -81,20 +87,20 @@ class Container:
         """Type."""
         return "object"
 
-    def update(self, value):
+    def update(self, value: dict[str, Any]):
         """Update the value."""
         for name, val in value.items():
             o = getattr(self, name)
             o.update(val)
 
-    def __call__(self, show_attributes=False):
+    def __call__(self, show_attributes=False) -> dict[str, Any]:
         state = {}
         for name, cls in self.__dict__.items():
             o = getattr(self, name)
             if o is None or name.startswith("_") or name.startswith("__"):
                 continue
 
-            if cls.__class__.__name__ == "PyLocalContainer":
+            if isinstance(cls, type) and isinstance(o, PyLocalContainer):
                 container = o
                 if getattr(container, "is_active", True):
                     state[name] = {}
@@ -105,7 +111,7 @@ class Container:
 
         return state
 
-    def _init_module(self, obj, mod, post_api_helper):
+    def _init_module(self, obj, mod: types.ModuleType, post_api_helper: builtins.type[PostAPIHelper]):
         """
         Dynamically initializes and attaches containers for classes in a module.
 
@@ -120,18 +126,15 @@ class Container:
         dynamically added to each container for creating and initializing new objects.
         """
         # Iterate through all attributes in the module's dictionary
-        for name, cls in mod.__dict__.items():
-            if cls.__class__.__name__ in (
-                "PyLocalNamedObjectMetaAbstract",
-            ) and not inspect.isabstract(cls):
+        for name, cls in inspect.getmembers(mod, predicate=inspect.isclass):
+            if issubclass(cls, PyLocalNamedObject) and not inspect.isabstract(cls):
                 cont = PyLocalContainer(self, cls, post_api_helper, cls.PLURAL)
 
                 # Define a method to add a "create" function to the container
-                def _add_create(py_cont):
+                def _add_create(py_cont: PyLocalContainer):
                     def _create(**kwargs):
-                        new_object = py_cont.__getitem__(
-                            py_cont._get_unique_chid_name()
-                        )
+                        new_object = py_cont[py_cont._get_unique_chid_name()]
+                        new_object.__call__
                         # Validate that all kwargs are valid attributes for the object
                         unexpected_args = set(kwargs) - set(new_object())
                         if unexpected_args:
@@ -182,12 +185,14 @@ class Plots(Container):
         Container for monitor plot objects.
     """
 
-    _sessions_state = {}
+    _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
+    XYPlots: PyLocalContainer[XYPlot]  # pyright: ignore[reportUninitializedInstanceVariable]
+    MonitorPlots: PyLocalContainer[MonitorPlot]  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self, session, module, post_api_helper, local_surfaces_provider=None):
         """__init__ method of Plots class."""
         super().__init__(
-            session, self.__class__, module, post_api_helper, local_surfaces_provider
+            session, module, post_api_helper, local_surfaces_provider
         )
 
 
@@ -221,16 +226,18 @@ class Graphics(Container):
         Container for vector objects.
     """
 
-    _sessions_state = {}
-    Meshes: PyLocalContainer[Mesh]
-    Surfaces: PyLocalContainer[Surface]
-    Contours: PyLocalContainer[Contour]
-    Vectors: PyLocalContainer[Vector]
+    _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
+    Meshes: PyLocalContainer[Mesh]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Surfaces: PyLocalContainer[Surface]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Contours: PyLocalContainer[Contour]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Vectors: PyLocalContainer[Vector]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Pathlines: PyLocalContainer[Pathline]  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    def __init__(self, session, module, post_api_helper, local_surfaces_provider=None):
+
+    def __init__(self, session: BaseSession, module: types.ModuleType, post_api_helper: type[PostAPIHelper], local_surfaces_provider=None):
         """__init__ method of Graphics class."""
         super().__init__(
-            session, self.__class__, module, post_api_helper, local_surfaces_provider
+            session, module, post_api_helper, local_surfaces_provider
         )
 
     def add_outline_mesh(self) -> Mesh | None:

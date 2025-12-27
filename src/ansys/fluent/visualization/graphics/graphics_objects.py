@@ -24,7 +24,7 @@
 
 import sys
 
-from ansys.fluent.interface.post_objects.meta import Command
+from ansys.fluent.interface.post_objects.meta import Command, PyLocalContainer
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     ContourDefn,
@@ -48,7 +48,7 @@ class Graphics(GraphicsContainer):
     """
 
     def __init__(
-        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider=None
+        self, session, post_api_helper: type[PostAPIHelper]=PostAPIHelper, local_surfaces_provider=None
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider

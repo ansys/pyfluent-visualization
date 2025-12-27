@@ -26,7 +26,7 @@ import abc
 from abc import abstractmethod
 from collections.abc import Callable, Sequence
 import logging
-from typing import TYPE_CHECKING, Literal, NamedTuple, Protocol, Self, cast, final
+from typing import TYPE_CHECKING, Literal, NamedTuple, Protocol, Self, TypeAlias, cast, final, override
 
 from ansys.fluent.interface.post_objects.meta import (
     Attribute,
@@ -45,9 +45,9 @@ logger = logging.getLogger("pyfluent.post_objects")
 class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
     """Base class for visualization objects."""
 
-    # @abc.abstractmethod
-    # def get_root(self) -> Container:
-    #     raise NotImplementedError
+    @abc.abstractmethod
+    def get_root(self) -> Container:
+        raise NotImplementedError
 
     surfaces: Callable[[], Sequence[str]]
 
@@ -180,7 +180,7 @@ class XYPlotDefn(PlotDefn, abc.ABC):
             )
 
 
-class MeshDefn(GraphicsDefn):
+class MeshDefn(GraphicsDefn, abc.ABC):
     """Mesh graphics definition."""
 
     PLURAL = "Meshes"
@@ -217,7 +217,7 @@ class MeshDefn(GraphicsDefn):
         value = True
 
 
-class PathlinesDefn(GraphicsDefn):
+class PathlinesDefn(GraphicsDefn, abc.ABC):
     """Pathlines definition."""
 
     PLURAL = "Pathlines"
@@ -247,7 +247,7 @@ class PathlinesDefn(GraphicsDefn):
             )
 
 
-class SurfaceDefn(GraphicsDefn):
+class SurfaceDefn(GraphicsDefn, abc.ABC):
     """Surface graphics definition."""
 
     PLURAL = "Surfaces"
@@ -263,7 +263,7 @@ class SurfaceDefn(GraphicsDefn):
 
         value = True
 
-    class definition(PyLocalObject[Self]):
+    class definition(PyLocalObject["SurfaceDefn"]):
         """Specify surface definition type."""
 
         @final
@@ -281,7 +281,7 @@ class SurfaceDefn(GraphicsDefn):
                 return ["plane-surface", "iso-surface"]
 
         @if_type_checking_instantiate
-        class plane_surface(PyLocalObject[Self]):
+        class plane_surface(PyLocalObject["definition"]):
             """Plane surface definition."""
 
             @Attribute
@@ -310,7 +310,7 @@ class SurfaceDefn(GraphicsDefn):
                     return ["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
 
             @if_type_checking_instantiate
-            class point(PyLocalObject[Self]):
+            class point(PyLocalObject["plane_surface"]):
                 """Point entry for point-and-normal surface."""
 
                 @Attribute
@@ -376,7 +376,7 @@ class SurfaceDefn(GraphicsDefn):
                         )
 
             @if_type_checking_instantiate
-            class normal(PyLocalObject[Self]):
+            class normal(PyLocalObject["plane_surface"]):
                 """Normal entry for point-and-normal surface."""
 
                 @Attribute
@@ -418,7 +418,7 @@ class SurfaceDefn(GraphicsDefn):
                         return [-1, 1]
 
             @if_type_checking_instantiate
-            class xy_plane(PyLocalObject[Self]):
+            class xy_plane(PyLocalObject["plane_surface"]):
                 """XY Plane definition."""
 
                 @Attribute
@@ -438,7 +438,7 @@ class SurfaceDefn(GraphicsDefn):
                         return self.field_data.scalar_fields.range("z-coordinate", True)
 
             @if_type_checking_instantiate
-            class yz_plane(PyLocalObject[Self]):
+            class yz_plane(PyLocalObject["plane_surface"]):
                 """YZ Plane definition."""
 
                 @Attribute
@@ -458,7 +458,7 @@ class SurfaceDefn(GraphicsDefn):
                         return self.field_data.scalar_fields.range("x-coordinate", True)
 
             @if_type_checking_instantiate
-            class zx_plane(PyLocalObject[Self]):
+            class zx_plane(PyLocalObject["plane_surface"]):
                 """ZX Plane definition."""
 
                 @Attribute
@@ -478,7 +478,7 @@ class SurfaceDefn(GraphicsDefn):
                         return self.field_data.scalar_fields.range("y-coordinate", True)
 
         @if_type_checking_instantiate
-        class iso_surface(PyLocalObject[Self]):
+        class iso_surface(PyLocalObject["definition"]):
             """Iso surface definition."""
 
             @Attribute
@@ -538,7 +538,7 @@ class SurfaceDefn(GraphicsDefn):
                         return self.field_data.scalar_fields.range(field, True)
 
 
-class ContourDefn(GraphicsDefn):
+class ContourDefn(GraphicsDefn, abc.ABC):
     """Contour graphics definition."""
 
     PLURAL = "Contours"
@@ -626,7 +626,7 @@ class ContourDefn(GraphicsDefn):
 
         value = False
 
-    class range(PyLocalObject[Self]):
+    class range(PyLocalObject["ContourDefn"]):
         """Range definition."""
 
         @final
@@ -644,7 +644,7 @@ class ContourDefn(GraphicsDefn):
                 return ["auto-range-on", "auto-range-off"]
 
         @if_type_checking_instantiate
-        class auto_range_on(PyLocalObject[Self]):
+        class auto_range_on(PyLocalObject["range"]):
             """Auto range on definition."""
 
             @Attribute
@@ -659,7 +659,7 @@ class ContourDefn(GraphicsDefn):
                 value = False
 
         @if_type_checking_instantiate
-        class auto_range_off(PyLocalObject[Self]):
+        class auto_range_off(PyLocalObject["range"]):
             """Auto range off definition."""
 
             @Attribute
@@ -679,13 +679,14 @@ class ContourDefn(GraphicsDefn):
 
                 _value = None
 
-                def _reset_on_change(self) -> list:
+                def _reset_on_change(self) -> list[Callable[[], object]]:
                     return [
                         self.get_ancestors_by_type(ContourDefn).field,
                         self.get_ancestors_by_type(ContourDefn).node_values,
                     ]
 
                 @property
+                @override
                 def value(self) -> float | None:
                     """Range minimum property setter."""
                     if getattr(self, "_value", None) is None:
@@ -709,13 +710,14 @@ class ContourDefn(GraphicsDefn):
 
                 _value = None
 
-                def _reset_on_change(self) -> list:
+                def _reset_on_change(self) -> list[Callable[[], object]]:
                     return [
                         self.get_ancestors_by_type(ContourDefn).field,
                         self.get_ancestors_by_type(ContourDefn).node_values,
                     ]
 
                 @property
+                @override
                 def value(self) -> float | None:
                     """Range maximum property setter."""
                     if getattr(self, "_value", None) is None:
@@ -735,7 +737,7 @@ class ContourDefn(GraphicsDefn):
                     self._value = value
 
 
-class VectorDefn(GraphicsDefn):
+class VectorDefn(GraphicsDefn, abc.ABC):
     """Vector graphics definition."""
 
     PLURAL = "Vectors"
@@ -794,7 +796,7 @@ class VectorDefn(GraphicsDefn):
         value = False
 
     @if_type_checking_instantiate
-    class range(PyLocalObject[Self]):
+    class range(PyLocalObject["VectorDefn"]):
         """Range definition."""
 
         @final
@@ -812,7 +814,7 @@ class VectorDefn(GraphicsDefn):
                 return ["auto-range-on", "auto-range-off"]
 
         @if_type_checking_instantiate
-        class auto_range_on(PyLocalObject[Self]):
+        class auto_range_on(PyLocalObject["range"]):
             """Auto range on definition."""
 
             @Attribute
@@ -827,7 +829,7 @@ class VectorDefn(GraphicsDefn):
                 value = False
 
         @if_type_checking_instantiate
-        class auto_range_off(PyLocalObject[Self]):
+        class auto_range_off(PyLocalObject["range"]):
             """Auto range off definition."""
 
             @Attribute
@@ -884,3 +886,5 @@ class VectorDefn(GraphicsDefn):
                 @value.setter
                 def value(self, value: float | None) -> None:
                     self._value = value
+
+Defns: TypeAlias = GraphicsDefn | PlotDefn | MonitorDefn | XYPlotDefn | MeshDefn | PathlinesDefn | SurfaceDefn | ContourDefn | VectorDefn

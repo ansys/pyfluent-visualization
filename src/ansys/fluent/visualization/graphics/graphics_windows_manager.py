@@ -62,8 +62,8 @@ class GraphicsWindow(VisualizationWindow):
         self,
         id: str,
         post_object: GraphicsDefn,
-        grid: tuple | None = (1, 1),
-        renderer: str = None,
+        grid: tuple[int, int] | None = (1, 1),
+        renderer: str | None = None,
     ):
         """Instantiate a Graphics window.
 
@@ -129,23 +129,25 @@ class GraphicsWindow(VisualizationWindow):
             raise KeyError(error_message) from ex
         return renderer(self.id, in_jupyter(), not pyviz.config.interactive, self._grid)
 
-    def set_data(self, data_type: FieldDataType, data: dict[int, dict[str, np.array]]):
+    def set_data(self, data_type: FieldDataType, data: dict[int, dict[str, np.ndarray]]):
         """Set data for graphics."""
         self._data[data_type] = data
 
     def fetch(self):
         """Fetch data for graphics."""
+        from ansys.fluent.visualization.containers import Monitor, Surface, XYPlot
+
         if not self.post_object:
             return
         obj = self.post_object
-        if obj.__class__.__name__ == "Surface":
+        if isinstance(obj, Surface):
             self._fetch_surface(obj)
-        elif obj.__class__.__name__ == "XYPlot":
+        elif isinstance(obj, XYPlot):
             self._fetch_xy_data(obj)
-        elif obj.__class__.__name__ == "MonitorPlot":
+        elif isinstance(obj, Monitor):
             self._fetch_monitor_data(obj)
         else:
-            self._fetch_data(obj, FieldDataType(obj.__class__.__name__))
+            self._fetch_data(obj, FieldDataType(obj.__name__))
 
     def render(self):
         """Render graphics."""
@@ -155,25 +157,35 @@ class GraphicsWindow(VisualizationWindow):
 
     def _render_graphics(self, obj_dict=None):
         """Render graphics."""
+        from ansys.fluent.visualization.containers import (
+            Contour,
+            Mesh,
+            Monitor,
+            Pathline,
+            Surface,
+            Vector,
+            XYPlot,
+        )
+
         if not self.post_object:
             return
         obj = self.post_object
 
         if not self.overlay:
             self.renderer._clear_plotter(in_jupyter())
-        if obj.__class__.__name__ == "Mesh":
+        if isinstance(obj, Mesh):
             self._display_mesh(obj, obj_dict)
-        elif obj.__class__.__name__ == "Surface":
+        elif isinstance(obj, Surface):
             self._display_surface(obj, obj_dict)
-        elif obj.__class__.__name__ == "Contour":
+        elif isinstance(obj, Contour):
             self._display_contour(obj, obj_dict)
-        elif obj.__class__.__name__ == "Vector":
+        elif isinstance(obj, Vector):
             self._display_vector(obj, obj_dict)
-        elif obj.__class__.__name__ == "Pathlines":
+        elif isinstance(obj, Pathline):
             self._display_pathlines(obj, obj_dict)
-        elif obj.__class__.__name__ == "XYPlot":
+        elif isinstance(obj, XYPlot):
             self._display_xy_plot(obj_dict)
-        elif obj.__class__.__name__ == "MonitorPlot":
+        elif isinstance(obj, Monitor):
             self._display_monitor_plot(obj_dict)
         if self.animate:
             self.renderer.write_frame()
@@ -1191,6 +1203,14 @@ class _GraphicsManagerProxy:
 
     def __setattr__(self, name, value):
         if name == "_real_instance":
+            super().__setattr__(name, value)
+        else:
+            if self._real_instance is None:
+                self._initialize()
+            setattr(self._real_instance, name, value)
+
+
+graphics_windows_manager = _GraphicsManagerProxy()
             super().__setattr__(name, value)
         else:
             if self._real_instance is None:

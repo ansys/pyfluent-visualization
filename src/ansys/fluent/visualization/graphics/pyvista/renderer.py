@@ -44,7 +44,7 @@ class Renderer(AbstractRenderer):
         win_id: str,
         in_jupyter: bool,
         non_interactive: bool,
-        grid: tuple[int, int] | None = (1, 1),
+        grid: tuple[int, int] | str = (1, 1),
     ):
         self.plotter: BackgroundPlotter | pv.Plotter = (
             pv.Plotter(title=f"PyFluent ({win_id})", shape=grid)

@@ -131,10 +131,12 @@ class PlotterWindow(VisualizationWindow):
 
     def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
         """Draw a plot."""
+        from ansys.fluent.visualization.containers import XYPlot
+
         if self.post_object is not None:
             plot = (
                 _XYPlot(self.post_object, self.plotter)
-                if self.post_object.__class__.__name__ == "XYPlot"
+                if isinstance(self.post_object, XYPlot)
                 else _MonitorPlot(self.post_object, self.plotter)
             )
             plot_data = plot()
@@ -152,6 +154,8 @@ class PlotterWindow(VisualizationWindow):
             self.plotter.show()
 
     def plot_graphics(self, object_list):
+        from ansys.fluent.visualization.containers import XYPlot
+
         self._obj_list = object_list
         if self.refresh:
             self._object_list_to_render = []
@@ -159,7 +163,7 @@ class PlotterWindow(VisualizationWindow):
             self.post_object = obj_dict["object"]._obj
             plot = (
                 _XYPlot(self.post_object, self.plotter)
-                if self.post_object.__class__.__name__ == "XYPlot"
+                if isinstance(self.post_object, XYPlot)
                 else _MonitorPlot(self.post_object, self.plotter)
             )
 
