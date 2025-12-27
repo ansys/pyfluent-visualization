@@ -26,7 +26,17 @@ import abc
 from abc import abstractmethod
 from collections.abc import Callable, Sequence
 import logging
-from typing import TYPE_CHECKING, Literal, NamedTuple, Protocol, Self, TypeAlias, cast, final, override
+from typing import (
+    TYPE_CHECKING,
+    Literal,
+    NamedTuple,
+    Protocol,
+    Self,
+    TypeAlias,
+    cast,
+    final,
+    override,
+)
 
 from ansys.fluent.interface.post_objects.meta import (
     Attribute,
@@ -887,4 +897,15 @@ class VectorDefn(GraphicsDefn, abc.ABC):
                 def value(self, value: float | None) -> None:
                     self._value = value
 
-Defns: TypeAlias = GraphicsDefn | PlotDefn | MonitorDefn | XYPlotDefn | MeshDefn | PathlinesDefn | SurfaceDefn | ContourDefn | VectorDefn
+
+Defns: TypeAlias = (
+    GraphicsDefn
+    | PlotDefn
+    | MonitorDefn
+    | XYPlotDefn
+    | MeshDefn
+    | PathlinesDefn
+    | SurfaceDefn
+    | ContourDefn
+    | VectorDefn
+)

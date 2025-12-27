@@ -150,7 +150,9 @@ class PostAPIHelper:
     def __init__(self, obj: PyLocalBase):
         """__init__ method of PostAPIHelper class."""
         self.obj = obj
-        self.field_data = lambda: cast("LiveFieldData", obj.get_root().session.fields.field_data)
+        self.field_data = lambda: cast(
+            "LiveFieldData", obj.get_root().session.fields.field_data
+        )
         if isinstance(obj, Surface):
             self.surface_api = PostAPIHelper._SurfaceAPI(obj)
 

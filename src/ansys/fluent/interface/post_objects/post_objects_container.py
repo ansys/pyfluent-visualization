@@ -29,7 +29,10 @@ from typing import Any, ClassVar
 
 from ansys.fluent.core.session import BaseSession
 
-from ansys.fluent.interface.post_objects.meta import PyLocalContainer, PyLocalNamedObject
+from ansys.fluent.interface.post_objects.meta import (
+    PyLocalContainer,
+    PyLocalNamedObject,
+)
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.visualization import Contour, Surface, Vector
 from ansys.fluent.visualization.containers import Pathline
@@ -55,6 +58,7 @@ class Container:
         Provider of local surfaces, allowing access to surfaces created in
         external modules (e.g., PyVista). Defaults to ``None``.
     """
+
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]]
 
     def __init__(
@@ -111,7 +115,9 @@ class Container:
 
         return state
 
-    def _init_module(self, obj, mod: types.ModuleType, post_api_helper: builtins.type[PostAPIHelper]):
+    def _init_module(
+        self, obj, mod: types.ModuleType, post_api_helper: builtins.type[PostAPIHelper]
+    ):
         """
         Dynamically initializes and attaches containers for classes in a module.
 
@@ -186,14 +192,16 @@ class Plots(Container):
     """
 
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
-    XYPlots: PyLocalContainer[XYPlot]  # pyright: ignore[reportUninitializedInstanceVariable]
-    MonitorPlots: PyLocalContainer[MonitorPlot]  # pyright: ignore[reportUninitializedInstanceVariable]
+    XYPlots: PyLocalContainer[
+        XYPlot
+    ]  # pyright: ignore[reportUninitializedInstanceVariable]
+    MonitorPlots: PyLocalContainer[
+        MonitorPlot
+    ]  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self, session, module, post_api_helper, local_surfaces_provider=None):
         """__init__ method of Plots class."""
-        super().__init__(
-            session, module, post_api_helper, local_surfaces_provider
-        )
+        super().__init__(session, module, post_api_helper, local_surfaces_provider)
 
 
 class Graphics(Container):
@@ -227,18 +235,31 @@ class Graphics(Container):
     """
 
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
-    Meshes: PyLocalContainer[Mesh]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Surfaces: PyLocalContainer[Surface]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Contours: PyLocalContainer[Contour]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Vectors: PyLocalContainer[Vector]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Pathlines: PyLocalContainer[Pathline]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Meshes: PyLocalContainer[
+        Mesh
+    ]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Surfaces: PyLocalContainer[
+        Surface
+    ]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Contours: PyLocalContainer[
+        Contour
+    ]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Vectors: PyLocalContainer[
+        Vector
+    ]  # pyright: ignore[reportUninitializedInstanceVariable]
+    Pathlines: PyLocalContainer[
+        Pathline
+    ]  # pyright: ignore[reportUninitializedInstanceVariable]
 
-
-    def __init__(self, session: BaseSession, module: types.ModuleType, post_api_helper: type[PostAPIHelper], local_surfaces_provider=None):
+    def __init__(
+        self,
+        session: BaseSession,
+        module: types.ModuleType,
+        post_api_helper: type[PostAPIHelper],
+        local_surfaces_provider=None,
+    ):
         """__init__ method of Graphics class."""
-        super().__init__(
-            session, module, post_api_helper, local_surfaces_provider
-        )
+        super().__init__(session, module, post_api_helper, local_surfaces_provider)
 
     def add_outline_mesh(self) -> Mesh | None:
         """Add a mesh outline.

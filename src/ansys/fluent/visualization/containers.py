@@ -1,5 +1,6 @@
-# pyright: reportIncompatibleVariableOverride=false
-# this cannot be enabled really and typing out the _obj as a property is annoying until ReadOnly[T] works on concrete classes
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
 # Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
@@ -44,21 +45,20 @@ from typing_extensions import override
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
 
-
 if TYPE_CHECKING:
     from ansys.fluent.core.session import BaseSession
     from ansys.fluent.core.session_solver import Solver
 
-    from ansys.fluent.interface.post_objects.post_objects_container import Container
+    from ansys.fluent.interface.post_objects.meta import _DeleteKwargs
     from ansys.fluent.interface.post_objects.post_object_definitions import (
-        Defns,
-        SurfaceDefn,
         ContourDefn,
+        Defns,
         GraphicsDefn,
         MonitorDefn,
+        SurfaceDefn,
         VectorDefn,
     )
-    from ansys.fluent.interface.post_objects.meta import _DeleteKwargs
+    from ansys.fluent.interface.post_objects.post_objects_container import Container
 
 
 class _GraphicsContainer:
@@ -81,14 +81,17 @@ class _GraphicsContainer:
                 self.kwargs["vectors_of"]
             )
 
-
     if TYPE_CHECKING:
         # we have these due to inheriting from the ABCs at type time but the attributes coming from ._obj
         # the type checker thinks they aren't valid to instantiate otherwise
         def get_root(self) -> Container: ...
         def display(self, window_id: str | None = None) -> None: ...
-        surfaces: Callable[[], list[str]]  # pyright: ignore[reportUninitializedInstanceVariable]
+
+        surfaces: Callable[
+            [], list[str]
+        ]  # pyright: ignore[reportUninitializedInstanceVariable]
     else:
+
         def __getattr__(self, attr):
             return getattr(self._obj, attr)
 
@@ -102,7 +105,10 @@ class _GraphicsContainer:
     def __dir__(self) -> list[str]:
         return sorted(set(super().__dir__()) | set(dir(self._obj)))
 
-class Mesh(_GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC):  # pyright: ignore[reportUnsafeMultipleInheritance]
+
+class Mesh(
+    _GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC
+):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """Mesh visualization object.
 
     Creates a Fluent mesh graphic object on the specified surfaces.
@@ -171,7 +177,9 @@ class SurfaceKwargs(TypedDict, total=False):
     normal: tuple[float, float, float] | None
 
 
-class Surface(_GraphicsContainer, SurfaceDefn if TYPE_CHECKING else object, abc.ABC):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Surface(
+    _GraphicsContainer, SurfaceDefn if TYPE_CHECKING else object, abc.ABC
+):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """Surface definition for Fluent post-processing.
 
     The ``Surface`` class represents any Fluent surface generated for
@@ -486,7 +494,9 @@ class IsoSurface(Surface, abc.ABC):
         )
 
 
-class Contour(_GraphicsContainer, ContourDefn if TYPE_CHECKING else object, abc.ABC):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Contour(
+    _GraphicsContainer, ContourDefn if TYPE_CHECKING else object, abc.ABC
+):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """
     Contour visualization object.
 
@@ -534,7 +544,9 @@ class Contour(_GraphicsContainer, ContourDefn if TYPE_CHECKING else object, abc.
         )
 
 
-class Vector(_GraphicsContainer, VectorDefn if TYPE_CHECKING else object, abc.ABC):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Vector(
+    _GraphicsContainer, VectorDefn if TYPE_CHECKING else object, abc.ABC
+):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """Vector visualization object.
 
     Parameters
@@ -624,7 +636,9 @@ class Vector(_GraphicsContainer, VectorDefn if TYPE_CHECKING else object, abc.AB
         setattr(self._obj, attr, value)
 
 
-class Pathline(_GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Pathline(
+    _GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC
+):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """Pathline visualization object.
 
     The ``Pathline`` class generates pathlines, which represent the trajectories
@@ -683,7 +697,9 @@ class Pathline(_GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, ab
         )
 
 
-class XYPlot(_GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class XYPlot(
+    _GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC
+):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """XY plot visualization object.
 
     The ``XYPlot`` class creates a Fluent XY plot of a scalar field evaluated
@@ -746,7 +762,9 @@ class XYPlot(_GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.
         ).XYPlots.create(**self.kwargs)
 
 
-class Monitor(_GraphicsContainer, MonitorDefn if TYPE_CHECKING else object, abc.ABC):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Monitor(
+    _GraphicsContainer, MonitorDefn if TYPE_CHECKING else object, abc.ABC
+):  # pyright: ignore[reportUnsafeMultipleInheritance]
     """Monitor visualization object.
 
     The ``Monitor`` class provides access to Fluent monitor data for plotting,

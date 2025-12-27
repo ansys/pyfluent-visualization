@@ -71,8 +71,14 @@ class FieldDataExtractor:
         Dict[int: Dict[str: np.ndarray]]
             Return dictionary of surfaces id to field name to numpy array.
         """
-        from ansys.fluent.visualization.containers import Mesh, Surface, Contour, Vector, Pathline
-        
+        from ansys.fluent.visualization.containers import (
+            Contour,
+            Mesh,
+            Pathline,
+            Surface,
+            Vector,
+        )
+
         if isinstance(self._post_object, Mesh):
             return self._fetch_mesh_data(self._post_object, *args, **kwargs)
         elif isinstance(self._post_object, Surface):

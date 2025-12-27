@@ -134,8 +134,7 @@ class Attribute(Generic[_SelfT, _T_co]):
     @overload
     def __get__(
         self, instance: _SelfT, _  # pyright: ignore[reportGeneralTypeIssues]
-    ) -> _T_co:
-        ...
+    ) -> _T_co: ...
 
     def __get__(self, instance: _SelfT | None, _) -> _T_co | Self:
         if instance is None:
@@ -231,6 +230,7 @@ T2 = TypeVar("T2")
 
 AccessorT = TypeVar("AccessorT", bound=BasePostObjectDefn)
 
+
 class PyLocalBase:
     """Local base."""
 
@@ -245,7 +245,7 @@ class PyLocalBase:
             parent = self.get_ancestors_by_type(instance, owner._parent)
         return parent
 
-    def get_root(self, instance = None) -> Container:
+    def get_root(self, instance=None) -> Container:
         instance = self if instance is None else instance
         parent = instance
         if getattr(instance, "_parent", None):
@@ -337,6 +337,7 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
         return rv
 
     if TYPE_CHECKING:
+
         def __set__(self, instance: object, value: T) -> None: ...
 
     def set_state(self, value: T):
@@ -349,10 +350,10 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
 
     @Attribute
     @overload
-    def allowed_values(self: "PyLocalProperty[Sequence[T2]]") -> Sequence[T2]:...
+    def allowed_values(self: "PyLocalProperty[Sequence[T2]]") -> Sequence[T2]: ...
     @Attribute
     @overload
-    def allowed_values(self: "PyLocalProperty[T2]") -> Sequence[T2]:...
+    def allowed_values(self: "PyLocalProperty[T2]") -> Sequence[T2]: ...
     @Attribute
     def allowed_values(self) -> Sequence[object]:
         """Get allowed values."""
@@ -402,12 +403,15 @@ class PyLocalProperty(PyLocalBase, Generic[T]):
 
 ParentT = TypeVar("ParentT")
 
+
 # TODO try poking around this more cause it is kinda what we are doing?
 # @dataclass_transform(field_specifiers=(type,))
 class PyLocalObject(PyLocalBase, Generic[ParentT]):
     """Local object classes."""
 
-    def __init__(self, parent: ParentT, api_helper: type[PostAPIHelper], name: str = ""):
+    def __init__(
+        self, parent: ParentT, api_helper: type[PostAPIHelper], name: str = ""
+    ):
         """Create the initialization method for 'PyLocalObjectMeta'."""
         self._parent = parent
         self._name = name
@@ -529,6 +533,7 @@ class PyLocalObject(PyLocalBase, Generic[ParentT]):
 
 CallKwargs = TypeVar("CallKwargs", bound=TypedDict)
 
+
 class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
     """Local object metaclass."""
 
@@ -614,16 +619,21 @@ class PyLocalNamedObjectAbstract(ABC, PyLocalNamedObject):
 
 DefnT = TypeVar("DefnT", bound=Defns, default=Defns)
 
-def if_type_checking_instantiate(type: type[T]) -> T:  # the current behaviour has all of the classes that use this initialised in the XXX class
+
+def if_type_checking_instantiate(
+    type: type[T],
+) -> (
+    T
+):  # the current behaviour has all of the classes that use this initialised in the XXX class
     return cast(T, type)  # this is hopefully obviously unsafe
 
 
 class _DeleteKwargs(TypedDict, total=False):
     names: list[str]
 
+
 class _CreateKwargs(TypedDict, total=False):
     name: str | None
-
 
 
 class PyLocalContainer(MutableMapping[str, DefnT]):
@@ -644,7 +654,6 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
         self.__api_helper = api_helper
         self.type = "named-object"
         self._command_names = []
-
 
         if hasattr(object_class, "SHOW_AS_SEPARATE_OBJECT"):
             PyLocalContainer.show_as_separate_object = property(
@@ -791,4 +800,3 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
     # added by __init__
     delete: Delete
     create: Create
-
