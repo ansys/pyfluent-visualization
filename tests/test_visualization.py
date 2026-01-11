@@ -552,12 +552,14 @@ def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_d
         creation_method="xy-plane",
         z=-0.0441921,
     )
-    assert surf_xy_plane.get_raw_data()["surface-0"].vertices.shape == (15423, 3)
+    temp_key = surf_xy_plane.get_raw_data().keys()[0]
+    assert surf_xy_plane.get_raw_data()[temp_key].vertices.shape == (15423, 3)
 
     surf_outlet_plane = Surface(solver=solver, type="iso-surface")
     surf_outlet_plane.field = "y-coordinate"
     surf_outlet_plane.iso_value = -0.125017
-    assert surf_outlet_plane.get_raw_data()["surface-1"].connectivity.shape == (6556,)
+    temp_key = surf_xy_plane.get_raw_data().keys()[0]
+    assert surf_outlet_plane.get_raw_data()[temp_key].connectivity.shape == (6556,)
 
     surf_vel_contour = Surface(
         solver=solver,
