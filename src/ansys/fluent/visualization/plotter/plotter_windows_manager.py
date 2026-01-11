@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -264,22 +264,11 @@ class _MonitorPlot:
         """Draw a monitor plot."""
         if not self.post_object:
             return
-        self.post_object.session.monitors.refresh(None, None)
         monitors = self.post_object.session.monitors
         xy_data = {}
-        timeout = 5
-        count = 0.0
-        import time
-
-        while True:
-            indices, columns_data = monitors.get_monitor_set_data(
-                self.post_object.monitor_set_name()
-            )
-            if columns_data != {} or count > timeout:
-                break
-            time.sleep(0.1)
-            count += 0.1
-
+        indices, columns_data = monitors.get_monitor_set_data(
+            self.post_object.monitor_set_name()
+        )
         for column_name, column_data in columns_data.items():
             xy_data[column_name] = {"xvalues": indices, "yvalues": column_data}
         monitor_set_name = self.post_object.monitor_set_name()

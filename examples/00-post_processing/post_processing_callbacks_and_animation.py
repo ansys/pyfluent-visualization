@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -110,34 +110,29 @@ p_vect.add_graphics(vector1)
 p_vect.show()
 
 # iso surface
-surface1 = Surface(solver=session)
-surface1.definition.type = "iso-surface"
+surface1 = Surface(solver=session, type="iso-surface")
 surface1.definition.iso_surface.field = "velocity-magnitude"
 surface1.definition.iso_surface.rendering = "contour"
 surface1.definition.iso_surface.iso_value = 0.0
 
 
-p1 = XYPlot(solver=session, surfaces=["solid_up:1:830"])
-p1.y_axis_function = "temperature"
+p1 = XYPlot(solver=session, surfaces=["solid_up:1:830"], y_axis_function="temperature")
 p_xy = GraphicsWindow()
 p_xy.add_plot(p1)
 p_xy.show()
 
 session.monitors.get_monitor_set_names()
-residual = Monitor(solver=session)
-residual.monitor_set_name = "residual"
+residual = Monitor(solver=session, monitor_set_name="residual")
 p_res = GraphicsWindow()
 p_res.add_plot(residual)
 p_res.show()
 
-mtr = Monitor(solver=session)
-mtr.monitor_set_name = "mass-tot-rplot"
+mtr = Monitor(solver=session, monitor_set_name="mass-tot-rplot")
 p_mtr = GraphicsWindow()
 p_mtr.add_plot(mtr)
 p_mtr.show()
 
-mbr = Monitor(solver=session)
-mbr.monitor_set_name = "mass-bal-rplot"
+mbr = Monitor(solver=session, monitor_set_name="mass-bal-rplot")
 p_mbr = GraphicsWindow()
 p_mbr.add_plot(mbr)
 p_mbr.show()
