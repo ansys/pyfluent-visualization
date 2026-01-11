@@ -49,6 +49,7 @@ class _GraphicsContainer:
             self.kwargs["vectors_of"] = _to_field_name_str(self.kwargs["vectors_of"])
 
     def get_raw_data(self):
+        """Exposes field data."""
         return FieldDataExtractor(self._obj).fetch_data()
 
     def __getattr__(self, attr):
@@ -628,6 +629,7 @@ class XYPlot(_GraphicsContainer):
         ).XYPlots.create(**self.kwargs)
 
     def get_raw_data(self):
+        """Exposes 2d plot data data."""
         return XYPlotDataExtractor(self._obj).fetch_data()
 
 
@@ -674,6 +676,7 @@ class Monitor(_GraphicsContainer):
         ).Monitors.create(**self.kwargs)
 
     def get_raw_data(self):
+        """Exposes monitor data."""
         return self._obj.session.monitors.get_monitor_set_data(
             self.kwargs["monitor_set_name"]
         )
