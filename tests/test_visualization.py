@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -530,3 +530,91 @@ def test_vector_attributes(new_solver_session_with_exhaust_case_and_data):
 
     assert velocity_vector.field.allowed_values == ["velocity", "relative-velocity"]
     assert len(velocity_vector.surfaces.allowed_values) == 13
+
+
+def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_data):
+    solver = new_solver_session_with_exhaust_case_and_data
+    mesh_surfaces_list = [
+        "in1",
+        "in2",
+        "in3",
+        "out1",
+        "solid_up:1",
+        "solid_up:1:830",
+        "solid_up:1:830-shadow",
+    ]
+    mesh = Mesh(solver=solver, show_edges=True, surfaces=mesh_surfaces_list)
+    assert len(mesh.get_raw_data()) == 7
+
+    surf_xy_plane = Surface(
+        solver=solver,
+        type="plane-surface",
+        creation_method="xy-plane",
+        z=-0.0441921,
+    )
+    assert surf_xy_plane.get_raw_data()["surface-0"].vertices.shape == (15423, 3)
+
+    surf_outlet_plane = Surface(solver=solver, type="iso-surface")
+    surf_outlet_plane.field = "y-coordinate"
+    surf_outlet_plane.iso_value = -0.125017
+    assert surf_outlet_plane.get_raw_data()["surface-1"].connectivity.shape == (6556,)
+
+    surf_vel_contour = Surface(
+        solver=solver,
+        type="iso-surface",
+        field="velocity-magnitude",
+        rendering="contour",
+        iso_value=0.0,
+    )
+    assert surf_vel_contour.get_raw_data()
+
+    cont_surfaces_list = [
+        "in1",
+        "in2",
+        "in3",
+        "out1",
+        "solid_up:1",
+        "solid_up:1:830",
+    ]
+    temperature_contour_manifold = Contour(
+        solver=solver,
+        field=VariableCatalog.TEMPERATURE,
+        surfaces=cont_surfaces_list,
+    )
+    assert (
+        list(temperature_contour_manifold.get_raw_data().keys()) == cont_surfaces_list
+    )
+
+    velocity_vector = Vector(
+        solver=solver,
+        field="velocity",
+        color_by="x-velocity",
+        surfaces=["solid_up:1:830"],
+        scale=20,
+    )
+    assert velocity_vector.get_raw_data()["solid_up:1:830"] is not None
+
+    pathlines = Pathline(
+        solver=solver,
+        field="velocity-magnitude",
+        surfaces=["inlet", "inlet1", "inlet2"],
+    )
+    assert list(pathlines.get_raw_data().keys()) == ["inlet", "inlet1", "inlet2"]
+
+    xy_plot_object = XYPlot(
+        solver=solver,
+        surfaces=["outlet"],
+        y_axis_function="temperature",
+    )
+    assert xy_plot_object.get_raw_data()["outlet"].shape == (416,)
+
+    residual = Monitor(solver=solver, monitor_set_name="residual")
+    assert list(residual.get_raw_data()[1].keys()) == [
+        "continuity",
+        "x-velocity",
+        "y-velocity",
+        "z-velocity",
+        "energy",
+        "k",
+        "omega",
+    ]

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -29,6 +29,10 @@ from ansys.units import VariableDescriptor
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
+from ansys.fluent.visualization.post_data_extractor import (
+    FieldDataExtractor,
+    XYPlotDataExtractor,
+)
 
 
 class _GraphicsContainer:
@@ -43,6 +47,9 @@ class _GraphicsContainer:
             self.kwargs["field"] = _to_field_name_str(self.kwargs["field"])
         if "vectors_of" in self.kwargs:
             self.kwargs["vectors_of"] = _to_field_name_str(self.kwargs["vectors_of"])
+
+    def get_raw_data(self):
+        return FieldDataExtractor(self._obj).fetch_data()
 
     def __getattr__(self, attr):
         return getattr(self._obj, attr)
@@ -620,6 +627,9 @@ class XYPlot(_GraphicsContainer):
             session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).XYPlots.create(**self.kwargs)
 
+    def get_raw_data(self):
+        return XYPlotDataExtractor(self._obj).fetch_data()
+
 
 class Monitor(_GraphicsContainer):
     """Monitor visualization object.
@@ -662,3 +672,8 @@ class Monitor(_GraphicsContainer):
         self.__dict__["_obj"] = Plots(
             session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).Monitors.create(**self.kwargs)
+
+    def get_raw_data(self):
+        return self._obj.session.monitors.get_monitor_set_data(
+            self.kwargs["monitor_set_name"]
+        )

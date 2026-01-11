@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -138,9 +138,15 @@ class PostAPIHelper:
         def delete_surface_on_server(self):
             """Deletes the surface on server."""
             if self.obj.definition.type() == "iso-surface":
-                del self._get_api_handle().iso_surface[self._surface_name_on_server]
+                iso_surface = self._get_api_handle().iso_surface
+                name = self._surface_name_on_server
+                if name in iso_surface():
+                    del iso_surface[name]
             elif self.obj.definition.type() == "plane-surface":
-                del self._get_api_handle().plane_surface[self._surface_name_on_server]
+                plane_surface = self._get_api_handle().plane_surface
+                name = self._surface_name_on_server
+                if name in plane_surface():
+                    del plane_surface[name]
 
     def __init__(self, obj):
         """__init__ method of PostAPIHelper class."""
