@@ -56,7 +56,7 @@ class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
     """Base class for visualization objects."""
 
     @abc.abstractmethod
-    def get_root(self) -> Container:
+    def get_root(self, instance: object = None) -> Container:
         raise NotImplementedError
 
     surfaces: Callable[[], Sequence[str]]
@@ -78,7 +78,7 @@ class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
                 surf_api.delete_surface_on_server()
 
 
-class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObject, abc.ABC):
+class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObject["Container"], abc.ABC):
     """Abstract base class for graphics objects."""
 
     @abstractmethod
@@ -93,7 +93,7 @@ class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObject, abc.ABC):
         pass
 
 
-class PlotDefn(BasePostObjectDefn, PyLocalNamedObject, abc.ABC):
+class PlotDefn(BasePostObjectDefn, PyLocalNamedObject["Container"], abc.ABC):
     """Abstract base class for plot objects."""
 
     @abstractmethod
@@ -525,7 +525,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
 
                 _value = None
 
-                def _reset_on_change(self) -> list:
+                def _reset_on_change(self) -> list[str | None]:
                     return [self._parent.field]
 
                 @property
@@ -545,7 +545,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     """Iso value range."""
                     field = self._parent.field()
                     if field:
-                        return self.field_data.scalar_fields.range(field, True)
+                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range(field, True)))
 
 
 class ContourDefn(GraphicsDefn, abc.ABC):

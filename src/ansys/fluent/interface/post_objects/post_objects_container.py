@@ -25,9 +25,11 @@
 import builtins
 import inspect
 import types
-from typing import Any, ClassVar
+from typing import Any, Callable, ClassVar, Literal, TypeVar
 
 from ansys.fluent.core.session import BaseSession
+from numpy import isin
+from typing_extensions import TypeIs
 
 from ansys.fluent.interface.post_objects.meta import (
     PyLocalContainer,
@@ -38,6 +40,14 @@ from ansys.fluent.visualization import Contour, Surface, Vector
 from ansys.fluent.visualization.containers import Pathline
 from ansys.fluent.visualization.graphics.graphics_objects import Mesh
 from ansys.fluent.visualization.plotter.plotter_objects import MonitorPlot, XYPlot
+
+LocalSurfacesProvider = PyLocalContainer[Surface]
+
+T = TypeVar("T")
+
+
+def is_container(obj: Any) -> TypeIs["PyLocalContainer"]:
+    return isinstance(obj, PyLocalContainer)
 
 
 class Container:
@@ -66,7 +76,7 @@ class Container:
         session: BaseSession,
         module: types.ModuleType,
         post_api_helper: type[PostAPIHelper],
-        local_surfaces_provider=None,
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
     ):
         """__init__ method of Container class."""
         session_state = self.__class__._sessions_state.get(session)
@@ -87,31 +97,25 @@ class Container:
         return self._path
 
     @property
-    def type(self):
+    def type(self) -> Literal["object"]:
         """Type."""
         return "object"
 
-    def update(self, value: dict[str, Any]):
+    def update(self, value: dict[str, Any]) -> None:
         """Update the value."""
         for name, val in value.items():
             o = getattr(self, name)
             o.update(val)
 
-    def __call__(self, show_attributes=False) -> dict[str, Any]:
-        state = {}
-        for name, cls in self.__dict__.items():
-            o = getattr(self, name)
-            if o is None or name.startswith("_") or name.startswith("__"):
-                continue
-
-            if isinstance(cls, type) and isinstance(o, PyLocalContainer):
-                container = o
-                if getattr(container, "is_active", True):
-                    state[name] = {}
-                    for child_name in container:
-                        o = container[child_name]
-                        if getattr(o, "is_active", True):
-                            state[name][child_name] = o()
+    def __call__(self, show_attributes: bool = False) -> dict[str, Any]:
+        state: dict[str, Any] = {}
+        for name, container in inspect.getmembers(self, predicate=is_container):
+            if getattr(container, "is_active", True):
+                state[name] = {}
+                for child_name in container:
+                    o = container[child_name]
+                    if getattr(o, "is_active", True):
+                        state[name][child_name] = o()
 
         return state
 
@@ -192,14 +196,20 @@ class Plots(Container):
     """
 
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
-    XYPlots: PyLocalContainer[
+    XYPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         XYPlot
-    ]  # pyright: ignore[reportUninitializedInstanceVariable]
-    MonitorPlots: PyLocalContainer[
+    ]
+    MonitorPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         MonitorPlot
-    ]  # pyright: ignore[reportUninitializedInstanceVariable]
+    ]
 
-    def __init__(self, session, module, post_api_helper, local_surfaces_provider=None):
+    def __init__(
+        self,
+        session,
+        module,
+        post_api_helper: type[PostAPIHelper],
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
+    ):
         """__init__ method of Plots class."""
         super().__init__(session, module, post_api_helper, local_surfaces_provider)
 
@@ -235,28 +245,28 @@ class Graphics(Container):
     """
 
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
-    Meshes: PyLocalContainer[
+    Meshes: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         Mesh
-    ]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Surfaces: PyLocalContainer[
+    ]
+    Surfaces: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         Surface
-    ]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Contours: PyLocalContainer[
+    ]
+    Contours: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         Contour
-    ]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Vectors: PyLocalContainer[
+    ]
+    Vectors: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         Vector
-    ]  # pyright: ignore[reportUninitializedInstanceVariable]
-    Pathlines: PyLocalContainer[
+    ]
+    Pathlines: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         Pathline
-    ]  # pyright: ignore[reportUninitializedInstanceVariable]
+    ]
 
     def __init__(
         self,
         session: BaseSession,
         module: types.ModuleType,
         post_api_helper: type[PostAPIHelper],
-        local_surfaces_provider=None,
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
     ):
         """__init__ method of Graphics class."""
         super().__init__(session, module, post_api_helper, local_surfaces_provider)
