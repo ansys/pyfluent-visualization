@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
+
+from collections.abc import Iterable
 import warnings
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
@@ -69,7 +71,7 @@ class GraphicsWindow:
     def add_graphics(
         self,
         graphics_obj,
-        position: tuple = (0, 0),
+        position: tuple[int, int] = (0, 0),
         opacity: float = 1,
         **kwargs,
     ) -> None:
@@ -94,7 +96,7 @@ class GraphicsWindow:
     def add_plot(
         self,
         plot_obj,
-        position: tuple = (0, 0),
+        position: tuple[int, int] = (0, 0),
         **kwargs,
     ) -> None:
         """Add 2D plot-data to a window.
@@ -122,7 +124,7 @@ class GraphicsWindow:
         return True
 
     @staticmethod
-    def _show_find_grid_size(points):
+    def _show_find_grid_size(points: Iterable[tuple[int, int]]) -> tuple[int, int]:
         # Extract x and y coordinates separately
         x_coords = {p[0] for p in points}
         y_coords = {p[1] for p in points}

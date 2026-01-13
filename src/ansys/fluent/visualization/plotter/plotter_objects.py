@@ -23,12 +23,12 @@
 """Module providing visualization objects for Matplotlib."""
 
 import sys
-from typing import Optional
 
 from ansys.fluent.interface.post_objects.meta import Command
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     MonitorDefn,
+    SurfaceDefn,
     XYPlotDefn,
 )
 from ansys.fluent.interface.post_objects.post_objects_container import (
@@ -46,7 +46,10 @@ class Plots(PlotsContainer):
     """
 
     def __init__(
-        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider=None
+        self,
+        session,
+        post_api_helper=PostAPIHelper,
+        local_surfaces_provider: SurfaceDefn | None = None,
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider
@@ -77,7 +80,7 @@ class XYPlot(XYPlotDefn):
     """
 
     @Command
-    def plot(self, window_id: Optional[str] = None):
+    def plot(self, window_id: str | None = None):
         """Draw XYPlot.
 
         Parameters
@@ -112,7 +115,7 @@ class MonitorPlot(MonitorDefn):
     """
 
     @Command
-    def plot(self, window_id: Optional[str] = None):
+    def plot(self, window_id: str | None = None):
         """Draw Monitor Plot.
 
         Parameters

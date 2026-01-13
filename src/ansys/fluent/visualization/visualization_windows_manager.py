@@ -26,7 +26,7 @@ PostWindowManager is container for VisualizationWindow.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Optional, Union
+from collections.abc import Sequence
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
@@ -47,7 +47,7 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
     """Abstract class for visualization windows management."""
 
     @abstractmethod
-    def open_window(self, window_id: Optional[str] = None) -> str:
+    def open_window(self, window_id: str | None = None) -> str:
         """Open new window.
 
         Parameters
@@ -64,7 +64,7 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
 
     @abstractmethod
     def set_object_for_window(
-        self, object: Union[GraphicsDefn, PlotDefn], window_id: str
+        self, object: GraphicsDefn | PlotDefn, window_id: str
     ) -> None:
         """Associate visualization object with running window instance.
 
@@ -86,8 +86,8 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
     @abstractmethod
     def plot(
         self,
-        object: Union[GraphicsDefn, PlotDefn],
-        window_id: Optional[str] = None,
+        object: GraphicsDefn | PlotDefn,
+        window_id: str | None = None,
     ) -> None:
         """Draw plot.
 
@@ -131,9 +131,9 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
     @abstractmethod
     def refresh_windows(
         self,
-        session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
-        overlay: Optional[bool] = False,
+        session_id: str | None = "",
+        windows_id: list[str] | None = [],
+        overlay: bool | None = False,
     ) -> None:
         """Refresh windows.
 
@@ -156,8 +156,8 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
     @abstractmethod
     def animate_windows(
         self,
-        session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        session_id: str | None = "",
+        windows_id: Sequence[str] | None = [],
     ) -> None:
         """Animate windows.
 
@@ -182,8 +182,8 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
     @abstractmethod
     def close_windows(
         self,
-        session_id: Optional[str] = "",
-        windows_id: Optional[List[str]] = [],
+        session_id: str | None = "",
+        windows_id: Sequence[str] | None = [],
     ) -> None:
         """Close windows.
 

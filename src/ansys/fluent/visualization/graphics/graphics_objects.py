@@ -23,9 +23,8 @@
 """Module providing visualization objects for PyVista."""
 
 import sys
-from typing import Optional
 
-from ansys.fluent.interface.post_objects.meta import Command
+from ansys.fluent.interface.post_objects.meta import Command, PyLocalContainer
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     ContourDefn,
@@ -49,7 +48,10 @@ class Graphics(GraphicsContainer):
     """
 
     def __init__(
-        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider=None
+        self,
+        session,
+        post_api_helper: type[PostAPIHelper] = PostAPIHelper,
+        local_surfaces_provider=None,
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider
@@ -80,7 +82,7 @@ class Mesh(MeshDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display mesh graphics.
 
         Parameters
@@ -112,7 +114,7 @@ class Pathlines(PathlinesDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display mesh graphics.
 
         Parameters
@@ -143,19 +145,21 @@ class Surface(SurfaceDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization import Graphics
-
-        graphics_session = Graphics(session)
-        surface1 = graphics_session.Surfaces["surface-1"]
-        surface1.definition.type = "iso-surface"
-        surface1.definition.iso_surface.field= "velocity-magnitude"
-        surface1.definition.iso_surface.rendering= "contour"
-        surface1.definition.iso_surface.iso_value = 0.0
-        surface1.display("window-0")
+        >>> from ansys.fluent.visualization import Graphics
+        >>>
+        >>> graphics_session = Graphics(session)
+        >>> surface1 = graphics_session.Surfaces["surface-1"]
+        >>> surface1.type = "iso-surface"
+        >>> surface1.iso_surface.field= "velocity-magnitude"
+        >>> surface1.iso_surface.rendering= "contour"
+        >>> surface1.iso_surface.iso_value = 0.0
+        >>> surface1.display("window-0")
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display surface graphics.
 
         Parameters
@@ -196,7 +200,9 @@ class Contour(ContourDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display contour graphics.
 
         Parameters
@@ -238,7 +244,9 @@ class Vector(VectorDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display vector graphics.
 
         Parameters
