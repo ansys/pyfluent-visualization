@@ -199,9 +199,11 @@ class Plots(Container):
     XYPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         XYPlot
     ]
-    MonitorPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        MonitorPlot
-    ]
+    MonitorPlots: (
+        PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+            MonitorPlot
+        ]
+    )
 
     def __init__(
         self,

@@ -494,7 +494,7 @@ class IsoSurface(Surface, abc.ABC):
         )
 
 
-class Contour( # pyright: ignore[reportUnsafeMultipleInheritance, reportIncompatibleVariableOverride]
+class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance, reportIncompatibleVariableOverride]
     _GraphicsContainer, ContourDefn if TYPE_CHECKING else object, abc.ABC
 ):
     """

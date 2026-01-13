@@ -545,7 +545,12 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     """Iso value range."""
                     field = self._parent.field()
                     if field:
-                        return cast(tuple[float, float], cast(object, self.field_data.scalar_fields.range(field, True)))
+                        return cast(
+                            tuple[float, float],
+                            cast(
+                                object, self.field_data.scalar_fields.range(field, True)
+                            ),
+                        )
 
 
 class ContourDefn(GraphicsDefn, abc.ABC):
