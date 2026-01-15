@@ -46,7 +46,7 @@ managing multiple visualization windows.
 
 ###############################################################################
 # Run the following in command prompt to execute this file:
-# exec(open("updated_script_manifold_example.py").read())
+# exec(open("post_processing_callbacks_and_animation.py").read())
 
 from ansys.fluent.visualization import config
 
