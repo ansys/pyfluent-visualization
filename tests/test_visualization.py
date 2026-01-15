@@ -532,7 +532,7 @@ def test_vector_attributes(new_solver_session_with_exhaust_case_and_data):
     assert len(velocity_vector.surfaces.allowed_values) == 13
 
 
-def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_data):
+def test_get_field_data_from_viz_object(new_solver_session_with_exhaust_case_and_data):
     solver = new_solver_session_with_exhaust_case_and_data
     mesh_surfaces_list = [
         "in1",
@@ -544,7 +544,7 @@ def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_d
         "solid_up:1:830-shadow",
     ]
     mesh = Mesh(solver=solver, show_edges=True, surfaces=mesh_surfaces_list)
-    assert len(mesh.get_raw_data()) == 7
+    assert len(mesh.get_field_data()) == 7
 
     surf_xy_plane = Surface(
         solver=solver,
@@ -552,17 +552,17 @@ def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_d
         creation_method="xy-plane",
         z=-0.0441921,
     )
-    temp_key = list(surf_xy_plane.get_raw_data().keys())[0]
+    temp_key = list(surf_xy_plane.get_field_data().keys())[0]
     assert isinstance(
-        surf_xy_plane.get_raw_data()[temp_key].vertices,
+        surf_xy_plane.get_field_data()[temp_key].vertices,
         np.ndarray,
     )
     surf_outlet_plane = Surface(solver=solver, type="iso-surface")
     surf_outlet_plane.field = "y-coordinate"
     surf_outlet_plane.iso_value = -0.125017
-    temp_key = list(surf_outlet_plane.get_raw_data().keys())[0]
+    temp_key = list(surf_outlet_plane.get_field_data().keys())[0]
     assert isinstance(
-        surf_outlet_plane.get_raw_data()[temp_key].connectivity,
+        surf_outlet_plane.get_field_data()[temp_key].connectivity,
         np.ndarray,
     )
 
@@ -573,7 +573,7 @@ def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_d
         rendering="contour",
         iso_value=0.0,
     )
-    assert surf_vel_contour.get_raw_data()
+    assert surf_vel_contour.get_field_data()
 
     cont_surfaces_list = [
         "in1",
@@ -589,7 +589,7 @@ def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_d
         surfaces=cont_surfaces_list,
     )
     assert (
-        list(temperature_contour_manifold.get_raw_data().keys()) == cont_surfaces_list
+        list(temperature_contour_manifold.get_field_data().keys()) == cont_surfaces_list
     )
 
     velocity_vector = Vector(
@@ -599,24 +599,24 @@ def test_get_raw_data_from_viz_object(new_solver_session_with_exhaust_case_and_d
         surfaces=["solid_up:1:830"],
         scale=20,
     )
-    assert velocity_vector.get_raw_data()["solid_up:1:830"] is not None
+    assert velocity_vector.get_field_data()["solid_up:1:830"] is not None
 
     pathlines = Pathline(
         solver=solver,
         field="velocity-magnitude",
         surfaces=["inlet", "inlet1", "inlet2"],
     )
-    assert list(pathlines.get_raw_data().keys()) == ["inlet", "inlet1", "inlet2"]
+    assert list(pathlines.get_field_data().keys()) == ["inlet", "inlet1", "inlet2"]
 
     xy_plot_object = XYPlot(
         solver=solver,
         surfaces=["outlet"],
         y_axis_function="temperature",
     )
-    assert isinstance(xy_plot_object.get_raw_data()["outlet"], np.ndarray)
+    assert isinstance(xy_plot_object.get_field_data()["outlet"], np.ndarray)
 
     residual = Monitor(solver=solver, monitor_set_name="residual")
-    assert list(residual.get_raw_data()[1].keys()) == [
+    assert list(residual.get_field_data()[1].keys()) == [
         "continuity",
         "x-velocity",
         "y-velocity",

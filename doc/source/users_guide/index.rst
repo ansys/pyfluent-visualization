@@ -324,6 +324,44 @@ are closed safely and consistently when the code block finishes. It also
 helps maintain clean, predictable behavior in larger automated
 post-processing workflows.
 
+Get Field data from Graphics objects
+------------------------------------
+PyFluent-Visualization provides the ``get_field_data()`` method to extract the 
+underlying field data from graphics objects. This method returns the raw numerical 
+data used to generate visualizations, enabling further post-processing, custom 
+analysis, or data export workflows.
+
+For example, to extract field data from a velocity vector object:
+
+.. code-block:: python
+
+    from ansys.fluent.visualization import Vector
+    from ansys.fluent.core.solver import WallBoundary
+    from ansys.units import VariableCatalog
+
+    # Create a velocity vector visualization
+    velocity_vector = Vector(
+        solver=solver_session,
+        field=VariableCatalog.VELOCITY_X,
+        surfaces=[WallBoundary(settings_source=solver_session, name="solid_up:1:830")],
+        scale=20,
+    )
+
+    # Extract the underlying field data
+    field_data = velocity_vector.get_field_data()
+
+    # Access individual components
+    vertices = field_data['vertices']  # Array of [x, y, z] coordinates
+    faces = field_data['faces']        # Surface connectivity information
+
+This is particularly useful when you need to:
+
+- Perform custom calculations on the visualization data
+- Export field data to external analysis tools
+- Create custom plots using external plotting libraries
+- Validate or compare numerical results
+
+
 This guide provides a structured approach to using PyFluent-Visualization.
 For detailed usage of individual modules,
 refer to the respective module documentation, see :ref:`ref_visualization`.
