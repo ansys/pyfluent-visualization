@@ -28,7 +28,7 @@ import types
 from typing import Any, Callable, ClassVar, Literal, TypeVar
 
 from ansys.fluent.core.session import BaseSession
-from numpy import isin
+from ansys.fluent.core.session_solver import Solver
 from typing_extensions import TypeIs
 
 from ansys.fluent.interface.post_objects.meta import (
@@ -73,7 +73,7 @@ class Container:
 
     def __init__(
         self,
-        session: BaseSession,
+        session: Solver,
         module: types.ModuleType,
         post_api_helper: type[PostAPIHelper],
         local_surfaces_provider: LocalSurfacesProvider | None = None,
@@ -141,26 +141,23 @@ class Container:
                 cont = PyLocalContainer(self, cls, post_api_helper, cls.PLURAL)
 
                 # Define a method to add a "create" function to the container
-                def _add_create(py_cont: PyLocalContainer):
-                    def _create(**kwargs):
-                        new_object = py_cont[py_cont._get_unique_chid_name()]
-                        new_object.__call__
-                        # Validate that all kwargs are valid attributes for the object
-                        unexpected_args = set(kwargs) - set(new_object())
-                        if unexpected_args:
-                            raise TypeError(
-                                f"create() got an unexpected keyword argument '{next(iter(unexpected_args))}'."  # noqa: E501
-                            )
-                        for key, value in kwargs.items():
-                            if key == "surfaces":
-                                value = list(value)
-                            setattr(new_object, key, value)
-                        return new_object
-
-                    return _create
+                def _create(**kwargs):
+                    new_object = cont[cont._get_unique_child_name()]
+                    new_object.__call__
+                    # Validate that all kwargs are valid attributes for the object
+                    unexpected_args = set(kwargs) - set(new_object())
+                    if unexpected_args:
+                        raise TypeError(
+                            f"create() got an unexpected keyword argument '{next(iter(unexpected_args))}'."  # noqa: E501
+                        )
+                    for key, value in kwargs.items():
+                        if key == "surfaces":
+                            value = list(value)
+                        setattr(new_object, key, value)
+                    return new_object
 
                 # Attach the create method to the container
-                setattr(cont, "create", _add_create(cont))
+                setattr(cont, "create", _create)
                 # Attach the container to the parent object
                 setattr(
                     obj,
@@ -199,11 +196,9 @@ class Plots(Container):
     XYPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         XYPlot
     ]
-    MonitorPlots: (
-        PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-            MonitorPlot
-        ]
-    )
+    MonitorPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+        MonitorPlot
+    ]
 
     def __init__(
         self,
