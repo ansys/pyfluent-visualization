@@ -22,6 +22,7 @@
 
 """Metaclasses used in various explicit classes in PyFluent."""
 
+from abc import ABC, abstractmethod
 import inspect
 from collections.abc import Callable, Iterator, MutableMapping, Sequence
 from typing import (
@@ -539,7 +540,7 @@ class PyLocalObject(PyLocalBase[ParentT]):
 CallKwargs = TypeVar("CallKwargs", bound=TypedDict)
 
 
-class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
+class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs], ABC):
     """Local object metaclass."""
 
     def __init__(self, parent: ParentT, api_helper: type[PostAPIHelper], name: str = ""):
@@ -549,9 +550,13 @@ class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs]):
         self.type = "object"
         self._args = []
         self._command_names = []
-        self._exe_cmd = getattr(self, "_exe_cmd")
 
-    def _update(cls):
+    @abstractmethod
+    def _exe_cmd(self, **kwargs: Unpack[CallKwargs]) -> Any:
+        """Execute command."""
+        raise NotImplementedError("not implemented")
+
+    def _update(self, api_helper: type[PostAPIHelper]) -> None:
         def update(clss) -> None:
             for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
                 if issubclass(cls, PyLocalProperty):
@@ -764,6 +769,7 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
     class Delete(PyLocalCommand["PyLocalContainer", _DeleteKwargs]):
         """Local delete command."""
 
+        @override
         def _exe_cmd(self, names: list[str]) -> None:
             for item in names:
                 self._parent.__delitem__(item)
@@ -782,10 +788,11 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
     class Create(PyLocalCommand["PyLocalContainer", _CreateKwargs]):
         """Local create command."""
 
+        @override
         def _exe_cmd(self, name: str | None = None):
             if name is None:
                 name = self._parent._get_unique_child_name()
-            new_object = self._parent.__getitem__(name)
+            new_object = self._parent[name]
             return new_object._name
 
         @if_type_checking_instantiate
