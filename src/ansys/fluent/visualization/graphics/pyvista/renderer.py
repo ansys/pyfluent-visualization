@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Module for pyVista windows management."""
+
 import numpy as np
 import pyvista as pv
 

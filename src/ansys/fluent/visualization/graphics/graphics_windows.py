@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
+
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 

@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
+
 import warnings
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
