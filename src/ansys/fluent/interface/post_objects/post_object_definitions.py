@@ -23,15 +23,13 @@
 """Module providing visualization objects definition."""
 
 import abc
+import logging
 from abc import abstractmethod
 from collections.abc import Callable, Sequence
-import logging
 from typing import (
     TYPE_CHECKING,
     Literal,
-    NamedTuple,
     Protocol,
-    Self,
     TypeAlias,
     cast,
     final,
@@ -115,7 +113,7 @@ class MonitorDefn(PlotDefn, abc.ABC):
 
     @final
     @if_type_checking_instantiate
-    class monitor_set_name(PyLocalProperty[str | None]):
+    class monitor_set_name(PyLocalProperty["MonitorDefn", str | None]):
         """Monitor set name."""
 
         value = None
@@ -133,28 +131,28 @@ class XYPlotDefn(PlotDefn, abc.ABC):
 
     @final
     @if_type_checking_instantiate
-    class node_values(PyLocalProperty[bool]):
+    class node_values(PyLocalProperty["XYPlotDefn", bool]):
         """Plot nodal values."""
 
         value = True
 
     @final
     @if_type_checking_instantiate
-    class boundary_values(PyLocalProperty[bool]):
+    class boundary_values(PyLocalProperty["XYPlotDefn", bool]):
         """Plot Boundary values."""
 
         value = True
 
     @final
     @if_type_checking_instantiate
-    class direction_vector(PyLocalProperty[tuple[int, int, int]]):
+    class direction_vector(PyLocalProperty["XYPlotDefn", tuple[int, int, int]]):
         """Direction Vector."""
 
         value = (1, 0, 0)
 
     @final
     @if_type_checking_instantiate
-    class y_axis_function(PyLocalProperty[str | None]):
+    class y_axis_function(PyLocalProperty["XYPlotDefn", str | None]):
         """Y Axis Function."""
 
         value = None
@@ -166,7 +164,7 @@ class XYPlotDefn(PlotDefn, abc.ABC):
 
     @final
     @if_type_checking_instantiate
-    class x_axis_function(PyLocalProperty[Literal["direction-vector"]]):
+    class x_axis_function(PyLocalProperty["XYPlotDefn", Literal["direction-vector"]]):
         """X Axis Function."""
 
         value = "direction-vector"
@@ -177,7 +175,7 @@ class XYPlotDefn(PlotDefn, abc.ABC):
             return ["direction-vector"]
 
     @if_type_checking_instantiate
-    class surfaces(PyLocalProperty[list[str]]):
+    class surfaces(PyLocalProperty["XYPlotDefn", list[str]]):
         """List of surfaces for plotting."""
 
         value = []
@@ -196,7 +194,7 @@ class MeshDefn(GraphicsDefn, abc.ABC):
     PLURAL = "Meshes"
 
     @if_type_checking_instantiate
-    class surfaces(PyLocalProperty[list[str]]):
+    class surfaces(PyLocalProperty["MeshDefn", list[str]]):
         """List of surfaces for mesh graphics."""
 
         value = []
@@ -209,19 +207,19 @@ class MeshDefn(GraphicsDefn, abc.ABC):
             )
 
     @if_type_checking_instantiate
-    class show_edges(PyLocalProperty[bool]):
+    class show_edges(PyLocalProperty["MeshDefn", bool]):
         """Show edges for mesh."""
 
         value = False
 
     @if_type_checking_instantiate
-    class show_nodes(PyLocalProperty[bool]):
+    class show_nodes(PyLocalProperty["MeshDefn", bool]):
         """Show nodes for mesh."""
 
         value = False
 
     @if_type_checking_instantiate
-    class show_faces(PyLocalProperty[bool]):
+    class show_faces(PyLocalProperty["MeshDefn", bool]):
         """Show faces for mesh."""
 
         value = True
@@ -233,7 +231,7 @@ class PathlinesDefn(GraphicsDefn, abc.ABC):
     PLURAL = "Pathlines"
 
     @if_type_checking_instantiate
-    class field(PyLocalProperty[str | None]):
+    class field(PyLocalProperty["PathlinesDefn", str | None]):
         """Pathlines field."""
 
         value = None
@@ -244,7 +242,7 @@ class PathlinesDefn(GraphicsDefn, abc.ABC):
             return list(self.field_data.scalar_fields())
 
     @if_type_checking_instantiate
-    class surfaces(PyLocalProperty[list[str]]):
+    class surfaces(PyLocalProperty["PathlinesDefn", list[str]]):
         """List of surfaces for pathlines."""
 
         value = []
@@ -268,7 +266,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
         return self._name
 
     @if_type_checking_instantiate
-    class show_edges(PyLocalProperty[bool]):
+    class show_edges(PyLocalProperty["SurfaceDefn", bool]):
         """Show edges for surface."""
 
         value = True
@@ -278,7 +276,9 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
 
         @final
         @if_type_checking_instantiate
-        class type(PyLocalProperty[Literal["plane-surface", "iso-surface"]]):
+        class type(
+            PyLocalProperty["definition", Literal["plane-surface", "iso-surface"]]
+        ):
             """Surface type."""
 
             value = "iso-surface"
@@ -303,7 +303,8 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
             @if_type_checking_instantiate
             class creation_method(
                 PyLocalProperty[
-                    Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
+                    "plane_surface",
+                    Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"],
                 ]
             ):
                 """Creation Method."""
@@ -329,7 +330,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     return self._parent.creation_method() == "point-and-normal"
 
                 @if_type_checking_instantiate
-                class x(PyLocalProperty[float]):
+                class x(PyLocalProperty["point", float]):
                     """X value."""
 
                     value = 0
@@ -348,7 +349,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                         )
 
                 @if_type_checking_instantiate
-                class y(PyLocalProperty[float]):
+                class y(PyLocalProperty["point", float]):
                     """Y value."""
 
                     value = 0
@@ -367,7 +368,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                         )
 
                 @if_type_checking_instantiate
-                class z(PyLocalProperty[float]):
+                class z(PyLocalProperty["point", float]):
                     """Z value."""
 
                     value = 0
@@ -395,7 +396,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     return self._parent.creation_method() == "point-and-normal"
 
                 @if_type_checking_instantiate
-                class x(PyLocalProperty[float]):
+                class x(PyLocalProperty["normal", float]):
                     """X value."""
 
                     value = 0
@@ -406,7 +407,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                         return [-1, 1]
 
                 @if_type_checking_instantiate
-                class y(PyLocalProperty[float]):
+                class y(PyLocalProperty["normal", float]):
                     """Y value."""
 
                     value = 0
@@ -417,7 +418,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                         return [-1, 1]
 
                 @if_type_checking_instantiate
-                class z(PyLocalProperty[float]):
+                class z(PyLocalProperty["normal", float]):
                     """Z value."""
 
                     value = 0
@@ -437,7 +438,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     return self._parent.creation_method() == "xy-plane"
 
                 @if_type_checking_instantiate
-                class z(PyLocalProperty[float]):
+                class z(PyLocalProperty["xy_plane", float]):
                     """Z value."""
 
                     value = 0
@@ -457,7 +458,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     return self._parent.creation_method() == "yz-plane"
 
                 @if_type_checking_instantiate
-                class x(PyLocalProperty[float]):
+                class x(PyLocalProperty["yz_plane", float]):
                     """X value."""
 
                     value = 0
@@ -477,7 +478,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     return self._parent.creation_method() == "zx-plane"
 
                 @if_type_checking_instantiate
-                class y(PyLocalProperty[float]):
+                class y(PyLocalProperty["zx_plane", float]):
                     """Y value."""
 
                     value = 0
@@ -497,7 +498,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                 return self._parent.type() == "iso-surface"
 
             @if_type_checking_instantiate
-            class field(PyLocalProperty[str | None]):
+            class field(PyLocalProperty["iso_surface", str | None]):
                 """Iso surface field."""
 
                 value = None
@@ -509,7 +510,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
 
             @final
             @if_type_checking_instantiate
-            class rendering(PyLocalProperty[Literal["mesh", "contour"]]):
+            class rendering(PyLocalProperty["iso_surface", Literal["mesh", "contour"]]):
                 """Iso surface rendering."""
 
                 value = "mesh"
@@ -520,7 +521,7 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     return ["mesh", "contour"]
 
             @if_type_checking_instantiate
-            class iso_value(PyLocalProperty[float | None]):
+            class iso_value(PyLocalProperty["iso_surface", float | None]):
                 """Iso value for field."""
 
                 _value = None
@@ -559,7 +560,7 @@ class ContourDefn(GraphicsDefn, abc.ABC):
     PLURAL = "Contours"
 
     @if_type_checking_instantiate
-    class field(PyLocalProperty[str | None]):
+    class field(PyLocalProperty["ContourDefn", str | None]):
         """Contour field."""
 
         value = None
@@ -570,7 +571,7 @@ class ContourDefn(GraphicsDefn, abc.ABC):
             return list(self.field_data.scalar_fields())
 
     @if_type_checking_instantiate
-    class surfaces(PyLocalProperty[list[str]]):
+    class surfaces(PyLocalProperty["ContourDefn", list[str]]):
         """Contour surfaces."""
 
         value = []
@@ -583,13 +584,13 @@ class ContourDefn(GraphicsDefn, abc.ABC):
             )
 
     @if_type_checking_instantiate
-    class filled(PyLocalProperty[bool]):
+    class filled(PyLocalProperty["ContourDefn", bool]):
         """Draw filled contour."""
 
         value = True
 
     @if_type_checking_instantiate
-    class node_values(PyLocalProperty[bool]):
+    class node_values(PyLocalProperty["ContourDefn", bool]):
         """Draw nodal data."""
 
         _value = True
@@ -624,19 +625,19 @@ class ContourDefn(GraphicsDefn, abc.ABC):
             self._value = value
 
     @if_type_checking_instantiate
-    class boundary_values(PyLocalProperty[bool]):
+    class boundary_values(PyLocalProperty["ContourDefn", bool]):
         """Draw boundary values."""
 
         value = False
 
     @if_type_checking_instantiate
-    class contour_lines(PyLocalProperty[bool]):
+    class contour_lines(PyLocalProperty["ContourDefn", bool]):
         """Draw contour lines."""
 
         value = False
 
     @if_type_checking_instantiate
-    class show_edges(PyLocalProperty[bool]):
+    class show_edges(PyLocalProperty["ContourDefn", bool]):
         """Show edges."""
 
         value = False
@@ -646,7 +647,9 @@ class ContourDefn(GraphicsDefn, abc.ABC):
 
         @final
         @if_type_checking_instantiate
-        class option(PyLocalProperty[Literal["auto-range-on", "auto-range-off"]]):
+        class option(
+            PyLocalProperty["range", Literal["auto-range-on", "auto-range-off"]]
+        ):
             """Range option."""
 
             value = "auto-range-on"
@@ -668,7 +671,7 @@ class ContourDefn(GraphicsDefn, abc.ABC):
                 return self._parent.option() == "auto-range-on"
 
             @if_type_checking_instantiate
-            class global_range(PyLocalProperty[bool]):
+            class global_range(PyLocalProperty["auto_range_on", bool]):
                 """Show global range."""
 
                 value = False
@@ -683,13 +686,13 @@ class ContourDefn(GraphicsDefn, abc.ABC):
                 return self._parent.option() == "auto-range-off"
 
             @if_type_checking_instantiate
-            class clip_to_range(PyLocalProperty[bool]):
+            class clip_to_range(PyLocalProperty["auto_range_off", bool]):
                 """Clip contour within range."""
 
                 value = False
 
             @if_type_checking_instantiate
-            class minimum(PyLocalProperty[float | None]):
+            class minimum(PyLocalProperty["auto_range_off", float | None]):
                 """Range minimum."""
 
                 _value = None
@@ -720,7 +723,7 @@ class ContourDefn(GraphicsDefn, abc.ABC):
                     self._value = value
 
             @if_type_checking_instantiate
-            class maximum(PyLocalProperty[float | None]):
+            class maximum(PyLocalProperty["auto_range_off", float | None]):
                 """Range maximum."""
 
                 _value = None
@@ -758,7 +761,7 @@ class VectorDefn(GraphicsDefn, abc.ABC):
     PLURAL = "Vectors"
 
     @if_type_checking_instantiate
-    class vectors_of(PyLocalProperty[str | None]):
+    class vectors_of(PyLocalProperty["VectorDefn", str | None]):
         """Vector type."""
 
         value = None
@@ -769,7 +772,7 @@ class VectorDefn(GraphicsDefn, abc.ABC):
             return list(self.field_data.vector_fields())
 
     @if_type_checking_instantiate
-    class field(PyLocalProperty[str | None]):
+    class field(PyLocalProperty["VectorDefn", str | None]):
         """Vector color field."""
 
         value = None
@@ -780,7 +783,7 @@ class VectorDefn(GraphicsDefn, abc.ABC):
             return list(self.field_data.scalar_fields())
 
     @if_type_checking_instantiate
-    class surfaces(PyLocalProperty[list[str]]):
+    class surfaces(PyLocalProperty["VectorDefn", list[str]]):
         """List of surfaces for vector graphics."""
 
         value = []
@@ -793,19 +796,19 @@ class VectorDefn(GraphicsDefn, abc.ABC):
             )
 
     @if_type_checking_instantiate
-    class scale(PyLocalProperty[float]):
+    class scale(PyLocalProperty["VectorDefn", float]):
         """Vector scale."""
 
         value = 1.0
 
     @if_type_checking_instantiate
-    class skip(PyLocalProperty[int]):
+    class skip(PyLocalProperty["VectorDefn", int]):
         """Vector skip."""
 
         value = 0
 
     @if_type_checking_instantiate
-    class show_edges(PyLocalProperty[bool]):
+    class show_edges(PyLocalProperty["VectorDefn", bool]):
         """Show edges."""
 
         value = False
@@ -816,7 +819,9 @@ class VectorDefn(GraphicsDefn, abc.ABC):
 
         @final
         @if_type_checking_instantiate
-        class option(PyLocalProperty[Literal["auto-range-on", "auto-range-off"]]):
+        class option(
+            PyLocalProperty["range", Literal["auto-range-on", "auto-range-off"]]
+        ):
             """Range option."""
 
             value = "auto-range-on"
@@ -838,7 +843,7 @@ class VectorDefn(GraphicsDefn, abc.ABC):
                 return self._parent.option() == "auto-range-on"
 
             @if_type_checking_instantiate
-            class global_range(PyLocalProperty[bool]):
+            class global_range(PyLocalProperty["auto_range_on", bool]):
                 """Show global range."""
 
                 value = False
@@ -853,13 +858,13 @@ class VectorDefn(GraphicsDefn, abc.ABC):
                 return self._parent.option() == "auto-range-off"
 
             @if_type_checking_instantiate
-            class clip_to_range(PyLocalProperty[bool]):
+            class clip_to_range(PyLocalProperty["auto_range_off", bool]):
                 """Clip vector within range."""
 
                 value = False
 
             @if_type_checking_instantiate
-            class minimum(PyLocalProperty[float | None]):
+            class minimum(PyLocalProperty["auto_range_off", float | None]):
                 """Range minimum."""
 
                 _value = None
@@ -881,7 +886,7 @@ class VectorDefn(GraphicsDefn, abc.ABC):
                     self._value = value
 
             @if_type_checking_instantiate
-            class maximum(PyLocalProperty[float | None]):
+            class maximum(PyLocalProperty["auto_range_off", float | None]):
                 """Range maximum."""
 
                 _value = None

@@ -36,6 +36,7 @@ from ansys.fluent.interface.post_objects.meta import (
     PyLocalNamedObject,
 )
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
+from ansys.fluent.interface.post_objects.post_object_definitions import ContourDefn, MeshDefn, SurfaceDefn, VectorDefn
 from ansys.fluent.visualization import Contour, Surface, Vector
 from ansys.fluent.visualization.containers import Pathline
 from ansys.fluent.visualization.graphics.graphics_objects import Mesh
@@ -202,8 +203,8 @@ class Plots(Container):
 
     def __init__(
         self,
-        session,
-        module,
+        session: Solver,
+        module: types.ModuleType,
         post_api_helper: type[PostAPIHelper],
         local_surfaces_provider: LocalSurfacesProvider | None = None,
     ):
@@ -241,18 +242,19 @@ class Graphics(Container):
         Container for vector objects.
     """
 
+    # TODO double triple check these local container types are correct cause something seems off vs Mesh 
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
     Meshes: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        Mesh
+        MeshDefn
     ]
     Surfaces: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        Surface
+        SurfaceDefn
     ]
     Contours: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        Contour
+        ContourDefn
     ]
     Vectors: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        Vector
+        VectorDefn
     ]
     Pathlines: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         Pathline
@@ -260,7 +262,7 @@ class Graphics(Container):
 
     def __init__(
         self,
-        session: BaseSession,
+        session: Solver,
         module: types.ModuleType,
         post_api_helper: type[PostAPIHelper],
         local_surfaces_provider: LocalSurfacesProvider | None = None,
@@ -268,7 +270,7 @@ class Graphics(Container):
         """__init__ method of Graphics class."""
         super().__init__(session, module, post_api_helper, local_surfaces_provider)
 
-    def add_outline_mesh(self) -> Mesh | None:
+    def add_outline_mesh(self) -> MeshDefn | None:
         """Add a mesh outline.
 
         Returns

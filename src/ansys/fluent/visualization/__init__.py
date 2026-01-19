@@ -22,29 +22,7 @@
 
 """Python post processing integrations for the Fluent solver."""
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
-
-_VERSION_INFO = None
-__version__ = importlib_metadata.version(__name__.replace(".", "-"))
-
-
-def version_info() -> str:
-    """Method returning the version of PyFluent being used.
-
-    Returns
-    -------
-    str
-        The PyFluent version being used.
-
-    Notes
-    -----
-        Only available in packaged versions. Otherwise it will return __version__.
-    """
-    return _VERSION_INFO if _VERSION_INFO is not None else __version__
-
+from importlib.metadata import version as _version
 
 from ansys.fluent.visualization.config import config as config
 from ansys.fluent.visualization.config import get_config as get_config
@@ -62,3 +40,24 @@ from ansys.fluent.visualization.graphics import Graphics as Graphics
 from ansys.fluent.visualization.plotter import Plots as Plots
 from ansys.fluent.visualization.registrar import register_renderer as register_renderer
 from ansys.fluent.visualization.renderer import GraphicsWindow as GraphicsWindow
+
+
+_VERSION_INFO = None
+__version__ = _version(__name__.replace(".", "-"))
+
+
+def version_info() -> str:
+    """Method returning the version of PyFluent being used.
+
+    Returns
+    -------
+    str
+        The PyFluent version being used.
+
+    Notes
+    -----
+        Only available in packaged versions. Otherwise it will return __version__.
+    """
+    return _VERSION_INFO if _VERSION_INFO is not None else __version__
+
+

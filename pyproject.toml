@@ -81,6 +81,7 @@ skips = [
     ]
 
 [tool.basedpyright]
+reportAny = false
 reportUnknownMemberType = false
 reportExplicitAny = false
 reportPrivateUsage = false
@@ -88,3 +89,4 @@ reportUnusedCallResult = false
 reportUnannotatedClassAttribute = false
 reportPrivateImportUsage = false
 ignore = ["doc"]
+reportMissingTypeStubs=false

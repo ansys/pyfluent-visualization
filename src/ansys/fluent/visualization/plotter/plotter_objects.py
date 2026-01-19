@@ -32,6 +32,7 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
     XYPlotDefn,
 )
 from ansys.fluent.interface.post_objects.post_objects_container import (
+    LocalSurfacesProvider,
     Plots as PlotsContainer,
 )
 from ansys.fluent.visualization.plotter.plotter_windows_manager import (
@@ -48,8 +49,8 @@ class Plots(PlotsContainer):
     def __init__(
         self,
         session,
-        post_api_helper=PostAPIHelper,
-        local_surfaces_provider: SurfaceDefn | None = None,
+        post_api_helper: type[PostAPIHelper]=PostAPIHelper,
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider

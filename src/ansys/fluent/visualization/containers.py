@@ -26,10 +26,10 @@
 """Containers for graphics."""
 
 import abc
-from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
+    Generic,
     Literal,
     Self,
     TypedDict,
@@ -40,37 +40,42 @@ import warnings
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
 from ansys.units import VariableDescriptor
-from typing_extensions import override
+from typing_extensions import TypeVar, override
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
 
 if TYPE_CHECKING:
-    from ansys.fluent.core.session import BaseSession
     from ansys.fluent.core.session_solver import Solver
 
     from ansys.fluent.interface.post_objects.meta import _DeleteKwargs
     from ansys.fluent.interface.post_objects.post_object_definitions import (
         ContourDefn,
         Defns,
-        GraphicsDefn,
         MonitorDefn,
         SurfaceDefn,
         VectorDefn,
+        MeshDefn,
+        PathlinesDefn,
+        XYPlotDefn,
     )
     from ansys.fluent.interface.post_objects.post_objects_container import Container
 
+DefnT = TypeVar("DefnT", bound="Defns", default="Defns")
 
-class _GraphicsContainer:
+
+class _GraphicsContainer(Generic[DefnT]):
     """Base class for graphics containers."""
 
-    solver: BaseSession  # pyright: ignore[reportUninitializedInstanceVariable]
-    _obj: Defns  # pyright: ignore[reportUninitializedInstanceVariable]
+    kwargs: dict[str, Any]  # pyright: ignore[reportUninitializedInstanceVariable]
+    solver: Solver  # pyright: ignore[reportUninitializedInstanceVariable]
+    _obj: DefnT  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    def __init__(self, solver: BaseSession | None, **kwargs: Any):
+    def __init__(self, solver: Solver | None, **kwargs: Any):
+        super().__init__()
         self.__dict__["solver"] = solver or _get_active_session()
         self.__dict__["kwargs"] = kwargs
-        if self.solver is None:
+        if self.solver is None:  # pyright: ignore[reportUnnecessaryComparison]
             raise RuntimeError("No solver session provided and none found in context.")
         if "field" in self.kwargs:
             self.kwargs["field"] = kwargs["field"] = _to_field_name_str(
@@ -84,12 +89,10 @@ class _GraphicsContainer:
     if TYPE_CHECKING:
         # we have these due to inheriting from the ABCs at type time but the attributes coming from ._obj
         # the type checker thinks they aren't valid to instantiate otherwise
-        def get_root(self) -> Container: ...
-        def display(self, window_id: str | None = None) -> None: ...
+        def get_root(self, instance: object = None) -> Container: ...  # pyright: ignore[reportUnusedParameter]
+        def display(self, window_id: str | None = None) -> None: ...# pyright: ignore[reportUnusedParameter]
 
-        surfaces: Callable[
-            [], list[str]
-        ]  # pyright: ignore[reportUninitializedInstanceVariable]
+        surfaces: Any  # pyright: ignore[reportUninitializedInstanceVariable]
     else:
 
         def __getattr__(self, attr):
@@ -106,9 +109,9 @@ class _GraphicsContainer:
         return sorted(set(super().__dir__()) | set(dir(self._obj)))
 
 
-class Mesh(
-    _GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC
-):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Mesh(  # pyright: ignore[reportUnsafeMultipleInheritance]
+    _GraphicsContainer["MeshDefn"], MeshDefn if TYPE_CHECKING else object, abc.ABC
+):
     """Mesh visualization object.
 
     Creates a Fluent mesh graphic object on the specified surfaces.
@@ -139,14 +142,12 @@ class Mesh(
     >>> )
     """
 
-    _obj: GraphicsDefn
-
     def __init__(
         self,
         *,
         surfaces: list[str],
         show_edges: bool = False,
-        solver: BaseSession | None = None,
+        solver: Solver | None = None,
         **kwargs: Unpack[_DeleteKwargs],
     ):
         """__init__ method of Mesh class."""
@@ -159,27 +160,34 @@ class Mesh(
                 "show_edges": show_edges,
             },
         )
-        self.__dict__["_obj"] = Graphics(session=self.solver).Meshes.create(
-            **self.kwargs
+        super().__setattr__(
+            "_obj", Graphics(session=self.solver).Meshes.create(**self.kwargs)
         )
 
 
-class SurfaceKwargs(TypedDict, total=False):
-    type: str | None
-    creation_method: str | None
-    x: float | None
-    y: float | None
-    z: float | None
-    field: str | VariableDescriptor | None
-    iso_value: float | None
-    rendering: str | None
-    point: tuple[float, float, float] | None
-    normal: tuple[float, float, float] | None
+SurfaceType = Literal['plane-surface', 'iso-surface']
+SurfaceCreationMethod = Literal[
+    'xy-plane', 'yz-plane', 'zx-plane', 'point-and-normal'
+]
+SurfaceRendering = Literal['mesh', 'contour']
 
+class SurfaceKwargsNoType(TypedDict, total=False):
+    creation_method: SurfaceCreationMethod
+    x: float
+    y: float
+    z: float
+    field: str | VariableDescriptor
+    iso_value: float
+    rendering: SurfaceRendering
+    point: tuple[float, float, float]
+    normal: tuple[float, float, float]
 
-class Surface(
-    _GraphicsContainer, SurfaceDefn if TYPE_CHECKING else object, abc.ABC
-):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class SurfaceKwargs(SurfaceKwargsNoType):
+    type: SurfaceType
+
+class Surface(  # pyright: ignore[reportUnsafeMultipleInheritance]
+    _GraphicsContainer["SurfaceDefn"], SurfaceDefn if TYPE_CHECKING else object, abc.ABC
+):
     """Surface definition for Fluent post-processing.
 
     The ``Surface`` class represents any Fluent surface generated for
@@ -228,46 +236,54 @@ class Surface(
     >>> surf_outlet_plane.iso_value = -0.125017
     """
 
-    _obj: SurfaceDefn
-
     def __init__(
-        self, *, solver: BaseSession | None = None, **kwargs: Unpack[SurfaceKwargs]
+        self, *, solver: Solver | None = None, **kwargs: Unpack[SurfaceKwargs]
     ):
         """__init__ method of Surface class."""
         super().__init__(solver, **kwargs)
         super().__setattr__(
-            "_obj", Graphics(session=self.solver).Surfaces.create(**kwargs)
+            "_obj", Graphics(session=self.solver).Surfaces.create(**self.kwargs)
         )
-        self.type = kwargs.get("type")
-        self.creation_method = kwargs.get("creation_method")
-        self.x = kwargs.get("x")
-        self.y = kwargs.get("y")
-        self.z = kwargs.get("z")
-        self.field = kwargs.get("field")
-        self.iso_value = kwargs.get("iso_value")
-        self.rendering = kwargs.get("rendering")
-        self.point = kwargs.get("point")
-        self.normal = kwargs.get("normal")
+        self.type = kwargs["type"]
+        if "creation_method" in kwargs:
+            self.creation_method = kwargs["creation_method"]
+        if "x" in kwargs:
+            self.x = kwargs["x"]
+        if "y" in kwargs:
+            self.y = kwargs["y"]
+        if "z" in kwargs:
+            self.z = kwargs["z"]
+        if "field" in kwargs:
+            self.field = kwargs["field"]
+        if "iso_value" in kwargs:
+            self.iso_value = kwargs["iso_value"]
+        if "rendering" in kwargs:
+            self.rendering = kwargs["rendering"]
+        if "point" in kwargs:
+            self.point = kwargs["point"]
+        if "normal" in kwargs:
+            self.normal = kwargs["normal"]
 
     @property
-    def type(self) -> Literal["plane-surface", "iso-surface"]:
+    @override
+    def type(self) -> SurfaceType:
         """Surface definition type."""
         return self._obj.definition.type()
 
     @type.setter
-    def type(self, value: Literal["plane-surface", "iso-surface"]) -> None:
+    def type(self, value: SurfaceType) -> None:
         self._obj.definition.type = value
 
     @property
     def creation_method(
         self,
-    ) -> Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]:
+    ) -> SurfaceCreationMethod:
         """Plane surface creation method."""
         return self._obj.definition.plane_surface.creation_method()
 
     @creation_method.setter
     def creation_method(
-        self, value: Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
+        self, value: SurfaceCreationMethod
     ) -> None:
         self._obj.definition.plane_surface.creation_method = value
 
@@ -323,12 +339,12 @@ class Surface(
         self._obj.definition.iso_surface.iso_value = value
 
     @property
-    def rendering(self) -> Literal["mesh", "contour"]:
+    def rendering(self) -> SurfaceRendering:
         """Iso-surface rendering method."""
         return self._obj.definition.iso_surface.rendering()
 
     @rendering.setter
-    def rendering(self, value: Literal["mesh", "contour"]) -> None:
+    def rendering(self, value: SurfaceRendering) -> None:
         self._obj.definition.iso_surface.rendering = value
 
     @property
@@ -383,7 +399,7 @@ class PlaneSurface(Surface, abc.ABC):
 
     @classmethod
     def create_xy_plane(
-        cls, *, solver: BaseSession | None = None, z: float = 0.0, **kwargs: Any
+        cls, *, solver: Solver | None = None, z: float = 0.0, **kwargs: Any
     ) -> Self:
         """Create a plane surface in the XY plane at a given Z value."""
         return cls(
@@ -396,7 +412,7 @@ class PlaneSurface(Surface, abc.ABC):
 
     @classmethod
     def create_yz_plane(
-        cls, solver: BaseSession | None = None, x: float = 0.0, **kwargs: Any
+        cls, solver: Solver | None = None, x: float = 0.0, **kwargs: Any
     ) -> Self:
         """Create a plane surface in the YZ plane at a given X value."""
         return cls(
@@ -409,7 +425,7 @@ class PlaneSurface(Surface, abc.ABC):
 
     @classmethod
     def create_zx_plane(
-        cls, solver: BaseSession | None = None, y: float = 0.0, **kwargs: Any
+        cls, solver: Solver | None = None, y: float = 0.0, **kwargs: Any
     ):
         """Create a plane surface in the ZX plane at a given Y value."""
         return cls(
@@ -423,7 +439,7 @@ class PlaneSurface(Surface, abc.ABC):
     @classmethod
     def create_from_point_and_normal(
         cls,
-        solver: BaseSession | None = None,
+        solver: Solver | None = None,
         point: tuple[float, float, float] = (0, 0, 0),
         normal: tuple[float, float, float] = (0, 0, 0),
         **kwargs: Any,
@@ -477,25 +493,21 @@ class IsoSurface(Surface, abc.ABC):
 
     def __init__(
         self,
-        solver: BaseSession | None = None,
-        field: str | VariableDescriptor | None = None,
-        rendering: str | None = None,
-        iso_value: float | None = None,
-        **kwargs: Any,
+        solver: Solver | None = None,
+        **kwargs: Unpack[SurfaceKwargsNoType],
     ):
         """Create an iso-surface."""
         super().__init__(
             solver=solver,
             type="iso-surface",
-            field=field,
-            rendering=rendering,
-            iso_value=iso_value,
             **kwargs,
         )
 
+class GenericCreateArgs(TypedDict, total=False):
+    name: str
 
-class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance, reportIncompatibleVariableOverride]
-    _GraphicsContainer, ContourDefn if TYPE_CHECKING else object, abc.ABC
+class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
+    _GraphicsContainer["ContourDefn"], ContourDefn if TYPE_CHECKING else object, abc.ABC
 ):
     """
     Contour visualization object.
@@ -531,22 +543,17 @@ class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance, reportIncompa
     >>> )
     """
 
-    _obj: ContourDefn
-
-    def __init__(self, *, solver=None, **kwargs):
+    def __init__(self, *, solver: Solver | None = None, **kwargs: Unpack[SurfaceKwargsNoType]):
         """__init__ method of Contour class."""
-        super().__init__(
-            solver,
-            **kwargs,
-        )
-        self.__dict__["_obj"] = Graphics(session=self.solver).Contours.create(
-            **self.kwargs
+        super().__init__(solver, **kwargs)
+        super().__setattr__(
+            "_obj", Graphics(session=self.solver).Contours.create(**self.kwargs)
         )
 
 
-class Vector(
-    _GraphicsContainer, VectorDefn if TYPE_CHECKING else object, abc.ABC
-):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
+    _GraphicsContainer["VectorDefn"], VectorDefn if TYPE_CHECKING else object, abc.ABC
+):
     """Vector visualization object.
 
     Parameters
@@ -580,16 +587,15 @@ class Vector(
     >>> )
     """
 
-    _obj: VectorDefn
-
     def __init__(
         self,
         *,
         field: str | VariableDescriptor,
+        surfaces: list[str],
         color_by: str | VariableDescriptor | None = None,
         scale: float = 1.0,
-        solver=None,
-        **kwargs,
+        solver: Solver | None = None,
+        **kwargs: Any,
     ):
         """__init__ method of Vector class."""
         if color_by is None:
@@ -604,9 +610,10 @@ class Vector(
                 "scale": scale,
             },
         )
-        self.__dict__["_obj"] = Graphics(session=self.solver).Vectors.create(
-            **self.kwargs
+        super().__setattr__(
+            "_obj", Graphics(session=self.solver).Vectors.create(**self.kwargs)
         )
+
         if field not in self._obj.vectors_of.allowed_values:
             warnings.warn(
                 "API update: `field` now represents the vector variable, and `color_by`"
@@ -617,28 +624,32 @@ class Vector(
                 "Please update your code to: field=<vector>, color_by=<scalar>."
             )
 
-    @staticmethod
-    def _get_mapped_attrs(attr: str) -> str | None:
-        _attr_map = {
-            "field": "vectors_of",
-            "color_by": "field",
-        }
-        return _attr_map.get(attr)
+    if not TYPE_CHECKING:
+        @staticmethod
+        def _get_mapped_attrs(attr: str) -> str | None:
+            _attr_map = {
+                "field": "vectors_of",
+                "color_by": "field",
+            }
+            return _attr_map.get(attr)
 
-    def __getattr__(self, attr: str) -> Any:
-        attr = self._get_mapped_attrs(attr) or attr
-        return getattr(self._obj, attr)
+        def __getattr__(self, attr: str) -> Any:
+            attr = self._get_mapped_attrs(attr) or attr
+            return getattr(self._obj, attr)
 
-    def __setattr__(self, attr, value):
-        attr = self._get_mapped_attrs(attr) or attr
-        if attr == "surfaces":
-            value = list(value)
-        setattr(self._obj, attr, value)
+        @override
+        def __setattr__(self, attr: str, value: Any) -> None:
+            attr = self._get_mapped_attrs(attr) or attr
+            if attr == "surfaces":
+                value = list(value)
+            setattr(self._obj, attr, value)
 
 
-class Pathline(
-    _GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC
-):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Pathline(  # pyright: ignore[reportUnsafeMultipleInheritance]
+    _GraphicsContainer["PathlinesDefn"],
+    PathlinesDefn if TYPE_CHECKING else object,
+    abc.ABC,
+):
     """Pathline visualization object.
 
     The ``Pathline`` class generates pathlines, which represent the trajectories
@@ -674,15 +685,13 @@ class Pathline(
     >>> )
     """
 
-    _obj: GraphicsDefn
-
     def __init__(
         self,
         *,
         field: str | VariableDescriptor,
         surfaces: list[str],
-        solver=None,
-        **kwargs,
+        solver: Solver | None = None,
+        **kwargs: Any,
     ):
         """__init__ method of Pathline class."""
         kwargs.update(
@@ -692,14 +701,14 @@ class Pathline(
             }
         )
         super().__init__(solver, **kwargs)
-        self.__dict__["_obj"] = Graphics(session=self.solver).Pathlines.create(
-            **self.kwargs
+        super().__setattr__(
+            "_obj", Graphics(session=self.solver).Pathlines.create(**self.kwargs)
         )
 
 
-class XYPlot(
-    _GraphicsContainer, GraphicsDefn if TYPE_CHECKING else object, abc.ABC
-):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
+    _GraphicsContainer["XYPlotDefn"], XYPlotDefn if TYPE_CHECKING else object, abc.ABC
+):
     """XY plot visualization object.
 
     The ``XYPlot`` class creates a Fluent XY plot of a scalar field evaluated
@@ -734,16 +743,13 @@ class XYPlot(
     >>> )
     """
 
-    _obj: GraphicsDefn
-
     def __init__(
         self,
         *,
         surfaces: list[str],
         y_axis_function: str | VariableDescriptor,
-        solver: BaseSession | None = None,
-        local_surfaces_provider=None,
-        **kwargs,
+        solver: Solver | None = None,
+        **kwargs: Any,
     ):
         """__init__ method of XYPlot class."""
         kwargs.update(
@@ -757,14 +763,17 @@ class XYPlot(
             self.kwargs["y_axis_function"] = _to_field_name_str(
                 self.kwargs["y_axis_function"]
             )
-        self.__dict__["_obj"] = Plots(
-            session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
-        ).XYPlots.create(**self.kwargs)
+        super().__setattr__(
+            "_obj",
+            Plots(
+                session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
+            ).XYPlots.create(**self.kwargs),
+        )
 
 
-class Monitor(
-    _GraphicsContainer, MonitorDefn if TYPE_CHECKING else object, abc.ABC
-):  # pyright: ignore[reportUnsafeMultipleInheritance]
+class Monitor(  # pyright: ignore[reportUnsafeMultipleInheritance]
+    _GraphicsContainer["MonitorDefn"], MonitorDefn if TYPE_CHECKING else object, abc.ABC
+):
     """Monitor visualization object.
 
     The ``Monitor`` class provides access to Fluent monitor data for plotting,
@@ -792,15 +801,12 @@ class Monitor(
     >>> residual = Monitor(solver=solver_session, monitor_set_name="residual")
     """
 
-    _obj: MonitorDefn
-
     def __init__(
         self,
         *,
         monitor_set_name: str,
-        solver=None,
-        local_surfaces_provider=None,
-        **kwargs,
+        solver: Solver | None = None,
+        **kwargs: Any,
     ):
         """__init__ method of Monitor class."""
         kwargs.update(
@@ -809,6 +815,9 @@ class Monitor(
             }
         )
         super().__init__(solver, **kwargs)
-        self.__dict__["_obj"] = Plots(
-            session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
-        ).Monitors.create(**self.kwargs)
+        super().__setattr__(
+            "_obj",
+            Plots(
+                session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
+            ).MonitorPlots.create(**self.kwargs),
+        )

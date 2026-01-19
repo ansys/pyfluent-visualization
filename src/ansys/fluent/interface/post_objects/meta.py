@@ -53,20 +53,12 @@ from typing_extensions import (
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     BasePostObjectDefn,
-    ContourDefn,
     Defns,
-    MonitorDefn,
-    VectorDefn,
 )
 
 if TYPE_CHECKING:
     from ansys.fluent.core.services.field_data import LiveFieldData
     from ansys.fluent.core.streaming_services.monitor_streaming import MonitorsManager
-
-    from ansys.fluent.interface.post_objects.post_object_definitions import (
-        GraphicsDefn,
-        PlotDefn,
-    )
     from ansys.fluent.interface.post_objects.post_objects_container import Container
 
 # pylint: disable=unused-private-member

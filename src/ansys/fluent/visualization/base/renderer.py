@@ -23,27 +23,31 @@
 """Abstract module providing rendering functionality."""
 
 from abc import ABC, abstractmethod
-from typing import Any, TypedDict
+from collections.abc import Mapping, Sequence
+from typing import Any, Generic, NotRequired, TypedDict
+from typing_extensions import TypeVar
 
 
-class SurfaceToRender(TypedDict):
+DataT = TypeVar("DataT", default=Any)
+
+class SurfaceToRender(TypedDict, Generic[DataT]):
     """TypedDict for mesh surface definition."""
 
-    data: object
-    position: tuple[int, int]
-    opacity: float
+    data: DataT
+    position: NotRequired[tuple[int, int]]
+    opacity: NotRequired[float]
     title: str
-    kwargs: dict[str, Any]
+    kwargs: Mapping[str, Any]
 
 
-SubPlot = list[SurfaceToRender]
+SubPlot = Sequence[SurfaceToRender[DataT]]
 
 
 class AbstractRenderer(ABC):
     """Abstract class for rendering graphics and plots."""
 
     @abstractmethod
-    def render(self, meshes: list[SubPlot]) -> None:
+    def render(self, meshes: Sequence[SubPlot]) -> None:
         """Render graphics and plots in a window.
 
         Parameters
