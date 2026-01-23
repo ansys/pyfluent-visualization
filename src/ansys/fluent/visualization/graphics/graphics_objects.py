@@ -22,6 +22,7 @@
 
 """Module providing visualization objects for PyVista."""
 
+from abc import ABC
 import sys
 
 from ansys.fluent.interface.post_objects.meta import Command, PyLocalContainer
@@ -35,6 +36,7 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
 )
 from ansys.fluent.interface.post_objects.post_objects_container import (
     Graphics as GraphicsContainer,
+    LocalSurfacesProvider,
 )
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     graphics_windows_manager,
@@ -51,14 +53,14 @@ class Graphics(GraphicsContainer):
         self,
         session,
         post_api_helper: type[PostAPIHelper] = PostAPIHelper,
-        local_surfaces_provider=None,
+        local_surfaces_provider: LocalSurfacesProvider |None =None,
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider
         )
 
 
-class Mesh(MeshDefn):
+class Mesh(MeshDefn, ABC):
     """Provides for displaying mesh graphics.
 
     Parameters
@@ -99,7 +101,7 @@ class Mesh(MeshDefn):
         )
 
 
-class Pathlines(PathlinesDefn):
+class Pathlines(PathlinesDefn, ABC):
     """Pathlines definition for PyVista.
 
     .. code-block:: python
@@ -131,7 +133,7 @@ class Pathlines(PathlinesDefn):
         )
 
 
-class Surface(SurfaceDefn):
+class Surface(SurfaceDefn, ABC):
     """Provides for displaying surface graphics.
 
     Parameters
@@ -176,7 +178,7 @@ class Surface(SurfaceDefn):
         )
 
 
-class Contour(ContourDefn):
+class Contour(ContourDefn, ABC):
     """Provides for displaying contour graphics.
 
     Parameters
@@ -219,7 +221,7 @@ class Contour(ContourDefn):
         )
 
 
-class Vector(VectorDefn):
+class Vector(VectorDefn, ABC):
     """Provides for displaying vector graphics.
 
     Parameters

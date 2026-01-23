@@ -38,6 +38,7 @@ from typing import (
 
 from ansys.fluent.interface.post_objects.meta import (
     Attribute,
+    Command,
     PyLocalNamedObject,
     PyLocalObject,
     PyLocalProperty,
@@ -79,6 +80,7 @@ class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
 class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObject["Container"], abc.ABC):
     """Abstract base class for graphics objects."""
 
+    @Command
     @abstractmethod
     def display(self, window_id: str | None = None) -> None:
         """Display graphics.
@@ -402,9 +404,9 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     value = 0
 
                     @Attribute
-                    def range(self) -> list[int]:
+                    def range(self) -> tuple[int, int]:
                         """X value range."""
-                        return [-1, 1]
+                        return (-1, 1)
 
                 @if_type_checking_instantiate
                 class y(PyLocalProperty["normal", float]):
@@ -413,9 +415,9 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     value = 0
 
                     @Attribute
-                    def range(self) -> list[int]:
+                    def range(self) -> tuple[int, int]:
                         """Y value range."""
-                        return [-1, 1]
+                        return (-1, 1)
 
                 @if_type_checking_instantiate
                 class z(PyLocalProperty["normal", float]):
@@ -424,9 +426,9 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     value = 0
 
                     @Attribute
-                    def range(self) -> list[int]:
+                    def range(self) -> tuple[int, int]:
                         """Z value range."""
-                        return [-1, 1]
+                        return (-1, 1)
 
             @if_type_checking_instantiate
             class xy_plane(PyLocalObject["plane_surface"]):
@@ -446,7 +448,15 @@ class SurfaceDefn(GraphicsDefn, abc.ABC):
                     @Attribute
                     def range(self) -> tuple[float, float]:
                         """Z value range."""
-                        return self.field_data.scalar_fields.range("z-coordinate", True)
+                        return cast(
+                            tuple[float, float],
+                            cast(
+                                object,
+                                self.field_data.scalar_fields.range(
+                                    "z-coordinate", True
+                                ),
+                            ),
+                        )
 
             @if_type_checking_instantiate
             class yz_plane(PyLocalObject["plane_surface"]):
@@ -870,6 +880,7 @@ class VectorDefn(GraphicsDefn, abc.ABC):
                 _value = None
 
                 @property
+                @override
                 def value(self) -> float | None:
                     """Range minimum property setter."""
                     if getattr(self, "_value", None) is None:

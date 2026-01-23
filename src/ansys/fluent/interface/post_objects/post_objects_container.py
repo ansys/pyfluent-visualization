@@ -25,7 +25,7 @@
 import builtins
 import inspect
 import types
-from typing import Any, Callable, ClassVar, Literal, TypeVar
+from typing import Any, ClassVar, Literal, TypeVar
 
 from ansys.fluent.core.session import BaseSession
 from ansys.fluent.core.session_solver import Solver
@@ -70,7 +70,7 @@ class Container:
         external modules (e.g., PyVista). Defaults to ``None``.
     """
 
-    _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]]
+    _sessions_state: ClassVar[dict[Solver, dict[str, Any]]]
 
     def __init__(
         self,
@@ -90,7 +90,7 @@ class Container:
         else:
             self.__dict__ = session_state
         self._local_surfaces_provider = lambda: local_surfaces_provider or getattr(
-            self, "Surfaces", []
+            self, "Surfaces", {}
         )
 
     def get_path(self) -> str:
@@ -144,9 +144,10 @@ class Container:
                 # Define a method to add a "create" function to the container
                 def _create(**kwargs):
                     new_object = cont[cont._get_unique_child_name()]
-                    new_object.__call__
+                    state = new_object()
+                    assert state is not None
                     # Validate that all kwargs are valid attributes for the object
-                    unexpected_args = set(kwargs) - set(new_object())
+                    unexpected_args = set(kwargs) - set(state)
                     if unexpected_args:
                         raise TypeError(
                             f"create() got an unexpected keyword argument '{next(iter(unexpected_args))}'."  # noqa: E501
@@ -242,7 +243,7 @@ class Graphics(Container):
         Container for vector objects.
     """
 
-    # TODO double triple check these local container types are correct cause something seems off vs Mesh 
+    # TODO double triple check these local container types are correct cause something seems off vs Mesh
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
     Meshes: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
         MeshDefn

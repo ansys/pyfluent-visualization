@@ -67,9 +67,9 @@ DefnT = TypeVar("DefnT", bound="Defns", default="Defns")
 class _GraphicsContainer(Generic[DefnT]):
     """Base class for graphics containers."""
 
-    kwargs: dict[str, Any]  # pyright: ignore[reportUninitializedInstanceVariable]
     solver: Solver  # pyright: ignore[reportUninitializedInstanceVariable]
-    _obj: DefnT  # pyright: ignore[reportUninitializedInstanceVariable]
+    _obj: Defns  # pyright: ignore[reportUninitializedInstanceVariable]
+    kwargs: dict[str, Any]  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self, solver: Solver | None, **kwargs: Any):
         super().__init__()
@@ -92,7 +92,7 @@ class _GraphicsContainer(Generic[DefnT]):
         def get_root(self, instance: object = None) -> Container: ...  # pyright: ignore[reportUnusedParameter]
         def display(self, window_id: str | None = None) -> None: ...# pyright: ignore[reportUnusedParameter]
 
-        surfaces: Any  # pyright: ignore[reportUninitializedInstanceVariable]
+        surfaces: Any  # pyright: ignore[reportUninitializedInstanceVariable]  £ something is definitely bugged here in the type checker as () -> list[str doesn't work]
     else:
 
         def __getattr__(self, attr):
@@ -497,6 +497,13 @@ class IsoSurface(Surface, abc.ABC):
         **kwargs: Unpack[SurfaceKwargsNoType],
     ):
         """Create an iso-surface."""
+        init_kwargs: SurfaceKwargs = kwargs
+        if field is not None:
+            init_kwargs["field"] = field
+        if rendering is not None:
+            init_kwargs["rendering"] = rendering
+        if iso_value is not None:
+            init_kwargs["iso_value"] = iso_value
         super().__init__(
             solver=solver,
             type="iso-surface",
@@ -749,7 +756,8 @@ class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
         surfaces: list[str],
         y_axis_function: str | VariableDescriptor,
         solver: Solver | None = None,
-        **kwargs: Any,
+        local_surfaces_provider=None,
+        **kwargs,
     ):
         """__init__ method of XYPlot class."""
         kwargs.update(

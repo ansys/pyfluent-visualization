@@ -288,6 +288,8 @@ class PyLocalBase(Generic[ParentT]):
         """Monitors associated with the current object."""
         return self.session.monitors
 
+ParentT = TypeVar("ParentT")
+
 
 class PyLocalProperty(PyLocalBase[ParentT], Generic[ParentT, T]):
     """Local property classes."""
@@ -298,8 +300,8 @@ class PyLocalProperty(PyLocalBase[ParentT], Generic[ParentT, T]):
         super().__init__(parent, name)
         self._api_helper = api_helper(self)
         self._on_change_cbs = []
-        self.type: type[T] = get_args(get_original_bases(self.__class__)[0])[
-            0
+        self.type: type[T] = get_args(get_original_bases(self.__class__)[1])[
+            1
         ]  # T for the class
         reset_on_change = (
             hasattr(self, "_reset_on_change") and getattr(self, "_reset_on_change")()
@@ -400,7 +402,6 @@ class PyLocalProperty(PyLocalBase[ParentT], Generic[ParentT, T]):
 #         self.session_id = session_id
 #         if hasattr(self, "_object"):
 #             delattr(self, "_object")
-
 
 
 
@@ -572,6 +573,7 @@ class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs], ABC):
 
 class PyLocalNamedObject(PyLocalObject[ParentT]):
     """Base class for local named object classes."""
+    PLURAL: str
 
     def __init__(self, name: str, parent: ParentT, api_helper: type[PostAPIHelper]):
         self._name = name
@@ -687,15 +689,16 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
                     cls(self, api_helper, name),
                 )
 
-    def get_root(self, obj=None):
+    def get_root(self, obj: "PyLocalContainer | None" = None) -> Container:
         """Returns the top-most parent object."""
         obj = self if obj is None else obj
         parent = obj
         if getattr(obj, "_parent", None):
             parent = self.get_root(obj._parent)
+        assert isinstance(parent, Container)
         return parent
 
-    def get_session(self, obj=None) -> "Solver":
+    def get_session(self, obj: "PyLocalContainer | None" = None) -> "Solver":
         """Returns the session object."""
         root = self.get_root(obj)
         return root.session
@@ -757,6 +760,9 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
                 break
             index += 1
         return unique_name
+
+    if TYPE_CHECKING:
+        def create(self, ): ...
 
     class Delete(PyLocalCommand["PyLocalContainer", _DeleteKwargs]):
         """Local delete command."""
