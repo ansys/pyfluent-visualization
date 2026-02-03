@@ -71,7 +71,7 @@ class GraphicsWindow:
         graphics_obj,
         position: tuple = (0, 0),
         opacity: float = 1,
-        title: str = None,
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """Add graphics-data to a window.
@@ -98,7 +98,7 @@ class GraphicsWindow:
         self,
         plot_obj,
         position: tuple = (0, 0),
-        title: str = None,
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """Add 2D plot-data to a window.

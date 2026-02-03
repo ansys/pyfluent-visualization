@@ -656,26 +656,24 @@ class GraphicsWindow(VisualizationWindow):
         self._object_list_to_render.append(mesh_obj_list)
 
     def _display_xy_plot(self, obj_dict):
-        self._object_list_to_render.append(
-            [
-                {
-                    "data": self._data["XYPlot"],
-                    "position": obj_dict.get("position"),
-                    "kwargs": obj_dict.get("kwargs"),
-                }
-            ]
-        )
+        plot_dict = {
+            "data": self._data["XYPlot"],
+            "position": obj_dict.get("position"),
+            "kwargs": obj_dict.get("kwargs"),
+        }
+        if obj_dict.get("title"):
+            plot_dict["title"] = obj_dict.get("title")
+        self._object_list_to_render.append([plot_dict])
 
     def _display_monitor_plot(self, obj_dict):
-        self._object_list_to_render.append(
-            [
-                {
-                    "data": self._data["MonitorPlot"],
-                    "position": obj_dict.get("position"),
-                    "kwargs": obj_dict.get("kwargs"),
-                }
-            ]
-        )
+        plot_dict = {
+            "data": self._data["MonitorPlot"],
+            "position": obj_dict.get("position"),
+            "kwargs": obj_dict.get("kwargs"),
+        }
+        if obj_dict.get("title"):
+            plot_dict["title"] = obj_dict.get("title")
+        self._object_list_to_render.append([plot_dict])
 
     def _get_refresh_for_plotter(self, window: "GraphicsWindow", graphics_obj_list):
         def refresh():
