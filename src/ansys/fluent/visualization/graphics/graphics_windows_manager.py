@@ -360,7 +360,7 @@ class GraphicsWindow(VisualizationWindow):
                 _mesh_dict["title"] = (
                     obj_dict.get("title")
                     or f"{vectors_of.capitalize()} "
-                    f"vectors colored by {field.replace("\n", " ")}."
+                    f"vectors colored by {field.replace('\n', ' ')}."
                 )
                 _mesh_dict["position"] = obj_dict.get("position")
                 _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -378,7 +378,7 @@ class GraphicsWindow(VisualizationWindow):
                     _mesh_dict["title"] = (
                         obj_dict.get("title")
                         or f"{vectors_of.capitalize()} "
-                        f"vectors colored by {field.replace("\n", " ")}."
+                        f"vectors colored by {field.replace('\n', ' ')}."
                     )
                     _mesh_dict["position"] = obj_dict.get("position")
                     _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -422,7 +422,7 @@ class GraphicsWindow(VisualizationWindow):
             if obj_dict is not None:
                 _mesh_dict["title"] = (
                     obj_dict.get("title")
-                    or f"Pathlines colored by {field.replace("\n", " ")}."
+                    or f"Pathlines colored by {field.replace('\n', ' ')}."
                 )
                 _mesh_dict["position"] = obj_dict.get("position")
                 _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -487,7 +487,7 @@ class GraphicsWindow(VisualizationWindow):
                                 if obj_dict is not None:
                                     _mesh_dict["title"] = (
                                         obj_dict.get("title")
-                                        or f"Contour of {field.replace("\n", " ")}."
+                                        or f"Contour of {field.replace('\n', ' ')}."
                                     )
                                     _mesh_dict["position"] = obj_dict.get("position")
                                     _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -505,7 +505,7 @@ class GraphicsWindow(VisualizationWindow):
                                 if obj_dict is not None:
                                     _mesh_dict["title"] = (
                                         obj_dict.get("title")
-                                        or f"Contour of {field.replace("\n", " ")}."
+                                        or f"Contour of {field.replace('\n', ' ')}."
                                     )
                                     _mesh_dict["position"] = obj_dict.get("position")
                                     _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -527,7 +527,7 @@ class GraphicsWindow(VisualizationWindow):
                         if obj_dict is not None:
                             _mesh_dict["title"] = (
                                 obj_dict.get("title")
-                                or f"Contour of {field.replace("\n", " ")}."
+                                or f"Contour of {field.replace('\n', ' ')}."
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -541,7 +541,7 @@ class GraphicsWindow(VisualizationWindow):
                         if obj_dict is not None:
                             _mesh_dict["title"] = (
                                 obj_dict.get("title")
-                                or f"Contour of {field.replace("\n", " ")}."
+                                or f"Contour of {field.replace('\n', ' ')}."
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -563,7 +563,7 @@ class GraphicsWindow(VisualizationWindow):
                         if obj_dict is not None:
                             _mesh_dict["title"] = (
                                 obj_dict.get("title")
-                                or f"Contour of {field.replace("\n", " ")}."
+                                or f"Contour of {field.replace('\n', ' ')}."
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -577,7 +577,7 @@ class GraphicsWindow(VisualizationWindow):
                         if obj_dict is not None:
                             _mesh_dict["title"] = (
                                 obj_dict.get("title")
-                                or f"Contour of {field.replace("\n", " ")}."
+                                or f"Contour of {field.replace('\n', ' ')}."
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -596,7 +596,7 @@ class GraphicsWindow(VisualizationWindow):
                         if obj_dict is not None:
                             _mesh_dict["title"] = (
                                 obj_dict.get("title")
-                                or f"Contour of {field.replace("\n", " ")}."
+                                or f"Contour of {field.replace('\n', ' ')}."
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -610,7 +610,7 @@ class GraphicsWindow(VisualizationWindow):
                         if obj_dict is not None:
                             _mesh_dict["title"] = (
                                 obj_dict.get("title")
-                                or f"Contour of {field.replace("\n", " ")}."
+                                or f"Contour of {field.replace('\n', ' ')}."
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
