@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 # Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
@@ -45,6 +45,10 @@ from typing_extensions import TypeVar, override
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
+from ansys.fluent.visualization.post_data_extractor import (
+    FieldDataExtractor,
+    XYPlotDataExtractor,
+)
 
 if TYPE_CHECKING:
     from ansys.fluent.core.session_solver import Solver
@@ -86,6 +90,10 @@ class _GraphicsContainer(Generic[DefnT]):
             self.kwargs["vectors_of"] = kwargs["vectors_of"] = _to_field_name_str(
                 self.kwargs["vectors_of"]
             )
+
+    def get_field_data(self):
+        """Exposes field data."""
+        return FieldDataExtractor(self._obj).fetch_data()
 
     if TYPE_CHECKING:
         # we have these due to inheriting from the ABCs at type time but the attributes coming from ._obj
@@ -809,6 +817,10 @@ class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
 class MonitorKwargs(TypedDict, total=False):
     monitor_set_name: Required[str]
 
+    def get_field_data(self):
+        """Exposes 2d plot data data."""
+        return XYPlotDataExtractor(self._obj).fetch_data()
+
 
 class Monitor(  # pyright: ignore[reportUnsafeMultipleInheritance]
     _GraphicsContainer["MonitorDefn"],
@@ -863,4 +875,10 @@ class Monitor(  # pyright: ignore[reportUnsafeMultipleInheritance]
             Plots(
                 session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
             ).MonitorPlots.create(**self.kwargs),
+        )
+
+    def get_field_data(self):
+        """Exposes monitor data."""
+        return self._obj.session.monitors.get_monitor_set_data(
+            self.kwargs["monitor_set_name"]
         )
