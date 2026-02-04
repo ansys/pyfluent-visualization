@@ -90,3 +90,4 @@ reportUnannotatedClassAttribute = false
 reportPrivateImportUsage = false
 ignore = ["doc"]
 reportMissingTypeStubs=false
+baselineFile = ".ci/basedpyright.json"
