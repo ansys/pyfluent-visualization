@@ -22,7 +22,6 @@
 
 """Module providing matplotlib plotter functionality."""
 
-
 import matplotlib.pyplot as plt
 import numpy as np
 

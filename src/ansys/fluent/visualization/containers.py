@@ -26,16 +26,17 @@
 """Containers for graphics."""
 
 import abc
+import warnings
 from typing import (
     TYPE_CHECKING,
     Any,
     Generic,
     Literal,
+    Required,
     Self,
     TypedDict,
     Unpack,
 )
-import warnings
 
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
@@ -52,11 +53,11 @@ if TYPE_CHECKING:
     from ansys.fluent.interface.post_objects.post_object_definitions import (
         ContourDefn,
         Defns,
+        MeshDefn,
         MonitorDefn,
+        PathlinesDefn,
         SurfaceDefn,
         VectorDefn,
-        MeshDefn,
-        PathlinesDefn,
         XYPlotDefn,
     )
     from ansys.fluent.interface.post_objects.post_objects_container import Container
@@ -67,11 +68,11 @@ DefnT = TypeVar("DefnT", bound="Defns", default="Defns")
 class _GraphicsContainer(Generic[DefnT]):
     """Base class for graphics containers."""
 
-    solver: Solver  # pyright: ignore[reportUninitializedInstanceVariable]
-    _obj: Defns  # pyright: ignore[reportUninitializedInstanceVariable]
+    solver: "Solver"  # pyright: ignore[reportUninitializedInstanceVariable]
+    _obj: "Defns"  # pyright: ignore[reportUninitializedInstanceVariable]
     kwargs: dict[str, Any]  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    def __init__(self, solver: Solver | None, **kwargs: Any):
+    def __init__(self, solver: "Solver | None", **kwargs: Any):
         super().__init__()
         self.__dict__["solver"] = solver or _get_active_session()
         self.__dict__["kwargs"] = kwargs
@@ -90,9 +91,9 @@ class _GraphicsContainer(Generic[DefnT]):
         # we have these due to inheriting from the ABCs at type time but the attributes coming from ._obj
         # the type checker thinks they aren't valid to instantiate otherwise
         def get_root(self, instance: object = None) -> Container: ...  # pyright: ignore[reportUnusedParameter]
-        def display(self, window_id: str | None = None) -> None: ...# pyright: ignore[reportUnusedParameter]
+        def display(self, window_id: str | None = None) -> None: ...  # pyright: ignore[reportUnusedParameter]
 
-        surfaces: Any  # pyright: ignore[reportUninitializedInstanceVariable]  £ something is definitely bugged here in the type checker as () -> list[str doesn't work]
+        surfaces: Any  # pyright: ignore[reportUninitializedInstanceVariable]  # something is definitely bugged here in the type checker as () -> list[str doesn't work]
     else:
 
         def __getattr__(self, attr):
@@ -110,7 +111,7 @@ class _GraphicsContainer(Generic[DefnT]):
 
 
 class Mesh(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["MeshDefn"], MeshDefn if TYPE_CHECKING else object, abc.ABC
+    _GraphicsContainer["MeshDefn"], MeshDefn if TYPE_CHECKING else abc.ABC
 ):
     """Mesh visualization object.
 
@@ -147,8 +148,8 @@ class Mesh(  # pyright: ignore[reportUnsafeMultipleInheritance]
         *,
         surfaces: list[str],
         show_edges: bool = False,
-        solver: Solver | None = None,
-        **kwargs: Unpack[_DeleteKwargs],
+        solver: "Solver | None" = None,
+        **kwargs: Unpack["_DeleteKwargs"],
     ):
         """__init__ method of Mesh class."""
 
@@ -165,11 +166,10 @@ class Mesh(  # pyright: ignore[reportUnsafeMultipleInheritance]
         )
 
 
-SurfaceType = Literal['plane-surface', 'iso-surface']
-SurfaceCreationMethod = Literal[
-    'xy-plane', 'yz-plane', 'zx-plane', 'point-and-normal'
-]
-SurfaceRendering = Literal['mesh', 'contour']
+SurfaceType = Literal["plane-surface", "iso-surface"]
+SurfaceCreationMethod = Literal["xy-plane", "yz-plane", "zx-plane", "point-and-normal"]
+SurfaceRendering = Literal["mesh", "contour"]
+
 
 class SurfaceKwargsNoType(TypedDict, total=False):
     creation_method: SurfaceCreationMethod
@@ -182,11 +182,13 @@ class SurfaceKwargsNoType(TypedDict, total=False):
     point: tuple[float, float, float]
     normal: tuple[float, float, float]
 
+
 class SurfaceKwargs(SurfaceKwargsNoType):
     type: SurfaceType
 
+
 class Surface(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["SurfaceDefn"], SurfaceDefn if TYPE_CHECKING else object, abc.ABC
+    _GraphicsContainer["SurfaceDefn"], SurfaceDefn if TYPE_CHECKING else abc.ABC
 ):
     """Surface definition for Fluent post-processing.
 
@@ -236,8 +238,10 @@ class Surface(  # pyright: ignore[reportUnsafeMultipleInheritance]
     >>> surf_outlet_plane.iso_value = -0.125017
     """
 
+    _obj: "SurfaceDefn"  # pyright: ignore[reportIncompatibleVariableOverride]
+
     def __init__(
-        self, *, solver: Solver | None = None, **kwargs: Unpack[SurfaceKwargs]
+        self, *, solver: "Solver | None" = None, **kwargs: Unpack[SurfaceKwargs]
     ):
         """__init__ method of Surface class."""
         super().__init__(solver, **kwargs)
@@ -282,9 +286,7 @@ class Surface(  # pyright: ignore[reportUnsafeMultipleInheritance]
         return self._obj.definition.plane_surface.creation_method()
 
     @creation_method.setter
-    def creation_method(
-        self, value: SurfaceCreationMethod
-    ) -> None:
+    def creation_method(self, value: SurfaceCreationMethod) -> None:
         self._obj.definition.plane_surface.creation_method = value
 
     @property
@@ -399,7 +401,7 @@ class PlaneSurface(Surface, abc.ABC):
 
     @classmethod
     def create_xy_plane(
-        cls, *, solver: Solver | None = None, z: float = 0.0, **kwargs: Any
+        cls, *, solver: "Solver | None" = None, z: float = 0.0, **kwargs: Any
     ) -> Self:
         """Create a plane surface in the XY plane at a given Z value."""
         return cls(
@@ -412,7 +414,7 @@ class PlaneSurface(Surface, abc.ABC):
 
     @classmethod
     def create_yz_plane(
-        cls, solver: Solver | None = None, x: float = 0.0, **kwargs: Any
+        cls, solver: "Solver | None" = None, x: float = 0.0, **kwargs: Any
     ) -> Self:
         """Create a plane surface in the YZ plane at a given X value."""
         return cls(
@@ -425,7 +427,7 @@ class PlaneSurface(Surface, abc.ABC):
 
     @classmethod
     def create_zx_plane(
-        cls, solver: Solver | None = None, y: float = 0.0, **kwargs: Any
+        cls, solver: "Solver | None" = None, y: float = 0.0, **kwargs: Any
     ):
         """Create a plane surface in the ZX plane at a given Y value."""
         return cls(
@@ -439,7 +441,7 @@ class PlaneSurface(Surface, abc.ABC):
     @classmethod
     def create_from_point_and_normal(
         cls,
-        solver: Solver | None = None,
+        solver: "Solver | None" = None,
         point: tuple[float, float, float] = (0, 0, 0),
         normal: tuple[float, float, float] = (0, 0, 0),
         **kwargs: Any,
@@ -493,28 +495,35 @@ class IsoSurface(Surface, abc.ABC):
 
     def __init__(
         self,
-        solver: Solver | None = None,
+        solver: "Solver | None" = None,
         **kwargs: Unpack[SurfaceKwargsNoType],
     ):
         """Create an iso-surface."""
-        init_kwargs: SurfaceKwargs = kwargs
-        if field is not None:
-            init_kwargs["field"] = field
-        if rendering is not None:
-            init_kwargs["rendering"] = rendering
-        if iso_value is not None:
-            init_kwargs["iso_value"] = iso_value
         super().__init__(
             solver=solver,
             type="iso-surface",
             **kwargs,
         )
 
+
 class GenericCreateArgs(TypedDict, total=False):
     name: str
 
+
+class ContourKwargs(TypedDict, total=False):
+    field: str | VariableDescriptor
+    surfaces: list[str]
+    filled: bool
+    node_values: bool
+    boundary_values: bool
+    contour_lines: bool
+    show_edges: bool
+
+
 class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["ContourDefn"], ContourDefn if TYPE_CHECKING else object, abc.ABC
+    _GraphicsContainer["ContourDefn"],
+    ContourDefn if TYPE_CHECKING else abc.ABC,
+    abc.ABC,
 ):
     """
     Contour visualization object.
@@ -550,7 +559,11 @@ class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
     >>> )
     """
 
-    def __init__(self, *, solver: Solver | None = None, **kwargs: Unpack[SurfaceKwargsNoType]):
+    _obj: "ContourDefn"  # pyright: ignore[reportIncompatibleVariableOverride]
+
+    def __init__(
+        self, *, solver: "Solver | None" = None, **kwargs: Unpack[ContourKwargs]
+    ):
         """__init__ method of Contour class."""
         super().__init__(solver, **kwargs)
         super().__setattr__(
@@ -558,8 +571,17 @@ class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
         )
 
 
+# class VectorKwargs(TypedDict, total=False):
+#     field: Required[str | VariableDescriptor]
+#     surfaces: Required[list[str]]
+#     vectors_of: str | VariableDescriptor | None
+#     scale: float
+#     skip: int
+#     show_edges: bool
+
+
 class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["VectorDefn"], VectorDefn if TYPE_CHECKING else object, abc.ABC
+    _GraphicsContainer["VectorDefn"], VectorDefn if TYPE_CHECKING else abc.ABC, abc.ABC
 ):
     """Vector visualization object.
 
@@ -594,6 +616,8 @@ class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
     >>> )
     """
 
+    _obj: "VectorDefn"  # pyright: ignore[reportIncompatibleVariableOverride]
+
     def __init__(
         self,
         *,
@@ -601,8 +625,10 @@ class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
         surfaces: list[str],
         color_by: str | VariableDescriptor | None = None,
         scale: float = 1.0,
-        solver: Solver | None = None,
-        **kwargs: Any,
+        skip: int = 0,
+        show_edges: bool = False,
+        solver: "Solver | None" = None,
+        # **kwargs: Unpack[VectorKwargs],
     ):
         """__init__ method of Vector class."""
         if color_by is None:
@@ -610,12 +636,11 @@ class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
 
         super().__init__(
             solver,
-            **kwargs
-            | {
-                "vectors_of": field,
-                "field": color_by,
-                "scale": scale,
-            },
+            vectors_of=field,
+            field=color_by,
+            scale=scale,
+            skip=skip,
+            show_edges=show_edges,
         )
         super().__setattr__(
             "_obj", Graphics(session=self.solver).Vectors.create(**self.kwargs)
@@ -632,6 +657,7 @@ class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
             )
 
     if not TYPE_CHECKING:
+
         @staticmethod
         def _get_mapped_attrs(attr: str) -> str | None:
             _attr_map = {
@@ -652,9 +678,14 @@ class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
             setattr(self._obj, attr, value)
 
 
+class PathlineKwargs(TypedDict, total=False):
+    field: Required[str | VariableDescriptor]
+    surfaces: Required[list[str]]
+
+
 class Pathline(  # pyright: ignore[reportUnsafeMultipleInheritance]
     _GraphicsContainer["PathlinesDefn"],
-    PathlinesDefn if TYPE_CHECKING else object,
+    PathlinesDefn if TYPE_CHECKING else abc.ABC,
     abc.ABC,
 ):
     """Pathline visualization object.
@@ -692,29 +723,32 @@ class Pathline(  # pyright: ignore[reportUnsafeMultipleInheritance]
     >>> )
     """
 
+    _obj: "PathlinesDefn"  # pyright: ignore[reportIncompatibleVariableOverride]
+
     def __init__(
         self,
         *,
-        field: str | VariableDescriptor,
-        surfaces: list[str],
-        solver: Solver | None = None,
-        **kwargs: Any,
+        solver: "Solver | None" = None,
+        **kwargs: Unpack[PathlineKwargs],
     ):
         """__init__ method of Pathline class."""
-        kwargs.update(
-            {
-                "field": field,
-                "surfaces": surfaces,
-            }
-        )
         super().__init__(solver, **kwargs)
         super().__setattr__(
             "_obj", Graphics(session=self.solver).Pathlines.create(**self.kwargs)
         )
 
 
+class XYPlotKwargs(TypedDict, total=False):
+    direction_vector: tuple[int, int, int]
+    node_values: bool
+    boundary_values: bool
+    x_axis_function: Literal["direction-vector"]
+    y_axis_function: Required[str | VariableDescriptor]
+    surfaces: Required[list[str]]
+
+
 class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["XYPlotDefn"], XYPlotDefn if TYPE_CHECKING else object, abc.ABC
+    _GraphicsContainer["XYPlotDefn"], XYPlotDefn if TYPE_CHECKING else abc.ABC, abc.ABC
 ):
     """XY plot visualization object.
 
@@ -750,22 +784,15 @@ class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
     >>> )
     """
 
+    _obj: "XYPlotDefn"  # pyright: ignore[reportIncompatibleVariableOverride]
+
     def __init__(
         self,
         *,
-        surfaces: list[str],
-        y_axis_function: str | VariableDescriptor,
-        solver: Solver | None = None,
-        local_surfaces_provider=None,
-        **kwargs,
+        solver: "Solver | None" = None,
+        **kwargs: Unpack[XYPlotKwargs],
     ):
         """__init__ method of XYPlot class."""
-        kwargs.update(
-            {
-                "y_axis_function": y_axis_function,
-                "surfaces": surfaces,
-            }
-        )
         super().__init__(solver, **kwargs)
         if "y_axis_function" in self.kwargs:
             self.kwargs["y_axis_function"] = _to_field_name_str(
@@ -779,8 +806,14 @@ class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
         )
 
 
+class MonitorKwargs(TypedDict, total=False):
+    monitor_set_name: Required[str]
+
+
 class Monitor(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["MonitorDefn"], MonitorDefn if TYPE_CHECKING else object, abc.ABC
+    _GraphicsContainer["MonitorDefn"],
+    MonitorDefn if TYPE_CHECKING else abc.ABC,
+    abc.ABC,
 ):
     """Monitor visualization object.
 
@@ -809,12 +842,14 @@ class Monitor(  # pyright: ignore[reportUnsafeMultipleInheritance]
     >>> residual = Monitor(solver=solver_session, monitor_set_name="residual")
     """
 
+    _obj: "MonitorDefn"  # pyright: ignore[reportIncompatibleVariableOverride]
+
     def __init__(
         self,
         *,
         monitor_set_name: str,
-        solver: Solver | None = None,
-        **kwargs: Any,
+        solver: "Solver | None" = None,
+        **kwargs: Unpack[MonitorKwargs],
     ):
         """__init__ method of Monitor class."""
         kwargs.update(

@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Provides a module to check if the library is being used in a Jupyter environment."""
+
 import warnings
 
 from ansys.fluent.core import PyFluentDeprecationWarning
@@ -32,7 +33,7 @@ def in_jupyter() -> bool:
         from IPython import get_ipython
 
         return (
-            "IPKernelApp" in get_ipython().config # pyright: ignore[reportOptionalMemberAccess]
+            "IPKernelApp" in get_ipython().config  # pyright: ignore[reportOptionalMemberAccess]
         )
     except (ImportError, AttributeError):
         return False

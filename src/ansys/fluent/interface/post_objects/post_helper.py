@@ -23,14 +23,15 @@
 """Provides a module for post objects."""
 
 import re
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from ansys.fluent.core.services import LiveFieldData
 from ansys.fluent.core.solver.flunits import get_si_unit_for_fluent_quantity
 from ansys.fluent.core.utils.fluent_version import FluentVersion
 
-from ansys.fluent.interface.post_objects.meta import PyLocalBase
-from ansys.fluent.visualization import Surface
+if TYPE_CHECKING:
+    from ansys.fluent.interface.post_objects.meta import PyLocalBase
+    from ansys.fluent.visualization import Surface
 
 
 class IncompleteISOSurfaceDefinition(RuntimeError):
@@ -55,7 +56,7 @@ class PostAPIHelper:
     class _SurfaceAPI:
         """Class providing APIs for surface operations."""
 
-        def __init__(self, obj: Surface):
+        def __init__(self, obj: "Surface"):
             self.obj = obj
             self._surface_name_on_server = self.surface_name_on_server(obj._name)
 
@@ -147,7 +148,7 @@ class PostAPIHelper:
             elif self.obj.definition.type() == "plane-surface":
                 del self._get_api_handle().plane_surface[self._surface_name_on_server]
 
-    def __init__(self, obj: PyLocalBase):
+    def __init__(self, obj: "PyLocalBase"):
         """__init__ method of PostAPIHelper class."""
         self.obj = obj
         self.field_data = lambda: cast(

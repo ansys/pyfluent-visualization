@@ -25,10 +25,11 @@
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 from typing import Any, Generic, NotRequired, TypedDict
+
 from typing_extensions import TypeVar
 
-
 DataT = TypeVar("DataT", default=Any)
+
 
 class SurfaceToRender(TypedDict, Generic[DataT]):
     """TypedDict for mesh surface definition."""

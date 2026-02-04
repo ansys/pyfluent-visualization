@@ -22,14 +22,14 @@
 
 """Module for pyVista windows management."""
 
+import importlib.util
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any, TypedDict, cast
-import importlib.util
 
-from typing_extensions import override
 import numpy as np
 import numpy.typing as npt
 import pyvista as pv
+from typing_extensions import override
 
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.base.renderer import AbstractRenderer, SubPlot
@@ -79,7 +79,9 @@ class Renderer(AbstractRenderer):
         if in_jupyter or non_interactive:
             self.plotter = pv.Plotter(title=f"PyFluent ({win_id})", shape=grid)
         else:
-            from pyvistaqt import BackgroundPlotter  # pyright: ignore[reportMissingTypeStubs]
+            from pyvistaqt import (  # pyright: ignore[reportMissingTypeStubs]
+                BackgroundPlotter,
+            )
 
             self.plotter = BackgroundPlotter(
                 title=f"PyFluent ({win_id})",
@@ -229,7 +231,10 @@ class Renderer(AbstractRenderer):
                         ]
 
                     chart.title = mesh_dict["title"]
-                    self.plotter.add_chart(chart, **kwargs)  # pyright: ignore[reportArgumentType, reportAny]  # add_chart uses functools.wraps internally which isn't typed for methods
+                    self.plotter.add_chart(  # add_chart uses functools.wraps internally which isn't typed for methods
+                        chart,
+                        **kwargs,  # pyright: ignore[reportArgumentType]
+                    )
 
     @override
     def save_graphic(self, file_name: str):

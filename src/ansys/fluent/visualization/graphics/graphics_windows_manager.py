@@ -22,20 +22,20 @@
 
 """Module for graphics windows management."""
 
-from enum import Enum
 import itertools
 import threading
+from enum import Enum
 
 import numpy as np
 import pyvista as pv
 
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.interface.post_objects.check_in_notebook import in_jupyter
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
 from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
-import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
     XYPlotDataExtractor,
@@ -129,7 +129,9 @@ class GraphicsWindow(VisualizationWindow):
             raise KeyError(error_message) from ex
         return renderer(self.id, in_jupyter(), not pyviz.config.interactive, self._grid)
 
-    def set_data(self, data_type: FieldDataType, data: dict[int, dict[str, np.ndarray]]):
+    def set_data(
+        self, data_type: FieldDataType, data: dict[int, dict[str, np.ndarray]]
+    ):
         """Set data for graphics."""
         self._data[data_type] = data
 
@@ -895,7 +897,6 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
 class NonInteractiveGraphicsManager(
     GraphicsWindowsManager, VisualizationWindowsManager
 ):
-
     def open_window(
         self,
         window_id: str | None = None,
@@ -1006,7 +1007,6 @@ class NonInteractiveGraphicsManager(
 
 
 class InteractiveGraphicsManager(GraphicsWindowsManager, VisualizationWindowsManager):
-
     def open_window(
         self,
         window_id: str | None = None,
@@ -1203,14 +1203,6 @@ class _GraphicsManagerProxy:
 
     def __setattr__(self, name, value):
         if name == "_real_instance":
-            super().__setattr__(name, value)
-        else:
-            if self._real_instance is None:
-                self._initialize()
-            setattr(self._real_instance, name, value)
-
-
-graphics_windows_manager = _GraphicsManagerProxy()
             super().__setattr__(name, value)
         else:
             if self._real_instance is None:

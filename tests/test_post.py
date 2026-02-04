@@ -20,13 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pathlib import Path
 import pickle
 import sys
+from pathlib import Path
 
-from ansys.fluent.core.field_data_interfaces import SurfaceDataType
 import numpy as np
 import pytest
+from ansys.fluent.core.field_data_interfaces import SurfaceDataType
 
 from ansys.fluent.visualization import Graphics, Plots
 

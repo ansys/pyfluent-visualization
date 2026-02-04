@@ -41,7 +41,6 @@ from ansys.fluent.visualization.plotter import Plots as Plots
 from ansys.fluent.visualization.registrar import register_renderer as register_renderer
 from ansys.fluent.visualization.renderer import GraphicsWindow as GraphicsWindow
 
-
 _VERSION_INFO = None
 __version__ = _version(__name__.replace(".", "-"))
 
@@ -59,5 +58,3 @@ def version_info() -> str:
         Only available in packaged versions. Otherwise it will return __version__.
     """
     return _VERSION_INFO if _VERSION_INFO is not None else __version__
-
-

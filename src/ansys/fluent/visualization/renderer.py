@@ -24,15 +24,21 @@
 
 from collections.abc import Iterable
 from typing import Any, Literal
-import warnings
 
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
     XYPlotDefn,
 )
-import ansys.fluent.visualization as pyviz
-from ansys.fluent.visualization.containers import Mesh, Monitor
+from ansys.fluent.visualization.containers import (
+    Contour,
+    Mesh,
+    Monitor,
+    Pathline,
+    Surface,
+    Vector,
+)
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.graphics.graphics_windows import _GraphicsWindow
 from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
@@ -73,7 +79,7 @@ class GraphicsWindow:
 
     def add_graphics(
         self,
-        graphics_obj: Mesh,
+        graphics_obj: Mesh | Surface | Contour | Vector | Pathline,
         position: tuple[int, int] = (0, 0),
         opacity: float = 1,
         **kwargs: Any,
@@ -90,7 +96,9 @@ class GraphicsWindow:
             Transparency of the sub-plot.
         """
         self._list_of_positions.append(position)
-        self._graphics_objs.append(kwargs | {"object": graphics_obj, "position": position, "opacity": opacity})
+        self._graphics_objs.append(
+            kwargs | {"object": graphics_obj, "position": position, "opacity": opacity}
+        )
 
     def add_plot(
         self,
@@ -111,7 +119,9 @@ class GraphicsWindow:
             Title of the sub-plot.
         """
         self._list_of_positions.append(position)
-        self._graphics_objs.append(kwargs | {"object": plot_obj, "position": position, "title": title})
+        self._graphics_objs.append(
+            kwargs | {"object": plot_obj, "position": position, "title": title}
+        )
 
     def _all_plt_objs(self) -> bool:
         for obj in self._graphics_objs:

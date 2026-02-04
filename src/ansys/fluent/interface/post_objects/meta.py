@@ -22,8 +22,8 @@
 
 """Metaclasses used in various explicit classes in PyFluent."""
 
-from abc import ABC, abstractmethod
 import inspect
+from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterator, MutableMapping, Sequence
 from typing import (
     TYPE_CHECKING,
@@ -50,15 +50,15 @@ from typing_extensions import (
     get_original_bases,
 )
 
-from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
-from ansys.fluent.interface.post_objects.post_object_definitions import (
-    BasePostObjectDefn,
-    Defns,
-)
-
 if TYPE_CHECKING:
     from ansys.fluent.core.services.field_data import LiveFieldData
     from ansys.fluent.core.streaming_services.monitor_streaming import MonitorsManager
+
+    from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
+    from ansys.fluent.interface.post_objects.post_object_definitions import (
+        BasePostObjectDefn,
+        Defns,
+    )
     from ansys.fluent.interface.post_objects.post_objects_container import Container
 
 # pylint: disable=unused-private-member
@@ -117,7 +117,7 @@ class Attribute(Generic[_SelfT, _T_co]):
 
     def __set__(
         self,
-        instance: _SelfT,    # pyright: ignore[reportGeneralTypeIssues]
+        instance: _SelfT,  # pyright: ignore[reportGeneralTypeIssues]
         value: _T_co,  # pyright: ignore[reportGeneralTypeIssues]
     ) -> Never:
         raise AttributeError("Attributes are read only.")
@@ -128,7 +128,7 @@ class Attribute(Generic[_SelfT, _T_co]):
     @overload
     def __get__(
         self,
-        instance: _SelfT,    # pyright: ignore[reportGeneralTypeIssues]
+        instance: _SelfT,  # pyright: ignore[reportGeneralTypeIssues]
         _,
     ) -> _T_co: ...
 
@@ -224,9 +224,10 @@ TT = TypeVar("TT", bound=type)
 T = TypeVar("T")
 T2 = TypeVar("T2")
 
-AccessorT = TypeVar("AccessorT", bound=BasePostObjectDefn)
+AccessorT = TypeVar("AccessorT", bound="BasePostObjectDefn")
 
 ParentT = TypeVar("ParentT")
+
 
 class PyLocalBase(Generic[ParentT]):
     """Local base."""
@@ -247,7 +248,7 @@ class PyLocalBase(Generic[ParentT]):
         assert parent is not None
         return parent
 
-    def get_root(self, instance=None) -> Container:
+    def get_root(self, instance=None) -> "Container":
         instance = self if instance is None else instance
         parent = instance
         if hasattr(instance, "_parent"):
@@ -264,7 +265,7 @@ class PyLocalBase(Generic[ParentT]):
         return self._name
 
     @property
-    def root(self) -> Container:
+    def root(self) -> "Container":
         """Top-most parent object."""
         return self.get_root(self)
 
@@ -288,6 +289,7 @@ class PyLocalBase(Generic[ParentT]):
         """Monitors associated with the current object."""
         return self.session.monitors
 
+
 ParentT = TypeVar("ParentT")
 
 
@@ -296,7 +298,9 @@ class PyLocalProperty(PyLocalBase[ParentT], Generic[ParentT, T]):
 
     value: T  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    def __init__(self, parent: ParentT, api_helper: type[PostAPIHelper], name: str = ""):
+    def __init__(
+        self, parent: ParentT, api_helper: "type[PostAPIHelper]", name: str = ""
+    ):
         super().__init__(parent, name)
         self._api_helper = api_helper(self)
         self._on_change_cbs = []
@@ -404,13 +408,11 @@ class PyLocalProperty(PyLocalBase[ParentT], Generic[ParentT, T]):
 #             delattr(self, "_object")
 
 
-
-
 class PyLocalObject(PyLocalBase[ParentT]):
     """Local object classes."""
 
     def __init__(
-        self, parent: ParentT, api_helper: type[PostAPIHelper], name: str = ""
+        self, parent: ParentT, api_helper: "type[PostAPIHelper]", name: str = ""
     ):
         """Create the initialization method for 'PyLocalObjectMeta'."""
         super().__init__(parent, name)
@@ -420,7 +422,9 @@ class PyLocalObject(PyLocalBase[ParentT]):
 
         update(self.__class__)
 
-    def _add_classes_to_instance(self, clss: type[PyLocalBase[object]], api_helper: type[PostAPIHelper]) -> None:
+    def _add_classes_to_instance(
+        self, clss: type[PyLocalBase[object]], api_helper: "type[PostAPIHelper]"
+    ) -> None:
         for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
             if issubclass(cls, PyLocalCommand):
                 self._command_names.append(name)
@@ -536,7 +540,9 @@ CallKwargs = TypeVar("CallKwargs", bound=TypedDict)
 class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs], ABC):
     """Local object metaclass."""
 
-    def __init__(self, parent: ParentT, api_helper: type[PostAPIHelper], name: str = ""):
+    def __init__(
+        self, parent: ParentT, api_helper: "type[PostAPIHelper]", name: str = ""
+    ):
         self._parent = parent
         self._name = name
         self._api_helper = api_helper(self)
@@ -549,7 +555,7 @@ class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs], ABC):
         """Execute command."""
         raise NotImplementedError("not implemented")
 
-    def _update(self, api_helper: type[PostAPIHelper]) -> None:
+    def _update(self, api_helper: "type[PostAPIHelper]") -> None:
         def update(clss) -> None:
             for name, cls in inspect.getmembers(clss, predicate=inspect.isclass):
                 if issubclass(cls, PyLocalProperty):
@@ -573,9 +579,10 @@ class PyLocalCommand(PyLocalObject[ParentT], Generic[ParentT, CallKwargs], ABC):
 
 class PyLocalNamedObject(PyLocalObject[ParentT]):
     """Base class for local named object classes."""
+
     PLURAL: str
 
-    def __init__(self, name: str, parent: ParentT, api_helper: type[PostAPIHelper]):
+    def __init__(self, name: str, parent: ParentT, api_helper: "type[PostAPIHelper]"):
         self._name = name
         self._api_helper = api_helper(self)
         self._parent = parent
@@ -614,8 +621,7 @@ class PyLocalNamedObject(PyLocalObject[ParentT]):
         def create(self) -> Self: ...
 
 
-
-DefnT = TypeVar("DefnT", bound=Defns, default=Defns)
+DefnT = TypeVar("DefnT", bound="Defns", default="Defns")
 
 
 def if_type_checking_instantiate(
@@ -639,7 +645,7 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
         self,
         parent: "Container",
         object_class: type[PyLocalNamedObject[Any]],
-        api_helper: type[PostAPIHelper],
+        api_helper: "type[PostAPIHelper]",
         name: str = "",
     ):
         """Initialize the 'PyLocalContainer' object."""
@@ -689,14 +695,14 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
                     cls(self, api_helper, name),
                 )
 
-    def get_root(self, obj: "PyLocalContainer | None" = None) -> Container:
+    def get_root(self, obj: "PyLocalContainer | None" = None) -> "Container":
         """Returns the top-most parent object."""
         obj = self if obj is None else obj
         parent = obj
         if getattr(obj, "_parent", None):
             parent = self.get_root(obj._parent)
-        assert isinstance(parent, Container)
-        return parent
+
+        return cast("Container", parent)
 
     def get_session(self, obj: "PyLocalContainer | None" = None) -> "Solver":
         """Returns the session object."""
@@ -762,7 +768,10 @@ class PyLocalContainer(MutableMapping[str, DefnT]):
         return unique_name
 
     if TYPE_CHECKING:
-        def create(self, ): ...
+
+        def create(
+            self,
+        ): ...
 
     class Delete(PyLocalCommand["PyLocalContainer", _DeleteKwargs]):
         """Local delete command."""

@@ -22,8 +22,8 @@
 
 import sys
 
-from ansys.units import VariableCatalog
 import pytest
+from ansys.units import VariableCatalog
 
 from ansys.fluent.interface.post_objects.post_object_definitions import ContourDefn
 
@@ -40,10 +40,10 @@ else:
 from unittest.mock import patch
 
 import ansys.fluent.core as pyfluent
-from ansys.fluent.core import examples
 import numpy as np
 import pytest
 import pyvista as pv
+from ansys.fluent.core import examples
 
 from ansys.fluent.visualization import (
     Contour,

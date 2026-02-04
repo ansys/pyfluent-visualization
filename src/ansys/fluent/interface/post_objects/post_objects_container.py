@@ -25,7 +25,7 @@
 import builtins
 import inspect
 import types
-from typing import Any, ClassVar, Literal, TypeVar
+from typing import Any, ClassVar, Literal, TypeAlias, TypeVar
 
 from ansys.fluent.core.session import BaseSession
 from ansys.fluent.core.session_solver import Solver
@@ -36,13 +36,17 @@ from ansys.fluent.interface.post_objects.meta import (
     PyLocalNamedObject,
 )
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
-from ansys.fluent.interface.post_objects.post_object_definitions import ContourDefn, MeshDefn, SurfaceDefn, VectorDefn
-from ansys.fluent.visualization import Contour, Surface, Vector
-from ansys.fluent.visualization.containers import Pathline
-from ansys.fluent.visualization.graphics.graphics_objects import Mesh
-from ansys.fluent.visualization.plotter.plotter_objects import MonitorPlot, XYPlot
+from ansys.fluent.interface.post_objects.post_object_definitions import (
+    ContourDefn,
+    MeshDefn,
+    MonitorDefn,
+    PathlinesDefn,
+    SurfaceDefn,
+    VectorDefn,
+    XYPlotDefn,
+)
 
-LocalSurfacesProvider = PyLocalContainer[Surface]
+LocalSurfacesProvider: TypeAlias = PyLocalContainer[SurfaceDefn]
 
 T = TypeVar("T")
 
@@ -89,8 +93,8 @@ class Container:
             self._init_module(self, module, post_api_helper)
         else:
             self.__dict__ = session_state
-        self._local_surfaces_provider = lambda: local_surfaces_provider or getattr(
-            self, "Surfaces", {}
+        self._local_surfaces_provider = lambda: (
+            local_surfaces_provider or getattr(self, "Surfaces", {})
         )
 
     def get_path(self) -> str:
@@ -196,10 +200,10 @@ class Plots(Container):
 
     _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
     XYPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        XYPlot
+        XYPlotDefn
     ]
     MonitorPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        MonitorPlot
+        MonitorDefn
     ]
 
     def __init__(
@@ -258,7 +262,7 @@ class Graphics(Container):
         VectorDefn
     ]
     Pathlines: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
-        Pathline
+        PathlinesDefn
     ]
 
     def __init__(

@@ -55,7 +55,7 @@ class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
     """Base class for visualization objects."""
 
     @abc.abstractmethod
-    def get_root(self, instance: object = None) -> Container:
+    def get_root(self, instance: object = None) -> "Container":
         raise NotImplementedError
 
     surfaces: Callable[[], Sequence[str]]

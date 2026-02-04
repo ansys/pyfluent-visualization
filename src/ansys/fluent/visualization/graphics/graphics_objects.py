@@ -22,8 +22,9 @@
 
 """Module providing visualization objects for PyVista."""
 
-from abc import ABC
 import sys
+from abc import ABC
+from typing import TYPE_CHECKING
 
 from ansys.fluent.interface.post_objects.meta import Command, PyLocalContainer
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
@@ -36,11 +37,16 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
 )
 from ansys.fluent.interface.post_objects.post_objects_container import (
     Graphics as GraphicsContainer,
+)
+from ansys.fluent.interface.post_objects.post_objects_container import (
     LocalSurfacesProvider,
 )
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     graphics_windows_manager,
 )
+
+if TYPE_CHECKING:
+    from ansys.fluent.core.session_solver import Solver
 
 
 class Graphics(GraphicsContainer):
@@ -51,9 +57,9 @@ class Graphics(GraphicsContainer):
 
     def __init__(
         self,
-        session,
+        session: "Solver",
         post_api_helper: type[PostAPIHelper] = PostAPIHelper,
-        local_surfaces_provider: LocalSurfacesProvider |None =None,
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider
