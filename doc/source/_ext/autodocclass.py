@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Any, Optional
+from typing import Any
 
 from docutils.statemachine import StringList
 from sphinx.application import Sphinx
@@ -28,7 +28,7 @@ class PostDocumenter(ClassDocumenter):
         super().add_directive_header(sig)
         self.add_line("   ", self.get_sourcename())
 
-    def add_content(self, more_content: Optional[StringList]) -> None:
+    def add_content(self, more_content: StringList | None) -> None:
         super().add_content(more_content)
 
         source_name = self.get_sourcename()

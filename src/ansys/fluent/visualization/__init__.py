@@ -22,13 +22,27 @@
 
 """Python post processing integrations for the Fluent solver."""
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
+from importlib.metadata import version as _version
+
+from ansys.fluent.visualization.config import config as config
+from ansys.fluent.visualization.config import get_config as get_config
+from ansys.fluent.visualization.config import set_config as set_config
+from ansys.fluent.visualization.containers import Contour as Contour
+from ansys.fluent.visualization.containers import IsoSurface as IsoSurface
+from ansys.fluent.visualization.containers import Mesh as Mesh
+from ansys.fluent.visualization.containers import Monitor as Monitor
+from ansys.fluent.visualization.containers import Pathline as Pathline
+from ansys.fluent.visualization.containers import PlaneSurface as PlaneSurface
+from ansys.fluent.visualization.containers import Surface as Surface
+from ansys.fluent.visualization.containers import Vector as Vector
+from ansys.fluent.visualization.containers import XYPlot as XYPlot
+from ansys.fluent.visualization.graphics import Graphics as Graphics
+from ansys.fluent.visualization.plotter import Plots as Plots
+from ansys.fluent.visualization.registrar import register_renderer as register_renderer
+from ansys.fluent.visualization.renderer import GraphicsWindow as GraphicsWindow
 
 _VERSION_INFO = None
-__version__ = importlib_metadata.version(__name__.replace(".", "-"))
+__version__ = _version(__name__.replace(".", "-"))
 
 
 def version_info() -> str:
@@ -44,21 +58,3 @@ def version_info() -> str:
         Only available in packaged versions. Otherwise it will return __version__.
     """
     return _VERSION_INFO if _VERSION_INFO is not None else __version__
-
-
-from ansys.fluent.visualization.config import config, get_config, set_config
-from ansys.fluent.visualization.containers import (  # noqa: F401
-    Contour,
-    IsoSurface,
-    Mesh,
-    Monitor,
-    Pathline,
-    PlaneSurface,
-    Surface,
-    Vector,
-    XYPlot,
-)
-from ansys.fluent.visualization.graphics import Graphics  # noqa: F401
-from ansys.fluent.visualization.plotter import Plots  # noqa: F401
-from ansys.fluent.visualization.registrar import register_renderer
-from ansys.fluent.visualization.renderer import GraphicsWindow

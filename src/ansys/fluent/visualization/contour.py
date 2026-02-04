@@ -22,7 +22,7 @@
 
 """Contour objects based on field name and surfaces list."""
 
-from typing import List, Optional
+from typing import Optional
 
 
 class Contour:
@@ -57,7 +57,7 @@ class Contour:
                     f"{surface} is not valid surface. Valid surfaces are {allowed_surfaces}"  # noqa: E501
                 )
 
-    def __init__(self, field: str, surfaces: List[str], solver: Optional = None):
+    def __init__(self, field: str, surfaces: list[str], solver: Optional = None):
         """Create contour using field name and surfaces list.
 
         Parameters
@@ -95,25 +95,30 @@ class Contour:
         -------
         Graphics or solver-based contour object.
         """
+        from ansys.fluent.core.session_solver import Solver
+
+        from ansys.fluent.visualization.graphics import Graphics
+
         self._error_check(solver)
         graphics_mode = target
         existing_contours = (
             solver.results.graphics.contour.get_object_names()
-            if graphics_mode.__class__.__name__ == "Solver"
+            if isinstance(graphics_mode, Solver)
             else graphics_mode.Contours.allowed_values()
         )
         contour_name = self._get_contour_name()
         if contour_name not in existing_contours:
-            if graphics_mode.__class__.__name__ == "Graphics":
+            if isinstance(graphics_mode, Graphics):
                 contour = graphics_mode.Contours[contour_name]
                 contour.field = self.field
                 contour.surfaces = self.surfaces
                 contour.display()
                 return contour
-            elif graphics_mode.__class__.__name__ == "Solver":
+            elif isinstance(graphics_mode, Solver):
                 solver.results.graphics.contour[contour_name] = {
                     "field": self.field,
                     "surfaces": self.surfaces,
                 }
                 solver.results.graphics.contour.display(object_name=contour_name)
+                return solver.results.graphics.contour[contour_name]
                 return solver.results.graphics.contour[contour_name]

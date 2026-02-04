@@ -22,9 +22,37 @@
 
 """Module providing visualization objects."""
 
+import builtins
 import inspect
+import types
+from typing import Any, ClassVar, Literal, TypeAlias, TypeVar
 
-from ansys.fluent.interface.post_objects.meta import PyLocalContainer
+from ansys.fluent.core.session import BaseSession
+from ansys.fluent.core.session_solver import Solver
+from typing_extensions import TypeIs
+
+from ansys.fluent.interface.post_objects.meta import (
+    PyLocalContainer,
+    PyLocalNamedObject,
+)
+from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
+from ansys.fluent.interface.post_objects.post_object_definitions import (
+    ContourDefn,
+    MeshDefn,
+    MonitorDefn,
+    PathlinesDefn,
+    SurfaceDefn,
+    VectorDefn,
+    XYPlotDefn,
+)
+
+LocalSurfacesProvider: TypeAlias = PyLocalContainer[SurfaceDefn]
+
+T = TypeVar("T")
+
+
+def is_container(obj: Any) -> TypeIs["PyLocalContainer"]:
+    return isinstance(obj, PyLocalContainer)
 
 
 class Container:
@@ -46,62 +74,59 @@ class Container:
         external modules (e.g., PyVista). Defaults to ``None``.
     """
 
+    _sessions_state: ClassVar[dict[Solver, dict[str, Any]]]
+
     def __init__(
         self,
-        session,
-        container_type,
-        module,
-        post_api_helper,
-        local_surfaces_provider=None,
+        session: Solver,
+        module: types.ModuleType,
+        post_api_helper: type[PostAPIHelper],
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
     ):
         """__init__ method of Container class."""
-        session_state = container_type._sessions_state.get(session)
-        self._path = container_type.__name__
+        session_state = self.__class__._sessions_state.get(session)
+        self._path = self.__class__.__name__
         if not session_state:
             session_state = self.__dict__
-            container_type._sessions_state[session] = session_state
+            self.__class__._sessions_state[session] = session_state
             self.session = session
             self._init_module(self, module, post_api_helper)
         else:
             self.__dict__ = session_state
-        self._local_surfaces_provider = lambda: local_surfaces_provider or getattr(
-            self, "Surfaces", []
+        self._local_surfaces_provider = lambda: (
+            local_surfaces_provider or getattr(self, "Surfaces", {})
         )
 
-    def get_path(self):
+    def get_path(self) -> str:
         """Get container path."""
         return self._path
 
     @property
-    def type(self):
+    def type(self) -> Literal["object"]:
         """Type."""
         return "object"
 
-    def update(self, value):
+    def update(self, value: dict[str, Any]) -> None:
         """Update the value."""
         for name, val in value.items():
             o = getattr(self, name)
             o.update(val)
 
-    def __call__(self, show_attributes=False):
-        state = {}
-        for name, cls in self.__dict__.items():
-            o = getattr(self, name)
-            if o is None or name.startswith("_") or name.startswith("__"):
-                continue
-
-            if cls.__class__.__name__ == "PyLocalContainer":
-                container = o
-                if getattr(container, "is_active", True):
-                    state[name] = {}
-                    for child_name in container:
-                        o = container[child_name]
-                        if getattr(o, "is_active", True):
-                            state[name][child_name] = o()
+    def __call__(self, show_attributes: bool = False) -> dict[str, Any]:
+        state: dict[str, Any] = {}
+        for name, container in inspect.getmembers(self, predicate=is_container):
+            if getattr(container, "is_active", True):
+                state[name] = {}
+                for child_name in container:
+                    o = container[child_name]
+                    if getattr(o, "is_active", True):
+                        state[name][child_name] = o()
 
         return state
 
-    def _init_module(self, obj, mod, post_api_helper):
+    def _init_module(
+        self, obj, mod: types.ModuleType, post_api_helper: builtins.type[PostAPIHelper]
+    ):
         """
         Dynamically initializes and attaches containers for classes in a module.
 
@@ -116,34 +141,29 @@ class Container:
         dynamically added to each container for creating and initializing new objects.
         """
         # Iterate through all attributes in the module's dictionary
-        for name, cls in mod.__dict__.items():
-            if cls.__class__.__name__ in (
-                "PyLocalNamedObjectMetaAbstract",
-            ) and not inspect.isabstract(cls):
+        for name, cls in inspect.getmembers(mod, predicate=inspect.isclass):
+            if issubclass(cls, PyLocalNamedObject) and not inspect.isabstract(cls):
                 cont = PyLocalContainer(self, cls, post_api_helper, cls.PLURAL)
 
                 # Define a method to add a "create" function to the container
-                def _add_create(py_cont):
-                    def _create(**kwargs):
-                        new_object = py_cont.__getitem__(
-                            py_cont._get_unique_chid_name()
+                def _create(**kwargs):
+                    new_object = cont[cont._get_unique_child_name()]
+                    state = new_object()
+                    assert state is not None
+                    # Validate that all kwargs are valid attributes for the object
+                    unexpected_args = set(kwargs) - set(state)
+                    if unexpected_args:
+                        raise TypeError(
+                            f"create() got an unexpected keyword argument '{next(iter(unexpected_args))}'."  # noqa: E501
                         )
-                        # Validate that all kwargs are valid attributes for the object
-                        unexpected_args = set(kwargs) - set(new_object())
-                        if unexpected_args:
-                            raise TypeError(
-                                f"create() got an unexpected keyword argument '{next(iter(unexpected_args))}'."  # noqa: E501
-                            )
-                        for key, value in kwargs.items():
-                            if key == "surfaces":
-                                value = list(value)
-                            setattr(new_object, key, value)
-                        return new_object
-
-                    return _create
+                    for key, value in kwargs.items():
+                        if key == "surfaces":
+                            value = list(value)
+                        setattr(new_object, key, value)
+                    return new_object
 
                 # Attach the create method to the container
-                setattr(cont, "create", _add_create(cont))
+                setattr(cont, "create", _create)
                 # Attach the container to the parent object
                 setattr(
                     obj,
@@ -178,13 +198,25 @@ class Plots(Container):
         Container for monitor plot objects.
     """
 
-    _sessions_state = {}
+    _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
+    XYPlots: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+        XYPlotDefn
+    ]
+    MonitorPlots: (
+        PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+            MonitorDefn
+        ]
+    )
 
-    def __init__(self, session, module, post_api_helper, local_surfaces_provider=None):
+    def __init__(
+        self,
+        session: Solver,
+        module: types.ModuleType,
+        post_api_helper: type[PostAPIHelper],
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
+    ):
         """__init__ method of Plots class."""
-        super().__init__(
-            session, self.__class__, module, post_api_helper, local_surfaces_provider
-        )
+        super().__init__(session, module, post_api_helper, local_surfaces_provider)
 
 
 class Graphics(Container):
@@ -217,27 +249,47 @@ class Graphics(Container):
         Container for vector objects.
     """
 
-    _sessions_state = {}
+    # TODO double triple check these local container types are correct cause something seems off vs Mesh
+    _sessions_state: ClassVar[dict[BaseSession, dict[str, Any]]] = {}
+    Meshes: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+        MeshDefn
+    ]
+    Surfaces: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+        SurfaceDefn
+    ]
+    Contours: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+        ContourDefn
+    ]
+    Vectors: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+        VectorDefn
+    ]
+    Pathlines: PyLocalContainer[  # pyright: ignore[reportUninitializedInstanceVariable]
+        PathlinesDefn
+    ]
 
-    def __init__(self, session, module, post_api_helper, local_surfaces_provider=None):
+    def __init__(
+        self,
+        session: Solver,
+        module: types.ModuleType,
+        post_api_helper: type[PostAPIHelper],
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
+    ):
         """__init__ method of Graphics class."""
-        super().__init__(
-            session, self.__class__, module, post_api_helper, local_surfaces_provider
-        )
+        super().__init__(session, module, post_api_helper, local_surfaces_provider)
 
-    def add_outline_mesh(self):
+    def add_outline_mesh(self) -> MeshDefn | None:
         """Add a mesh outline.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        None
+        Mesh | None
+            The outline mesh object if it exists, otherwise ``None``.
         """
-        meshes = getattr(self, "Meshes", None)
-        if meshes is not None:
+        try:
+            meshes = self.Meshes
+        except AttributeError:
+            return
+        else:
             outline_mesh_id = "mesh-outline"
             outline_mesh = meshes[outline_mesh_id]
             outline_mesh.surfaces = [

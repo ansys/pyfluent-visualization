@@ -24,8 +24,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
-importlib-metadata = {version = "^4.0", python = "<3.9"}
-ansys-fluent-core = "~=0.38.dev0"
+ansys-fluent-core = { git = "https://github.com/ansys/pyfluent", branch = "jhilton/typing-improvements" }
+ansys-units = "0.10.0"
 pyvista = ">=0.44.0"
 matplotlib = ">=3.6.0"
 pyvistaqt = { version = "~=0.11.1", optional = true }
@@ -34,6 +34,7 @@ pyside6 = { version = "~=6.8.1", optional = true }
 [tool.poetry.extras]
 interactive = ["pyvistaqt"]
 single-window = ["pyvistaqt", "pyside6"]
+ci_types = ["pyvistaqt", "pyside6", "ipython"]
 
 [tool.poetry.urls]
 "Documentation" = "https://visualization.fluent.docs.pyansys.com/"
@@ -77,3 +78,15 @@ skips = [
     "B604",
     "B607",
     ]
+
+[tool.basedpyright]
+reportAny = false
+reportUnknownMemberType = false
+reportExplicitAny = false
+reportPrivateUsage = false
+reportUnusedCallResult = false
+reportUnannotatedClassAttribute = false
+reportPrivateImportUsage = false
+ignore = ["doc"]
+reportMissingTypeStubs=false
+baselineFile = ".ci/basedpyright.json"

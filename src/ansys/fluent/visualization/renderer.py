@@ -21,13 +21,24 @@
 # SOFTWARE.
 
 """A wrapper to improve the user interface of graphics."""
-import warnings
+
+from collections.abc import Iterable
+from typing import Any, Literal
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
+    XYPlotDefn,
 )
 import ansys.fluent.visualization as pyviz
+from ansys.fluent.visualization.containers import (
+    Contour,
+    Mesh,
+    Monitor,
+    Pathline,
+    Surface,
+    Vector,
+)
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.graphics.graphics_windows import _GraphicsWindow
 from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
@@ -58,7 +69,7 @@ class GraphicsWindow:
     >>> graphics_window.show()
     """
 
-    def __init__(self, renderer=None):
+    def __init__(self, renderer: Literal["pyvista", "matplotlib"] | str | None = None):
         """__init__ method of GraphicsWindow class."""
         self._graphics_objs = []
         self.window_id = None
@@ -68,10 +79,10 @@ class GraphicsWindow:
 
     def add_graphics(
         self,
-        graphics_obj,
-        position: tuple = (0, 0),
+        graphics_obj: Mesh | Surface | Contour | Vector | Pathline,
+        position: tuple[int, int] = (0, 0),
         opacity: float = 1,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """Add graphics-data to a window.
 
@@ -85,17 +96,16 @@ class GraphicsWindow:
             Transparency of the sub-plot.
         """
         self._list_of_positions.append(position)
-        if isinstance(graphics_obj._obj, GraphicsDefn):
-            locals()["object"] = locals().pop("graphics_obj")
-            self._graphics_objs.append({**locals()})
-        else:
-            warnings.warn("Only graphics objects are supported.")
+        self._graphics_objs.append(
+            kwargs | {"object": graphics_obj, "position": position, "opacity": opacity}
+        )
 
     def add_plot(
         self,
-        plot_obj,
-        position: tuple = (0, 0),
-        **kwargs,
+        plot_obj: Monitor | XYPlotDefn,
+        position: tuple[int, int] = (0, 0),
+        title: str | None = None,
+        **kwargs: Any,
     ) -> None:
         """Add 2D plot-data to a window.
 
@@ -109,20 +119,18 @@ class GraphicsWindow:
             Title of the sub-plot.
         """
         self._list_of_positions.append(position)
-        if isinstance(plot_obj._obj, PlotDefn):
-            locals()["object"] = locals().pop("plot_obj")
-            self._graphics_objs.append({**locals()})
-        else:
-            warnings.warn("Only 2D plot objects are supported.")
+        self._graphics_objs.append(
+            kwargs | {"object": plot_obj, "position": position, "title": title}
+        )
 
-    def _all_plt_objs(self):
+    def _all_plt_objs(self) -> bool:
         for obj in self._graphics_objs:
             if not isinstance(obj["object"]._obj, PlotDefn):
                 return False
         return True
 
     @staticmethod
-    def _show_find_grid_size(points):
+    def _show_find_grid_size(points: Iterable[tuple[int, int]]) -> tuple[int, int]:
         # Extract x and y coordinates separately
         x_coords = {p[0] for p in points}
         y_coords = {p[1] for p in points}

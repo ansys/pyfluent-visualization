@@ -24,7 +24,7 @@
 
 import itertools
 import multiprocessing as mp
-from typing import Dict, List, Optional, Union
+from typing import Union
 
 from ansys.fluent.core.fluent_connection import FluentConnection
 
@@ -121,7 +121,7 @@ class PlotterWindow(VisualizationWindow):
         self.id: str = id
         self.post_object = None
         self._grid = grid
-        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = self._get_plotter(
+        self.plotter: _ProcessPlotterHandle | Plotter = self._get_plotter(
             plotter_string=renderer
         )
         self.close: bool = False
@@ -131,10 +131,12 @@ class PlotterWindow(VisualizationWindow):
 
     def plot(self, grid=(1, 1), position=(0, 0), show=True, subplot_titles=None):
         """Draw a plot."""
+        from ansys.fluent.visualization.containers import XYPlot
+
         if self.post_object is not None:
             plot = (
                 _XYPlot(self.post_object, self.plotter)
-                if self.post_object.__class__.__name__ == "XYPlot"
+                if isinstance(self.post_object, XYPlot)
                 else _MonitorPlot(self.post_object, self.plotter)
             )
             plot_data = plot()
@@ -152,6 +154,8 @@ class PlotterWindow(VisualizationWindow):
             self.plotter.show()
 
     def plot_graphics(self, object_list):
+        from ansys.fluent.visualization.containers import XYPlot
+
         self._obj_list = object_list
         if self.refresh:
             self._object_list_to_render = []
@@ -159,7 +163,7 @@ class PlotterWindow(VisualizationWindow):
             self.post_object = obj_dict["object"]._obj
             plot = (
                 _XYPlot(self.post_object, self.plotter)
-                if self.post_object.__class__.__name__ == "XYPlot"
+                if isinstance(self.post_object, XYPlot)
                 else _MonitorPlot(self.post_object, self.plotter)
             )
 
@@ -226,7 +230,7 @@ class _XYPlot:
             Plotter to plot the data.
         """
         self.post_object: XYPlotDefn = post_object
-        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
+        self.plotter: _ProcessPlotterHandle | Plotter = plotter
 
     def __call__(self):
         """Draw an XY plot."""
@@ -258,7 +262,7 @@ class _MonitorPlot:
             Plotter to plot the data.
         """
         self.post_object: MonitorDefn = post_object
-        self.plotter: Union[_ProcessPlotterHandle, "Plotter"] = plotter
+        self.plotter: _ProcessPlotterHandle | Plotter = plotter
 
     def __call__(self):
         """Draw a monitor plot."""
@@ -289,7 +293,7 @@ class PlotterWindowsManager(
 
     def __init__(self):
         """Instantiate a windows manager for the plotter."""
-        self._post_windows: Dict[str, PlotterWindow] = {}
+        self._post_windows: dict[str, PlotterWindow] = {}
 
     def open_window(
         self,
@@ -343,7 +347,7 @@ class PlotterWindowsManager(
     def plot(
         self,
         object: PlotDefn,
-        window_id: Optional[str] = None,
+        window_id: str | None = None,
         grid=(1, 1),
         position=(0, 0),
         subplot_titles=None,
@@ -413,9 +417,9 @@ class PlotterWindowsManager(
 
     def refresh_windows(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
-        overlay: Optional[bool] = None,
+        overlay: bool | None = None,
     ) -> None:
         """Refresh windows.
 
@@ -440,7 +444,7 @@ class PlotterWindowsManager(
 
     def animate_windows(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
     ) -> None:
         """Animate windows.
@@ -465,7 +469,7 @@ class PlotterWindowsManager(
 
     def close_windows(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
     ) -> None:
         """Close windows.
@@ -510,9 +514,9 @@ class PlotterWindowsManager(
 
     def _get_windows_id(
         self,
-        session_id: Optional[str] = "",
+        session_id: str | None = "",
         windows_id=None,
-    ) -> List[str]:
+    ) -> list[str]:
         if windows_id is None:
             windows_id = []
         return [
