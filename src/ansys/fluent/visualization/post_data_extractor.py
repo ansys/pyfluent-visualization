@@ -24,7 +24,6 @@
 
 import itertools
 
-import numpy as np
 from ansys.fluent.core.field_data_interfaces import (
     PathlinesFieldDataRequest,
     ScalarFieldDataRequest,
@@ -32,6 +31,7 @@ from ansys.fluent.core.field_data_interfaces import (
     SurfaceFieldDataRequest,
     VectorFieldDataRequest,
 )
+import numpy as np
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,

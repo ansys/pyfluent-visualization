@@ -22,9 +22,9 @@
 
 """Metaclasses used in various explicit classes in PyFluent."""
 
-import inspect
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterator, MutableMapping, Sequence
+import inspect
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -626,7 +626,9 @@ DefnT = TypeVar("DefnT", bound="Defns", default="Defns")
 
 def if_type_checking_instantiate(
     type: type[T],
-) -> T:  # the current behaviour has all of the classes that use this initialised in the XXX class
+) -> (
+    T
+):  # the current behaviour has all of the classes that use this initialised in the XXX class
     return cast(T, type)  # this is hopefully obviously unsafe
 
 

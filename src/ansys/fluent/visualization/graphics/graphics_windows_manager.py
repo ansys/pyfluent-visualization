@@ -22,20 +22,20 @@
 
 """Module for graphics windows management."""
 
+from enum import Enum
 import itertools
 import threading
-from enum import Enum
 
 import numpy as np
 import pyvista as pv
 
-import ansys.fluent.visualization as pyviz
 from ansys.fluent.interface.post_objects.check_in_notebook import in_jupyter
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
 )
 from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
     XYPlotDataExtractor,

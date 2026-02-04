@@ -26,7 +26,6 @@
 """Containers for graphics."""
 
 import abc
-import warnings
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -37,6 +36,7 @@ from typing import (
     TypedDict,
     Unpack,
 )
+import warnings
 
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
@@ -98,8 +98,12 @@ class _GraphicsContainer(Generic[DefnT]):
     if TYPE_CHECKING:
         # we have these due to inheriting from the ABCs at type time but the attributes coming from ._obj
         # the type checker thinks they aren't valid to instantiate otherwise
-        def get_root(self, instance: object = None) -> Container: ...  # pyright: ignore[reportUnusedParameter]
-        def display(self, window_id: str | None = None) -> None: ...  # pyright: ignore[reportUnusedParameter]
+        def get_root(
+            self, instance: object = None
+        ) -> Container: ...  # pyright: ignore[reportUnusedParameter]
+        def display(
+            self, window_id: str | None = None
+        ) -> None: ...  # pyright: ignore[reportUnusedParameter]
 
         surfaces: Any  # pyright: ignore[reportUninitializedInstanceVariable]  # something is definitely bugged here in the type checker as () -> list[str doesn't work]
     else:

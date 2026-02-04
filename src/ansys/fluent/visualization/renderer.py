@@ -25,12 +25,12 @@
 from collections.abc import Iterable
 from typing import Any, Literal
 
-import ansys.fluent.visualization as pyviz
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     GraphicsDefn,
     PlotDefn,
     XYPlotDefn,
 )
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.containers import (
     Contour,
     Mesh,

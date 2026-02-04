@@ -28,7 +28,6 @@ from typing import Union
 
 from ansys.fluent.core.fluent_connection import FluentConnection
 
-import ansys.fluent.visualization as pyviz
 from ansys.fluent.interface.post_objects.check_in_notebook import in_jupyter
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     MonitorDefn,
@@ -36,6 +35,7 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
     XYPlotDefn,
 )
 from ansys.fluent.interface.post_objects.singleton_meta import AbstractSingletonMeta
+import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.plotter.matplotlib.renderer import ProcessPlotter
 from ansys.fluent.visualization.post_data_extractor import XYPlotDataExtractor
 from ansys.fluent.visualization.visualization_windows_manager import (

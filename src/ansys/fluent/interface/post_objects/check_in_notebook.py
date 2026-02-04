@@ -33,7 +33,8 @@ def in_jupyter() -> bool:
         from IPython import get_ipython
 
         return (
-            "IPKernelApp" in get_ipython().config  # pyright: ignore[reportOptionalMemberAccess]
+            "IPKernelApp"
+            in get_ipython().config  # pyright: ignore[reportOptionalMemberAccess]
         )
     except (ImportError, AttributeError):
         return False

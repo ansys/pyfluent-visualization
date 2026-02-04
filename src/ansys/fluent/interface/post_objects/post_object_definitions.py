@@ -23,9 +23,9 @@
 """Module providing visualization objects definition."""
 
 import abc
-import logging
 from abc import abstractmethod
 from collections.abc import Callable, Sequence
+import logging
 from typing import (
     TYPE_CHECKING,
     Literal,

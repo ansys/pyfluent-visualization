@@ -22,8 +22,8 @@
 
 """Module for pyVista windows management."""
 
-import importlib.util
 from collections.abc import Mapping, Sequence
+import importlib.util
 from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 import numpy as np
@@ -132,7 +132,9 @@ class Renderer(AbstractRenderer):
                 self.plotter, pv.Plotter
             )  # not sure why this isn't narrowing
             plotter = cast(pv.Plotter, self.plotter)
-            plotter.remove_actor(plotter.renderer.actors.copy())  # pyright: ignore[reportArgumentType]  # remove_actor uses functools.wraps internally which isn't typed for methods
+            plotter.remove_actor(
+                plotter.renderer.actors.copy()
+            )  # pyright: ignore[reportArgumentType]  # remove_actor uses functools.wraps internally which isn't typed for methods
         else:
             self.plotter.clear()
 
@@ -176,7 +178,9 @@ class Renderer(AbstractRenderer):
 
                 if isinstance(mesh, pv.DataSet):
                     if mesh.n_points > 0:
-                        self.plotter.add_mesh(mesh, **kwargs)  # pyright: ignore[reportAny]
+                        self.plotter.add_mesh(
+                            mesh, **kwargs
+                        )  # pyright: ignore[reportAny]
                 else:
                     y_range = None
                     chart = pv.Chart2D()

@@ -21,9 +21,9 @@
 # SOFTWARE.
 """Configuration variables for visualization."""
 
+from enum import Enum
 import os
 import warnings
-from enum import Enum
 
 from ansys.fluent.core import PyFluentDeprecationWarning
 

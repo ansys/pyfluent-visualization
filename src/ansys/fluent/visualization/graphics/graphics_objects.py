@@ -22,8 +22,8 @@
 
 """Module providing visualization objects for PyVista."""
 
-import sys
 from abc import ABC
+import sys
 from typing import TYPE_CHECKING
 
 from ansys.fluent.interface.post_objects.meta import Command, PyLocalContainer
