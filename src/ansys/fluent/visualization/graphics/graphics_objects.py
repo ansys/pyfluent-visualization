@@ -26,7 +26,7 @@ from abc import ABC
 import sys
 from typing import TYPE_CHECKING
 
-from ansys.fluent.interface.post_objects.meta import Command, PyLocalContainer
+from ansys.fluent.interface.post_objects.meta import Command
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
 from ansys.fluent.interface.post_objects.post_object_definitions import (
     ContourDefn,

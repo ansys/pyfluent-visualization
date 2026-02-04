@@ -36,18 +36,17 @@ from typing import (
     Unpack,
     cast,
     overload,
-    override,
 )
 
 from ansys.fluent.core.exceptions import DisallowedValuesError
 from ansys.fluent.core.session_solver import Solver
 from typing_extensions import (
-    NotRequired,
     ParamSpec,
     TypedDict,
     TypeVar,
     get_args,
     get_original_bases,
+    override,
 )
 
 if TYPE_CHECKING:
@@ -358,9 +357,11 @@ class PyLocalProperty(PyLocalBase[ParentT], Generic[ParentT, T]):
     @Attribute
     @overload
     def allowed_values(self: "PyLocalProperty[Any, Sequence[T2]]") -> Sequence[T2]: ...
+
     @Attribute
     @overload
     def allowed_values(self: "PyLocalProperty[Any, T2]") -> Sequence[T2]: ...
+
     @Attribute
     def allowed_values(self) -> Sequence[object]:
         """Get allowed values."""
@@ -609,8 +610,6 @@ class PyLocalNamedObject(PyLocalObject[ParentT]):
                         cls.PLURAL,
                         PyLocalContainer(self, cls, api_helper, cls.PLURAL),
                     )
-                # elif issubclass(cls, PyReferenceObject):
-                #     setattr(self, name, cls(self, cls.PATH, cls.LOCATION, cls.SESSION))
             for base_class in clss.__bases__:
                 update(base_class)
 

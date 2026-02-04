@@ -1350,14 +1350,6 @@
                 }
             },
             {
-                "code": "reportUnusedImport",
-                "range": {
-                    "startColumn": 4,
-                    "endColumn": 15,
-                    "lineCount": 1
-                }
-            },
-            {
                 "code": "reportUnknownParameterType",
                 "range": {
                     "startColumn": 33,
@@ -6716,14 +6708,6 @@
         ],
         "./src/ansys/fluent/visualization/plotter/plotter_objects.py": [
             {
-                "code": "reportUnusedImport",
-                "range": {
-                    "startColumn": 4,
-                    "endColumn": 15,
-                    "lineCount": 1
-                }
-            },
-            {
                 "code": "reportUnknownParameterType",
                 "range": {
                     "startColumn": 8,
@@ -9511,14 +9495,6 @@
             }
         ],
         "./src/ansys/fluent/visualization/renderer.py": [
-            {
-                "code": "reportUnusedImport",
-                "range": {
-                    "startColumn": 4,
-                    "endColumn": 16,
-                    "lineCount": 1
-                }
-            },
             {
                 "code": "reportUnknownVariableType",
                 "range": {

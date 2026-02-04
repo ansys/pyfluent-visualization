@@ -31,7 +31,6 @@ from typing import (
     Any,
     Generic,
     Literal,
-    Required,
     Self,
     TypedDict,
     Unpack,
@@ -41,7 +40,7 @@ import warnings
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
 from ansys.units import VariableDescriptor
-from typing_extensions import TypeVar, override
+from typing_extensions import Required, TypeVar, override
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots

@@ -26,7 +26,6 @@ from collections.abc import Iterable
 from typing import Any, Literal
 
 from ansys.fluent.interface.post_objects.post_object_definitions import (
-    GraphicsDefn,
     PlotDefn,
     XYPlotDefn,
 )
