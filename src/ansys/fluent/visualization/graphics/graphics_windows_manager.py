@@ -358,10 +358,11 @@ class GraphicsWindow(VisualizationWindow):
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:
                 clean_field = field.replace("\n", " ")
+                vect_title = obj_dict.get("title")
                 _mesh_dict["title"] = (
-                    obj_dict.get("title")
-                    or f"{vectors_of.capitalize()} "
-                    f"vectors colored by {clean_field}."
+                    f"{vectors_of.capitalize()} " f"vectors colored by {clean_field}."
+                    if vect_title is None
+                    else vect_title
                 )
                 _mesh_dict["position"] = obj_dict.get("position")
                 _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -377,10 +378,12 @@ class GraphicsWindow(VisualizationWindow):
                 _mesh_dict["kwargs"] = {}
                 if obj_dict is not None:
                     clean_field = field.replace("\n", " ")
+                    vect_title = obj_dict.get("title")
                     _mesh_dict["title"] = (
-                        obj_dict.get("title")
-                        or f"{vectors_of.capitalize()} "
+                        f"{vectors_of.capitalize()} "
                         f"vectors colored by {clean_field}."
+                        if vect_title is None
+                        else vect_title
                     )
                     _mesh_dict["position"] = obj_dict.get("position")
                     _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -423,8 +426,11 @@ class GraphicsWindow(VisualizationWindow):
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:
                 clean_field = field.replace("\n", " ")
+                path_title = obj_dict.get("title")
                 _mesh_dict["title"] = (
-                    obj_dict.get("title") or f"Pathlines colored by {clean_field}."
+                    f"Pathlines colored by {clean_field}."
+                    if path_title is None
+                    else path_title
                 )
                 _mesh_dict["position"] = obj_dict.get("position")
                 _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -488,9 +494,11 @@ class GraphicsWindow(VisualizationWindow):
                                 _mesh_dict["kwargs"] = {}
                                 if obj_dict is not None:
                                     clean_field = field.replace("\n", " ")
+                                    cont_title = obj_dict.get("title")
                                     _mesh_dict["title"] = (
-                                        obj_dict.get("title")
-                                        or f"Contour of {clean_field}."
+                                        f"Contour of {clean_field}."
+                                        if cont_title is None
+                                        else cont_title
                                     )
                                     _mesh_dict["position"] = obj_dict.get("position")
                                     _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -507,9 +515,11 @@ class GraphicsWindow(VisualizationWindow):
                                 _mesh_dict["kwargs"] = {}
                                 if obj_dict is not None:
                                     clean_field = field.replace("\n", " ")
+                                    cont_title = obj_dict.get("title")
                                     _mesh_dict["title"] = (
-                                        obj_dict.get("title")
-                                        or f"Contour of {clean_field}."
+                                        f"Contour of {clean_field}."
+                                        if cont_title is None
+                                        else cont_title
                                     )
                                     _mesh_dict["position"] = obj_dict.get("position")
                                     _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -530,8 +540,11 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
                             clean_field = field.replace("\n", " ")
+                            cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
-                                obj_dict.get("title") or f"Contour of {clean_field}."
+                                f"Contour of {clean_field}."
+                                if cont_title is None
+                                else cont_title
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -544,8 +557,11 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
                             clean_field = field.replace("\n", " ")
+                            cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
-                                obj_dict.get("title") or f"Contour of {clean_field}."
+                                f"Contour of {clean_field}."
+                                if cont_title is None
+                                else cont_title
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -566,8 +582,11 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
                             clean_field = field.replace("\n", " ")
+                            cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
-                                obj_dict.get("title") or f"Contour of {clean_field}."
+                                f"Contour of {clean_field}."
+                                if cont_title is None
+                                else cont_title
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -580,8 +599,11 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
                             clean_field = field.replace("\n", " ")
+                            cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
-                                obj_dict.get("title") or f"Contour of {clean_field}."
+                                f"Contour of {clean_field}."
+                                if cont_title is None
+                                else cont_title
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -599,8 +621,11 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
                             clean_field = field.replace("\n", " ")
+                            cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
-                                obj_dict.get("title") or f"Contour of {clean_field}."
+                                f"Contour of {clean_field}."
+                                if cont_title is None
+                                else cont_title
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -613,8 +638,11 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
                             clean_field = field.replace("\n", " ")
+                            cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
-                                obj_dict.get("title") or f"Contour of {clean_field}."
+                                f"Contour of {clean_field}."
+                                if cont_title is None
+                                else cont_title
                             )
                             _mesh_dict["position"] = obj_dict.get("position")
                             _mesh_dict["opacity"] = obj_dict.get("opacity")
@@ -648,7 +676,8 @@ class GraphicsWindow(VisualizationWindow):
             _mesh_dict = {"data": mesh, "show_edges": obj.show_edges(), "color": color}
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:
-                _mesh_dict["title"] = obj_dict.get("title") or obj._name
+                mesh_title = obj_dict.get("title")
+                _mesh_dict["title"] = obj._name if mesh_title is None else mesh_title
                 _mesh_dict["position"] = obj_dict.get("position")
                 _mesh_dict["opacity"] = obj_dict.get("opacity")
                 _mesh_dict["kwargs"] = obj_dict.get("kwargs")
@@ -661,7 +690,7 @@ class GraphicsWindow(VisualizationWindow):
             "position": obj_dict.get("position"),
             "kwargs": obj_dict.get("kwargs"),
         }
-        if obj_dict.get("title"):
+        if obj_dict.get("title") is not None:
             plot_dict["title"] = obj_dict.get("title")
         self._object_list_to_render.append([plot_dict])
 
@@ -671,7 +700,7 @@ class GraphicsWindow(VisualizationWindow):
             "position": obj_dict.get("position"),
             "kwargs": obj_dict.get("kwargs"),
         }
-        if obj_dict.get("title"):
+        if obj_dict.get("title") is not None:
             plot_dict["title"] = obj_dict.get("title")
         self._object_list_to_render.append([plot_dict])
 

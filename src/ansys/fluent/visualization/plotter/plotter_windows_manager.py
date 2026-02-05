@@ -164,7 +164,7 @@ class PlotterWindow(VisualizationWindow):
             )
 
             plot_data = plot()
-            if obj_dict.get("title"):
+            if obj_dict.get("title") is not None:
                 plot_data[1]["title"] = obj_dict["title"]
             self._object_list_to_render.append(
                 [
