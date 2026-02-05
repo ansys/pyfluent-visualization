@@ -71,6 +71,7 @@ class GraphicsWindow:
         graphics_obj,
         position: tuple = (0, 0),
         opacity: float = 1,
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """Add graphics-data to a window.
@@ -83,6 +84,8 @@ class GraphicsWindow:
             Position of the sub-plot.
         opacity: float, optional
             Transparency of the sub-plot.
+        title : str, optional
+            Title of the sub-plot.
         """
         self._list_of_positions.append(position)
         if isinstance(graphics_obj._obj, GraphicsDefn):
@@ -95,6 +98,7 @@ class GraphicsWindow:
         self,
         plot_obj,
         position: tuple = (0, 0),
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """Add 2D plot-data to a window.
