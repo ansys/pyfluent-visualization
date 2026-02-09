@@ -35,7 +35,7 @@ from ansys.fluent.visualization.post_data_extractor import (
 )
 
 
-class _GraphicsContainer:
+class GraphicsContainer:
     """Base class for graphics containers."""
 
     def __init__(self, solver, **kwargs):
@@ -64,7 +64,7 @@ class _GraphicsContainer:
         return sorted(set(super().__dir__()) | set(dir(self._obj)))
 
 
-class Mesh(_GraphicsContainer):
+class Mesh(GraphicsContainer):
     """Mesh visualization object.
 
     Creates a Fluent mesh graphic object on the specified surfaces.
@@ -111,7 +111,7 @@ class Mesh(_GraphicsContainer):
         )
 
 
-class Surface(_GraphicsContainer):
+class Surface(GraphicsContainer):
     """Surface definition for Fluent post-processing.
 
     The ``Surface`` class represents any Fluent surface generated for
@@ -371,7 +371,7 @@ class IsoSurface(Surface):
         )
 
 
-class Contour(_GraphicsContainer):
+class Contour(GraphicsContainer):
     """
     Contour visualization object.
 
@@ -426,7 +426,7 @@ class Contour(_GraphicsContainer):
         )
 
 
-class Vector(_GraphicsContainer):
+class Vector(GraphicsContainer):
     """Vector visualization object.
 
     Parameters
@@ -513,7 +513,7 @@ class Vector(_GraphicsContainer):
         setattr(self._obj, attr, value)
 
 
-class Pathline(_GraphicsContainer):
+class Pathline(GraphicsContainer):
     """Pathline visualization object.
 
     The ``Pathline`` class generates pathlines, which represent the trajectories
@@ -569,7 +569,7 @@ class Pathline(_GraphicsContainer):
         )
 
 
-class XYPlot(_GraphicsContainer):
+class XYPlot(GraphicsContainer):
     """XY plot visualization object.
 
     The ``XYPlot`` class creates a Fluent XY plot of a scalar field evaluated
@@ -633,7 +633,7 @@ class XYPlot(_GraphicsContainer):
         return XYPlotDataExtractor(self._obj).fetch_data()
 
 
-class Monitor(_GraphicsContainer):
+class Monitor(GraphicsContainer):
     """Monitor visualization object.
 
     The ``Monitor`` class provides access to Fluent monitor data for plotting,
