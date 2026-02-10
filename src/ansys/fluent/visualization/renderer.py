@@ -97,6 +97,7 @@ class GraphicsWindow:
         self,
         plot_obj,
         position: tuple = (0, 0),
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """Add 2D plot-data to a window.
@@ -112,7 +113,7 @@ class GraphicsWindow:
         """
         self._list_of_positions.append(position)
         if isinstance(plot_obj._obj, PlotDefn):
-            self._graphics_objs.append({"object": plot_obj, "position": position, "kwargs": kwargs})
+            self._graphics_objs.append({"object": plot_obj, "position": position, "title": title, "kwargs": kwargs})
         else:
         else:
             warnings.warn("Only 2D plot objects are supported.")
