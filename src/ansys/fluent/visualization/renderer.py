@@ -28,7 +28,7 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
     PlotDefn,
 )
 import ansys.fluent.visualization as pyviz
-from ansys.fluent.visualization.containers import GraphicsContainer
+from ansys.fluent.visualization.containers import GraphicsObject
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.graphics.graphics_windows import _GraphicsWindow
 from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
@@ -69,7 +69,7 @@ class GraphicsWindow:
 
     def add_graphics(
         self,
-        graphics_obj: GraphicsContainer,
+        graphics_obj: GraphicsObject,
         position: tuple = (0, 0),
         opacity: float = 1,
         title: str | None = None,
@@ -97,7 +97,7 @@ class GraphicsWindow:
 
     def add_plot(
         self,
-        plot_obj: GraphicsContainer,
+        plot_obj: GraphicsObject,
         position: tuple = (0, 0),
         title: str | None = None,
         **kwargs,
