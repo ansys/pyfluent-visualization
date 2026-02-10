@@ -115,7 +115,6 @@ class GraphicsWindow:
         if isinstance(plot_obj._obj, PlotDefn):
             self._graphics_objs.append({"object": plot_obj, "position": position, "title": title, "kwargs": kwargs})
         else:
-        else:
             warnings.warn("Only 2D plot objects are supported.")
 
     def _all_plt_objs(self):
