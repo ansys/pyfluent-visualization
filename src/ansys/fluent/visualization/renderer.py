@@ -90,8 +90,14 @@ class GraphicsWindow:
         """
         self._list_of_positions.append(position)
         if isinstance(graphics_obj._obj, GraphicsDefn):
-            locals()["object"] = locals().pop("graphics_obj")
-            self._graphics_objs.append({**locals()})
+            self._graphics_objs.append(
+                {
+                    "object": graphics_obj,
+                    "opacity": opacity,
+                    "position": position,
+                    "kwargs": kwargs,
+                }
+            )
         else:
             warnings.warn("Only graphics objects are supported.")
 
@@ -115,8 +121,14 @@ class GraphicsWindow:
         """
         self._list_of_positions.append(position)
         if isinstance(plot_obj._obj, PlotDefn):
-            locals()["object"] = locals().pop("plot_obj")
-            self._graphics_objs.append({**locals()})
+            self._graphics_objs.append(
+                {
+                    "object": plot_obj,
+                    "position": position,
+                    "title": title,
+                    "kwargs": kwargs,
+                }
+            )
         else:
             warnings.warn("Only 2D plot objects are supported.")
 
