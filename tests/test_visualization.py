@@ -132,6 +132,7 @@ def test_visualization_calls_render_correctly_with_single_mesh(
             "show_edges",
             "color",
             "kwargs",
+            "title",
             "position",
             "opacity",
         ]
@@ -191,6 +192,7 @@ def test_visualization_calls_render_correctly_with_dual_mesh(
             "show_edges",
             "color",
             "kwargs",
+            "title",
             "position",
             "opacity",
         ]

@@ -33,6 +33,7 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
 import ansys.fluent.visualization as pyviz
 from ansys.fluent.visualization.containers import (
     Contour,
+    GraphicsObject,
     Mesh,
     Monitor,
     Pathline,
@@ -82,6 +83,7 @@ class GraphicsWindow:
         graphics_obj: Mesh | Surface | Contour | Vector | Pathline,
         position: tuple[int, int] = (0, 0),
         opacity: float = 1,
+        title: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Add graphics-data to a window.
@@ -94,6 +96,8 @@ class GraphicsWindow:
             Position of the sub-plot.
         opacity: float, optional
             Transparency of the sub-plot.
+        title : str, optional
+            Title of the sub-plot.
         """
         self._list_of_positions.append(position)
         self._graphics_objs.append(

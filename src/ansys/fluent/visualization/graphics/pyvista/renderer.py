@@ -178,9 +178,15 @@ class Renderer(AbstractRenderer):
 
                 if isinstance(mesh, pv.DataSet):
                     if mesh.n_points > 0:
-                        self.plotter.add_mesh(
-                            mesh, **kwargs
-                        )  # pyright: ignore[reportAny]
+                        mesh_dict.update(mesh_dict.pop("kwargs"))
+                        if "title" in mesh_dict:
+                            self.plotter.add_text(
+                                mesh_dict.pop("title"),
+                                position="upper_edge",
+                                font_size=6,
+                                name="title",
+                            )
+                        self.plotter.add_mesh(mesh, **mesh_dict)
                 else:
                     y_range = None
                     chart = pv.Chart2D()
