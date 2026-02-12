@@ -122,7 +122,6 @@ class GraphicsObject(Generic[DefnT]):
         return sorted(set(super().__dir__()) | set(dir(self._obj)))
 
 
-
 class Mesh(  # pyright: ignore[reportUnsafeMultipleInheritance]
     GraphicsObject["MeshDefn"], MeshDefn if TYPE_CHECKING else abc.ABC
 ):
