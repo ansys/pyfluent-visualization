@@ -68,7 +68,7 @@ if TYPE_CHECKING:
 DefnT = TypeVar("DefnT", bound="Defns", default="Defns")
 
 
-class _GraphicsContainer(Generic[DefnT]):
+class GraphicsObject(Generic[DefnT]):
     """Base class for graphics containers."""
 
     solver: "Solver"  # pyright: ignore[reportUninitializedInstanceVariable]
@@ -122,7 +122,7 @@ class _GraphicsContainer(Generic[DefnT]):
 
 
 class Mesh(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["MeshDefn"], MeshDefn if TYPE_CHECKING else abc.ABC
+    GraphicsObject["MeshDefn"], MeshDefn if TYPE_CHECKING else abc.ABC
 ):
     """Mesh visualization object.
 
@@ -199,7 +199,7 @@ class SurfaceKwargs(SurfaceKwargsNoType):
 
 
 class Surface(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["SurfaceDefn"], SurfaceDefn if TYPE_CHECKING else abc.ABC
+    GraphicsObject["SurfaceDefn"], SurfaceDefn if TYPE_CHECKING else abc.ABC
 ):
     """Surface definition for Fluent post-processing.
 
@@ -532,7 +532,7 @@ class ContourKwargs(TypedDict, total=False):
 
 
 class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["ContourDefn"],
+    GraphicsObject["ContourDefn"],
     ContourDefn if TYPE_CHECKING else abc.ABC,
     abc.ABC,
 ):
@@ -592,7 +592,7 @@ class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
 
 
 class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["VectorDefn"], VectorDefn if TYPE_CHECKING else abc.ABC, abc.ABC
+    GraphicsObject["VectorDefn"], VectorDefn if TYPE_CHECKING else abc.ABC, abc.ABC
 ):
     """Vector visualization object.
 
@@ -695,7 +695,7 @@ class PathlineKwargs(TypedDict, total=False):
 
 
 class Pathline(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["PathlinesDefn"],
+    GraphicsObject["PathlinesDefn"],
     PathlinesDefn if TYPE_CHECKING else abc.ABC,
     abc.ABC,
 ):
@@ -759,7 +759,7 @@ class XYPlotKwargs(TypedDict, total=False):
 
 
 class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["XYPlotDefn"], XYPlotDefn if TYPE_CHECKING else abc.ABC, abc.ABC
+    GraphicsObject["XYPlotDefn"], XYPlotDefn if TYPE_CHECKING else abc.ABC, abc.ABC
 ):
     """XY plot visualization object.
 
@@ -826,7 +826,7 @@ class MonitorKwargs(TypedDict, total=False):
 
 
 class Monitor(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    _GraphicsContainer["MonitorDefn"],
+    GraphicsObject["MonitorDefn"],
     MonitorDefn if TYPE_CHECKING else abc.ABC,
     abc.ABC,
 ):
