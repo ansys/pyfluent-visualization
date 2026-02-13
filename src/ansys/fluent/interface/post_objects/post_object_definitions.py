@@ -33,8 +33,9 @@ from typing import (
     TypeAlias,
     cast,
     final,
-    override,
 )
+
+from typing_extensions import override
 
 from ansys.fluent.interface.post_objects.meta import (
     Attribute,
@@ -77,7 +78,7 @@ class BasePostObjectDefn(Protocol, metaclass=abc.ABCMeta):
                 surf_api.delete_surface_on_server()
 
 
-class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObject["Container"], abc.ABC):
+class GraphicsDefn(PyLocalNamedObject["Container"], BasePostObjectDefn, abc.ABC):
     """Abstract base class for graphics objects."""
 
     @Command
@@ -93,7 +94,7 @@ class GraphicsDefn(BasePostObjectDefn, PyLocalNamedObject["Container"], abc.ABC)
         pass
 
 
-class PlotDefn(BasePostObjectDefn, PyLocalNamedObject["Container"], abc.ABC):
+class PlotDefn(PyLocalNamedObject["Container"], BasePostObjectDefn, abc.ABC):
     """Abstract base class for plot objects."""
 
     @abstractmethod

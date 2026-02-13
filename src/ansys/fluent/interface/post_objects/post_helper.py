@@ -156,6 +156,7 @@ class PostAPIHelper:
 
     def __init__(self, obj: "PyLocalBase"):
         """__init__ method of PostAPIHelper class."""
+        from ansys.fluent.visualization import Surface
         self.obj = obj
         self.field_data = lambda: cast(
             "LiveFieldData", obj.get_root().session.fields.field_data

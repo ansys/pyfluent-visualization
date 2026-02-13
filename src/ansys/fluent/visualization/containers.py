@@ -534,7 +534,6 @@ class ContourKwargs(TypedDict, total=False):
 class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
     GraphicsObject["ContourDefn"],
     ContourDefn if TYPE_CHECKING else abc.ABC,
-    abc.ABC,
 ):
     """
     Contour visualization object.
@@ -592,7 +591,7 @@ class Contour(  # pyright: ignore[reportUnsafeMultipleInheritance]
 
 
 class Vector(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    GraphicsObject["VectorDefn"], VectorDefn if TYPE_CHECKING else abc.ABC, abc.ABC
+    GraphicsObject["VectorDefn"], VectorDefn if TYPE_CHECKING else abc.ABC
 ):
     """Vector visualization object.
 
@@ -697,7 +696,6 @@ class PathlineKwargs(TypedDict, total=False):
 class Pathline(  # pyright: ignore[reportUnsafeMultipleInheritance]
     GraphicsObject["PathlinesDefn"],
     PathlinesDefn if TYPE_CHECKING else abc.ABC,
-    abc.ABC,
 ):
     """Pathline visualization object.
 
@@ -759,7 +757,7 @@ class XYPlotKwargs(TypedDict, total=False):
 
 
 class XYPlot(  # pyright: ignore[reportUnsafeMultipleInheritance]
-    GraphicsObject["XYPlotDefn"], XYPlotDefn if TYPE_CHECKING else abc.ABC, abc.ABC
+    GraphicsObject["XYPlotDefn"], XYPlotDefn if TYPE_CHECKING else abc.ABC
 ):
     """XY plot visualization object.
 
@@ -828,7 +826,6 @@ class MonitorKwargs(TypedDict, total=False):
 class Monitor(  # pyright: ignore[reportUnsafeMultipleInheritance]
     GraphicsObject["MonitorDefn"],
     MonitorDefn if TYPE_CHECKING else abc.ABC,
-    abc.ABC,
 ):
     """Monitor visualization object.
 
