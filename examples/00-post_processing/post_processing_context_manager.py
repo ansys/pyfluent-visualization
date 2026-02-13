@@ -128,17 +128,17 @@ with using(solver_session):
     graphics_window = GraphicsWindow()
 
     surf_xy_plane = PlaneSurface.create_from_point_and_normal(
-        point=[0.0, 0.0, -0.0441921], normal=[0.0, 0.0, 1.0]
+        point=(0.0, 0.0, -0.0441921), normal=(0.0, 0.0, 1.0)
     )
     graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 
     surf_yz_plane = PlaneSurface.create_from_point_and_normal(
-        point=[-0.174628, 0.0, 0.0], normal=[1.0, 0.0, 0.0]
+        point=(-0.174628, 0.0, 0.0), normal=(1.0, 0.0, 0.0)
     )
     graphics_window.add_graphics(surf_yz_plane, position=(0, 1))
 
     surf_zx_plane = PlaneSurface.create_from_point_and_normal(
-        point=[0.0, -0.0627297, 0.0], normal=[0.0, 1.0, 0.0]
+        point=(0.0, -0.0627297, 0.0), normal=(0.0, 1.0, 0.0)
     )
     graphics_window.add_graphics(surf_zx_plane, position=(0, 2))
 

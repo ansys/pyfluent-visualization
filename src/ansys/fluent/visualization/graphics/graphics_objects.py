@@ -22,8 +22,9 @@
 
 """Module providing visualization objects for PyVista."""
 
+from abc import ABC
 import sys
-from typing import Optional
+from typing import TYPE_CHECKING
 
 from ansys.fluent.interface.post_objects.meta import Command
 from ansys.fluent.interface.post_objects.post_helper import PostAPIHelper
@@ -37,9 +38,15 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
 from ansys.fluent.interface.post_objects.post_objects_container import (
     Graphics as GraphicsContainer,
 )
+from ansys.fluent.interface.post_objects.post_objects_container import (
+    LocalSurfacesProvider,
+)
 from ansys.fluent.visualization.graphics.graphics_windows_manager import (
     graphics_windows_manager,
 )
+
+if TYPE_CHECKING:
+    from ansys.fluent.core.session_solver import Solver
 
 
 class Graphics(GraphicsContainer):
@@ -49,14 +56,17 @@ class Graphics(GraphicsContainer):
     """
 
     def __init__(
-        self, session, post_api_helper=PostAPIHelper, local_surfaces_provider=None
+        self,
+        session: "Solver",
+        post_api_helper: type[PostAPIHelper] = PostAPIHelper,
+        local_surfaces_provider: LocalSurfacesProvider | None = None,
     ):
         super().__init__(
             session, sys.modules[__name__], post_api_helper, local_surfaces_provider
         )
 
 
-class Mesh(MeshDefn):
+class Mesh(MeshDefn, ABC):
     """Provides for displaying mesh graphics.
 
     Parameters
@@ -80,7 +90,7 @@ class Mesh(MeshDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display mesh graphics.
 
         Parameters
@@ -97,7 +107,7 @@ class Mesh(MeshDefn):
         )
 
 
-class Pathlines(PathlinesDefn):
+class Pathlines(PathlinesDefn, ABC):
     """Pathlines definition for PyVista.
 
     .. code-block:: python
@@ -112,7 +122,7 @@ class Pathlines(PathlinesDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(self, window_id: str | None = None, overlay: bool | None = False):
         """Display mesh graphics.
 
         Parameters
@@ -129,7 +139,7 @@ class Pathlines(PathlinesDefn):
         )
 
 
-class Surface(SurfaceDefn):
+class Surface(SurfaceDefn, ABC):
     """Provides for displaying surface graphics.
 
     Parameters
@@ -143,19 +153,21 @@ class Surface(SurfaceDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization import Graphics
-
-        graphics_session = Graphics(session)
-        surface1 = graphics_session.Surfaces["surface-1"]
-        surface1.definition.type = "iso-surface"
-        surface1.definition.iso_surface.field= "velocity-magnitude"
-        surface1.definition.iso_surface.rendering= "contour"
-        surface1.definition.iso_surface.iso_value = 0.0
-        surface1.display("window-0")
+        >>> from ansys.fluent.visualization import Graphics
+        >>>
+        >>> graphics_session = Graphics(session)
+        >>> surface1 = graphics_session.Surfaces["surface-1"]
+        >>> surface1.type = "iso-surface"
+        >>> surface1.iso_surface.field= "velocity-magnitude"
+        >>> surface1.iso_surface.rendering= "contour"
+        >>> surface1.iso_surface.iso_value = 0.0
+        >>> surface1.display("window-0")
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display surface graphics.
 
         Parameters
@@ -172,7 +184,7 @@ class Surface(SurfaceDefn):
         )
 
 
-class Contour(ContourDefn):
+class Contour(ContourDefn, ABC):
     """Provides for displaying contour graphics.
 
     Parameters
@@ -196,7 +208,9 @@ class Contour(ContourDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display contour graphics.
 
         Parameters
@@ -213,7 +227,7 @@ class Contour(ContourDefn):
         )
 
 
-class Vector(VectorDefn):
+class Vector(VectorDefn, ABC):
     """Provides for displaying vector graphics.
 
     Parameters
@@ -238,7 +252,9 @@ class Vector(VectorDefn):
     """
 
     @Command
-    def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
+    def display(
+        self, window_id: str | None = None, overlay: bool | None = False
+    ) -> None:
         """Display vector graphics.
 
         Parameters

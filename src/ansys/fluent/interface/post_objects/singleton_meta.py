@@ -23,20 +23,23 @@
 """Provides a module for metaclasses."""
 
 from abc import ABCMeta
+from typing import TYPE_CHECKING, Any, Self
 
 
 class SingletonMeta(type):
     """Provides the metaclass for the singleton type."""
 
-    _single_instance = None
+    _single_instance: Self | None = None  # pyright: ignore[reportGeneralTypeIssues]
 
-    def __call__(cls, *args, **kwargs):
-        if not cls._single_instance:
-            cls._single_instance = super(SingletonMeta, cls).__call__(*args, **kwargs)
-        return cls._single_instance
+    if (
+        not TYPE_CHECKING
+    ):  # some type checkers may see this and erase the type otherwise
+
+        def __call__(cls, *args: Any, **kwargs: Any) -> Self:
+            if not cls._single_instance:
+                cls._single_instance = super().__call__(*args, **kwargs)
+            return cls._single_instance
 
 
 class AbstractSingletonMeta(ABCMeta, SingletonMeta):
     """Provides the metaclass for the abstract singleton type."""
-
-    pass

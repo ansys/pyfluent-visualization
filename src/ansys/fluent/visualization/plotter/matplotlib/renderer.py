@@ -22,8 +22,6 @@
 
 """Module providing matplotlib plotter functionality."""
 
-from typing import List, Optional
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -36,12 +34,12 @@ class Plotter(AbstractRenderer):
     def __init__(
         self,
         window_id: str,
-        curves: List[str] | None = None,
+        curves: list[str] | None = None,
         title: str | None = "XY Plot",
         xlabel: str | None = "position",
         ylabel: str | None = "",
-        remote_process: Optional[bool] = False,
-        grid: tuple | None = (1, 1),
+        remote_process: bool | None = False,
+        grid: tuple[int, int] | None = (1, 1),
     ):
         """Instantiate a matplotlib plotter.
 
@@ -63,6 +61,8 @@ class Plotter(AbstractRenderer):
             Subplot indices.
         remote_process: bool, optional
             Is remote process.
+        grid: tuple[int, int], optional
+            Grid layout for subplots.
         """
         self._curves = [] if curves is None else curves
         self._title = title
@@ -249,7 +249,7 @@ class ProcessPlotter(Plotter):
     def __init__(
         self,
         window_id,
-        curves_name: List[str] | None = None,
+        curves_name: list[str] | None = None,
         title: str | None = "XY Plot",
         xlabel: str | None = "position",
         ylabel: str | None = "",

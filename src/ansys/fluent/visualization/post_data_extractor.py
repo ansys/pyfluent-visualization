@@ -23,7 +23,6 @@
 """Module providing data extractor APIs."""
 
 import itertools
-from typing import Dict
 
 from ansys.fluent.core.field_data_interfaces import (
     PathlinesFieldDataRequest,
@@ -69,18 +68,26 @@ class FieldDataExtractor:
 
         Returns
         -------
-        Dict[int: Dict[str: np.array]]
+        Dict[int: Dict[str: np.ndarray]]
             Return dictionary of surfaces id to field name to numpy array.
         """
-        if self._post_object.__class__.__name__ == "Mesh":
+        from ansys.fluent.visualization.containers import (
+            Contour,
+            Mesh,
+            Pathline,
+            Surface,
+            Vector,
+        )
+
+        if isinstance(self._post_object, Mesh):
             return self._fetch_mesh_data(self._post_object, *args, **kwargs)
-        elif self._post_object.__class__.__name__ == "Surface":
+        elif isinstance(self._post_object, Surface):
             return self._fetch_surface_data(self._post_object, *args, **kwargs)
-        elif self._post_object.__class__.__name__ == "Contour":
+        elif isinstance(self._post_object, Contour):
             return self._fetch_contour_data(self._post_object, *args, **kwargs)
-        elif self._post_object.__class__.__name__ == "Vector":
+        elif isinstance(self._post_object, Vector):
             return self._fetch_vector_data(self._post_object, *args, **kwargs)
-        elif self._post_object.__class__.__name__ == "Pathlines":
+        elif isinstance(self._post_object, Pathline):
             return self._fetch_pathlines_data(self._post_object, *args, **kwargs)
 
     @staticmethod
@@ -267,7 +274,7 @@ class XYPlotDataExtractor:
         """
         self._post_object: PlotDefn = post_object
 
-    def fetch_data(self) -> Dict[str, Dict[str, np.array]]:
+    def fetch_data(self) -> dict[str, dict[str, np.ndarray]] | None:
         """Fetch data for visualization object.
 
         Parameters
@@ -276,11 +283,12 @@ class XYPlotDataExtractor:
 
         Returns
         -------
-        Dict[str: Dict[str: np.array]]
+        Dict[str: Dict[str: np.ndarray]]
             Return dictionary of surfaces name to numpy array of x and y values.
         """
+        from ansys.fluent.visualization.containers import XYPlot
 
-        if self._post_object.__class__.__name__ == "XYPlot":
+        if isinstance(self._post_object, XYPlot):
             return self._fetch_xy_data(self._post_object)
 
     def _fetch_xy_data(self, obj):

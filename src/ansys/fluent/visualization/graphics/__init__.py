@@ -22,7 +22,7 @@
 
 """A package that provides interfacing Fluent with graphics renderer (PyVista)."""
 
-from ansys.fluent.visualization.graphics.graphics_objects import Graphics  # noqa: F401
-from ansys.fluent.visualization.graphics.graphics_windows_manager import (  # noqa: F401
-    graphics_windows_manager,
+from ansys.fluent.visualization.graphics.graphics_objects import Graphics as Graphics
+from ansys.fluent.visualization.graphics.graphics_windows_manager import (
+    graphics_windows_manager as graphics_windows_manager,
 )

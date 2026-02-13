@@ -23,13 +23,32 @@
 """Abstract module providing rendering functionality."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
+from typing import Any, Generic, NotRequired, TypedDict
+
+from typing_extensions import TypeVar
+
+DataT = TypeVar("DataT", default=Any)
+
+
+class SurfaceToRender(TypedDict, Generic[DataT]):
+    """TypedDict for mesh surface definition."""
+
+    data: DataT
+    position: NotRequired[tuple[int, int]]
+    opacity: NotRequired[float]
+    title: str
+    kwargs: Mapping[str, Any]
+
+
+SubPlot = Sequence[SurfaceToRender[DataT]]
 
 
 class AbstractRenderer(ABC):
     """Abstract class for rendering graphics and plots."""
 
     @abstractmethod
-    def render(self, meshes: list[list[dict]]) -> None:
+    def render(self, meshes: Sequence[SubPlot]) -> None:
         """Render graphics and plots in a window.
 
         Parameters
@@ -49,7 +68,7 @@ class AbstractRenderer(ABC):
 
                 - 'data': The mesh or 2d plot object to be plotted.
                 - 'position': tuple(int, int),  Location of subplot. Defaults to (0, 0).
-                - 'opacity': int, Sets the transparency of the subplot. Defaults to 1,
+                - 'opacity': float, Sets the transparency of the subplot. Defaults to 1,
                 meaning fully opaque.
                 - 'title': str, Title of the subplot.
                 - 'kwargs': A dictionary of additional keyword arguments passed
