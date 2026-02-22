@@ -1,0 +1,981 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>User guide &#8212; PyFluent-Visualization</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=a46557d5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="../_static/toggleprompt.js?v=cec9bd37"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'users_guide/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://visualization.fluent.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.24';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API reference" href="../visualization/visualization_contents.html" />
+    <link rel="prev" title="Getting started" href="../getting_started/index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.24.0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Fluids" />
+  <link rel="canonical" href="https://visualization.fluent.docs.pyansys.com/version/stable/users_guide/index.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyFluent-Visualization - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyFluent-Visualization - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyFluent-Visualization home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization/visualization_contents.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contributing/index.html">
+    Contributing to PyFluent-Visualization
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyfluent-visualization" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyFluent-Visualization home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization/visualization_contents.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing/index.html">
+    Contributing to PyFluent-Visualization
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyfluent-visualization" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">User guide</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="user-guide">
+<span id="ref-user-guide"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
+<p>PyFluent-Visualization enables post-processing of Fluent results,
+allowing you to display graphical objects and plot data efficiently.</p>
+<section id="launch-fluent-and-read-data">
+<h2>Launch Fluent and read data<a class="headerlink" href="#launch-fluent-and-read-data" title="Link to this heading">#</a></h2>
+<p>Use the following script to launch Fluent and load your case and data files:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.fluent.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pyfluent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">examples</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+
+<span class="n">config</span><span class="o">.</span><span class="n">interactive</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">config</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="s2">&quot;isometric&quot;</span>
+
+<span class="n">import_case</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;exhaust_system.cas.h5&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;pyfluent/exhaust_system&quot;</span>
+<span class="p">)</span>
+
+<span class="n">import_data</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;exhaust_system.dat.h5&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;pyfluent/exhaust_system&quot;</span>
+<span class="p">)</span>
+
+<span class="n">solver_session</span> <span class="o">=</span> <span class="n">pyfluent</span><span class="o">.</span><span class="n">launch_fluent</span><span class="p">(</span>
+    <span class="n">precision</span><span class="o">=</span><span class="n">pyfluent</span><span class="o">.</span><span class="n">Precision</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+    <span class="n">processor_count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="n">pyfluent</span><span class="o">.</span><span class="n">FluentMode</span><span class="o">.</span><span class="n">SOLVER</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">solver_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read_case</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">import_case</span><span class="p">)</span>
+<span class="n">solver_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">import_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="graphics-operations">
+<h3>Graphics operations<a class="headerlink" href="#graphics-operations" title="Link to this heading">#</a></h3>
+<p>PyFluent-Visualization supports various graphical operations.</p>
+</section>
+</section>
+<section id="display-mesh">
+<h2>Display mesh<a class="headerlink" href="#display-mesh" title="Link to this heading">#</a></h2>
+<p>The following example demonstrates how to display a mesh with and without edges:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphicsWindow</span><span class="p">,</span> <span class="n">Mesh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">WallBoundaries</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">show_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">surfaces</span><span class="o">=</span><span class="n">WallBoundaries</span><span class="p">(</span><span class="n">settings_source</span><span class="o">=</span><span class="n">solver_session</span><span class="p">))</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">surfaces</span><span class="o">=</span><span class="n">WallBoundaries</span><span class="p">(</span><span class="n">settings_source</span><span class="o">=</span><span class="n">solver_session</span><span class="p">))</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="display-plane-surface">
+<h2>Display plane-surface<a class="headerlink" href="#display-plane-surface" title="Link to this heading">#</a></h2>
+<p>Create and visualize a plane surface at a specified z-coordinate:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlaneSurface</span>
+
+<span class="n">surf_xy_plane</span> <span class="o">=</span> <span class="n">PlaneSurface</span><span class="o">.</span><span class="n">create_xy_plane</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="mf">0.0441921</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">surf_xy_plane</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The same plane can also be created using point and normal:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlaneSurface</span>
+
+<span class="n">surf_xy_plane</span> <span class="o">=</span> <span class="n">PlaneSurface</span><span class="o">.</span><span class="n">create_from_point_and_normal</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0441921</span><span class="p">],</span> <span class="n">normal</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="display-iso-surface">
+<h2>Display iso-surface<a class="headerlink" href="#display-iso-surface" title="Link to this heading">#</a></h2>
+<p>Generate an iso-surface based on the y-coordinate:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">IsoSurface</span>
+
+<span class="n">surf_outlet_plane</span> <span class="o">=</span> <span class="n">IsoSurface</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span>
+    <span class="n">field</span><span class="o">=</span><span class="s2">&quot;y-coordinate&quot;</span><span class="p">,</span>
+    <span class="n">iso_value</span><span class="o">=-</span><span class="mf">0.125017</span>
+    <span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">surf_outlet_plane</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="display-contour">
+<h2>Display contour<a class="headerlink" href="#display-contour" title="Link to this heading">#</a></h2>
+<p>Plot a temperature contour over selected surfaces:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contour</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">WallBoundaries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariableCatalog</span>
+
+<span class="n">temperature_contour_manifold</span> <span class="o">=</span> <span class="n">Contour</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span>
+    <span class="n">field</span><span class="o">=</span><span class="n">VariableCatalog</span><span class="o">.</span><span class="n">TEMPERATURE</span><span class="p">,</span>
+    <span class="n">surfaces</span><span class="o">=</span><span class="n">WallBoundaries</span><span class="p">(</span><span class="n">settings_source</span><span class="o">=</span><span class="n">solver_session</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">temperature_contour_manifold</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="display-vector">
+<h2>Display vector<a class="headerlink" href="#display-vector" title="Link to this heading">#</a></h2>
+<p>Visualize velocity vectors over a selected surface:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">WallBoundary</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariableCatalog</span>
+
+<span class="n">velocity_vector</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span>
+    <span class="n">field</span><span class="o">=</span><span class="n">VariableCatalog</span><span class="o">.</span><span class="n">VELOCITY_X</span><span class="p">,</span>
+    <span class="n">surfaces</span><span class="o">=</span><span class="p">[</span><span class="n">WallBoundary</span><span class="p">(</span><span class="n">settings_source</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;solid_up:1:830&quot;</span><span class="p">)],</span>
+    <span class="n">scale</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">velocity_vector</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="display-pathlines">
+<h2>Display pathlines<a class="headerlink" href="#display-pathlines" title="Link to this heading">#</a></h2>
+<p>Visualize pathlines to analyze flow patterns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pathline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">VelocityInlets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariableCatalog</span>
+
+<span class="n">pathlines</span> <span class="o">=</span> <span class="n">Pathline</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span>
+    <span class="n">field</span><span class="o">=</span><span class="n">VariableCatalog</span><span class="o">.</span><span class="n">VELOCITY_MAGNITUDE</span><span class="p">,</span>
+    <span class="n">surfaces</span><span class="o">=</span><span class="n">VelocityInlets</span><span class="p">(</span><span class="n">settings_source</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">pathlines</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="plot-operations">
+<h3>Plot operations<a class="headerlink" href="#plot-operations" title="Link to this heading">#</a></h3>
+<p>PyFluent-Visualization supports various plot operations.</p>
+</section>
+</section>
+<section id="display-plot">
+<h2>Display plot<a class="headerlink" href="#display-plot" title="Link to this heading">#</a></h2>
+<p>Generate an XY plot of temperature variations at an outlet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYPlot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">PressureOutlets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariableCatalog</span>
+
+<span class="n">xy_plot</span> <span class="o">=</span> <span class="n">XYPlot</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span>
+    <span class="n">surfaces</span><span class="o">=</span><span class="n">PressureOutlets</span><span class="p">(</span><span class="n">settings_source</span><span class="o">=</span><span class="n">solver_session</span><span class="p">),</span>
+    <span class="n">y_axis_function</span><span class="o">=</span><span class="n">VariableCatalog</span><span class="o">.</span><span class="n">TEMPERATURE</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">xy_plot</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="display-solution-residual-plot">
+<h2>Display solution residual plot<a class="headerlink" href="#display-solution-residual-plot" title="Link to this heading">#</a></h2>
+<p>Plot solution residuals:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Monitor</span>
+
+<span class="n">residual</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">monitor_set_name</span><span class="o">=</span><span class="s2">&quot;residual&quot;</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="display-solution-monitors-plot">
+<h2>Display solution monitors plot<a class="headerlink" href="#display-solution-monitors-plot" title="Link to this heading">#</a></h2>
+<p>Monitor solution convergence using mass balance and velocity plots:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">initialization</span><span class="o">.</span><span class="n">hybrid_initialize</span><span class="p">()</span>
+<span class="n">solver_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">run_calculation</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">iter_count</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="n">mass_bal_rplot</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">monitor_set_name</span><span class="o">=</span><span class="s2">&quot;mass-bal-rplot&quot;</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">mass_bal_rplot</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="n">point_vel_rplot</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">monitor_set_name</span><span class="o">=</span><span class="s2">&quot;point-vel-rplot&quot;</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">point_vel_rplot</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="interactive-graphics">
+<h3>Interactive Graphics<a class="headerlink" href="#interactive-graphics" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GraphicsWindow</span></code> class provides functionality for managing and directly
+interacting with the graphics window. By registering the window with <code class="docutils literal notranslate"><span class="pre">EventsManager</span></code>,
+you can dynamically update graphics during runtime and create animations.</p>
+<p>The following example demonstrates how to update multiple graphics windows
+(contour_window, xy_plot_window, and monitor_window) during different solution
+stages. Graphics updates occur:</p>
+<ul class="simple">
+<li><p>During solution initialization</p></li>
+<li><p>At the end of every time step during the calculation</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contour</span><span class="p">,</span> <span class="n">XYPlot</span><span class="p">,</span> <span class="n">Monitor</span><span class="p">,</span> <span class="n">GraphicsWindow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">SolverEvent</span>
+
+<span class="n">contour_object</span> <span class="o">=</span> <span class="n">Contour</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s2">&quot;velocity-magnitude&quot;</span><span class="p">,</span> <span class="n">surfaces</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;symmetry&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">xy_plot_object</span> <span class="o">=</span> <span class="n">XYPlot</span><span class="p">(</span>
+    <span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span>
+    <span class="n">surfaces</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;symmetry&#39;</span><span class="p">],</span>
+    <span class="n">y_axis_function</span><span class="o">=</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">monitor_object</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver_session</span><span class="p">,</span> <span class="n">monitor_set_name</span><span class="o">=</span><span class="s2">&quot;residual&quot;</span><span class="p">)</span>
+
+<span class="n">contour_window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">contour_window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">contour_object</span><span class="p">)</span>
+<span class="n">contour_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">xy_plot_window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">xy_plot_window</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">xy_plot_object</span><span class="p">)</span>
+<span class="n">xy_plot_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">monitor_window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+<span class="n">monitor_window</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">monitor1</span><span class="p">)</span>
+<span class="n">monitor_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">contour_window</span><span class="o">.</span><span class="n">real_time_update</span><span class="p">(</span>
+    <span class="n">events</span><span class="o">=</span><span class="p">[</span><span class="n">SolverEvent</span><span class="o">.</span><span class="n">SOLUTION_INITIALIZED</span><span class="p">,</span> <span class="n">SolverEvent</span><span class="o">.</span><span class="n">ITERATION_ENDED</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">xy_plot_window</span><span class="o">.</span><span class="n">real_time_update</span><span class="p">(</span>
+    <span class="n">events</span><span class="o">=</span><span class="p">[</span><span class="n">SolverEvent</span><span class="o">.</span><span class="n">SOLUTION_INITIALIZED</span><span class="p">,</span> <span class="n">SolverEvent</span><span class="o">.</span><span class="n">ITERATION_ENDED</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">monitor_window</span><span class="o">.</span><span class="n">real_time_update</span><span class="p">(</span>
+    <span class="n">events</span><span class="o">=</span><span class="p">[</span><span class="n">SolverEvent</span><span class="o">.</span><span class="n">SOLUTION_INITIALIZED</span><span class="p">,</span> <span class="n">SolverEvent</span><span class="o">.</span><span class="n">ITERATION_ENDED</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">solver_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">initialization</span><span class="o">.</span><span class="n">hybrid_initialize</span><span class="p">()</span>
+<span class="n">solver_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">run_calculation</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">iter_count</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These updates are implemented using explicit callback registrations.
+Additionally, animations can be created from a graphics window.</p>
+</section>
+<section id="context-managed-graphics-workflow">
+<h3>Context-managed graphics workflow<a class="headerlink" href="#context-managed-graphics-workflow" title="Link to this heading">#</a></h3>
+<p>PyFluent-Visualization also supports a context-managed workflow with the
+<code class="docutils literal notranslate"><span class="pre">using()</span></code> interface. A context manager automatically handles setup and
+cleanup of solver sessions and graphics containers, ensuring that resources are
+released cleanly when the block completes.</p>
+<p>This approach improves readability, avoids manual window management, and
+prevents graphics objects from remaining open longer than intended. It is
+especially helpful when generating multiple plots or exporting images in a
+scripted workflow.</p>
+<p>The following example demonstrates context-managed creation and display of a
+mesh visualization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.fluent.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pyfluent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">examples</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.core.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">WallBoundaries</span><span class="p">,</span> <span class="n">using</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.fluent.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mesh</span><span class="p">,</span> <span class="n">GraphicsWindow</span>
+
+<span class="c1"># Download input files</span>
+<span class="n">case</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span>
+    <span class="s2">&quot;exhaust_system.cas.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;pyfluent/exhaust_system&quot;</span>
+<span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">examples</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span>
+    <span class="s2">&quot;exhaust_system.dat.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;pyfluent/exhaust_system&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Launch Fluent</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">pyfluent</span><span class="o">.</span><span class="n">launch_fluent</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">pyfluent</span><span class="o">.</span><span class="n">FluentMode</span><span class="o">.</span><span class="n">SOLVER</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># Context-managed workflow</span>
+<span class="k">with</span> <span class="n">using</span><span class="p">(</span><span class="n">solver</span><span class="p">):</span>
+
+    <span class="c1"># Create a graphics window</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">GraphicsWindow</span><span class="p">()</span>
+
+    <span class="c1"># Add mesh displays</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">Mesh</span><span class="p">(</span><span class="n">show_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">surfaces</span><span class="o">=</span><span class="n">WallBoundaries</span><span class="p">()),</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">add_graphics</span><span class="p">(</span><span class="n">Mesh</span><span class="p">(</span><span class="n">surfaces</span><span class="o">=</span><span class="n">WallBoundaries</span><span class="p">()),</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># Export and display</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">save_graphics</span><span class="p">(</span><span class="s2">&quot;mesh_view.pdf&quot;</span><span class="p">)</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Using this pattern ensures that both the Fluent session and graphics containers
+are closed safely and consistently when the code block finishes. It also
+helps maintain clean, predictable behavior in larger automated
+post-processing workflows.</p>
+<p>This guide provides a structured approach to using PyFluent-Visualization.
+For detailed usage of individual modules,
+refer to the respective module documentation, see <a class="reference internal" href="../visualization/visualization_contents.html#ref-visualization"><span class="std std-ref">API reference</span></a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-fluent-and-read-data">Launch Fluent and read data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#graphics-operations">Graphics operations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-mesh">Display mesh</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-plane-surface">Display plane-surface</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-iso-surface">Display iso-surface</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-contour">Display contour</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-vector">Display vector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-pathlines">Display pathlines</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-operations">Plot operations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-plot">Display plot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-solution-residual-plot">Display solution residual plot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-solution-monitors-plot">Display solution monitors plot</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interactive-graphics">Interactive Graphics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#context-managed-graphics-workflow">Context-managed graphics workflow</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.3. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

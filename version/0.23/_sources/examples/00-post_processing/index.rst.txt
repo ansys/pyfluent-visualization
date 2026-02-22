@@ -1,0 +1,63 @@
+
+
+.. _sphx_glr_examples_00-post_processing:
+
+Post-processing examples
+========================
+These examples show how to use external packages to postprocess Fluent
+results.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The model used here is an exhaust manifold, but the techniques apply to any Fluent simulation.">
+
+.. only:: html
+
+  .. image:: /examples/00-post_processing/images/thumb/sphx_glr_post_processing_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00-post_processing_post_processing.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Post-processing using Pyvista and Matplotlib</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to perform straightforward 2D and 3D post-processing in PyFluent using the Pyvista and Matplotlib interfaces. It highlights practical tasks such as mesh display, plotting key variables, and exporting graphics for reports.">
+
+.. only:: html
+
+  .. image:: /examples/00-post_processing/images/thumb/sphx_glr_post_processing_plotter_apis_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00-post_processing_post_processing_plotter_apis.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Post-processing using Pyvista and Matplotlib plotter APIs</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/00-post_processing/post_processing
+   /examples/00-post_processing/post_processing_plotter_apis
+
