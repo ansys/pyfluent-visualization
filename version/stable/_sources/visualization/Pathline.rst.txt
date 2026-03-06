@@ -1,0 +1,11 @@
+.. _ref_Pathline:
+
+Pathline
+========
+
+.. autoclass:: ansys.fluent.visualization.Pathline
+    :members:
+    :show-inheritance:
+    :undoc-members:
+    :exclude-members: __weakref__, __dict__
+    :special-members: __init__
