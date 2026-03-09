@@ -142,7 +142,6 @@ jobs:
       packages: read
     env:
       DOC_DEPLOYMENT_IMAGE_TAG: v25.2.3
-      DOCUMENTATION_CNAME: "visualization.fluent.docs.pyansys.com"
       XDG_RUNTIME_DIR: /tmp/runtime-${{ github.run_id }}
 
     steps:
@@ -231,7 +230,7 @@ jobs:
 
   deploy-docs-release:
     name: "Upload release documentation"
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, 'dev')
     runs-on: ubuntu-latest
     permissions:
       contents: write
