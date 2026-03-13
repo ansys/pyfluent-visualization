@@ -105,6 +105,7 @@ solver_session = pyfluent.launch_fluent(
     processor_count=2,
     start_transcript=False,
     mode=pyfluent.FluentMode.SOLVER,
+    ui_mode="gui",
 )
 
 solver_session.settings.file.read_case(file_name=import_case)
@@ -115,10 +116,16 @@ with using(solver_session):
     # Create a graphics object for the mesh display.
     graphics_window = GraphicsWindow()
 
-    mesh = Mesh(show_edges=True, surfaces=WallBoundaries())
+    mesh = Mesh(
+        solver=solver_session,
+        show_edges=True,
+        surfaces=WallBoundaries(settings_source=solver_session),
+    )
     graphics_window.add_graphics(mesh, position=(0, 0))
 
-    mesh = Mesh(surfaces=WallBoundaries())
+    mesh = Mesh(
+        solver=solver_session, surfaces=WallBoundaries(settings_source=solver_session)
+    )
     graphics_window.add_graphics(mesh, position=(0, 1))
 
     graphics_window.show()
@@ -128,28 +135,28 @@ with using(solver_session):
     graphics_window = GraphicsWindow()
 
     surf_xy_plane = PlaneSurface.create_from_point_and_normal(
-        point=[0.0, 0.0, -0.0441921], normal=[0.0, 0.0, 1.0]
+        solver=solver_session, point=[0.0, 0.0, -0.0441921], normal=[0.0, 0.0, 1.0]
     )
     graphics_window.add_graphics(surf_xy_plane, position=(0, 0))
 
     surf_yz_plane = PlaneSurface.create_from_point_and_normal(
-        point=[-0.174628, 0.0, 0.0], normal=[1.0, 0.0, 0.0]
+        solver=solver_session, point=[-0.174628, 0.0, 0.0], normal=[1.0, 0.0, 0.0]
     )
     graphics_window.add_graphics(surf_yz_plane, position=(0, 1))
 
     surf_zx_plane = PlaneSurface.create_from_point_and_normal(
-        point=[0.0, -0.0627297, 0.0], normal=[0.0, 1.0, 0.0]
+        solver=solver_session, point=[0.0, -0.0627297, 0.0], normal=[0.0, 1.0, 0.0]
     )
     graphics_window.add_graphics(surf_zx_plane, position=(0, 2))
 
     # Create XY, YZ and ZX plane-surface objects and display.
-    surf_xy_plane = PlaneSurface.create_xy_plane(z=-0.0441921)
+    surf_xy_plane = PlaneSurface.create_xy_plane(solver=solver_session, z=-0.0441921)
     graphics_window.add_graphics(surf_xy_plane, position=(1, 0))
 
-    surf_yz_plane = PlaneSurface.create_yz_plane(x=-0.174628)
+    surf_yz_plane = PlaneSurface.create_yz_plane(solver=solver_session, x=-0.174628)
     graphics_window.add_graphics(surf_yz_plane, position=(1, 1))
 
-    surf_zx_plane = PlaneSurface.create_zx_plane(y=-0.0627297)
+    surf_zx_plane = PlaneSurface.create_zx_plane(solver=solver_session, y=-0.0627297)
     graphics_window.add_graphics(surf_zx_plane, position=(1, 2))
 
     graphics_window.show()
