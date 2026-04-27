@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Containers for graphics."""
+
 import warnings
 
 from ansys.fluent.core.field_data_interfaces import _to_field_name_str
