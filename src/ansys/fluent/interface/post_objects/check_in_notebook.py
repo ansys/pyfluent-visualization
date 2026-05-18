@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Provides a module to check if the library is being used in a Jupyter environment."""
+
 import warnings
 
 from ansys.fluent.core import PyFluentDeprecationWarning
