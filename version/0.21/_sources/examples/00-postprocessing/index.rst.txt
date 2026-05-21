@@ -1,0 +1,63 @@
+
+
+.. _sphx_glr_examples_00-postprocessing:
+
+Postprocessing examples
+=======================
+These examples show how to use external packages to postprocess Fluent
+results.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Key Improvements:">
+
+.. only:: html
+
+  .. image:: /examples/00-postprocessing/images/thumb/sphx_glr_updated_exhaust_manifold_example_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00-postprocessing_updated_exhaust_manifold_example.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Enhanced Postprocessing with PyVista and Matplotlib</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Key Improvements:">
+
+.. only:: html
+
+  .. image:: /examples/00-postprocessing/images/thumb/sphx_glr_updated_post_processing_example_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_00-postprocessing_updated_post_processing_example.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Enhanced Postprocessing</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/00-postprocessing/updated_exhaust_manifold_example
+   /examples/00-postprocessing/updated_post_processing_example
+
