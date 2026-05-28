@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -24,4 +24,4 @@ from ansys.fluent.visualization import __version__
 
 
 def test_pkg_version():
-    assert __version__ == "0.25.dev0"
+    assert __version__ == "0.26.dev1"

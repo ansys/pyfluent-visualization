@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -29,9 +29,13 @@ from ansys.units import VariableDescriptor
 
 from ansys.fluent.visualization.graphics import Graphics
 from ansys.fluent.visualization.plotter import Plots
+from ansys.fluent.visualization.post_data_extractor import (
+    FieldDataExtractor,
+    XYPlotDataExtractor,
+)
 
 
-class _GraphicsContainer:
+class GraphicsObject:
     """Base class for graphics containers."""
 
     def __init__(self, solver, **kwargs):
@@ -43,6 +47,10 @@ class _GraphicsContainer:
             self.kwargs["field"] = _to_field_name_str(self.kwargs["field"])
         if "vectors_of" in self.kwargs:
             self.kwargs["vectors_of"] = _to_field_name_str(self.kwargs["vectors_of"])
+
+    def get_field_data(self):
+        """Exposes field data."""
+        return FieldDataExtractor(self._obj).fetch_data()
 
     def __getattr__(self, attr):
         return getattr(self._obj, attr)
@@ -56,7 +64,7 @@ class _GraphicsContainer:
         return sorted(set(super().__dir__()) | set(dir(self._obj)))
 
 
-class Mesh(_GraphicsContainer):
+class Mesh(GraphicsObject):
     """Mesh visualization object.
 
     Creates a Fluent mesh graphic object on the specified surfaces.
@@ -103,7 +111,7 @@ class Mesh(_GraphicsContainer):
         )
 
 
-class Surface(_GraphicsContainer):
+class Surface(GraphicsObject):
     """Surface definition for Fluent post-processing.
 
     The ``Surface`` class represents any Fluent surface generated for
@@ -363,7 +371,7 @@ class IsoSurface(Surface):
         )
 
 
-class Contour(_GraphicsContainer):
+class Contour(GraphicsObject):
     """
     Contour visualization object.
 
@@ -418,7 +426,7 @@ class Contour(_GraphicsContainer):
         )
 
 
-class Vector(_GraphicsContainer):
+class Vector(GraphicsObject):
     """Vector visualization object.
 
     Parameters
@@ -505,7 +513,7 @@ class Vector(_GraphicsContainer):
         setattr(self._obj, attr, value)
 
 
-class Pathline(_GraphicsContainer):
+class Pathline(GraphicsObject):
     """Pathline visualization object.
 
     The ``Pathline`` class generates pathlines, which represent the trajectories
@@ -561,7 +569,7 @@ class Pathline(_GraphicsContainer):
         )
 
 
-class XYPlot(_GraphicsContainer):
+class XYPlot(GraphicsObject):
     """XY plot visualization object.
 
     The ``XYPlot`` class creates a Fluent XY plot of a scalar field evaluated
@@ -620,8 +628,12 @@ class XYPlot(_GraphicsContainer):
             session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).XYPlots.create(**self.kwargs)
 
+    def get_field_data(self):
+        """Exposes 2d plot data data."""
+        return XYPlotDataExtractor(self._obj).fetch_data()
 
-class Monitor(_GraphicsContainer):
+
+class Monitor(GraphicsObject):
     """Monitor visualization object.
 
     The ``Monitor`` class provides access to Fluent monitor data for plotting,
@@ -662,3 +674,9 @@ class Monitor(_GraphicsContainer):
         self.__dict__["_obj"] = Plots(
             session=self.solver, local_surfaces_provider=Graphics(solver).Surfaces
         ).Monitors.create(**self.kwargs)
+
+    def get_field_data(self):
+        """Exposes monitor data."""
+        return self._obj.session.monitors.get_monitor_set_data(
+            self.kwargs["monitor_set_name"]
+        )
