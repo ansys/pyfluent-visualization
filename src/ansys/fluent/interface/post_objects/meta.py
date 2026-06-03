@@ -271,7 +271,7 @@ class PyLocalPropertyMeta(PyLocalBaseMeta):
             self._api_helper = api_helper(self)
             self._parent = parent
             self._on_change_cbs = []
-            annotations = self.__class__.__dict__.get("__annotations__")
+            annotations = getattr(self.__class__, "__annotations__", {}) or {}
             if isinstance(getattr(self.__class__, "value", None), property):
                 value_annotation = annotations.get("_value")
             else:
