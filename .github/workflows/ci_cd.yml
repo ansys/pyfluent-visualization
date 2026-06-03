@@ -23,7 +23,7 @@ env:
   # It applies 7 days retention policy by default.
   RESET_EXAMPLES_CACHE: 0
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-  MAIN_PYTHON_VERSION: "3.11"
+  MAIN_PYTHON_VERSION: "3.12"
   LIBRARY_NAME: 'ansys-fluent-visualization'
   PYFLUENT_TIMEOUT_FORCE_EXIT: 60
   PYFLUENT_LAUNCH_CONTAINER: 1
@@ -72,7 +72,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, public-ubuntu-latest-8-cores]
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
 
     steps:
