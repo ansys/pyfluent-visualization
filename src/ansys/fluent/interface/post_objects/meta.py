@@ -718,10 +718,10 @@ class PyLocalContainer(MutableMapping):
 
     def __init__(self, parent, object_class, api_helper, name=""):
         """Initialize the 'PyLocalContainer' object."""
+        self._local_collection = {}
         self._parent = parent
         self._name = name
         self.__object_class = object_class
-        self._local_collection = {}
         self.__api_helper = api_helper
         self.type = "named-object"
         self._command_names = []
