@@ -27,6 +27,7 @@ env:
   LIBRARY_NAME: 'ansys-fluent-visualization'
   PYFLUENT_TIMEOUT_FORCE_EXIT: 60
   PYFLUENT_LAUNCH_CONTAINER: 1
+  DOC_DEPLOYMENT_IMAGE_TAG: v25.2.3
   PYFLUENT_LAUNCH_FLUENT_TIMEOUT: 60
   DOCUMENTATION_CNAME: 'visualization.fluent.docs.pyansys.com'
 
@@ -37,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Running Vale
-        uses: ansys/actions/doc-style@v10
+        uses: ansys/actions/doc-style@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -45,7 +46,7 @@ jobs:
     name: "Check library vulnerabilities"
     runs-on: ubuntu-latest
     steps:
-      - uses: ansys/actions/check-vulnerabilities@main
+      - uses: ansys/actions/check-vulnerabilities@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
@@ -57,7 +58,7 @@ jobs:
     name: "Actions Security"
     runs-on: ubuntu-latest
     steps:
-      - uses: ansys/actions/check-actions-security@c2fa7c93f6883114e0e643599431b33d29f0b13f # v10.1.4
+      - uses: ansys/actions/check-actions-security@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           generate-summary: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -141,7 +142,6 @@ jobs:
       contents: read
       packages: read
     env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.3
       XDG_RUNTIME_DIR: /tmp/runtime-${{ github.run_id }}
 
     steps:
@@ -234,51 +234,27 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      DOC_DEPLOYMENT_IMAGE_TAG: v25.2.3
     needs: [ docs ]
     steps:
       - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@v10.1
+        uses: ansys/actions/doc-deploy-stable@121c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           doc-artifact-name: "HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}"
           cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   build:
-    name: Build library
+    name: "Package library"
     needs: [tests, docs]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: "Build library source and wheel artifacts"
+        uses: ansys/actions/build-library@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
+          library-name: ${{ env.LIBRARY_NAME}}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
-      - name: Add version information
-        run: make version-info
-
-      - name: Install dependencies and build the library
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements/requirements_build.txt
-          python -m build
-          python -m twine check dist/*
-
-      - name: Upload package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: ${{ env.LIBRARY_NAME }}-artifacts
-          path: |
-            dist/*.whl
-            dist/*.tar.gz
-          retention-days: 7
 
   release:
     name: "Release project to private, public PyPI and GitHub"
@@ -304,7 +280,7 @@ jobs:
         run: ls -R
 
       - name: "Release to the private PyPI repository"
-        uses: ansys/actions/release-pypi-private@v10
+        uses: ansys/actions/release-pypi-private@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           twine-username: "__token__"
