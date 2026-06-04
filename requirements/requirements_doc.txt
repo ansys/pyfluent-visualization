@@ -1,4 +1,4 @@
-Sphinx==9.0.1
+Sphinx>=9.1.0
 jupyter_sphinx==0.5.3
 numpydoc==1.10.0
 ansys-sphinx-theme==1.8.1
