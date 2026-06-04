@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -271,7 +271,7 @@ class PyLocalPropertyMeta(PyLocalBaseMeta):
             self._api_helper = api_helper(self)
             self._parent = parent
             self._on_change_cbs = []
-            annotations = self.__class__.__dict__.get("__annotations__")
+            annotations = getattr(self.__class__, "__annotations__", {}) or {}
             if isinstance(getattr(self.__class__, "value", None), property):
                 value_annotation = annotations.get("_value")
             else:
@@ -718,10 +718,10 @@ class PyLocalContainer(MutableMapping):
 
     def __init__(self, parent, object_class, api_helper, name=""):
         """Initialize the 'PyLocalContainer' object."""
+        self._local_collection = {}
         self._parent = parent
         self._name = name
         self.__object_class = object_class
-        self._local_collection = {}
         self.__api_helper = api_helper
         self.type = "named-object"
         self._command_names = []

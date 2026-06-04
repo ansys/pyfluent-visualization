@@ -20,5 +20,6 @@
 * [Muhammed Adedigba](https://github.com/moe-ad)
 * [Prithwish Mukherjee](https://github.com/prmukherj)
 * [Raphael Luciano](https://github.com/raph-luc)
+* [Revathy Venugopal](https://github.com/Revathyvenugopal162)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [Yogesh Patel](https://github.com/ypatel-qa)

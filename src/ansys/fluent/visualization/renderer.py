@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -28,6 +28,7 @@ from ansys.fluent.interface.post_objects.post_object_definitions import (
     PlotDefn,
 )
 import ansys.fluent.visualization as pyviz
+from ansys.fluent.visualization.containers import GraphicsObject
 from ansys.fluent.visualization.graphics import graphics_windows_manager
 from ansys.fluent.visualization.graphics.graphics_windows import _GraphicsWindow
 from ansys.fluent.visualization.plotter.plotter_windows import _PlotterWindow
@@ -58,7 +59,7 @@ class GraphicsWindow:
     >>> graphics_window.show()
     """
 
-    def __init__(self, renderer=None):
+    def __init__(self, renderer: str = None):
         """__init__ method of GraphicsWindow class."""
         self._graphics_objs = []
         self.window_id = None
@@ -68,9 +69,10 @@ class GraphicsWindow:
 
     def add_graphics(
         self,
-        graphics_obj,
+        graphics_obj: GraphicsObject,
         position: tuple = (0, 0),
         opacity: float = 1,
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """Add graphics-data to a window.
@@ -83,18 +85,22 @@ class GraphicsWindow:
             Position of the sub-plot.
         opacity: float, optional
             Transparency of the sub-plot.
+        title : str, optional
+            Title of the sub-plot.
         """
         self._list_of_positions.append(position)
         if isinstance(graphics_obj._obj, GraphicsDefn):
-            locals()["object"] = locals().pop("graphics_obj")
-            self._graphics_objs.append({**locals()})
+            local_vars = locals().copy()
+            local_vars["object"] = local_vars.pop("graphics_obj")
+            self._graphics_objs.append(local_vars)
         else:
             warnings.warn("Only graphics objects are supported.")
 
     def add_plot(
         self,
-        plot_obj,
+        plot_obj: GraphicsObject,
         position: tuple = (0, 0),
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """Add 2D plot-data to a window.
@@ -110,8 +116,9 @@ class GraphicsWindow:
         """
         self._list_of_positions.append(position)
         if isinstance(plot_obj._obj, PlotDefn):
-            locals()["object"] = locals().pop("plot_obj")
-            self._graphics_objs.append({**locals()})
+            local_vars = locals().copy()
+            local_vars["object"] = local_vars.pop("plot_obj")
+            self._graphics_objs.append(local_vars)
         else:
             warnings.warn("Only 2D plot objects are supported.")
 
