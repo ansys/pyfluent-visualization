@@ -199,6 +199,7 @@ sphinx_gallery_conf = {
 # https://github.com/sphinx-doc/sphinx/issues/12300
 suppress_warnings = ["config.cache"]
 
+autodoc_use_legacy_class_based = True
 
 # -- Options for HTML output -------------------------------------------------
 html_short_title = html_title = "PyFluent-Visualization"
