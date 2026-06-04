@@ -237,7 +237,7 @@ jobs:
     needs: [ docs ]
     steps:
       - name: "Deploy the stable documentation"
-        uses: ansys/actions/doc-deploy-stable@10
+        uses: ansys/actions/doc-deploy-stable@121c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
         with:
           doc-artifact-name: "HTML-Documentation-tag-${{ env.DOC_DEPLOYMENT_IMAGE_TAG }}"
           cname: ${{ env.DOCUMENTATION_CNAME }}
