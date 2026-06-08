@@ -47,6 +47,7 @@ Overall, this example highlights a concise, reliable, and flexible approach
 to post-processing CFD results.
 
 """
+
 ###############################################################################
 # Run the following in command prompt to execute this file:
 # exec(open("updated_post_processing_example.py").read())
