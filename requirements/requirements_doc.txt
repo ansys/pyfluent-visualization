@@ -1,12 +1,12 @@
 Sphinx>=9.1.0
 jupyter_sphinx==0.5.3
 numpydoc==1.10.0
-ansys-sphinx-theme==1.8.1
+ansys-sphinx-theme==1.9.0
 pypandoc==1.17
 pytest-sphinx==0.7.1
 sphinx-autobuild==2025.8.25
 sphinx-copybutton==0.5.2
-sphinx-autodoc-typehints==3.10.2
+sphinx-autodoc-typehints==3.11.0
 sphinx-gallery==0.21.0
 sphinx-notfound-page==1.1.0
 sphinxcontrib-websupport==2.0.0
@@ -15,5 +15,5 @@ sphinx-toggleprompt>=0.5.2
 autodocsumm==0.2.15
 pyvista[trame]>=0.48.4
 matplotlib>=3.10.9
-quarto-cli==1.9.37
+quarto-cli==1.9.38
 pdf2image==1.17.0
