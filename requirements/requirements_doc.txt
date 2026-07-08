@@ -11,7 +11,7 @@ sphinx-gallery==0.21.0
 sphinx-notfound-page==1.1.0
 sphinxcontrib-websupport==2.0.0
 sphinxemoji==0.3.2
-sphinx-toggleprompt>=0.5.2
+sphinx-toggleprompt>=0.6.0
 autodocsumm==0.2.15
 pyvista[trame]>=0.48.4
 matplotlib>=3.10.9
