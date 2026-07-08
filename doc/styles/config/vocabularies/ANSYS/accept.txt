@@ -32,3 +32,5 @@ contour_window
 monitor_window
 graphics_window
 renderers
+Synopsys
+synopsys
