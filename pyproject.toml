@@ -77,3 +77,11 @@ skips = [
     "B604",
     "B607",
     ]
+
+[tool.codespell]
+skip = """
+    *.xml,
+    pyproject.toml,
+    CODE_OF_CONDUCT.md,
+    """
+ignore-words = "doc/styles/config/vocabularies/ANSYS/accept.txt"
