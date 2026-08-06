@@ -242,8 +242,8 @@ class Graphics(Container):
             outline_mesh = meshes[outline_mesh_id]
             outline_mesh.surfaces = [
                 k
-                for k, v in outline_mesh._api_helper.field_info()
-                .get_surfaces_info()
+                for k, v in outline_mesh._api_helper._field_info()
+                ._get_surfaces_info()
                 .items()
                 if v["type"] == "zone-surf" and v["zone_type"] != "interior"
             ]

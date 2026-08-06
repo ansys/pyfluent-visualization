@@ -60,7 +60,7 @@ class PostAPIHelper:
             return local_surface_name.lower()
 
         def _get_api_handle(self):
-            return self.obj.get_root().session.results.surfaces
+            return self.obj.get_root().session.settings.results.surfaces
 
         def _delete_if_exists_on_server(self):
             field_data = self.obj._api_helper.field_data()

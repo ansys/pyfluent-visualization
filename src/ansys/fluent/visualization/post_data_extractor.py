@@ -25,7 +25,7 @@
 import itertools
 from typing import Dict
 
-from ansys.fluent.core.field_data_interfaces import (
+from ansys.fluent.core.fields.field_data_interfaces import (
     PathlinesFieldDataRequest,
     ScalarFieldDataRequest,
     SurfaceDataType,
@@ -150,8 +150,6 @@ class FieldDataExtractor:
             surfaces=obj.surfaces(),
             data_types=[SurfaceDataType.Vertices, SurfaceDataType.FacesConnectivity],
             flatten_connectivity=True,
-            *args,
-            **kwargs,
         )
         scalar_request = ScalarFieldDataRequest(
             field_name=field,

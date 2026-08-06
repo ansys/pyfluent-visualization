@@ -24,7 +24,7 @@
 
 import warnings
 
-from ansys.fluent.core.field_data_interfaces import _to_field_name_str
+from ansys.fluent.core.fields.live_field_data import _to_field_name_str
 from ansys.fluent.core.utils.context_managers import _get_active_session
 from ansys.units import VariableDescriptor
 
