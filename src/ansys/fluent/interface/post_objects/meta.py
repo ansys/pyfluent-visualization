@@ -254,7 +254,9 @@ class PyLocalBaseMeta(type):
         attrs["root"] = property(lambda self: self.get_root())
         attrs["path"] = property(lambda self: self.get_path())
         attrs["session"] = property(lambda self: self.get_session())
-        attrs["field_data"] = property(lambda self: self.get_session().fields.field_data)
+        attrs["field_data"] = property(
+            lambda self: self.get_session().fields.field_data
+        )
         attrs["monitors"] = property(lambda self: self.get_session().monitors)
         attrs["session_handle"] = property(lambda self: self.get_session_handle())
         return super(PyLocalBaseMeta, cls).__new__(cls, name, bases, attrs)
