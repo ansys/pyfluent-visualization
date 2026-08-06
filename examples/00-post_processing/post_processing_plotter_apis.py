@@ -70,7 +70,7 @@ from ansys.fluent.visualization import (
     config,
 )
 
-pyfluent.CONTAINER_MOUNT_PATH = pyfluent.EXAMPLES_PATH
+pyfluent.CONTAINER_MOUNT_PATH = pyfluent.config.examples_path
 
 config.interactive = False
 config.view = "isometric"

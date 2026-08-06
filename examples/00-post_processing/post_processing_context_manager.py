@@ -81,7 +81,7 @@ from ansys.fluent.visualization import (
     config,
 )
 
-pyfluent.CONTAINER_MOUNT_PATH = pyfluent.EXAMPLES_PATH
+pyfluent.CONTAINER_MOUNT_PATH = pyfluent.config.examples_path
 
 config.interactive = False
 config.view = "isometric"
@@ -226,8 +226,8 @@ with using(solver_session):
     residual = Monitor(monitor_set_name="residual")
     plot_window.add_plot(residual, position=(0, 1))
 
-    solver_session.solution.initialization.hybrid_initialize()
-    solver_session.solution.run_calculation.iterate(iter_count=50)
+    solver_session.settings.solution.initialization.hybrid_initialize()
+    solver_session.settings.solution.run_calculation.iterate(iter_count=50)
 
     mass_bal_rplot = Monitor(monitor_set_name="mass-bal-rplot")
     plot_window.add_plot(mass_bal_rplot, position=(1, 0))

@@ -291,7 +291,7 @@ class GraphicsWindow(VisualizationWindow):
             )
 
     def _display_vector(self, obj, obj_dict):
-        field_data = obj.session.field_data
+        field_data = obj.session.fields.field_data
         vectors_of = obj.vectors_of()
         # scalar bar properties
         try:
@@ -571,7 +571,7 @@ class GraphicsWindow(VisualizationWindow):
                 auto_range_on = obj.range.auto_range_on
                 if auto_range_on.global_range():
                     if filled:
-                        field_data = obj.session.field_data
+                        field_data = obj.session.fields.field_data
                         _mesh_dict = {
                             "data": mesh,
                             "clim": field_data.scalar_fields.range(obj.field(), False),

@@ -41,12 +41,8 @@ class Contour:
         """
         Check field and surface names.
         """
-        allowed_fields = (
-            solver.field_data.get_scalar_field_data.field_name.allowed_values()
-        )
-        allowed_surfaces = (
-            solver.field_data.get_scalar_field_data.surface_name.allowed_values()
-        )
+        allowed_fields = solver.fields.field_data.scalar_fields.allowed_values()
+        allowed_surfaces = solver.fields.field_data.surfaces.allowed_values()
         if self.field not in allowed_fields:
             raise ValueError(
                 f"{self.field} is not valid field. Valid fields are {allowed_fields}"
