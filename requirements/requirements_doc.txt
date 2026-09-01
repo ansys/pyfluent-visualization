@@ -14,6 +14,6 @@ sphinxemoji==0.3.2
 sphinx-toggleprompt>=0.6.0
 autodocsumm==0.2.15
 pyvista[trame]>=0.48.4
-matplotlib>=3.10.9
+matplotlib>=3.11.1
 quarto-cli==1.9.38
 pdf2image==1.17.0
