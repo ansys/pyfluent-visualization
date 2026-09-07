@@ -148,7 +148,7 @@ class VisualizationWindowsManager(metaclass=ABCMeta):
             Windows id to refresh. If not specified, all windows will be
             refreshed.
 
-        overlay : bool, Optional
+        overlay : bool, optional
             Overlay graphics over existing graphics.
         """
         pass

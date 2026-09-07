@@ -34,7 +34,7 @@ background and display customization, image export, and the creation of XY and
 residual plots. Users can access visualization properties directly through PyFluent’s
 interface, enabling flexible control without dealing with low-level renderer details.
 
-**Key Features
+**Key Features**
 
 * Context-managed solver and visualization workflow using using().
 
