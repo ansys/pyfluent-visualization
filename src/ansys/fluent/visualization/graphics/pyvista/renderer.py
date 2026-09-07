@@ -121,7 +121,7 @@ class Renderer(AbstractRenderer):
         Parameters
         ----------
         meshes : list[list[dict]]
-            Data to plot. Data consists the list of x and y
+            Data to plot. Data consists of the list of x and y
             values for each curve.
         """
         self.plotter.clear()

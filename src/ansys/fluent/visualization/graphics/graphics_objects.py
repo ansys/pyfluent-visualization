@@ -70,7 +70,7 @@ class Mesh(MeshDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization import  Graphics
+        from ansys.fluent.visualization import Graphics
 
         graphics_session = Graphics(session)
         mesh1 = graphics_session.Meshes["mesh-1"]
@@ -102,7 +102,7 @@ class Pathlines(PathlinesDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization import  Graphics
+        from ansys.fluent.visualization import Graphics
 
         graphics_session = Graphics(session)
         pathlines1 = graphics_session.Pathlines["pathlines-1"]
@@ -113,7 +113,7 @@ class Pathlines(PathlinesDefn):
 
     @Command
     def display(self, window_id: Optional[str] = None, overlay: Optional[bool] = False):
-        """Display mesh graphics.
+        """Display pathlines graphics.
 
         Parameters
         ----------
@@ -186,7 +186,7 @@ class Contour(ContourDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization import  Graphics
+        from ansys.fluent.visualization import Graphics
 
         graphics_session = Graphics(session)
         contour1 = graphics_session.Contours["contour-1"]
@@ -227,7 +227,7 @@ class Vector(VectorDefn):
 
     .. code-block:: python
 
-        from ansys.fluent.visualization import  Graphics
+        from ansys.fluent.visualization import Graphics
 
         graphics_session = Graphics(session)
         vector1 = graphics_session.Vectors["vector-1"]
