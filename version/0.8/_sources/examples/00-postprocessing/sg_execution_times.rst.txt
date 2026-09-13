@@ -1,0 +1,13 @@
+
+:orphan:
+
+.. _sphx_glr_examples_00-postprocessing_sg_execution_times:
+
+
+Computation times
+=================
+**02:30.577** total execution time for **examples_00-postprocessing** files:
+
++--------------------------------------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_examples_00-postprocessing_post_processing_exhaust_manifold.py` (``post_processing_exhaust_manifold.py``) | 02:30.577 | 0.0 MB |
++--------------------------------------------------------------------------------------------------------------------------+-----------+--------+
