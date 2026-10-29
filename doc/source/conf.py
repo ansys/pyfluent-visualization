@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 import ansys.fluent.core as pyfluent
-from ansys.fluent.core.docker.utils import get_grpc_launcher_args_for_gh_runs
+from ansys.fluent.core.execution.docker.utils import get_grpc_launcher_args_for_gh_runs
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
 import numpy as np
 import pyvista
