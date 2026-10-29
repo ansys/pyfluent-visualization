@@ -25,7 +25,7 @@
 import itertools
 from typing import Dict
 
-from ansys.fluent.core.fields.field_data_interfaces import (
+from ansys.fluent.core.fields.field_data import (
     PathlinesFieldDataRequest,
     ScalarFieldDataRequest,
     SurfaceDataType,
