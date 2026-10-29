@@ -24,6 +24,9 @@
 
 import warnings
 
+from ansys.fluent.core._variable_strategies import (
+    FluentFieldDataNamingStrategy as naming_strategy,
+)
 from ansys.fluent.core.execution.session.session import _get_active_session
 from ansys.units import VariableDescriptor
 
@@ -33,7 +36,7 @@ from ansys.fluent.visualization.post_data_extractor import (
     FieldDataExtractor,
     XYPlotDataExtractor,
 )
-from ansys.fluent.core._variable_strategies import FluentFieldDataNamingStrategy as naming_strategy
+
 _naming_strategy_instance = naming_strategy()
 _to_field_name_str = _naming_strategy_instance.to_string
 
