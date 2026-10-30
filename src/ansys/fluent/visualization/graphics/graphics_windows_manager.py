@@ -846,7 +846,7 @@ class GraphicsWindowsManager(metaclass=AbstractSingletonMeta):
         windows_id : List[str], optional
             IDs of the windows to refresh. The default is ``[]``, in which case
             all windows are refreshed.
-        overlay : bool, Optional
+        overlay : bool, optional
             Overlay graphics over existing graphics.
         """
         if windows_id is None:

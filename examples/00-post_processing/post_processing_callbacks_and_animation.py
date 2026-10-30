@@ -34,7 +34,7 @@ and updates them live during the solve. The workflow also highlights
 the use of Pyvista for 3D rendering and the GraphicsWindow interface for
 managing multiple visualization windows.
 
-**Key Features
+**Key Features**
 
 * Real-time plot and graphics updates driven by solver callbacks.
 * Live contour, XY, and monitor plot animation during iterations.

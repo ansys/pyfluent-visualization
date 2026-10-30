@@ -29,7 +29,7 @@ from ansys.fluent.visualization.base.renderer import AbstractRenderer
 
 
 class Plotter(AbstractRenderer):
-    """Class for pyvista chart 2D plotter."""
+    """Class for PyVista chart 2D plotter."""
 
     def __init__(
         self,
@@ -41,7 +41,7 @@ class Plotter(AbstractRenderer):
         remote_process: Optional[bool] = False,
         grid: tuple | None = (1, 1),
     ):
-        """Instantiate a pyvista chart 2D plotter.
+        """Instantiate a PyVista chart 2D plotter.
 
         Parameters
         ----------
@@ -56,7 +56,7 @@ class Plotter(AbstractRenderer):
         ylabel : str, optional
             Y axis label.
         figure : str, optional
-            Matplot lib figure.
+            Matplotlib figure.
         axis : str, optional
             Subplot indices.
         remote_process: bool, optional
@@ -86,7 +86,7 @@ class Plotter(AbstractRenderer):
         Parameters
         ----------
         meshes : list[list[dict]]
-            Data to plot. Data consists the list of x and y
+            Data to plot. Data consists of the list of x and y
             values for each curve.
         """
         if not self._remote_process:
