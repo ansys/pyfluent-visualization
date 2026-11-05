@@ -1,0 +1,11 @@
+.. _ref_Mesh:
+
+Mesh
+====
+
+.. autoclass:: ansys.fluent.visualization.Mesh
+    :members:
+    :show-inheritance:
+    :undoc-members:
+    :exclude-members: __weakref__, __dict__
+    :special-members: __init__
