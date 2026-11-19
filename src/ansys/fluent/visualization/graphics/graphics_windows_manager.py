@@ -303,6 +303,11 @@ class GraphicsWindow(VisualizationWindow):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
+        clean_field = field.replace("\n", " ")
+        try:
+            scalar_bar_args["title"] = clean_field
+        except (NameError, UnboundLocalError):
+            pass
 
         mesh_obj_list = []
 
@@ -357,7 +362,6 @@ class GraphicsWindow(VisualizationWindow):
             }
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:
-                clean_field = field.replace("\n", " ")
                 vect_title = obj_dict.get("title")
                 _mesh_dict["title"] = (
                     f"{vectors_of.capitalize()} " f"vectors colored by {clean_field}."
@@ -377,7 +381,6 @@ class GraphicsWindow(VisualizationWindow):
                 }
                 _mesh_dict["kwargs"] = {}
                 if obj_dict is not None:
-                    clean_field = field.replace("\n", " ")
                     vect_title = obj_dict.get("title")
                     _mesh_dict["title"] = (
                         f"{vectors_of.capitalize()} "
@@ -395,10 +398,12 @@ class GraphicsWindow(VisualizationWindow):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
+        clean_field = field.replace("\n", " ")
 
         # scalar bar properties
         try:
             scalar_bar_args = self.renderer._scalar_bar_default_properties()
+            scalar_bar_args["title"] = clean_field
         except AttributeError:
             # In case 2d renderer is selected, the above will not be available.
             pass
@@ -425,7 +430,6 @@ class GraphicsWindow(VisualizationWindow):
             }
             _mesh_dict["kwargs"] = {}
             if obj_dict is not None:
-                clean_field = field.replace("\n", " ")
                 path_title = obj_dict.get("title")
                 _mesh_dict["title"] = (
                     f"Pathlines colored by {clean_field}."
@@ -444,6 +448,7 @@ class GraphicsWindow(VisualizationWindow):
         field = obj.field()
         field_unit = obj._api_helper.get_field_unit(field)
         field = f"{field}\n[{field_unit}]" if field_unit else field
+        clean_field = field.replace("\n", " ")
         range_option = obj.range.option()
         filled = obj.filled()
         contour_lines = obj.contour_lines()
@@ -452,6 +457,7 @@ class GraphicsWindow(VisualizationWindow):
         # scalar bar properties
         try:
             scalar_bar_args = self.renderer._scalar_bar_default_properties()
+            scalar_bar_args["title"] = clean_field
         except AttributeError:
             # In case 2d renderer is selected, the above will not be available.
             pass
@@ -493,7 +499,6 @@ class GraphicsWindow(VisualizationWindow):
                                 }
                                 _mesh_dict["kwargs"] = {}
                                 if obj_dict is not None:
-                                    clean_field = field.replace("\n", " ")
                                     cont_title = obj_dict.get("title")
                                     _mesh_dict["title"] = (
                                         f"Contour of {clean_field}."
@@ -514,7 +519,6 @@ class GraphicsWindow(VisualizationWindow):
                                 }
                                 _mesh_dict["kwargs"] = {}
                                 if obj_dict is not None:
-                                    clean_field = field.replace("\n", " ")
                                     cont_title = obj_dict.get("title")
                                     _mesh_dict["title"] = (
                                         f"Contour of {clean_field}."
@@ -539,7 +543,6 @@ class GraphicsWindow(VisualizationWindow):
                         }
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
-                            clean_field = field.replace("\n", " ")
                             cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
                                 f"Contour of {clean_field}."
@@ -556,7 +559,6 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
-                            clean_field = field.replace("\n", " ")
                             cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
                                 f"Contour of {clean_field}."
@@ -581,7 +583,6 @@ class GraphicsWindow(VisualizationWindow):
                         }
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
-                            clean_field = field.replace("\n", " ")
                             cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
                                 f"Contour of {clean_field}."
@@ -598,7 +599,6 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
-                            clean_field = field.replace("\n", " ")
                             cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
                                 f"Contour of {clean_field}."
@@ -620,7 +620,6 @@ class GraphicsWindow(VisualizationWindow):
                         }
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
-                            clean_field = field.replace("\n", " ")
                             cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
                                 f"Contour of {clean_field}."
@@ -637,7 +636,6 @@ class GraphicsWindow(VisualizationWindow):
                         _mesh_dict = {"data": mesh.contour(isosurfaces=20)}
                         _mesh_dict["kwargs"] = {}
                         if obj_dict is not None:
-                            clean_field = field.replace("\n", " ")
                             cont_title = obj_dict.get("title")
                             _mesh_dict["title"] = (
                                 f"Contour of {clean_field}."
